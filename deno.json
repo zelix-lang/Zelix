@@ -3,7 +3,9 @@
     "dev": "deno run --allow-all --watch main.ts"
   },
   "imports": {
-    "@std/assert": "jsr:@std/assert@1",
-    "@std/yaml": "jsr:@std/yaml@^1.0.5"
+    "@lambdalisue/github-emoji": "jsr:@lambdalisue/github-emoji@^1.0.0",
+    "@std/path": "jsr:@std/path@^1.0.8",
+    "@std/yaml": "jsr:@std/yaml@^1.0.5",
+    "@sylc/step-spinner": "jsr:@sylc/step-spinner@^0.0.3"
   }
 }

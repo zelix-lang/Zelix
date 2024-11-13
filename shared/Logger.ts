@@ -9,7 +9,7 @@ function withPrefix(
     }).join("\n");
 }
 
-function colorize(message: string): string {
+export function colorize(message: string): string {
     return message.replace(
         /<(\w+(:[#\w:]+)?)>(.*?)<\/\1>/g,
         (_, color: string, __, text: string) => {
