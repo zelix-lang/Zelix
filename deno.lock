@@ -11,7 +11,8 @@
     "jsr:@std/path@^1.0.8": "1.0.8",
     "jsr:@std/yaml@^1.0.5": "1.0.5",
     "jsr:@sylc/step-spinner@*": "0.0.3",
-    "jsr:@sylc/step-spinner@^0.0.3": "0.0.3"
+    "jsr:@sylc/step-spinner@^0.0.3": "0.0.3",
+    "npm:assemblyscript@~0.27.31": "0.27.31"
   },
   "jsr": {
     "@korkje/read@0.1.2": {
@@ -54,6 +55,21 @@
         "jsr:@std/cli",
         "jsr:@std/fmt"
       ]
+    }
+  },
+  "npm": {
+    "assemblyscript@0.27.31": {
+      "integrity": "sha512-Ra8kiGhgJQGZcBxjtMcyVRxOEJZX64kd+XGpjWzjcjgxWJVv+CAQO0aDBk4GQVhjYbOkATarC83mHjAVGtwPBQ==",
+      "dependencies": [
+        "binaryen",
+        "long"
+      ]
+    },
+    "binaryen@116.0.0-nightly.20240114": {
+      "integrity": "sha512-0GZrojJnuhoe+hiwji7QFaL3tBlJoA+KFUN7ouYSDGZLSo9CKM8swQX8n/UcbR0d1VuZKU+nhogNzv423JEu5A=="
+    },
+    "long@5.2.3": {
+      "integrity": "sha512-lcHwpNoggQTObv5apGNCTdJrO69eHOZMi4BNC+rTLER8iHAqGrUVeLh/irVIM7zTw2bOXA8T6uNPeujwOLg/2Q=="
     }
   },
   "redirects": {
@@ -213,7 +229,8 @@
       "jsr:@lambdalisue/github-emoji@1",
       "jsr:@std/path@^1.0.8",
       "jsr:@std/yaml@^1.0.5",
-      "jsr:@sylc/step-spinner@^0.0.3"
+      "jsr:@sylc/step-spinner@^0.0.3",
+      "npm:assemblyscript@~0.27.31"
     ]
   }
 }

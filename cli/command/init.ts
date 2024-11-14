@@ -3,27 +3,23 @@ import GenericCommand from "../generic/GenericCommand.ts";
 import Logger, { colorize } from "../../shared/Logger.ts";
 import { stringify } from "@std/yaml";
 import { fileExists } from "../../shared/util/FileUtil.ts";
-import { isAbsolute, join } from "@std/path";
+import { join } from "@std/path";
 import messageHeader from "../message/header.ts";
 import question, { booleanQuestion } from "../lib/question.ts";
 import { step } from "jsr:@sylc/step-spinner"
 import { emojiOf } from "@lambdalisue/github-emoji";
 import exampleSurfScript from "../generic/exampleSurfScript.ts";
+import retrievePath from "../lib/retrievePath.ts";
 
 const rocketEmoji = emojiOf("rocket");
 const checkingSpinner = step("Checking...");
 const writingSpinner = step("Writing...");
 
-
 export class Init implements GenericCommand {
 
     async run(args: Arguments) {
         const cwd = Deno.cwd();
-        const where = args.where ?
-                isAbsolute(args.where) ?
-                    args.where :
-                    join(cwd, args.where) :
-                cwd;
+        const where = retrievePath(args.where);
 
         if (!fileExists(where)) {
             Deno.mkdirSync(where, { recursive: true });
