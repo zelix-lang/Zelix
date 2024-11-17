@@ -1,6 +1,6 @@
 use args::Commands;
 use clap::Parser;
-use command::{init::init_command, license::license_command, run::run_command, version::version_command};
+use command::{compile::compile_command, init::init_command, license::license_command, run::run_command, version::version_command};
 mod command;
 mod args;
 mod structs;
@@ -16,14 +16,14 @@ pub fn main() {
         Commands::Run { path } => {
             run_command(path);            
         },
+        Commands::Compile { path } => {
+            compile_command(path);            
+        },        
         Commands::License { show_full } => {
             license_command(show_full);
         },
         Commands::Version {} => {
             version_command();
-        },
-        _ => {
-            println!("TODO!");
         }
     }
 }
