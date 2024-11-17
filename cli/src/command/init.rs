@@ -4,7 +4,7 @@ use globals::{BOOL_REGEX, DESC_REGEX, NAME_REGEX, ROCKET_EMOJI, VERSION_REGEX};
 use shared::{logger::{Logger, LoggerImpl}, message::print_header, path::retrieve_path, result::try_unwrap, stdin::question::question};
 use std::{env::current_dir, fs::exists};
 
-use crate::{example::example_program::EXAMPLE_PROGRAM, structs::surf_config_file::{SurfBinds, SurfConfigFile}};
+use crate::{example::example_program::{EXAMPLE_GIT_IGNORE, EXAMPLE_PROGRAM}, structs::surf_config_file::{SurfBinds, SurfConfigFile}};
 
 mod globals {
     use fancy_regex::Regex;
@@ -83,6 +83,14 @@ pub fn init_command(path: Option<PathBuf>) {
                 .current_dir(final_path.clone())
                 .spawn(),
             "Failed to initialize the git repository (Is git installed?)"
+        );
+
+        try_unwrap(
+            fs::write(
+                final_path.join(".gitignore"),
+                EXAMPLE_GIT_IGNORE.clone()
+            ),
+            "Failed to write the main file"
         );
     }
 

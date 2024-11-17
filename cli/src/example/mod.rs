@@ -9,5 +9,7 @@ pub mod example_program {
             "    println(\"Hello, world!\")",
             "}"
         );
+
+        pub static ref EXAMPLE_GIT_IGNORE : String = "/out".to_string();
     }
 }
