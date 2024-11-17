@@ -196,6 +196,7 @@ dependencies = [
  "emojis",
  "fancy-regex",
  "lazy_static",
+ "lexer",
  "serde",
  "serde_yml",
  "shared",
