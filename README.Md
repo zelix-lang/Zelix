@@ -77,5 +77,7 @@ This project is licensed under the GNU General Public License v3.0. See the [LIC
 
 ```
 Copyright (C) 2024 Rodrigo R. & All Surf Contributors
-This program comes with ABSOLUTELY NO WARRANTY; for details type `surf license`. This is free software, and you are welcome to redistribute it under certain conditions; type `surf license --full` for details.
+This program comes with ABSOLUTELY NO WARRANTY; for details type `surf license`.
+This is free software, and you are welcome to redistribute it under certain conditions;
+type `surf license --full` for details.
 ```
