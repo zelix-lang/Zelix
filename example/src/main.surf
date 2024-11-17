@@ -1,5 +1,5 @@
-import from "@Surf:standard/io/println"
+import from "@Surf:standard/io/println";
 
 fun main() -> nothing {
-    println("Hello, world!")
+    println("Hello, world!");
 }

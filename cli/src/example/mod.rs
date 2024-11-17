@@ -4,9 +4,9 @@ pub mod example_program {
     lazy_static! {
         pub static ref EXAMPLE_PROGRAM: String = format!(
             "{}\n\n{}\n{}\n{}",
-            "import from \"@Surf:standard/io/println\"",
+            "import from \"@Surf:standard/io/println\";",
             "fun main() -> nothing {",
-            "    println(\"Hello, world!\")",
+            "    println(\"Hello, world!\");",
             "}"
         );
 
