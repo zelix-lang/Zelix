@@ -1,3 +1,11 @@
 [package]
 name = "core"
 edition = "2021"
+
+[dependencies]
+cranelift = "0.113.1"
+cranelift-module = "0.113.1"
+cranelift-object = "0.113.1"
+target-lexicon = "0.12.16"
+cranelift-codegen = "0.113.1"
+shared = { path = "../shared" }

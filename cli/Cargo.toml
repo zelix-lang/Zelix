@@ -11,3 +11,4 @@ serde_yml = "0.0.12"
 emojis = "0.6.4"
 shared = { path = "../shared" }
 lexer = { path = "../lexer" }
+core = { path = "../core" }

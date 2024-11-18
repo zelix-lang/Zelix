@@ -16,8 +16,8 @@ fn main() {
         )
             .expect("Failed to create target machine"),
         "basic_lang".to_string(),
-        cranelift_module::default_libcall_names(),
     )
+    cranelift_module::default_libcall_names(),
     .unwrap();
     let mut module = ObjectModule::new(builder);
 
