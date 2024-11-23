@@ -12,4 +12,3 @@ emojis = "0.6.4"
 shared = { path = "../shared" }
 lexer = { path = "../lexer" }
 core = { path = "../core" }
-logos = "0.14.2"

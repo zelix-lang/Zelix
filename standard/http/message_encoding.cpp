@@ -1,6 +1,0 @@
-enum MessageEncoding {
-
-    JSON,
-    TEXT
-
-};

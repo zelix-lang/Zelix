@@ -1,23 +1,29 @@
 use std::{fs::read_to_string, path::PathBuf, process::exit};
 
-use lexer::token::{lex, Token};
-use logos::Lexer;
+use lexer::{Lexer, LexerImpl};
 use shared::{
     logger::{Logger, LoggerImpl},
     path::retrieve_path,
-    result::try_unwrap,
+    result::try_unwrap, token::token::Token,
 };
 
 use std::{
-    env::current_dir,
     fs::{exists, metadata},
+    env::current_dir
 };
 
 use crate::structs::surf_config_file::SurfConfigFile;
 
-pub fn lexe_base(path: Option<PathBuf>) -> String {
+pub fn lexe_base(path: Option<PathBuf>) -> Vec<Token> {
     let final_path =
-        retrieve_path(path.unwrap_or(try_unwrap(current_dir(), "Failed to get current directory")));
+        retrieve_path(
+            path.unwrap_or(
+                try_unwrap(
+                    current_dir(), 
+                    "Failed to get current directory"
+                )
+            )
+        );
 
     if !try_unwrap(
         exists(final_path.clone()),
@@ -92,5 +98,5 @@ pub fn lexe_base(path: Option<PathBuf>) -> String {
         "Failed to read the main file",
     );
 
-    main_file_content
+    Lexer::new().tokenize(&main_file_content, &main_file.to_str().unwrap().to_string())
 }

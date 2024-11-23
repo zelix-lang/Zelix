@@ -16,7 +16,7 @@
 
 #include <string>
 #include <map>
-#include "message_encoding.cpp"
+#include "message_encoding.h"
 
 class HttpResponse {
     private:

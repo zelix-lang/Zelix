@@ -1,7 +1,6 @@
 use core::compiler::compile::compile;
 use std::{env::current_dir, fs::{remove_dir_all, remove_file}, path::PathBuf};
 
-use lexer::token::lex;
 use shared::{path::retrieve_path, result::try_unwrap};
 
 use crate::command::lexe_base::lexe_base;
@@ -39,7 +38,7 @@ pub fn compile_command(path: Option<PathBuf>) {
     );
 
     compile(
-        lex(tokens.as_str()),
+        tokens,
         out_dir
     );
 }

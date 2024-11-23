@@ -1,4 +1,4 @@
-import from "@Surf:standard/io/println";
+import println from "@Surf:standard/io/print";
 
 fun main() -> nothing {
     println("Hello, world!");

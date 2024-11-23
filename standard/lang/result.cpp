@@ -13,7 +13,7 @@
 
 #include "err.h"
 #include "result.h"
-#include "panic.cpp"
+#include "panic.h"
 #include <optional>
 
 using namespace std;
