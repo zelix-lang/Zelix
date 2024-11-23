@@ -1,6 +1,7 @@
 use core::compiler::compile::compile;
 use std::{env::current_dir, fs::{remove_dir_all, remove_file}, path::PathBuf};
 
+use lexer::token::lex;
 use shared::{path::retrieve_path, result::try_unwrap};
 
 use crate::command::lexe_base::lexe_base;
@@ -37,5 +38,8 @@ pub fn compile_command(path: Option<PathBuf>) {
         "Failed to create out directory",
     );
 
-    compile(tokens, out_dir);
+    compile(
+        lex(tokens.as_str()),
+        out_dir
+    );
 }

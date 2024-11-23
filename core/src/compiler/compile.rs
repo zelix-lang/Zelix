@@ -1,15 +1,16 @@
 use cranelift::prelude::*;
 use cranelift_module::{Module, Linkage};
 use cranelift_object::{ObjectBuilder, ObjectModule};
+use lexer::token::Token;
+use logos::Lexer;
 use shared::result::try_unwrap;
-use shared::token::token::Token;
 use target_lexicon::Triple;
 use std::fs::File;
 use std::io::Write;
 use std::path::PathBuf;
 use cranelift_codegen::settings::Flags;
 
-pub fn compile(tokens: Vec<Token>, out_dir: PathBuf) {
+pub fn compile(tokens: Lexer<'_, Token>, out_dir: PathBuf) {
     // New triple for the target
     let triple = Triple::host();
 
@@ -26,8 +27,7 @@ pub fn compile(tokens: Vec<Token>, out_dir: PathBuf) {
         ),
         "Failed to create object builder",
     );
+
     let mut module = ObjectModule::new(builder);
-
-
 
 }

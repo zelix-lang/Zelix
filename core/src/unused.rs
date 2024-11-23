@@ -13,8 +13,7 @@ fn main() {
     let builder = ObjectBuilder::new(
         cranelift_codegen::isa::lookup(triple.clone()).unwrap().finish(
             Flags::new(cranelift_codegen::settings::builder()),
-        )
-            .expect("Failed to create target machine"),
+        ).expect("Failed to create target machine"),
         "basic_lang".to_string(),
     )
     cranelift_module::default_libcall_names(),
