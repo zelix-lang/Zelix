@@ -11,6 +11,7 @@
     Copyright (c) 2024 Rodrigo R. & all Surf contributors
 */
 
+#include "read_line.h"
 #include <iostream>
 #include <string>
 

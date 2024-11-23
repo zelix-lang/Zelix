@@ -11,8 +11,9 @@
     Copyright (c) 2024 Rodrigo R. & all Surf contributors
 */
 
-#include "err.h"
 #include "result.h"
+
+#include "err.h"
 #include "panic.h"
 #include <optional>
 

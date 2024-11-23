@@ -11,6 +11,7 @@
     Copyright (c) 2024 Rodrigo R. & all Surf contributors
 */
 
+#include "print.h"
 #include <iostream>
 
 void print(const char* str) {

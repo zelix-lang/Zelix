@@ -11,6 +11,8 @@
     Copyright (c) 2024 Rodrigo R. & all Surf contributors
 */
 
+#include "files.h"
+
 #include <iostream>
 #include <string>
 #include <fstream>

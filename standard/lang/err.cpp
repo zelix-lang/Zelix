@@ -11,8 +11,9 @@
     Copyright (c) 2024 Rodrigo R. & all Surf contributors
 */
 
-#include <string>
 #include "err.h"
+
+#include <string>
 
 Err::Err(std::string message) : message(message) {}
 

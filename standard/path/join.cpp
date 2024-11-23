@@ -11,6 +11,8 @@
     Copyright (c) 2024 Rodrigo R. & all Surf contributors
 */
 
+#include "join.h"
+
 #include <string>
 
 std::string get_path_separator() {

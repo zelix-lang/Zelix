@@ -11,6 +11,8 @@
     Copyright (c) 2024 Rodrigo R. & all Surf contributors
 */
 
+#include "cwd.h"
+
 #include <iostream>
 #include <unistd.h>
 #include <limits.h>

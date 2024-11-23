@@ -11,6 +11,8 @@
     Copyright (c) 2024 Rodrigo R. & all Surf contributors
 */
 
+#include "http_server.h"
+
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -18,7 +20,6 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include "http_response.h"
-#include "http_request.h"
 #include "http_request.h"
 #include "../lang/result.h"
 #include "../lang/err.h"
