@@ -1,6 +1,8 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, process::exit};
 
-use super::{function::Function, import::Import};
+use shared::{logger::{Logger, LoggerImpl}, token::token::TokenImpl};
+
+use super::{function::{Function, FunctionImpl}, import::Import};
 
 #[derive(Debug, Clone)]
 pub struct FileCode {
@@ -32,6 +34,20 @@ impl FileCodeImpl for FileCode {
     }
 
     fn add_function(&mut self, name: String, function: Function) {
+        if self.functions.contains_key(&name) {
+            Logger::err(
+                format!("Duplicate function name: {}", name).as_str(),
+                &[
+                    "Function names must be unique"
+                ],
+                &[
+                    function.get_trace().build_trace().as_str()
+                ]
+            );
+
+            exit(1);
+        }
+
         self.functions.insert(name, function);
     }
 

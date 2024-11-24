@@ -1,7 +1,7 @@
 use std::{path::PathBuf, process::exit};
 
 use shared::{logger::{Logger, LoggerImpl}, path::retrieve_path, token::{token::{Token, TokenImpl}, token_type::TokenType}};
-use crate::shared::import::{Import, Importable};
+use crate::shared::{import::{Import, Importable}, import_group::{ImportGroup, ImportGroupImpl}};
 use super::{sentence_extractor::extract_sentence, standard_locator::locate_standard, token_splitter::split_tokens};
 
 fn throw_invalid_import(details: &[&str]) {
@@ -16,7 +16,7 @@ fn throw_invalid_import(details: &[&str]) {
     exit(1);
 }
 
-pub fn extract_import(tokens: Vec<Token>) -> Vec<Import> {
+pub fn extract_import(tokens: Vec<Token>) -> ImportGroup {
     let import_tokens : Vec<Token> = extract_sentence(tokens.clone(), TokenType::Semicolon);
     let mut imports : Vec<Import> = Vec::new();
 
@@ -85,5 +85,9 @@ pub fn extract_import(tokens: Vec<Token>) -> Vec<Import> {
         );
     }
 
-    imports
+    ImportGroup::new(
+        imports,
+        // Add 1 to also skip the semicolon
+        import_tokens.len() as i32 + 1
+    )
 }

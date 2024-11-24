@@ -1,3 +1,4 @@
 pub mod transpiler;
-pub mod extractor;
+mod extractor;
 mod shared;
+mod syntax;

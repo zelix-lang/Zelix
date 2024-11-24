@@ -8,11 +8,11 @@ use import_extractor::extract_import;
 use lexer::data_types::is_data_type;
 use shared::{logger::{Logger, LoggerImpl}, token::{token::{Token, TokenImpl}, token_type::TokenType}};
 
-use crate::shared::{file_code::{FileCode, FileCodeImpl}, function::{Function, FunctionImpl}, param::{Param, ParamImpl}};
+use crate::shared::{file_code::{FileCode, FileCodeImpl}, function::{Function, FunctionImpl}, import_group::ImportGroupImpl, param::{Param, ParamImpl}};
 
 pub fn extract_parts(tokens: &Vec<Token>) -> FileCode {
 
-    let current_function: Option<Function> = None;
+    let mut inside_function: bool = false;
     let mut result : FileCode = FileCode::new();
 
     let mut expecting_function_name = false;
@@ -38,11 +38,19 @@ pub fn extract_parts(tokens: &Vec<Token>) -> FileCode {
     let mut last_function_body: Vec<Token> = Vec::new();
     let mut last_param_name = String::new();
 
-    for token in tokens {
+    // Used to skip tokens
+    let mut skip_to_index = 0;
+
+    for n in skip_to_index..tokens.len() {
+        if skip_to_index > 0 && skip_to_index > n {
+            continue;
+        }
+
+        let token = &tokens[n];
         let token_type : TokenType = token.get_token_type();
 
         if token_type == TokenType::Import {
-            if current_function.is_some() {
+            if inside_function {
                 Logger::err(
                     "Invalid import",
                     &["Import statement is not allowed inside a function"],
@@ -52,16 +60,19 @@ pub fn extract_parts(tokens: &Vec<Token>) -> FileCode {
                 exit(1);
             }
 
-            let import = extract_import(
+            let imports = extract_import(
                 tokens.clone()[1..].to_vec()
             );
             
-            for i in import {
-                result.add_import(i);
+            for import in imports.get_imports() {
+                result.add_import(import.clone());
             }
 
+            // +1 because we skipped the import keyword
+            skip_to_index = n + imports.get_skipped_tokens() as usize + 1;
+
         } else if token_type == TokenType::Function {
-            if current_function.is_some() {
+            if inside_function {
                 Logger::err(
                     "Invalid function",
                     &[
@@ -77,6 +88,7 @@ pub fn extract_parts(tokens: &Vec<Token>) -> FileCode {
                 exit(1);
             }
 
+            inside_function = true;
             has_function_ended = false;
             expecting_function_name = true;
         } else if expecting_function_name {
@@ -241,12 +253,27 @@ pub fn extract_parts(tokens: &Vec<Token>) -> FileCode {
                         Function::new(
                             last_function_params.clone(),
                             last_function_body.clone(),
-                            last_function_return_type.clone()
+                            last_function_return_type.clone(),
+                            token.clone()
                         )
                     );
 
-                    last_function_name.clear();
+
+                    // Reset all flags
+                    inside_function = false;
+                    expecting_function_name = false;
+                    expecting_open_paren = false;
+                    expecting_params = false;
+                    expecting_param_type_splitter = false;
+                    expecting_param_type = false;
+                    expecting_comma = false;
+                    expecting_open_curly = false;
+                    expecting_arrow = false;
+                    expecting_return_type = false;
+                    last_function_return_type = TokenType::Unknown;
                     last_function_params.clear();
+                    last_function_body.clear();
+                    last_function_name.clear();
                     continue;
                 }
             }

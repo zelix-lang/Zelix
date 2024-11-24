@@ -6,26 +6,41 @@ use super::param::Param;
 pub struct Function {
     arguments: Vec<Param>,
     body: Vec<Token>,
-    return_type: TokenType
+    return_type: TokenType,
+    trace: Token
 }
 
 pub trait FunctionImpl {
 
-    fn new(arguments: Vec<Param>, body: Vec<Token>, return_type: TokenType) -> Self;
+    fn new(
+        arguments: 
+        Vec<Param>, 
+        body: Vec<Token>, 
+        return_type: TokenType, 
+        trace: Token
+    ) -> Self;
 
     fn get_arguments(&self) -> &Vec<Param>;
     fn get_body(&self) -> &Vec<Token>;
     fn get_return_type(&self) -> &TokenType;
+    fn get_trace(&self) -> &Token;
 
 }
 
 impl FunctionImpl for Function {
 
-    fn new(arguments: Vec<Param>, body: Vec<Token>, return_type: TokenType) -> Self {
+    fn new(
+        arguments: 
+        Vec<Param>, 
+        body: Vec<Token>, 
+        return_type: TokenType, 
+        trace: Token
+    ) -> Self {
         Function {
             arguments,
             body,
-            return_type
+            return_type,
+            trace
         }
     }
 
@@ -39,6 +54,10 @@ impl FunctionImpl for Function {
 
     fn get_return_type(&self) -> &TokenType {
         &self.return_type
+    }
+
+    fn get_trace(&self) -> &Token {
+        &self.trace
     }
     
 }
