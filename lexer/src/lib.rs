@@ -1,5 +1,5 @@
 use shared::token::{token::{Token, TokenImpl}, token_type::TokenType};
-mod data_types;
+pub mod data_types;
 
 mod globals {
     use std::collections::HashMap;
@@ -125,7 +125,7 @@ impl LexerImpl for Lexer {
                 current_column += 1;
             }
 
-            if !self.in_block_comment && character == '/' {
+            if !self.in_string && !self.in_block_comment && character == '/' {
                 if characters_len < 2 {
                     continue;
                 }
@@ -284,16 +284,18 @@ impl LexerImpl for Lexer {
                 } else if
                     character == '>'
                 {
-                    if tokens_len == 0 || tokens[tokens_len - 1].get_token_type() == TokenType::Minus {
+                    if tokens_len == 0 || tokens[tokens_len - 1].get_token_type() != TokenType::Minus {
                         continue;
                     }
 
                     tokens.pop();
-                    Lexer::calculate(
-                        &String::from("->"),
-                        &file,
-                        &current_line,
-                        &current_column
+                    tokens.push(
+                        Lexer::calculate(
+                            &String::from("->"),
+                            &file,
+                            &current_line,
+                            &current_column
+                        )
                     );
 
                     continue;

@@ -12,7 +12,8 @@ mod globals{
             TokenType::String,
             TokenType::Num,
             TokenType::Bool,
-            TokenType::Discrete
+            TokenType::Discrete,
+            TokenType::Nothing
         ];
     }
 }

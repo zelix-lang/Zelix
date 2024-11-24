@@ -1,4 +1,4 @@
-use core::compiler::compile::compile;
+use core::transpiler::transpile::transpile;
 use std::{env::current_dir, fs::{remove_dir_all, remove_file}, path::PathBuf};
 
 use shared::{path::retrieve_path, result::try_unwrap};
@@ -37,7 +37,7 @@ pub fn compile_command(path: Option<PathBuf>) {
         "Failed to create out directory",
     );
 
-    compile(
+    transpile(
         tokens,
         out_dir
     );
