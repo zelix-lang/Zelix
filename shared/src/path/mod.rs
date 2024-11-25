@@ -14,3 +14,14 @@ pub fn retrieve_path(path: PathBuf) -> PathBuf {
 
     return cwd.join(path);
 }
+
+pub fn discard_cwd(path: String) -> String {
+    let cwd = try_unwrap(
+        std::env::current_dir(),
+        "Failed to get current working directory",
+    );
+
+    let cwd_string = cwd.to_str().unwrap();
+    
+    path.replace(cwd_string, "")
+}

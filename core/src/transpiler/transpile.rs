@@ -5,17 +5,17 @@ use std::path::PathBuf;
 use shared::token::token::Token;
 
 use crate::extractor::extract_parts;
-use crate::shared::file_code::{FileCode, FileCodeImpl};
+use crate::shared::file_code::FileCodeImpl;
 use crate::syntax::analyze;
 
-pub fn transpile(tokens: Vec<Token>, out_dir: PathBuf) {
+pub fn transpile(tokens: Vec<Token>, out_dir: PathBuf, source: PathBuf) {
 
     let mut transpiled_code = "";
-    let file_code = extract_parts(&tokens);
+    let file_code = extract_parts(&tokens, source);
 
     // Borrow to avoid moving the value or cloning it
     analyze(&file_code);
 
-    println!("{:?}", file_code.get_functions());
+    //println!("{:?}", file_code.get_functions());
 
 }

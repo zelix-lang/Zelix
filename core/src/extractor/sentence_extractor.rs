@@ -14,13 +14,13 @@ pub fn extract_sentence(
     let mut sentence: Vec<Token> = Vec::new();
     let mut has_met_delimiter = false;
 
-    for token in tokens {
+    for token in tokens.iter() {
         if token.get_token_type() == delimiter {
             has_met_delimiter = true;
             break;
         }
         
-        sentence.push(token);
+        sentence.push(token.clone());
     }
 
     if !has_met_delimiter {

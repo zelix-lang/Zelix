@@ -7,7 +7,8 @@ pub struct Function {
     arguments: Vec<Param>,
     body: Vec<Token>,
     return_type: TokenType,
-    trace: Token
+    trace: Token,
+    public: bool
 }
 
 pub trait FunctionImpl {
@@ -17,13 +18,15 @@ pub trait FunctionImpl {
         Vec<Param>, 
         body: Vec<Token>, 
         return_type: TokenType, 
-        trace: Token
+        trace: Token,
+        public: bool
     ) -> Self;
 
     fn get_arguments(&self) -> &Vec<Param>;
     fn get_body(&self) -> &Vec<Token>;
     fn get_return_type(&self) -> &TokenType;
     fn get_trace(&self) -> &Token;
+    fn is_public(&self) -> bool;
 
 }
 
@@ -34,13 +37,15 @@ impl FunctionImpl for Function {
         Vec<Param>, 
         body: Vec<Token>, 
         return_type: TokenType, 
-        trace: Token
+        trace: Token,
+        public: bool
     ) -> Self {
         Function {
             arguments,
             body,
             return_type,
-            trace
+            trace,
+            public
         }
     }
 
@@ -58,6 +63,10 @@ impl FunctionImpl for Function {
 
     fn get_trace(&self) -> &Token {
         &self.trace
+    }
+
+    fn is_public(&self) -> bool {
+        self.public
     }
     
 }

@@ -2,18 +2,18 @@ mod import_extractor;
 mod sentence_extractor;
 mod standard_locator;
 mod token_splitter;
-use std::process::exit;
+use std::{path::PathBuf, process::exit};
 
 use import_extractor::extract_import;
 use lexer::data_types::is_data_type;
 use shared::{logger::{Logger, LoggerImpl}, token::{token::{Token, TokenImpl}, token_type::TokenType}};
 
-use crate::shared::{file_code::{FileCode, FileCodeImpl}, function::{Function, FunctionImpl}, import_group::ImportGroupImpl, param::{Param, ParamImpl}};
+use crate::shared::{file_code::{FileCode, FileCodeImpl}, function::{Function, FunctionImpl}, import::Importable, import_group::ImportGroupImpl, param::{Param, ParamImpl}};
 
-pub fn extract_parts(tokens: &Vec<Token>) -> FileCode {
+pub fn extract_parts(tokens: &Vec<Token>, source: PathBuf) -> FileCode {
 
     let mut inside_function: bool = false;
-    let mut result : FileCode = FileCode::new();
+    let mut result : FileCode = FileCode::new(source);
 
     let mut expecting_function_name = false;
     let mut expecting_open_paren = false;
@@ -25,6 +25,8 @@ pub fn extract_parts(tokens: &Vec<Token>) -> FileCode {
     let mut has_function_ended = false;
     let mut expecting_arrow = false;
     let mut expecting_return_type = false;
+    let mut expecting_fun_keyword = true;
+    let mut is_last_function_public = false;
 
 
     // Used to count nested curly braces
@@ -49,7 +51,12 @@ pub fn extract_parts(tokens: &Vec<Token>) -> FileCode {
         let token = &tokens[n];
         let token_type : TokenType = token.get_token_type();
 
-        if token_type == TokenType::Import {
+        if token_type == TokenType::Pub {
+            is_last_function_public = true;
+            expecting_fun_keyword = true;
+
+            continue;
+        } else if token_type == TokenType::Import {
             if inside_function {
                 Logger::err(
                     "Invalid import",
@@ -61,9 +68,9 @@ pub fn extract_parts(tokens: &Vec<Token>) -> FileCode {
             }
 
             let imports = extract_import(
-                tokens.clone()[1..].to_vec()
+                tokens.clone()[(n + 1)..].to_vec()
             );
-            
+
             for import in imports.get_imports() {
                 result.add_import(import.clone());
             }
@@ -72,6 +79,16 @@ pub fn extract_parts(tokens: &Vec<Token>) -> FileCode {
             skip_to_index = n + imports.get_skipped_tokens() as usize + 1;
 
         } else if token_type == TokenType::Function {
+            if !expecting_fun_keyword {
+                Logger::err(
+                    "Invalid function",
+                    &["Expecting a function keyword"],
+                    &[token.build_trace().as_str()]
+                );
+
+                exit(1);
+            }
+
             if inside_function {
                 Logger::err(
                     "Invalid function",
@@ -88,6 +105,7 @@ pub fn extract_parts(tokens: &Vec<Token>) -> FileCode {
                 exit(1);
             }
 
+            expecting_fun_keyword = false;
             inside_function = true;
             has_function_ended = false;
             expecting_function_name = true;
@@ -254,7 +272,8 @@ pub fn extract_parts(tokens: &Vec<Token>) -> FileCode {
                             last_function_params.clone(),
                             last_function_body.clone(),
                             last_function_return_type.clone(),
-                            token.clone()
+                            token.clone(),
+                            is_last_function_public
                         )
                     );
 
@@ -270,6 +289,7 @@ pub fn extract_parts(tokens: &Vec<Token>) -> FileCode {
                     expecting_open_curly = false;
                     expecting_arrow = false;
                     expecting_return_type = false;
+                    is_last_function_public = false;
                     last_function_return_type = TokenType::Unknown;
                     last_function_params.clear();
                     last_function_body.clear();

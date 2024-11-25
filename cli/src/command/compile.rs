@@ -39,6 +39,7 @@ pub fn compile_command(path: Option<PathBuf>) {
 
     transpile(
         tokens,
-        out_dir
+        out_dir,
+        final_path
     );
 }

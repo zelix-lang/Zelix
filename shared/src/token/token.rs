@@ -1,3 +1,5 @@
+use crate::{path::discard_cwd, result::try_unwrap};
+
 use super::token_type::TokenType;
 
 #[derive(Debug, Clone, PartialEq)]
@@ -51,6 +53,11 @@ impl TokenImpl for Token {
     }
 
     fn build_trace(&self) -> String {
-        format!("At {}:{}:{}", self.get_file(), self.get_line(), self.get_column())
+        format!(
+            "At {}:{}:{}",
+            discard_cwd(self.get_file()),
+            self.get_line(),
+            self.get_column()
+        )
     }
 }
