@@ -24,7 +24,7 @@ Welcome to the official Surf repository! Here, you will find the source code of 
 
 ## 🎆 Installation
 
-To install Surf, **you'll need [CLang++](https://clang.llvm.org/) and [LLVM](https://llvm.org/) installed**. Installation steps may vary depending on your OS.
+To install Surf, **you'll need [CLang++](https://clang.llvm.org/) installed**. Installation steps may vary depending on your OS.
 Once installed, you can download the official Surf installer from the **Releases** pages.
 
 > **NOTE:**
