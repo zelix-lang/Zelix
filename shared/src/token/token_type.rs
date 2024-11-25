@@ -80,9 +80,7 @@ pub enum TokenType {
     Continue, 
     Pub, 
 
-    Import, 
-    From, 
-    As, 
+    Import,
 
     Ampersand, 
     Bar, 

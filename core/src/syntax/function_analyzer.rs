@@ -1,6 +1,6 @@
 use std::{collections::HashMap, path::PathBuf, process::exit};
 
-use shared::{logger::{Logger, LoggerImpl}, path::discard_cwd, token::token_type::TokenType};
+use shared::{logger::{Logger, LoggerImpl}, path::discard_cwd, token::{token::TokenImpl, token_type::TokenType}};
 
 use crate::shared::{function::{Function, FunctionImpl}, value_name::value_name::VALUE_NAME_REGEX};
 
@@ -30,7 +30,7 @@ pub fn analyze_functions(
 
     // The return type of the main function must be Nothing
     let main_function = functions.get("main").unwrap();
-    if main_function.get_return_type() != &TokenType::Nothing {
+    if main_function.get_return_type().get_token_type() != TokenType::Nothing {
         Logger::err(
             "Invalid return type for main function",
             &[

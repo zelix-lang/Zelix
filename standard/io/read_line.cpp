@@ -11,13 +11,13 @@
     Copyright (c) 2024 Rodrigo R. & all Surf contributors
 */
 
-#include "read_line.h"
+#include "read_line.hpp"
 #include <iostream>
 #include <string>
 
-std::string* read_line() {
+std::string read_line() {
     std::string line;
 
-    std::cin >> line;
-    return &line;
+    getline(std::cin, line);
+    return line;
 }

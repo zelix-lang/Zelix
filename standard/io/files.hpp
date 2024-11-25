@@ -17,7 +17,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include "../lang/result.h"
+#include "../lang/result.hpp"
 #include "../lang/err.h"
 
 Result<bool> write_file(const std::string* path, const std::string* content);

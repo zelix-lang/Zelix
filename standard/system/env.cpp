@@ -11,10 +11,11 @@
     Copyright (c) 2024 Rodrigo R. & all Surf contributors
 */
 
-#include "env.h"
+#include "env.hpp"
 
 #include <string>
-#include "../lang/result.h"
+#include "../lang/result.hpp"
+#include "../lang/err.hpp"
 
 Result<std::string> get_env(const std::string* key) {
     char* value = getenv(key->c_str());
@@ -22,20 +23,20 @@ Result<std::string> get_env(const std::string* key) {
     if (value == NULL) {
         return Result(
             std::string(""), 
-            optional<Err>(Err("Environment variable not found"))
+            std::optional<Err>(Err("Environment variable not found"))
         );
     }
 
-    return Result(std::string(value), optional<Err>());
+    return Result(std::string(value), std::optional<Err>());
 }
 
 Result<bool> set_env(const std::string* key, const std::string* value) {
     if (setenv(key->c_str(), value->c_str(), 1) != 0) {
         return Result(
             false, 
-            optional<Err>(Err("Failed to set environment variable"))
+            std::optional<Err>(Err("Failed to set environment variable"))
         );
     }
 
-    return Result(true, optional<Err>());
+    return Result(true, std::optional<Err>());
 }

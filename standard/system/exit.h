@@ -14,6 +14,6 @@
 #ifndef EXIT_H
 #define EXIT_H
 
-void exit(int status);
+[[noreturn]] void exit(int status) noexcept;
 
 #endif

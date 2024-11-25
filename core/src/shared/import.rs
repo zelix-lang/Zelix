@@ -3,9 +3,6 @@ use std::path::PathBuf;
 #[derive(Debug, Clone)]
 pub struct Import {
 
-    /// What to import
-    name: String,
-
     /// Where to import from
     from: PathBuf,
 
@@ -16,8 +13,7 @@ pub struct Import {
 
 pub trait Importable {
 
-    fn new(name: String, from: PathBuf, trace: String) -> Self;
-    fn get_name(&self) -> String;
+    fn new(from: PathBuf, trace: String) -> Self;
     fn get_from(&self) -> PathBuf;
     fn get_trace(&self) -> String;
     
@@ -25,16 +21,11 @@ pub trait Importable {
 
 impl Importable for Import {
 
-    fn new(name: String, from: PathBuf, trace: String) -> Import {
+    fn new(from: PathBuf, trace: String) -> Import {
         Import {
-            name,
             from,
             trace
         }
-    }
-
-    fn get_name(&self) -> String {
-        self.name.clone()
     }
 
     fn get_from(&self) -> PathBuf {

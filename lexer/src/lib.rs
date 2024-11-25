@@ -65,9 +65,7 @@ mod globals {
             map.insert(String::from("nothing"), TokenType::Nothing);
             map.insert(String::from("bool"), TokenType::Bool);
             map.insert(String::from("pub"), TokenType::Pub);
-            map.insert(String::from("import"), TokenType::Import);
-            map.insert(String::from("from"), TokenType::From);
-            map.insert(String::from("as"), TokenType::As);
+            map.insert(String::from("@import"), TokenType::Import);
             map.insert(String::from("str[]"), TokenType::StringArray);
             map.insert(String::from("num[]"), TokenType::NumArray);
             map.insert(String::from("bool[]"), TokenType::BoolArray);

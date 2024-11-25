@@ -1,5 +1,11 @@
-import println from "@Surf:standard/io/print";
+@import "@Surf:standard/io/read_line";
+@import "@Surf:standard/io/print";
 
 fun main() -> nothing {
-    println("Hello, world!");
+    println("Please enter anything:");
+    let line: str = read_line();
+
+    print("You entered: ");
+    print(line);
+    println("");
 }

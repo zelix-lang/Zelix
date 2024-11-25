@@ -1,4 +1,4 @@
-use shared::token::{token::Token, token_type::TokenType};
+use shared::token::token::Token;
 
 use super::param::Param;
 
@@ -6,7 +6,7 @@ use super::param::Param;
 pub struct Function {
     arguments: Vec<Param>,
     body: Vec<Token>,
-    return_type: TokenType,
+    return_type: Token,
     trace: String,
     public: bool
 }
@@ -17,14 +17,14 @@ pub trait FunctionImpl {
         arguments: 
         Vec<Param>, 
         body: Vec<Token>, 
-        return_type: TokenType, 
+        return_type: Token, 
         trace: String,
         public: bool
     ) -> Self;
 
     fn get_arguments(&self) -> &Vec<Param>;
     fn get_body(&self) -> &Vec<Token>;
-    fn get_return_type(&self) -> &TokenType;
+    fn get_return_type(&self) -> &Token;
     fn get_trace(&self) -> &String;
     fn is_public(&self) -> bool;
 
@@ -36,7 +36,7 @@ impl FunctionImpl for Function {
         arguments: 
         Vec<Param>, 
         body: Vec<Token>, 
-        return_type: TokenType, 
+        return_type: Token, 
         trace: String,
         public: bool
     ) -> Self {
@@ -57,7 +57,7 @@ impl FunctionImpl for Function {
         &self.body
     }
 
-    fn get_return_type(&self) -> &TokenType {
+    fn get_return_type(&self) -> &Token {
         &self.return_type
     }
 

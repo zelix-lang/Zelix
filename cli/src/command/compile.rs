@@ -41,7 +41,7 @@ pub fn compile_command(path: Option<PathBuf>) -> PathBuf {
     );
 
     Logger::log(&[
-        "  <black_bright>-></black_bright> <magenta_bright>Building</magenta_bright>"
+        "  <black_bright>-></black_bright> <magenta_bright>Lexing</magenta_bright>"
     ]);
 
     let source : PathBuf;
@@ -58,7 +58,7 @@ pub fn compile_command(path: Option<PathBuf>) -> PathBuf {
     );
 
     Logger::log(&[
-        "  <black_bright>-></black_bright> <magenta_bright>Compiling</magenta_bright>"
+        "  <black_bright>-></black_bright> <magenta_bright>Analyzing</magenta_bright>"
     ]);
 
     // The path of the transpiled file will always be
@@ -84,23 +84,12 @@ pub fn compile_command(path: Option<PathBuf>) -> PathBuf {
 
     command.push_str(" ");
 
-    // Add the main file to the command
-    command.push_str(transpiled_file_path.to_str().unwrap());
+    let mut files_to_link : Vec<PathBuf> = vec![];
 
     // Add all the imports
-    // We import only .h files, but the standard library is built
-    // in such a way that for each .h file, there's a corresponding
-    // .cpp file, so we can just replace the .h extension with .cpp
+    // We import only .h and .hpp files
+    // Some libraries don't have a corresponding .cpp file
 
-    for import in imports {
-        let mut import_path = import.get_from().clone();
-        import_path.set_extension("cpp");
-
-        command.push_str(" ");
-        command.push_str(import_path.to_str().unwrap());
-    }
-
-    // Execute the command
     let shell_program = if on_windows {
         "cmd"
     } else {
@@ -113,6 +102,134 @@ pub fn compile_command(path: Option<PathBuf>) -> PathBuf {
         "-c"
     };
 
+    for import in imports {
+        let import_path = import.get_from().clone();
+
+        let extension_optional = import_path.extension();
+        if extension_optional.is_none() {
+            continue;
+        }
+
+        let prev_extension = extension_optional.unwrap().to_str().unwrap();
+        // Some libraries may include only .hpp files
+        // And don't provide a .cpp file
+        if prev_extension != "h" && prev_extension != "hpp" {
+            continue;
+        }
+
+        // Check if there's a .cpp file to build
+        // otherwise, skip as the necessary code is
+        // already in the header file
+        let new_path = import_path.with_extension("cpp");
+
+        if !new_path.exists() {
+            // Nothing to do, the code is already in the header file
+            continue;
+        }
+
+        // Convert the library to an object file
+        let out_path = out_dir.join(
+            new_path.with_extension("o")
+                .file_name()
+                .unwrap()
+        );
+
+        Logger::log(&[
+            format!(
+                "  <black_bright>-></black_bright> <magenta_bright>Building {}</magenta_bright>",
+                new_path
+                    .with_extension("")
+                    .file_name().unwrap().to_str().unwrap()
+            ).as_str()
+        ]);
+
+        let command = format!(
+            "clang++ -c {} -o {}",
+            new_path.to_str().unwrap(),
+            out_path.to_str().unwrap()
+        );
+
+        let output = try_unwrap(
+            std::process::Command::new(shell_program)
+                .arg(separator)
+                .arg(command)
+                .output(),
+            "Failed to execute the command",
+        );
+
+        if output.status != ExitStatus::from_raw(0) {
+            Logger::err(
+                "Failed to compile the code",
+                &[
+                    "Maybe your syntax is incorrect?",
+                    "If this is a persistent issue, please report it on the GitHub repository",
+                ],
+                &[
+                    "Clang++ gave an error while compiling the code"
+                ]
+            );
+
+            println!("{}", String::from_utf8_lossy(&output.stderr));
+            
+            exit(1);
+        }
+
+        files_to_link.push(out_path);
+    }
+
+    // Build the .cpp file
+    {
+        let path_with_new_extension = transpiled_file_path.with_extension("o");
+        let transpiled_code_path = path_with_new_extension
+            .to_str().unwrap();
+
+        Logger::log(&[
+            format!(
+                "  <black_bright>-></black_bright> <magenta_bright>Compiling {}</magenta_bright>",
+                path_with_new_extension.file_name().unwrap().to_str().unwrap()
+            ).as_str()
+        ]);
+
+        let command = format!(
+            "clang++ -o {} -c {}",
+            transpiled_code_path,
+            transpiled_file_path.to_str().unwrap()
+        );
+
+        let output = try_unwrap(
+            std::process::Command::new(shell_program)
+                .arg(separator)
+                .arg(command)
+                .output(),
+            "Failed to execute the command",
+        );
+
+        if output.status != ExitStatus::from_raw(0) {
+            Logger::err(
+                "Failed to compile the main file",
+                &[
+                    "Maybe your syntax is incorrect?",
+                    "If this is a persistent issue, please report it on the GitHub repository",
+                ],
+                &[
+                    "Clang++ gave an error while compiling the code"
+                ]
+            );
+
+            println!("{}", String::from_utf8_lossy(&output.stderr));
+            
+            exit(1);
+        }
+
+        files_to_link.push(PathBuf::from(transpiled_code_path));
+    }
+
+    for file in files_to_link {
+        command.push_str(file.to_str().unwrap());
+        command.push_str(" ");
+    }
+
+    // Execute the command
     let output = try_unwrap(
         std::process::Command::new(shell_program)
             .arg(separator)
@@ -137,12 +254,6 @@ pub fn compile_command(path: Option<PathBuf>) -> PathBuf {
         
         exit(1);
     } else {
-        // Remove the .cpp file
-        try_unwrap(
-            remove_file(transpiled_file_path.clone()),
-            "Failed to remove the transpiled file",
-        );
-
         Logger::log(&[
             "  <black_bright>-></black_bright> <green_bright>Finished</green_bright>",
             format!(

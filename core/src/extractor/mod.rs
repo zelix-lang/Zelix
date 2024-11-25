@@ -1,14 +1,13 @@
 mod import_extractor;
-mod sentence_extractor;
+pub mod sentence_extractor;
 mod standard_locator;
-mod token_splitter;
 use std::{path::PathBuf, process::exit};
 
 use import_extractor::extract_import;
 use lexer::data_types::is_data_type;
 use shared::{logger::{Logger, LoggerImpl}, token::{token::{Token, TokenImpl}, token_type::TokenType}};
 
-use crate::shared::{file_code::{FileCode, FileCodeImpl}, function::{Function, FunctionImpl}, import_group::ImportGroupImpl, param::{Param, ParamImpl}};
+use crate::shared::{file_code::{FileCode, FileCodeImpl}, function::{Function, FunctionImpl}, param::{Param, ParamImpl}};
 
 pub fn extract_parts(tokens: &Vec<Token>, source: PathBuf) -> FileCode {
 
@@ -52,7 +51,13 @@ pub fn extract_parts(tokens: &Vec<Token>, source: PathBuf) -> FileCode {
     let mut nested_operations = 0;
 
     let mut last_function_name = String::new();
-    let mut last_function_return_type: TokenType = TokenType::Unknown;
+    let mut last_function_return_type: Token = Token::new(
+        TokenType::Unknown,
+        String::new(), 
+        String::new(),
+         0,
+          0
+    );
     let mut last_function_params: Vec<Param> = Vec::new();
     let mut last_function_body: Vec<Token> = Vec::new();
     let mut last_param_name = String::new();
@@ -73,28 +78,17 @@ pub fn extract_parts(tokens: &Vec<Token>, source: PathBuf) -> FileCode {
             expecting_fun_keyword = true;
 
             continue;
-        } else if token_type == TokenType::Import {
-            if inside_function {
-                Logger::err(
-                    "Invalid import",
-                    &["Import statement is not allowed inside a function"],
-                    &[token.build_trace().as_str()]
-                );
-
-                exit(1);
-            }
-
-            let imports = extract_import(
-                tokens.clone()[(n + 1)..].to_vec()
+        } else if
+            token_type == TokenType::Import
+            && inside_function
+        {
+            Logger::err(
+                "Invalid import",
+                &["Import statement is not allowed inside a function"],
+                &[token.build_trace().as_str()]
             );
 
-            for import in imports.get_imports() {
-                result.add_import(import.clone());
-            }
-
-            // +1 because we skipped the import keyword
-            skip_to_index = n + imports.get_skipped_tokens() as usize + 1;
-
+            exit(1);
         } else if token_type == TokenType::Function {
             if !expecting_fun_keyword {
                 Logger::err(
@@ -126,6 +120,36 @@ pub fn extract_parts(tokens: &Vec<Token>, source: PathBuf) -> FileCode {
             inside_function = true;
             has_function_ended = false;
             expecting_function_name = true;
+        } else if !inside_function {
+            if token_type == TokenType::Import {
+                let import = extract_import(
+                    tokens.clone()[(n + 1)..].to_vec()
+                );
+    
+                result.add_import(import.clone());
+    
+                // +1 because we skipped the import keyword
+                // +1 for the semicolon
+                // +1 for the string literal
+                // total tokens skipped = 3
+                skip_to_index = n + 3;
+
+                continue;
+            }
+
+            Logger::err(
+                "Invalid token",
+                &[
+                    "You can't have code outside of a function"
+                ],
+                &[
+                    "Unexpected token",
+                    token.build_trace().as_str()
+                ]
+            );
+
+            exit(1);
+
         } else if expecting_function_name {
             // Expecting an unknown token here (not a keyword)
             // Name is going to be validated later by syntax checker
@@ -214,7 +238,7 @@ pub fn extract_parts(tokens: &Vec<Token>, source: PathBuf) -> FileCode {
                 exit(1);
             }
 
-            last_function_return_type = token_type.clone();
+            last_function_return_type = token.clone();
             expecting_return_type = false;
             expecting_open_curly = true;
         } else if expecting_param_type_splitter {
@@ -312,7 +336,6 @@ pub fn extract_parts(tokens: &Vec<Token>, source: PathBuf) -> FileCode {
                     expecting_arrow = false;
                     expecting_return_type = false;
                     is_last_function_public = false;
-                    last_function_return_type = TokenType::Unknown;
                     last_function_params.clear();
                     last_function_body.clear();
                     last_function_name.clear();

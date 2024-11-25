@@ -11,7 +11,7 @@
     Copyright (c) 2024 Rodrigo R. & all Surf contributors
 */
 
-#include "files.h"
+#include "files.hpp"
 
 #include <iostream>
 #include <string>
@@ -20,8 +20,8 @@
 #include <vector>
 #include <dirent.h>
 #include <filesystem>
-#include "../lang/result.h"
-#include "../lang/err.h"
+#include "../lang/result.hpp"
+#include "../lang/err.hpp"
 
 Result<bool> write_file(const std::string* path, const std::string* content) {
 

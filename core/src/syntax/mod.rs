@@ -12,6 +12,6 @@ pub fn analyze(code: &FileCode) {
 
     analyze_functions(code.clone().get_functions(), code.get_source().clone());
     analyze_imports(code.clone());
-    analyze_scope(code.clone());
+    //analyze_scope(code.clone());
 
 }

@@ -11,7 +11,7 @@
     Copyright (c) 2024 Rodrigo R. & all Surf contributors
 */
 
-#include "http_request.h"
+#include "http_request.hpp"
 
 HttpRequest::HttpRequest(
     MessageEncoding message_encoding,

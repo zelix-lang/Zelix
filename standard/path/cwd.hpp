@@ -11,13 +11,12 @@
     Copyright (c) 2024 Rodrigo R. & all Surf contributors
 */
 
-#include "print.h"
-#include <iostream>
+#ifndef CWD_H
+#define CWD_H
 
-void print(const char* str) {
-    std::cout << str;
-}
+#include <string>
+#include "../lang/result.hpp"
 
-void println(const char* str) {
-    std::cout << str << std::endl;
-}
+Result<std::string> get_cwd();
+
+#endif

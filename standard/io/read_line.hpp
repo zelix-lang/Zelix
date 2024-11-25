@@ -11,12 +11,10 @@
     Copyright (c) 2024 Rodrigo R. & all Surf contributors
 */
 
-#ifndef PRINT_H
-#define PRINT_H
+#ifndef READ_LINE_H
+#define READ_LINE_H
+#include <string>
 
-#include <iostream>
-
-void print(const char* str);
-void println(const char* str);
+std::string read_line();
 
 #endif

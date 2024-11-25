@@ -15,7 +15,7 @@
 
 #include <cstdlib>
 #include <iostream>
-#include "../lang/result.h"
+#include "../lang/result.hpp"
 
 // Executes a shell command and returns the output
 void exec(const char* cmd) {

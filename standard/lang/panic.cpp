@@ -18,7 +18,7 @@
 
 using namespace std;
 
-void panic(const string* message) {
+void panic(const char* message) {
     cerr << "Panic: " << message << endl;
     exit(EXIT_FAILURE);
 }

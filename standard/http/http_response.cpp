@@ -11,7 +11,7 @@
     Copyright (c) 2024 Rodrigo R. & all Surf contributors
 */
 
-#include "http_response.h"
+#include "http_response.hpp"
 #include <map>
 
 HttpResponse::HttpResponse(

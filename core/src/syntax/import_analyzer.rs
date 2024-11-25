@@ -6,7 +6,7 @@ use lexer::{Lexer, LexerImpl};
 use shared::{logger::{Logger, LoggerImpl}, path::discard_cwd, result::try_unwrap};
 
 // Internal module imports
-use crate::{extractor::extract_parts, shared::{file_code::{FileCode, FileCodeImpl}, function::FunctionImpl, import::{Import, Importable}}};
+use crate::{extractor::extract_parts, shared::{file_code::{FileCode, FileCodeImpl}, import::{Import, Importable}}};
 
 // Builds a human-readable trace of the import chain, showing dependencies in order
 fn build_trace(import_chain : Vec<PathBuf>) -> Vec<String> {
@@ -48,7 +48,7 @@ fn check_extension(import: &&Import) -> bool {
     }
 
     // Returns true if the extension is not `.h`
-    extension_optional.unwrap() != "h"
+    extension_optional.unwrap() != "h" && extension_optional.unwrap() != "hpp"
 }
 
 // Analyzes the imports in a source file to check for issues like circular dependencies
@@ -125,35 +125,11 @@ pub fn analyze_imports(source: FileCode) {
         );
 
         let parts = extract_parts(&tokens, current_import.clone());
-        let declared_functions = parts.get_functions();
         let chained_imports = parts.get_imports();
         let mut total_impots : Vec<Import> = vec![];
 
         total_impots.extend(chained_imports.clone());
         total_impots.extend(imports.clone());
-
-        // Check if the imported function exists
-        for import in total_impots {
-            if
-                !import.get_from().to_str().unwrap().ends_with(".h") &&
-                (
-                    !declared_functions.contains_key(&import.get_name().clone())
-                    || !declared_functions.get(&import.get_name().clone()).unwrap().is_public()
-                )
-            {
-                Logger::err(
-                    "Imported function not found!",
-                    &[
-                        "The imported function doesn't exist or is not public"
-                    ],
-                    &[
-                        import.get_trace().as_str()
-                    ]
-                );
-
-                exit(1);
-            }
-        }
 
         // Track the current import chain and prevent circular dependencies
         let current_chain = all_import_chains.entry(current_import.clone()).or_insert_with(Vec::new);

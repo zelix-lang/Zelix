@@ -11,7 +11,7 @@
     Copyright (c) 2024 Rodrigo R. & all Surf contributors
 */
 
-#include "err.h"
+#include "err.hpp"
 
 #include <string>
 

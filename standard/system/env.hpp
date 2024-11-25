@@ -11,12 +11,13 @@
     Copyright (c) 2024 Rodrigo R. & all Surf contributors
 */
 
-#ifndef CWD_H
-#define CWD_H
+#ifndef SYSTEM_ENV_H
+#define SYSTEM_ENV_H
 
 #include <string>
-#include "../lang/result.h"
+#include "../lang/result.hpp"
 
-Result<std::string> get_cwd();
+Result<std::string> get_env(const std::string* key);
+Result<bool> set_env(const std::string* key, const std::string* value);
 
 #endif

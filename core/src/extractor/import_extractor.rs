@@ -1,8 +1,8 @@
 use std::{path::PathBuf, process::exit};
 
 use shared::{logger::{Logger, LoggerImpl}, path::retrieve_path, token::{token::{Token, TokenImpl}, token_type::TokenType}};
-use crate::shared::{import::{Import, Importable}, import_group::{ImportGroup, ImportGroupImpl}};
-use super::{sentence_extractor::extract_sentence, standard_locator::locate_standard, token_splitter::split_tokens};
+use crate::shared::import::{Import, Importable};
+use super::{sentence_extractor::extract_sentence, standard_locator::locate_standard};
 
 fn throw_invalid_import(details: &[&str]) {
     Logger::err(
@@ -16,35 +16,34 @@ fn throw_invalid_import(details: &[&str]) {
     exit(1);
 }
 
-pub fn extract_import(tokens: Vec<Token>) -> ImportGroup {
+pub fn extract_import(tokens: Vec<Token>) -> Import {
     let import_tokens : Vec<Token> = extract_sentence(tokens.clone(), TokenType::Semicolon);
-    let mut imports : Vec<Import> = Vec::new();
 
-    // A valid import should have a "From" keyword
-    // example: "import primtln from ..."
-    let before_from = extract_sentence(import_tokens.clone(), TokenType::From);
-    // No need to extract again, just get the rest of the tokens
-    let after_from = &import_tokens[before_from.len() + 1..];
+    // A valid import should have be only 2 tokens long
+    // @import "file";
+    // But we don't receive the @import token so we just have to check
+    // if the length is 1
 
-    // Everything after "From" should be exactly 1 string literal
-    if after_from.len() != 1 || after_from[0].get_token_type() != TokenType::StringLiteral {
-        let trace: Token;
+    if import_tokens.len() != 1 {
+        let trace;
 
-        if after_from.len() == 0 {
-            trace = import_tokens[import_tokens.len() - 1].clone();
+        if import_tokens.len() == 0 {
+            // Tokens always have at least one token
+            trace = tokens[0].build_trace();
         } else {
-            trace = after_from[0].clone();
+            trace = import_tokens[0].build_trace();
         }
 
-        throw_invalid_import(    
+        throw_invalid_import(
             &[
-                "Expected to find a string literal after 'From' keyword!",
-                trace.build_trace().as_str()
-            ]
+                "Invalid import syntax!",
+                "Imports should be in the format: @import \"file\";",
+                trace.as_str()
+            ],
         );
     }
 
-    let mut from_raw = after_from[0].get_value();
+    let mut from_raw = import_tokens[0].get_value();
     let from : PathBuf;
 
     // Check for standard libraries
@@ -52,43 +51,28 @@ pub fn extract_import(tokens: Vec<Token>) -> ImportGroup {
         from_raw = from_raw.replacen("@Surf:standard/", "", 1);
         from_raw.push_str(".h");
 
+        // Check if the extension is .hpp instead of .h
+        // Some libraries use .hpp as they contain pure C++ code
+        // instead of C code
+        if !PathBuf::from(from_raw.clone()).exists() {
+            from_raw = from_raw.strip_suffix(".h").unwrap().to_string();
+            from_raw.push_str(".hpp");
+        }
+
         from = locate_standard(from_raw);
     } else {
-        if !from_raw.ends_with(".h") && !from_raw.ends_with(".surf") {
+        if !from_raw.ends_with(".h") &&
+            !from_raw.ends_with(".hpp") &&
+            !from_raw.ends_with(".surf")
+        {
             from_raw.push_str(".surf");
         }
 
         from = retrieve_path(PathBuf::from(from_raw.clone()));
     }
-
-    let split = split_tokens(&before_from, TokenType::Comma);
-
-    for token in split {
-        // This should be an unknown token (not a keyword)
-        // and since we're splitting, the length of the vec
-        // should be 1
-
-        if token.len() != 1 || token[0].get_token_type() != TokenType::Unknown {
-            throw_invalid_import(
-                &[
-                    "Expected to find an unknown token!",
-                    token[0].build_trace().as_str()
-                ]
-            );
-        }
-
-        imports.push(
-            Import::new(
-                token[0].get_value().clone(),
-                from.clone(),
-                token[0].build_trace()
-            )
-        );
-    }
-
-    ImportGroup::new(
-        imports,
-        // Add 1 to also skip the semicolon
-        import_tokens.len() as i32 + 1
+    
+    Import::new(
+        from.clone(),
+        import_tokens[0].build_trace()
     )
 }

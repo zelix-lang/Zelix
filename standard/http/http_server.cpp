@@ -11,7 +11,7 @@
     Copyright (c) 2024 Rodrigo R. & all Surf contributors
 */
 
-#include "http_server.h"
+#include "http_server.hpp"
 
 #include <iostream>
 #include <string>
@@ -19,11 +19,12 @@
 #include <unistd.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
-#include "http_response.h"
-#include "http_request.h"
-#include "../lang/result.h"
-#include "../lang/err.h"
+#include "http_response.hpp"
+#include "http_request.hpp"
+#include "../lang/result.hpp"
+#include "../lang/err.hpp"
 #include <arpa/inet.h>
+#include <optional>
 
 Result<bool> create_http_server(int port, HttpResponse (*callback)(HttpRequest)) {
     int server_fd, new_socket;
@@ -33,7 +34,7 @@ Result<bool> create_http_server(int port, HttpResponse (*callback)(HttpRequest))
 
     // Create socket
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
-        return Result(false, optional<Err>(Err("Socket creation failed")));
+        return Result(false, std::optional<Err>(Err("Socket creation failed")));
     }
 
     // Setup server address
@@ -43,12 +44,12 @@ Result<bool> create_http_server(int port, HttpResponse (*callback)(HttpRequest))
 
     // Bind socket
     if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0) {
-        return Result(false, optional<Err>(Err("Bind failed")));
+        return Result(false, std::optional<Err>(Err("Bind failed")));
     }
 
     // Listen for connections
     if (listen(server_fd, 3) < 0) {
-        return Result(false, optional<Err>(Err("Listen failed")));
+        return Result(false, std::optional<Err>(Err("Listen failed")));
     }
 
     // Accept connections
@@ -133,5 +134,5 @@ Result<bool> create_http_server(int port, HttpResponse (*callback)(HttpRequest))
         close(new_socket);
     }
 
-    return Result(true, optional<Err>());
+    return Result(true, std::optional<Err>());
 }

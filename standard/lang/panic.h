@@ -14,8 +14,6 @@
 #ifndef PANIC_H
 #define PANIC_H
 
-#include <string>
-
-void panic(const string* message);
+void panic(const char* message);
 
 #endif

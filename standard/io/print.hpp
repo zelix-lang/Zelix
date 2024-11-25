@@ -11,28 +11,20 @@
     Copyright (c) 2024 Rodrigo R. & all Surf contributors
 */
 
-#ifndef RESULT_H
-#define RESULT_H
+#ifndef PRINT_H
+#define PRINT_H
 
-#include "err.h"
-#include <optional>
-
-using namespace std;
+#include <iostream>
+#include <string>
 
 template <typename T>
-class Result {
-    private:
-        T value;
-        optional<Err> error;
-    public:
-        // Constructors
-        Result(T value, optional<Err> error);
+void print(const T& str) {
+    std::cout << str;
+}
 
-        // Methods
-        bool has_error() const;
-        T* unwrap();
-        T* unwrap_or(T* default_value);
-        Err get_error() const;
-};
+template <typename T>
+void println(const T& str) {
+    std::cout << str << std::endl;
+}
 
 #endif
