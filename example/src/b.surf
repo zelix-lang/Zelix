@@ -1,5 +1,0 @@
-import main_3 from "/home/rodrigo/Documents/Surf/example/src/c.surf";
-
-pub fun main() -> nothing {
-    println("Hello, world!");
-}

@@ -117,6 +117,11 @@ impl LexerImpl for Lexer {
             let character = characters[i];
 
             if character == '\n' {
+                if self.in_comment {
+                    self.in_comment = false;
+                    current_token.clear();
+                }
+
                 current_line += 1;
                 current_column = 1;
 
@@ -125,6 +130,10 @@ impl LexerImpl for Lexer {
                 current_column += 1;
             }
 
+            if self.in_comment {
+                continue;
+            }
+            
             if !self.in_string && !self.in_block_comment && character == '/' {
                 if characters_len < 2 {
                     continue;
@@ -132,25 +141,15 @@ impl LexerImpl for Lexer {
 
                 if characters[i + 1] == '*' {
                     self.in_block_comment = true;
-                    continue;
+                } else if characters[i + 1] == '/' {
+                    self.in_comment = true;
                 }
 
-                if characters[i + 1] != '/' {
-                    continue;
-                }
-
-                self.in_comment = true;
                 current_token.clear();
 
             } else if self.in_block_comment {
                 if character == '/' && characters[i - 1] == '*' {
                     self.in_block_comment = false;
-                }
-
-                continue;
-            } else if self.in_comment {
-                if character == '\n' {
-                    self.in_comment = false;
                 }
 
                 continue;

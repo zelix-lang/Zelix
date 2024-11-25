@@ -1,4 +1,4 @@
-use crate::{path::discard_cwd, result::try_unwrap};
+use crate::path::discard_cwd;
 
 use super::token_type::TokenType;
 

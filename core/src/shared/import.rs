@@ -1,5 +1,7 @@
 use std::path::PathBuf;
 
+use shared::token::token::Token;
+
 #[derive(Debug, Clone)]
 pub struct Import {
 
@@ -7,24 +9,29 @@ pub struct Import {
     name: String,
 
     /// Where to import from
-    from: PathBuf
+    from: PathBuf,
+
+    /// The trace of the import chain
+    trace: Token
 
 }
 
 pub trait Importable {
 
-    fn new(name: String, from: PathBuf) -> Self;
+    fn new(name: String, from: PathBuf, trace: Token) -> Self;
     fn get_name(&self) -> String;
     fn get_from(&self) -> PathBuf;
+    fn get_trace(&self) -> Token;
     
 }
 
 impl Importable for Import {
 
-    fn new(name: String, from: PathBuf) -> Self {
+    fn new(name: String, from: PathBuf, trace: Token) -> Import {
         Import {
             name,
-            from
+            from,
+            trace
         }
     }
 
@@ -34,6 +41,10 @@ impl Importable for Import {
 
     fn get_from(&self) -> PathBuf {
         self.from.clone()
+    }
+
+    fn get_trace(&self) -> Token {
+        self.trace.clone()
     }
 
 }

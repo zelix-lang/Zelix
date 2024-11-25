@@ -1,5 +1,4 @@
 import println from "@Surf:standard/io/print";
-import main_2 from "/home/rodrigo/Documents/Surf/example/src/b.surf";
 
 pub fun main() -> nothing {
     println("Hello, world!");

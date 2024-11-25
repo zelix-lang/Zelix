@@ -7,7 +7,6 @@ use super::{function::{Function, FunctionImpl}, import::Import};
 #[derive(Debug, Clone)]
 pub struct FileCode {
 
-    file_path: PathBuf,
     functions: HashMap<String, Function>,
     imports: Vec<Import>
     
@@ -15,24 +14,22 @@ pub struct FileCode {
 
 pub trait FileCodeImpl {
 
-    fn new(file_path: PathBuf) -> Self;
+    fn new() -> Self;
 
     fn add_function(&mut self, name: String, function: Function);
     fn add_import(&mut self, import: Import);
 
     fn get_functions(&self) -> &HashMap<String, Function>;
     fn get_imports(&self) -> &Vec<Import>;
-    fn get_file_path(&self) -> &PathBuf;
     
 }
 
 impl FileCodeImpl for FileCode {
 
-    fn new(file_path: PathBuf) -> Self {
+    fn new() -> Self {
         FileCode {
             functions: HashMap::new(),
             imports: Vec::new(),
-            file_path
         }
     }
 
@@ -64,10 +61,6 @@ impl FileCodeImpl for FileCode {
 
     fn get_imports(&self) -> &Vec<Import> {
         &self.imports
-    }
-
-    fn get_file_path(&self) -> &PathBuf {
-        &self.file_path
     }
     
 }

@@ -8,12 +8,29 @@ use import_extractor::extract_import;
 use lexer::data_types::is_data_type;
 use shared::{logger::{Logger, LoggerImpl}, token::{token::{Token, TokenImpl}, token_type::TokenType}};
 
-use crate::shared::{file_code::{FileCode, FileCodeImpl}, function::{Function, FunctionImpl}, import::Importable, import_group::ImportGroupImpl, param::{Param, ParamImpl}};
+use crate::shared::{file_code::{FileCode, FileCodeImpl}, function::{Function, FunctionImpl}, import_group::ImportGroupImpl, param::{Param, ParamImpl}};
 
 pub fn extract_parts(tokens: &Vec<Token>, source: PathBuf) -> FileCode {
 
+    if tokens.is_empty() {
+        Logger::err(
+            "Refused to parse an empty file",
+            &[
+                "Write some code inside this file"
+            ],
+            &[
+                format!(
+                    "At {}",
+                    source.to_str().unwrap().to_string()
+                ).as_str()
+            ]
+        );
+
+        exit(1);
+    }
+
     let mut inside_function: bool = false;
-    let mut result : FileCode = FileCode::new(source);
+    let mut result : FileCode = FileCode::new();
 
     let mut expecting_function_name = false;
     let mut expecting_open_paren = false;
@@ -306,7 +323,10 @@ pub fn extract_parts(tokens: &Vec<Token>, source: PathBuf) -> FileCode {
         Logger::err(
             "Invalid function declaration",
             &["Expecting a closing curly brace"],
-            &["Function must end with a closing curly brace"]
+            &[
+                "Function must end with a closing curly brace",
+                tokens[tokens.len() - 1].build_trace().as_str()
+            ]
         );
 
         exit(1);

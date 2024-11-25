@@ -3,10 +3,10 @@ use std::{collections::HashMap, fs::read_to_string, path::PathBuf, process::exit
 
 // External module imports
 use lexer::{Lexer, LexerImpl};
-use shared::{logger::{Logger, LoggerImpl}, path::discard_cwd, result::try_unwrap};
+use shared::{logger::{Logger, LoggerImpl}, path::discard_cwd, result::try_unwrap, token::token::TokenImpl};
 
 // Internal module imports
-use crate::{extractor::extract_parts, shared::{file_code::{FileCode, FileCodeImpl}, import::{Import, Importable}}};
+use crate::{extractor::extract_parts, shared::{file_code::{FileCode, FileCodeImpl}, function::FunctionImpl, import::{Import, Importable}}};
 
 // Builds a human-readable trace of the import chain, showing dependencies in order
 fn build_trace(import_chain : Vec<PathBuf>) -> Vec<String> {
@@ -53,9 +53,9 @@ fn check_extension(import: &&Import) -> bool {
 
 // Analyzes the imports in a source file to check for issues like circular dependencies
 pub fn analyze_imports(source: FileCode) {
-    // TODO: Check if imported functions exist or are public
+    let imports = source.get_imports();
     // Collects all initial imports that pass the extension check
-    let mut import_chain = source.get_imports()
+    let mut import_chain = imports
         .iter().filter(check_extension)
         .map(|i| i.get_from().clone())
         .collect::<Vec<PathBuf>>();
@@ -89,10 +89,20 @@ pub fn analyze_imports(source: FileCode) {
 
         // If the file does not exist, log an error and exit
         if !current_import.exists() {
+            // Try to figure out where the import is coming from
+            let import_trace = imports
+                .iter()
+                .filter(|i| i.get_from() == current_import)
+                .map(|i| i.get_trace().build_trace())
+                .collect::<Vec<String>>();
+
             Logger::err(
                 "Import file not found!",
                 &["The import file doesn't exist"],
-                &[current_import.to_str().unwrap()]
+                import_trace
+                    .iter()
+                    .map(|s| s.as_str())
+                    .collect::<Vec<&str>>().as_slice()
             );
             exit(1);
         }
@@ -115,7 +125,35 @@ pub fn analyze_imports(source: FileCode) {
         );
 
         let parts = extract_parts(&tokens, current_import.clone());
+        let declared_functions = parts.get_functions();
         let chained_imports = parts.get_imports();
+        let mut total_impots : Vec<Import> = vec![];
+
+        total_impots.extend(chained_imports.clone());
+        total_impots.extend(imports.clone());
+
+        // Check if the imported function exists
+        for import in total_impots {
+            if
+                !import.get_from().to_str().unwrap().ends_with(".h") &&
+                (
+                    !declared_functions.contains_key(&import.get_name().clone())
+                    || !declared_functions.get(&import.get_name().clone()).unwrap().is_public()
+                )
+            {
+                Logger::err(
+                    "Imported function not found!",
+                    &[
+                        "The imported function doesn't exist or is not public"
+                    ],
+                    &[
+                        import.get_trace().build_trace().as_str()
+                    ]
+                );
+
+                exit(1);
+            }
+        }
 
         // Track the current import chain and prevent circular dependencies
         let current_chain = all_import_chains.entry(current_import.clone()).or_insert_with(Vec::new);

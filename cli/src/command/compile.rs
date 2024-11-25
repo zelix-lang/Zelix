@@ -1,7 +1,7 @@
 use core::transpiler::transpile::transpile;
 use std::{env::current_dir, fs::{remove_dir_all, remove_file}, path::PathBuf};
 
-use shared::{path::retrieve_path, result::try_unwrap};
+use shared::{path::retrieve_path, result::try_unwrap, token::token::TokenImpl};
 
 use crate::command::lexe_base::lexe_base;
 
@@ -37,9 +37,16 @@ pub fn compile_command(path: Option<PathBuf>) {
         "Failed to create out directory",
     );
 
+    let source : PathBuf;
+    if tokens.len() > 0 {
+        source = PathBuf::from(tokens[0].get_file());
+    } else {
+        source = final_path.clone();
+    }
+
     transpile(
         tokens,
         out_dir,
-        final_path
+        source
     );
 }
