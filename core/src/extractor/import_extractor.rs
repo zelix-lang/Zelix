@@ -81,7 +81,7 @@ pub fn extract_import(tokens: Vec<Token>) -> ImportGroup {
             Import::new(
                 token[0].get_value().clone(),
                 from.clone(),
-                token[0].clone()
+                token[0].build_trace()
             )
         );
     }

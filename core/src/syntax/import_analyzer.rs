@@ -3,7 +3,7 @@ use std::{collections::HashMap, fs::read_to_string, path::PathBuf, process::exit
 
 // External module imports
 use lexer::{Lexer, LexerImpl};
-use shared::{logger::{Logger, LoggerImpl}, path::discard_cwd, result::try_unwrap, token::token::TokenImpl};
+use shared::{logger::{Logger, LoggerImpl}, path::discard_cwd, result::try_unwrap};
 
 // Internal module imports
 use crate::{extractor::extract_parts, shared::{file_code::{FileCode, FileCodeImpl}, function::FunctionImpl, import::{Import, Importable}}};
@@ -93,7 +93,7 @@ pub fn analyze_imports(source: FileCode) {
             let import_trace = imports
                 .iter()
                 .filter(|i| i.get_from() == current_import)
-                .map(|i| i.get_trace().build_trace())
+                .map(|i| i.get_trace())
                 .collect::<Vec<String>>();
 
             Logger::err(
@@ -147,7 +147,7 @@ pub fn analyze_imports(source: FileCode) {
                         "The imported function doesn't exist or is not public"
                     ],
                     &[
-                        import.get_trace().build_trace().as_str()
+                        import.get_trace().as_str()
                     ]
                 );
 

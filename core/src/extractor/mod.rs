@@ -30,7 +30,7 @@ pub fn extract_parts(tokens: &Vec<Token>, source: PathBuf) -> FileCode {
     }
 
     let mut inside_function: bool = false;
-    let mut result : FileCode = FileCode::new();
+    let mut result : FileCode = FileCode::new(source);
 
     let mut expecting_function_name = false;
     let mut expecting_open_paren = false;
@@ -159,6 +159,7 @@ pub fn extract_parts(tokens: &Vec<Token>, source: PathBuf) -> FileCode {
             expecting_params = true;
         } else if expecting_params || expecting_comma {
             if token_type == TokenType::CloseParen {
+                expecting_comma = false;
                 expecting_params = false;
                 expecting_arrow = true;
                 expecting_open_curly = false;
@@ -234,7 +235,10 @@ pub fn extract_parts(tokens: &Vec<Token>, source: PathBuf) -> FileCode {
                 Logger::err(
                     "Invalid parameter type",
                     &["Expecting a valid data type"],
-                    &[token.build_trace().as_str()]
+                    &[
+                        token.build_trace().as_str(),
+                        format!("Got a {:?}", token_type).as_str()
+                    ]
                 );
 
                 exit(1);
@@ -243,7 +247,8 @@ pub fn extract_parts(tokens: &Vec<Token>, source: PathBuf) -> FileCode {
             last_function_params.push(
                 Param::new(
                     last_param_name.clone(),
-                    token_type.clone()
+                    token_type.clone(),
+                    token.build_trace()
                 )
             );
 
@@ -289,7 +294,7 @@ pub fn extract_parts(tokens: &Vec<Token>, source: PathBuf) -> FileCode {
                             last_function_params.clone(),
                             last_function_body.clone(),
                             last_function_return_type.clone(),
-                            token.clone(),
+                            token.build_trace(),
                             is_last_function_public
                         )
                     );

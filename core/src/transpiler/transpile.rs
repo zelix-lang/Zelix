@@ -5,7 +5,6 @@ use std::path::PathBuf;
 use shared::token::token::Token;
 
 use crate::extractor::extract_parts;
-use crate::shared::file_code::FileCodeImpl;
 use crate::syntax::analyze;
 
 pub fn transpile(tokens: Vec<Token>, out_dir: PathBuf, source: PathBuf) {

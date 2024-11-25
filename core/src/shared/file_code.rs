@@ -1,6 +1,6 @@
 use std::{collections::HashMap, path::PathBuf, process::exit};
 
-use shared::{logger::{Logger, LoggerImpl}, token::token::TokenImpl};
+use shared::logger::{Logger, LoggerImpl};
 
 use super::{function::{Function, FunctionImpl}, import::Import};
 
@@ -8,28 +8,31 @@ use super::{function::{Function, FunctionImpl}, import::Import};
 pub struct FileCode {
 
     functions: HashMap<String, Function>,
-    imports: Vec<Import>
+    imports: Vec<Import>,
+    source: PathBuf
     
 }
 
 pub trait FileCodeImpl {
 
-    fn new() -> Self;
+    fn new(source: PathBuf) -> Self;
 
     fn add_function(&mut self, name: String, function: Function);
     fn add_import(&mut self, import: Import);
 
     fn get_functions(&self) -> &HashMap<String, Function>;
     fn get_imports(&self) -> &Vec<Import>;
+    fn get_source(&self) -> &PathBuf;
     
 }
 
 impl FileCodeImpl for FileCode {
 
-    fn new() -> Self {
+    fn new(source: PathBuf) -> Self {
         FileCode {
             functions: HashMap::new(),
             imports: Vec::new(),
+            source
         }
     }
 
@@ -41,7 +44,7 @@ impl FileCodeImpl for FileCode {
                     "Function names must be unique"
                 ],
                 &[
-                    function.get_trace().build_trace().as_str()
+                    function.get_trace().as_str()
                 ]
             );
 
@@ -61,6 +64,10 @@ impl FileCodeImpl for FileCode {
 
     fn get_imports(&self) -> &Vec<Import> {
         &self.imports
+    }
+
+    fn get_source(&self) -> &PathBuf {
+        &self.source
     }
     
 }

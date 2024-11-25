@@ -1,12 +1,13 @@
-use std::{collections::HashMap, process::exit};
+use std::{collections::HashMap, path::PathBuf, process::exit};
 
-use shared::{logger::{Logger, LoggerImpl}, token::{token::TokenImpl, token_type::TokenType}};
+use shared::{logger::{Logger, LoggerImpl}, path::discard_cwd, token::token_type::TokenType};
 
 use crate::shared::{function::{Function, FunctionImpl}, value_name::value_name::VALUE_NAME_REGEX};
 
 pub fn analyze_functions(
     // Pass by reference to avoid moving the value or cloning it 
-    functions: &HashMap<String, Function>
+    functions: &HashMap<String, Function>,
+    source: PathBuf
 ) {
 
     // First check if the main function is even defined
@@ -16,7 +17,12 @@ pub fn analyze_functions(
             &[
                 "The main function must be defined in the code"
             ],
-            &[]
+            &[
+                format!(
+                    "At {}",
+                    discard_cwd(source.to_str().unwrap().to_string())
+                ).as_str()
+            ]
         );
 
         exit(1);
@@ -31,7 +37,7 @@ pub fn analyze_functions(
                 "The return type of the main function must be Nothing"
             ],
             &[
-                main_function.get_trace().build_trace().as_str()
+                main_function.get_trace().as_str()
             ]
         );
 
@@ -46,7 +52,7 @@ pub fn analyze_functions(
                     "Function names must start with a letter or an underscore",
                 ],
                 &[
-                    function.get_trace().build_trace().as_str()
+                    function.get_trace().as_str()
                 ]
             );
 
