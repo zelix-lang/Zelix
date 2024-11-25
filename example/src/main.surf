@@ -1,5 +1,5 @@
 import println from "@Surf:standard/io/print";
 
-pub fun main() -> nothing {
+fun main() -> nothing {
     println("Hello, world!");
 }
