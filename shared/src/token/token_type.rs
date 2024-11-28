@@ -78,9 +78,7 @@ pub enum TokenType {
 
     Break, 
     Continue, 
-    Pub, 
-
-    Import,
+    Pub,
 
     Ampersand, 
     Bar, 
