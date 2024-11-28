@@ -6,6 +6,30 @@ use shared::{logger::{Logger, LoggerImpl}, message::print_header, path::retrieve
 use crate::command::lexe_base::lexe_base;
 
 pub fn compile_command(path: Option<PathBuf>) -> PathBuf {
+    let preferred_compiler = try_unwrap(
+        std::env::var("SURF_PREFERRED_COMPILER"),
+        "Failed to get the compiler"
+    );
+
+    if 
+        preferred_compiler != "clang++"
+        && preferred_compiler != "g++"
+    {
+        Logger::err(
+            "Invalid compiler",
+            &[
+                "Set the SURF_PREFERRED_COMPILER environment variable to clang++ or g++",
+                "depending on your preferred compiler"
+            ],
+            &[
+                "The compiler you set is invalid",
+                "Please use either clang++ or g++"
+            ],
+        );
+
+        exit(1);
+    }
+
     print_header();
     println!();
 
@@ -69,7 +93,10 @@ pub fn compile_command(path: Option<PathBuf>) -> PathBuf {
     let on_windows = cfg!(target_os = "windows");
 
     let transpiled_file_path = out_dir.join("out.cpp");
-    let mut command = String::from("clang++ -o ");
+    let mut command = format!(
+        "{} -o ",
+        preferred_compiler
+    );
     let mut final_out_path = out_dir.join("out");
 
     // Add the output file
@@ -144,7 +171,8 @@ pub fn compile_command(path: Option<PathBuf>) -> PathBuf {
         ]);
 
         let command = format!(
-            "clang++ -c {} -o {}",
+            "{} -c {} -o {}",
+            preferred_compiler,
             new_path.to_str().unwrap(),
             out_path.to_str().unwrap()
         );
@@ -159,13 +187,13 @@ pub fn compile_command(path: Option<PathBuf>) -> PathBuf {
 
         if output.status != ExitStatus::from_raw(0) {
             Logger::err(
-                "Failed to compile the code",
+                "Failed to compile a library/import",
                 &[
                     "Maybe your syntax is incorrect?",
                     "If this is a persistent issue, please report it on the GitHub repository",
                 ],
                 &[
-                    "Clang++ gave an error while compiling the code"
+                    "The compiler threw an error while compiling the code"
                 ]
             );
 
@@ -191,7 +219,8 @@ pub fn compile_command(path: Option<PathBuf>) -> PathBuf {
         ]);
 
         let command = format!(
-            "clang++ -o {} -c {}",
+            "{} -o {} -c {}",
+            preferred_compiler,
             transpiled_code_path,
             transpiled_file_path.to_str().unwrap()
         );
@@ -212,7 +241,7 @@ pub fn compile_command(path: Option<PathBuf>) -> PathBuf {
                     "If this is a persistent issue, please report it on the GitHub repository",
                 ],
                 &[
-                    "Clang++ gave an error while compiling the code"
+                    "The compiler threw error while compiling the code"
                 ]
             );
 
@@ -246,7 +275,7 @@ pub fn compile_command(path: Option<PathBuf>) -> PathBuf {
                 "If this is a persistent issue, please report it on the GitHub repository",
             ],
             &[
-                "Clang++ gave an error while compiling the code"
+                "The compiler threw error while compiling the code"
             ]
         );
 

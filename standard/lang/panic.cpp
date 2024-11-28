@@ -11,14 +11,10 @@
     Copyright (c) 2024 Rodrigo R. & all Surf contributors
 */
 
-#include "panic.h"
-
 #include <iostream>
-#include <string>
-
-using namespace std;
+#include "panic.hpp"
 
 void panic(const char* message) {
-    cerr << "Panic: " << message << endl;
+    std::cerr << "Panic: " << message << std::endl;
     exit(EXIT_FAILURE);
 }

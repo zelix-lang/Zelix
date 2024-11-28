@@ -12,12 +12,20 @@
 */
 
 #include "read_line.hpp"
+#include "../lang/result.hpp"
+#include "../lang/err.hpp"
 #include <iostream>
 #include <string>
+#include <optional>
 
-std::string read_line() {
-    std::string line;
+Result<std::string> read_line() {
+    try {
+        std::string line;
 
-    getline(std::cin, line);
-    return line;
+        getline(std::cin, line);
+        return Result(line, std::optional<Err>());
+    } catch(const std::exception& e) {
+        return Result(std::string(""), std::optional<Err>(Err(e.what())));
+    }
+    
 }

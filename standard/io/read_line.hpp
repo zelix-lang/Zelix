@@ -14,7 +14,8 @@
 #ifndef READ_LINE_H
 #define READ_LINE_H
 #include <string>
+#include "../lang/result.hpp"
 
-std::string read_line();
+Result<std::string> read_line();
 
 #endif

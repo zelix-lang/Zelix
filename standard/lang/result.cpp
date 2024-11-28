@@ -11,21 +11,19 @@
     Copyright (c) 2024 Rodrigo R. & all Surf contributors
 */
 
-#ifndef ERR_H
-#define ERR_H
+#include "result.hpp"
 
-#include <string>
 #include <iostream>
 
-class Err {
-private:
-    std::string message;
+template<typename T>
+std::ostream& operator<<(std::ostream& os, const Result<T>& res) {
+    os << "Result("
 
-public:
-    Err(std::string message);  // Constructor declaration
-    std::string get_message() const;  // Method declaration
-};
-
-std::ostream& operator<<(std::ostream& os, const Err& err);
-
-#endif
+    if (res.has_error()) {
+        os << "None, Err(" << res.get_error() << "))";
+    } else {
+        os << "Some(" << res.unwrap() << "), None)";
+    }
+    
+    return os;
+}

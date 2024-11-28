@@ -55,6 +55,11 @@ impl FileCodeImpl for FileCode {
     }
 
     fn add_import(&mut self, import: Import) {
+        // Don't include duplicate imports
+        if self.imports.contains(&import) {
+            return;
+        }
+
         self.imports.push(import);
     }
 

@@ -1,8 +1,21 @@
+/*
+    These files are part of the Surf's standard library.
+    They're bundled with the main program by the compiler
+    which is then converted to machine code.
+
+    -----
+    License notice:
+
+    This code is released under the GNU GPL v3 license.
+    The code is provided as is without any warranty
+    Copyright (c) 2024 Rodrigo R. & all Surf contributors
+*/
+
 #ifndef RESULT_H
 #define RESULT_H
 
-#include "err.h"
-#include "panic.h"
+#include "err.hpp"
+#include "panic.hpp"
 #include <optional>
 #include <utility>
 
@@ -36,10 +49,12 @@ public:
 
     const Err& get_error() const {
         if (!has_error()) {
-            throw std::logic_error("Attempted to get error from a successful Result");
+            panic("Attempted to get error from a successful Result");
         }
         return error.value();
     }
 };
+
+std::ostream& operator<<(std::ostream& os, const Err& err);
 
 #endif

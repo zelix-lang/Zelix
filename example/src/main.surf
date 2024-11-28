@@ -1,11 +1,6 @@
-@import "@Surf:standard/io/read_line";
 @import "@Surf:standard/io/print";
+@import "@Surf:standard/io/read_line";
 
 fun main() -> nothing {
-    println("Please enter anything:");
-    let line: str = read_line();
-
-    print("You entered: ");
-    print(line);
-    println("");
+    println(Err("Hello, world!"));
 }

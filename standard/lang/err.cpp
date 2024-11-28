@@ -13,10 +13,16 @@
 
 #include "err.hpp"
 
+#include <iostream>
 #include <string>
 
-Err::Err(std::string message) : message(message) {}
+Err::Err(std::string message) : message(std::move(message)) {}
 
 std::string Err::get_message() const {
     return message;
+}
+
+std::ostream& operator<<(std::ostream& os, const Err& err) {
+    os << "Err(" << err.get_message() << ")";
+    return os;
 }
