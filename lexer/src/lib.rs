@@ -1,80 +1,8 @@
 use shared::token::{token::{Token, TokenImpl}, token_type::TokenType};
+use token_map::{KNOWN_TOKENS, NUMBER_REGEX, PUNCTUATION_CHARS};
+mod import_processor;
 pub mod data_types;
-
-mod globals {
-    use std::collections::HashMap;
-
-    use fancy_regex::Regex;
-    use shared::token::token_type::TokenType;
-
-    lazy_static::lazy_static! {
-        pub static ref NUMBER_REGEX:Regex = Regex::new(r#"^\d+((\.\d+)?)$"#).unwrap();
-        pub static ref PUNCTUATION_CHARS: Vec<char> = ";,(){}:+\\->%<.=![]/|*^&".chars()
-            .collect();
-
-        pub static ref knwon_tokens : HashMap<String, TokenType> = {
-            let mut map = HashMap::new();
-            map.insert(String::from("return"), TokenType::Return);
-            map.insert(String::from("fun"), TokenType::Function);
-            map.insert(String::from("let"), TokenType::Let);
-            map.insert(String::from("const"), TokenType::Const);
-            map.insert(String::from("while"), TokenType::While);
-            map.insert(String::from("for"), TokenType::For);
-            map.insert(String::from("break"), TokenType::Break);
-            map.insert(String::from("continue"), TokenType::Continue);
-            map.insert(String::from("in"), TokenType::In);
-            map.insert(String::from("if"), TokenType::If);
-            map.insert(String::from("else"), TokenType::Else);
-            map.insert(String::from("elseif"), TokenType::ElseIf);
-            map.insert(String::from("unsafe"), TokenType::Unsafe);
-            map.insert(String::from("="), TokenType::Assign);
-            map.insert(String::from("+"), TokenType::Plus);
-            map.insert(String::from("-"), TokenType::Minus);
-            map.insert(String::from("++"), TokenType::Increment);
-            map.insert(String::from("--"), TokenType::Decrement);
-            map.insert(String::from("*"), TokenType::Asterisk);
-            map.insert(String::from("/"), TokenType::Slash);
-            map.insert(String::from("<"), TokenType::LessThan);
-            map.insert(String::from(">"), TokenType::GreaterThan);
-            map.insert(String::from("+="), TokenType::AssignAdd);
-            map.insert(String::from("-="), TokenType::AssignSub);
-            map.insert(String::from("*="), TokenType::AssignAsterisk);
-            map.insert(String::from("/="), TokenType::AssignSlash);
-            map.insert(String::from("=="), TokenType::Equal);
-            map.insert(String::from("!="), TokenType::NotEqual);
-            map.insert(String::from("<="), TokenType::LessThan);
-            map.insert(String::from(">="), TokenType::GreaterThan);
-            map.insert(String::from("&"), TokenType::Ampersand);
-            map.insert(String::from("|"), TokenType::Bar);
-            map.insert(String::from("^"), TokenType::Xor);
-            map.insert(String::from("!"), TokenType::Not);
-            map.insert(String::from(","), TokenType::Comma);
-            map.insert(String::from(";"), TokenType::Semicolon);
-            map.insert(String::from("("), TokenType::OpenParen);
-            map.insert(String::from(")"), TokenType::CloseParen);
-            map.insert(String::from("{"), TokenType::OpenCurly);
-            map.insert(String::from("}"), TokenType::CloseCurly);
-            map.insert(String::from(":"), TokenType::Colon);
-            map.insert(String::from("->"), TokenType::Arrow);
-            map.insert(String::from("["), TokenType::OpenBracket);
-            map.insert(String::from("]"), TokenType::CloseBracket);
-            map.insert(String::from("."), TokenType::Dot);
-            map.insert(String::from("%"), TokenType::Slash);
-            map.insert(String::from("str"), TokenType::String);
-            map.insert(String::from("num"), TokenType::Num);
-            map.insert(String::from("nothing"), TokenType::Nothing);
-            map.insert(String::from("bool"), TokenType::Bool);
-            map.insert(String::from("pub"), TokenType::Pub);
-            map.insert(String::from("str[]"), TokenType::StringArray);
-            map.insert(String::from("num[]"), TokenType::NumArray);
-            map.insert(String::from("bool[]"), TokenType::BoolArray);
-            map.insert(String::from("[discrete]"), TokenType::Discrete);
-
-            map
-        };
-    }
-
-}
+mod token_map;
 
 pub struct Lexer {
 
@@ -88,7 +16,7 @@ pub struct Lexer {
 pub trait LexerImpl {
     fn tokenize(
         &mut self,
-        contents: &String,
+        contents: &mut String,
         file: &String
     ) -> Vec<Token>;
 
@@ -99,7 +27,7 @@ pub trait LexerImpl {
 impl LexerImpl for Lexer {
     fn tokenize(
         &mut self,
-        contents: &String,
+        contents: &mut String,
         file: &String
     ) -> Vec<Token> {
         let mut tokens: Vec<Token> = Vec::new();
@@ -188,7 +116,7 @@ impl LexerImpl for Lexer {
 
                     current_token.clear();
                 }
-            } else if globals::PUNCTUATION_CHARS.contains(&character) {
+            } else if PUNCTUATION_CHARS.contains(&character) {
                 if character == '.' && !current_token.parse::<i128>().is_err() {
                     current_token.push(character);
                     continue;
@@ -323,10 +251,10 @@ impl LexerImpl for Lexer {
     }
 
     fn calculate(current_token: &str, file: &String, line: &u32, col: &u32) -> Token {
-        let token_type = match globals::knwon_tokens.get(current_token) {
+        let token_type = match KNOWN_TOKENS.get(current_token) {
             Some(token_type) => token_type,
             None => {
-                if globals::NUMBER_REGEX.is_match(current_token).unwrap() {
+                if NUMBER_REGEX.is_match(current_token).unwrap() {
                     &TokenType::NumLiteral
                 } else if current_token == "true" || current_token == "false" {
                     &TokenType::BoolLiteral

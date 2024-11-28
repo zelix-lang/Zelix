@@ -93,10 +93,10 @@ pub fn lexe_base(path: Option<PathBuf>) -> Vec<Token> {
         exit(1);
     }
 
-    let main_file_content = try_unwrap(
+    let mut main_file_content = try_unwrap(
         read_to_string(main_file.clone()),
         "Failed to read the main file",
     );
 
-    Lexer::new().tokenize(&main_file_content, &main_file.to_str().unwrap().to_string())
+    Lexer::new().tokenize(&mut main_file_content, &main_file.to_str().unwrap().to_string())
 }
