@@ -83,5 +83,7 @@ pub enum TokenType {
     Ampersand, 
     Bar, 
 
+    Import,
+
     Unknown, 
 }

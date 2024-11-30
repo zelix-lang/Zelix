@@ -74,6 +74,9 @@ lazy_static::lazy_static! {
         map.insert(String::from("num[]"), TokenType::NumArray);
         map.insert(String::from("bool[]"), TokenType::BoolArray);
 
+        // Imports
+        map.insert(String::from("@import"), TokenType::Import);
+
         // Special annotations
         map.insert(String::from("[discrete]"), TokenType::Discrete);
 

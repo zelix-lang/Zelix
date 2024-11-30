@@ -1,6 +1,7 @@
 mod function_checker;
 mod scope_checker;
 mod main_function_checker;
+pub mod import_checker;
 
 use function_checker::analyze_functions;
 use scope_checker::analyze_scope;

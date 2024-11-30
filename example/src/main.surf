@@ -1,5 +1,4 @@
 @import "@Surf:standard/io/print";
-@import "@Surf:standard/io/read_line";
 
 fun main() -> nothing {
     println(Err("Hello, world!"));
