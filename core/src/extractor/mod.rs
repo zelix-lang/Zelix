@@ -58,7 +58,6 @@ pub fn extract_parts(tokens: &Vec<Token>, source: PathBuf) -> FileCode {
     let mut has_function_ended = false;
     let mut expecting_arrow = false;
     let mut expecting_return_type = false;
-    let mut expecting_fun_keyword = true;
     let mut is_last_function_public = false;
 
 
@@ -92,7 +91,6 @@ pub fn extract_parts(tokens: &Vec<Token>, source: PathBuf) -> FileCode {
 
         if token_type == TokenType::Pub {
             is_last_function_public = true;
-            expecting_fun_keyword = true;
 
             continue;
         } else if
@@ -106,37 +104,6 @@ pub fn extract_parts(tokens: &Vec<Token>, source: PathBuf) -> FileCode {
             );
 
             exit(1);
-        } else if token_type == TokenType::Function {
-            if !expecting_fun_keyword {
-                Logger::err(
-                    "Invalid function",
-                    &["Expecting a function keyword"],
-                    &[token.build_trace().as_str()]
-                );
-
-                exit(1);
-            }
-
-            if inside_function {
-                Logger::err(
-                    "Invalid function",
-                    &[
-                        "Define this function outside of the current function",
-                        "Use modules to organize your code"
-                    ],
-                    &[
-                        token.build_trace().as_str(),
-                        "You can't define a function inside another function"
-                    ]
-                );
-                
-                exit(1);
-            }
-
-            expecting_fun_keyword = false;
-            inside_function = true;
-            has_function_ended = false;
-            expecting_function_name = true;
         } else if !inside_function {
             if token_type == TokenType::Import {
                 let import = extract_import(
@@ -151,6 +118,29 @@ pub fn extract_parts(tokens: &Vec<Token>, source: PathBuf) -> FileCode {
                 // total tokens skipped = 3
                 skip_to_index = n + 3;
 
+                continue;
+            }
+
+            if token_type == TokenType::Function {
+                if inside_function {
+                    Logger::err(
+                        "Invalid function",
+                        &[
+                            "Define this function outside of the current function",
+                            "Use modules to organize your code"
+                        ],
+                        &[
+                            token.build_trace().as_str(),
+                            "You can't define a function inside another function"
+                        ]
+                    );
+                    
+                    exit(1);
+                }
+    
+                inside_function = true;
+                has_function_ended = false;
+                expecting_function_name = true;
                 continue;
             }
 

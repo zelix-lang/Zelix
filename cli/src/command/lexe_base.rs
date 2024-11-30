@@ -98,5 +98,5 @@ pub fn lexe_base(path: Option<PathBuf>) -> Vec<Token> {
         "Failed to read the main file",
     );
 
-    Lexer::new().tokenize(&mut main_file_content, &main_file.to_str().unwrap().to_string())
+    Lexer::new().tokenize(&mut main_file_content, &main_file)
 }

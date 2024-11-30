@@ -1,6 +1,7 @@
+use std::path::PathBuf;
+
 use import::import_processor::process_imports;
 use regex_patterns::NUMBER_REGEX;
-// Import necessary modules and types for the Lexer implementation
 use shared::token::{token::{Token, TokenImpl}, token_type::TokenType};
 use token_map::{KNOWN_TOKENS, PUNCTUATION_CHARS};
 mod regex_patterns;
@@ -22,7 +23,7 @@ pub trait LexerImpl {
     fn tokenize(
         &mut self,
         contents: &mut String,
-        file: &String
+        file: &PathBuf
     ) -> Vec<Token>;
 
     // Factory method to create a new Lexer instance
@@ -38,10 +39,12 @@ impl LexerImpl for Lexer {
     fn tokenize(
         &mut self,
         contents: &mut String,
-        file: &String
+        file_path: &PathBuf
     ) -> Vec<Token> {
+        let file = file_path.to_str().unwrap().to_string();
+
         // First replace all the imports
-        let processed_contents = process_imports(contents, file);
+        let processed_contents = process_imports(contents, file_path);
         *contents = processed_contents;
 
         // Initialize variables for tokens, current token, and position tracking
@@ -107,7 +110,7 @@ impl LexerImpl for Lexer {
                         Token::new(
                             TokenType::StringLiteral,
                             current_token.clone(),
-                            String::from(file),
+                            String::from(file.clone()),
                             current_line,
                             current_column
                         )

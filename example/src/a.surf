@@ -1,6 +1,5 @@
 @import "@Surf:standard/io/print";
-@import "b/b.surf";
 
-fun main() -> nothing {
+fun a_a() -> nothing {
     println(Err("Hello, world!"));
 }
