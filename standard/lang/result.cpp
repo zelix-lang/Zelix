@@ -17,7 +17,7 @@
 
 template<typename T>
 std::ostream& operator<<(std::ostream& os, const Result<T>& res) {
-    os << "Result("
+    os << "Result(";
 
     if (res.has_error()) {
         os << "None, Err(" << res.get_error() << "))";
