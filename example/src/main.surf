@@ -1,6 +1,6 @@
 @import "@Surf:standard/io/print";
 
 fun main() -> nothing {
-    let helloA : str = "Hello, world";
-    println(helloA);
+    let hello_b : str = "Hello, world";
+    println(hello_b);
 }

@@ -10,7 +10,7 @@ lazy_static! {
     // Used to print warnings for cammel case variable names
     // Surf encourages snake case variable names!
     pub static ref CAMMEL_CASE_REGEX: Regex = 
-        Regex::new(r"^[a-zA-Z_][a-zA-Z0-9_]*$").unwrap();
+        Regex::new(r"^[a-zA-Z][a-zA-Z0-9]*$").unwrap();
 }
 
 pub fn transpile_variable(tokens: &Vec<Token>, n: usize, transpiled_code: &mut String) -> usize {
