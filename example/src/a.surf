@@ -1,5 +1,0 @@
-@import "@Surf:standard/io/print";
-
-fun a_a() -> nothing {
-    println(Err("Hello, world!"));
-}

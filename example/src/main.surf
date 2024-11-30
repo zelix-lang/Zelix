@@ -1,5 +1,4 @@
 @import "@Surf:standard/io/print";
-@import "b/b.surf";
 
 fun main() -> nothing {
     println(Err("Hello, world!"));
