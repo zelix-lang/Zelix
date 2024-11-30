@@ -1,0 +1,22 @@
+use shared::token::{token::{Token, TokenImpl}, token_type::TokenType};
+
+pub fn transpile_type(
+    token: &Token,
+    transpiled_code: &mut String
+) {
+
+    let token_type = token.get_token_type();
+    if token_type == TokenType::Nothing {
+        transpiled_code.push_str("void ");
+    } else if token_type == TokenType::Num {
+        transpiled_code.push_str("double ");
+    } else if token_type == TokenType::String {
+        transpiled_code.push_str("std::string ");
+    } else if token_type == TokenType::Bool {
+        transpiled_code.push_str("bool ");
+    } else {
+        transpiled_code.push_str(token.get_value().as_str());
+        transpiled_code.push_str(" ");
+    }
+
+}
