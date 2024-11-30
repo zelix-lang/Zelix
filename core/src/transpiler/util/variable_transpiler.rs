@@ -1,17 +1,9 @@
-use fancy_regex::Regex;
-use lazy_static::lazy_static;
-use shared::{logger::{Logger, LoggerImpl}, result::try_unwrap, token::{token::{Token, TokenImpl}, token_type::TokenType}};
+use checker::variable_checker::check_variable_name;
+use shared::token::{token::{Token, TokenImpl}, token_type::TokenType};
 
 use crate::extractor::sentence_extractor::extract_sentence;
 
 use super::type_transpiler::transpile_type;
-
-lazy_static! {
-    // Used to print warnings for cammel case variable names
-    // Surf encourages snake case variable names!
-    pub static ref CAMMEL_CASE_REGEX: Regex = 
-        Regex::new(r"^[a-zA-Z][a-zA-Z0-9]*$").unwrap();
-}
 
 pub fn transpile_variable(tokens: &Vec<Token>, n: usize, transpiled_code: &mut String) -> usize {
     let sentence: Vec<Token> = extract_sentence(
@@ -32,23 +24,12 @@ pub fn transpile_variable(tokens: &Vec<Token>, n: usize, transpiled_code: &mut S
     let var_name = &sentence[0].get_value();
     let var_value: &[Token] = &sentence[4..];
 
-    if try_unwrap(
-        CAMMEL_CASE_REGEX.is_match(&var_name),
-        "Failed to validate a variable name"
-    ) {
-        Logger::warn(
-            "Consider using snake case for variable names",
-            &[
-                format!(
-                    "Consider converting {} to snake case",
-                    var_name
-                ).as_str(),
-                sentence[0].build_trace().as_str()
-            ],
-        );
-    }
-
+    check_variable_name(
+        &var_name,
+        &sentence[0].build_trace()
+    );
     transpile_type(&var_type, transpiled_code);
+
     transpiled_code.push_str(var_name);
     transpiled_code.push_str(" = ");
     
