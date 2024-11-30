@@ -15,7 +15,7 @@
 #define RESULT_H
 
 #include "err.hpp"
-#include "panic.hpp"
+#include "panic.h"
 #include <optional>
 #include <utility>
 

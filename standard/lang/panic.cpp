@@ -12,7 +12,7 @@
 */
 
 #include <iostream>
-#include "panic.hpp"
+#include "panic.h"
 
 void panic(const char* message) {
     std::cerr << "Panic: " << message << std::endl;

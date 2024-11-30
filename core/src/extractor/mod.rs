@@ -34,7 +34,7 @@ pub fn extract_parts(tokens: &Vec<Token>, source: PathBuf) -> FileCode {
 
     // Add all the lang standard functions to the imports
     result.add_import(Import::new(
-        locate_standard("lang/panic.hpp".to_string()),
+        locate_standard("lang/panic.h".to_string()),
         tokens[0].build_trace()
     ));
 
@@ -91,6 +91,16 @@ pub fn extract_parts(tokens: &Vec<Token>, source: PathBuf) -> FileCode {
 
         if token_type == TokenType::Pub {
             is_last_function_public = true;
+
+            if n + 1 >= tokens.len() {
+                Logger::err(
+                    "Invalid public declaration",
+                    &["Expecting a function after the public keyword"],
+                    &[token.build_trace().as_str()]
+                );
+
+                exit(1);
+            }
 
             continue;
         } else if
