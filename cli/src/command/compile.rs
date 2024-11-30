@@ -65,10 +65,6 @@ pub fn compile_command(path: Option<PathBuf>) -> PathBuf {
         "Failed to create out directory",
     );
 
-    Logger::log(&[
-        "  <black_bright>-></black_bright> <magenta_bright>Lexing</magenta_bright>"
-    ]);
-
     let source : PathBuf;
     if tokens.len() > 0 {
         source = PathBuf::from(tokens[0].get_file());
@@ -82,9 +78,6 @@ pub fn compile_command(path: Option<PathBuf>) -> PathBuf {
         source
     );
 
-    Logger::log(&[
-        "  <black_bright>-></black_bright> <magenta_bright>Analyzing</magenta_bright>"
-    ]);
 
     // The path of the transpiled file will always be
     // join(out_dir, "out.cpp")
