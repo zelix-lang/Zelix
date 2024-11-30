@@ -7,10 +7,10 @@ use shared::token::token::Token;
 use crate::extractor::extract_parts;
 use crate::shared::file_code::FileCodeImpl;
 use crate::shared::import::Import;
-use crate::syntax::analyze;
+use crate::checker::analyze;
 
-use super::transpile_util::function_transpiler::transpile_functions;
-use super::transpile_util::import_transpiler::transpile_imports;
+use super::util::function_transpiler::transpile_functions;
+use super::util::import_transpiler::transpile_imports;
 
 /// Transpiles Surf code into C++ code
 /// This can be later compiled with G++, Clang++ or GCC
