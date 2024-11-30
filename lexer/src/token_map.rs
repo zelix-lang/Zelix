@@ -1,11 +1,7 @@
 use std::collections::HashMap;
-use fancy_regex::Regex;
 use shared::token::token_type::TokenType;
 
 lazy_static::lazy_static! {
-    // Regular expression to match numbers, including integers and decimals
-    pub static ref NUMBER_REGEX: Regex = Regex::new(r#"^\d+((\.\d+)?)$"#).unwrap();
-
     // A vector of punctuation characters to be used in tokenization or parsing
     pub static ref PUNCTUATION_CHARS: Vec<char> = ";,(){}:+\\->%<.=![]/|*^&".chars()
         .collect();

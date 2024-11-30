@@ -1,9 +1,12 @@
+use import::import_processor::process_imports;
+use regex_patterns::NUMBER_REGEX;
 // Import necessary modules and types for the Lexer implementation
 use shared::token::{token::{Token, TokenImpl}, token_type::TokenType};
-use token_map::{KNOWN_TOKENS, NUMBER_REGEX, PUNCTUATION_CHARS};
-mod import_processor;
-pub mod data_types;
+use token_map::{KNOWN_TOKENS, PUNCTUATION_CHARS};
+mod regex_patterns;
 mod token_map;
+mod import;
+pub mod data_types;
 
 // Define the Lexer struct, tracking the parser state (string, escape, comments)
 pub struct Lexer {
@@ -37,6 +40,10 @@ impl LexerImpl for Lexer {
         contents: &mut String,
         file: &String
     ) -> Vec<Token> {
+        // First replace all the imports
+        let processed_contents = process_imports(contents, file);
+        *contents = processed_contents;
+
         // Initialize variables for tokens, current token, and position tracking
         let mut tokens: Vec<Token> = Vec::new();
         let mut current_token: String = String::new();
@@ -58,6 +65,7 @@ impl LexerImpl for Lexer {
                     self.in_comment = false; // Exit single-line comment
                     current_token.clear();
                 }
+                
                 current_line += 1;
                 current_column = 1; // Reset column for the new line
                 continue;
