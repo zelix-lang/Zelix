@@ -21,9 +21,8 @@ fn throw_value_already_defined(name: &String, trace: &String) {
 }
 
 // Analyzes the source code to determine undefined variables
-pub fn analyze_scope(source: FileCode) {
+pub fn analyze_scope(source: &FileCode) {
     let functions = source.get_functions();
-    check_main_function(functions);
 
     
 }

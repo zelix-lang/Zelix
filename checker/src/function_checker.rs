@@ -7,7 +7,7 @@ use shared::code::{function::{Function, FunctionImpl}, value_name::value_name::V
 pub fn analyze_functions(
     // Pass by reference to avoid moving the value or cloning it 
     functions: &HashMap<String, Function>,
-    source: PathBuf
+    source: &PathBuf
 ) {
 
     // First check if the main function is even defined
