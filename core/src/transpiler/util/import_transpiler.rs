@@ -1,4 +1,4 @@
-use crate::shared::{file_code::{FileCode, FileCodeImpl}, import::Importable};
+use shared::code::{file_code::{FileCode, FileCodeImpl}, import::Importable};
 
 pub fn transpile_imports(file_code: &FileCode, transpiled_code: &mut String) {
     // First add the imports

@@ -1,4 +1,4 @@
-use shared::token::token_type::TokenType;
+use crate::token::token_type::TokenType;
 
 #[derive(Debug, Clone)]
 pub struct Param {

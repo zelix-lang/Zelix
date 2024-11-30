@@ -2,7 +2,7 @@ use std::{collections::HashMap, process::exit};
 
 use shared::{logger::{Logger, LoggerImpl}, token::{token::TokenImpl, token_type::TokenType}};
 
-use crate::shared::function::{Function, FunctionImpl};
+use shared::code::function::{Function, FunctionImpl};
 
 pub fn check_main_function(functions: &HashMap<String, Function>) {
     // Reached this point, the main function is always defined

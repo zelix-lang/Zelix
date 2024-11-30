@@ -1,4 +1,4 @@
-use crate::shared::{file_code::{FileCode, FileCodeImpl}, function::FunctionImpl};
+use shared::code::{file_code::{FileCode, FileCodeImpl}, function::FunctionImpl};
 
 use super::{body_transpiler::transpile_body, type_transpiler::transpile_type};
 

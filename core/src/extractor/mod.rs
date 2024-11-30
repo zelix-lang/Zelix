@@ -6,7 +6,7 @@ use lexer::data_types::is_data_type;
 use shared::{logger::{Logger, LoggerImpl}, token::{token::{Token, TokenImpl}, token_type::TokenType}};
 use standard_locator::locate_standard;
 
-use crate::shared::{file_code::{FileCode, FileCodeImpl}, function::{Function, FunctionImpl}, import::{Import, Importable}, param::{Param, ParamImpl}};
+use shared::code::{file_code::{FileCode, FileCodeImpl}, function::{Function, FunctionImpl}, import::{Import, Importable}, param::{Param, ParamImpl}};
 
 pub fn extract_parts(tokens: &Vec<Token>, source: PathBuf) -> FileCode {
 

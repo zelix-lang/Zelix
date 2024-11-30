@@ -1,6 +1,6 @@
 use std::{collections::HashMap, path::PathBuf, process::exit};
 
-use shared::logger::{Logger, LoggerImpl};
+use crate::logger::{Logger, LoggerImpl};
 
 use super::{function::{Function, FunctionImpl}, import::Import};
 
