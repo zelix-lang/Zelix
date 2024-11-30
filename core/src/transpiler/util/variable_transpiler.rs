@@ -48,12 +48,22 @@ pub fn transpile_variable(tokens: &Vec<Token>, n: usize, transpiled_code: &mut S
         );
     }
 
-    transpile_type(var_type, transpiled_code);
+    transpile_type(&var_type, transpiled_code);
     transpiled_code.push_str(var_name);
     transpiled_code.push_str(" = ");
-     
+    
+    if var_type.get_token_type() == TokenType::String {
+        // Add quotes
+        transpiled_code.push_str("\"");
+    }
+
     for token in var_value {
         transpiled_code.push_str(&token.get_value());
+    }
+
+    if var_type.get_token_type() == TokenType::String {
+        // Add quotes
+        transpiled_code.push_str("\"");
     }
 
     // Add 1 to skip the let token, we still need the semicolon
