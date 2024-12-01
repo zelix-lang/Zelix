@@ -9,7 +9,7 @@ lazy_static! {
         Regex::new(r"^[a-zA-Z][a-zA-Z0-9]*$").unwrap();
 }
 
-pub fn check_variable_name(var_name: &String, trace: &String) {
+fn check_variable_name(var_name: &String, trace: &String) {
     if try_unwrap(
         CAMMEL_CASE_REGEX.is_match(var_name),
         "Failed to validate a variable name"
@@ -25,4 +25,8 @@ pub fn check_variable_name(var_name: &String, trace: &String) {
             ],
         );
     }
+}
+
+pub fn check_variable() {
+    
 }

@@ -33,6 +33,6 @@ pub fn transpile(tokens: Vec<Token>, out_dir: PathBuf, source: PathBuf) -> Vec<I
     let mut file = File::create(out_dir.join("out.cpp")).unwrap();
     file.write_all(transpiled_code.as_bytes()).unwrap();
 
-    file_code.get_imports().clone()
+    file_code.get_seen_imports().clone()
 
 }

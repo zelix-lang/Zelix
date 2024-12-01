@@ -5,11 +5,18 @@ pub mod variable_checker;
 
 use function_checker::analyze_functions;
 use main_function_checker::check_main_function;
+use parser::{create_c_instance, create_index};
 use scope_checker::analyze_scope;
 
 use shared::code::file_code::{FileCode, FileCodeImpl};
 
 pub fn analyze(code: &FileCode) {
+
+    // Create a Clang instance and an Index to parse .h and .hpp files
+    // in order to determine non-native functions and types
+    // which are needed for static analysis
+    let clang_instance = create_c_instance();
+    let index = create_index(&clang_instance);
 
     analyze_functions(code.get_functions(), code.get_source());
     check_main_function(code.get_functions());

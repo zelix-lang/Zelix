@@ -9,8 +9,10 @@ members = [
     "core",
     "lexer",
     "shared",
-    "checker"
+    "checker",
+    "parser"
 ]
 
 [dependencies]
 cli = { path = "cli" }
+parser = { path = "parser" }

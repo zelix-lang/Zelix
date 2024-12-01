@@ -1,4 +1,3 @@
-use checker::variable_checker::check_variable_name;
 use shared::token::{token::{Token, TokenImpl}, token_type::TokenType};
 
 use crate::extractor::sentence_extractor::extract_sentence;
@@ -24,10 +23,6 @@ pub fn transpile_variable(tokens: &Vec<Token>, n: usize, transpiled_code: &mut S
     let var_name = &sentence[0].get_value();
     let var_value: &[Token] = &sentence[4..];
 
-    check_variable_name(
-        &var_name,
-        &sentence[0].build_trace()
-    );
     transpile_type(&var_type, transpiled_code);
 
     transpiled_code.push_str(var_name);
