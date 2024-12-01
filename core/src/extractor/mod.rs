@@ -5,6 +5,7 @@ use std::{path::PathBuf, process::exit};
 
 use import_extractor::extract_import;
 use lexer::data_types::is_data_type;
+use parser::{create_c_instance, create_index};
 use shared::{code::import::{Import, Importable}, logger::{Logger, LoggerImpl}, token::{token::{Token, TokenImpl}, token_type::TokenType}};
 
 use shared::code::{file_code::{FileCode, FileCodeImpl}, function::{Function, FunctionImpl}, param::{Param, ParamImpl}};
@@ -32,21 +33,33 @@ pub fn extract_parts(tokens: &Vec<Token>, source: PathBuf) -> FileCode {
     let mut inside_function: bool = false;
     let mut result : FileCode = FileCode::new(source);
 
+    let clang = create_c_instance();
+    let index = create_index(&clang);
+
     // Add all the lang standard functions to the imports
-    result.add_import(Import::new(
-        locate_standard("lang/panic.h".to_string()),
-        tokens[0].build_trace()
-    ));
+    result.add_import(
+        Import::new(
+            locate_standard("lang/panic.h".to_string()),
+            tokens[0].build_trace()
+        ),
+        &index
+    );
 
-    result.add_import(Import::new(
-        locate_standard("lang/err.hpp".to_string()),
-        tokens[0].build_trace()
-    ));
+    result.add_import(
+        Import::new(
+            locate_standard("lang/err.hpp".to_string()),
+            tokens[0].build_trace()
+        ),
+        &index
+    );
 
-    result.add_import(Import::new(
-    locate_standard("lang/result.hpp".to_string()),
-        tokens[0].build_trace()
-    ));
+    result.add_import(
+        Import::new(
+        locate_standard("lang/result.hpp".to_string()),
+            tokens[0].build_trace()
+        ),
+        &index
+    );
 
     let mut expecting_function_name = false;
     let mut expecting_open_paren = false;
@@ -120,7 +133,10 @@ pub fn extract_parts(tokens: &Vec<Token>, source: PathBuf) -> FileCode {
                     tokens.clone()[(n + 1)..].to_vec()
                 );
     
-                result.add_import(import.clone());
+                result.add_import(
+                    import.clone(),
+                    &index
+                );
     
                 // +1 because we skipped the import keyword
                 // +1 for the semicolon

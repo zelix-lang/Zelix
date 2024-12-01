@@ -3,8 +3,8 @@ use clang::Entity;
 use crate::env::STANDARD_LIBRARY_LOCATION;
 
 // Reads the AST from the parsed initial root given by clang
-pub fn read_ast<'a>(entity: &Entity<'a>) -> Vec<Entity<'a>> {
-    let mut result : Vec<Entity<'a>> = Vec::new();
+pub fn read_ast(entity: Entity) -> Vec<Entity> {
+    let mut result : Vec<Entity> = Vec::new();
     result.push(entity.clone());
 
     // We don't know the total depth level, so we use usize
@@ -17,7 +17,6 @@ pub fn read_ast<'a>(entity: &Entity<'a>) -> Vec<Entity<'a>> {
         }
 
         let element = result[idx];
-
         let children = element.get_children();
 
         // Nothing more to read, break the loop

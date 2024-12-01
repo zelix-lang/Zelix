@@ -9,11 +9,11 @@ pub fn create_c_instance() -> Clang {
 }
 
 // Specify the lifetime of the Clang instance and the Index returned
-pub fn create_index<'a>(c: &'a Clang) -> Index<'a> {
-    Index::new(c, false, false)
+pub fn create_index(c: &Clang) -> Index {
+    Index::new(&c, false, false)
 }
 
-pub fn parse_header_file<'a>(path: &String, index: &'a Index<'a>) -> TranslationUnit<'a> {
+pub fn parse_header_file<'a>(path: &String, index: &'a Index) -> TranslationUnit<'a> {
     index.parser(path)
             .arguments(&["-x", "c++"])
             .parse()

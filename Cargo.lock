@@ -126,7 +126,6 @@ dependencies = [
  "clang",
  "fancy-regex",
  "lazy_static",
- "parser",
  "shared",
 ]
 
@@ -219,6 +218,7 @@ dependencies = [
  "fancy-regex",
  "lazy_static",
  "lexer",
+ "parser",
  "shared",
 ]
 

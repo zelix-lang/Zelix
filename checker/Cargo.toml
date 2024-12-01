@@ -4,7 +4,6 @@ edition = "2021"
 
 [dependencies]
 shared = { path = "../shared" }
-parser = { path = "../parser" }
 lazy_static = "1.5.0"
 fancy-regex = "0.14.0"
 clang = "2.0.0"

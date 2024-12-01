@@ -1,17 +1,16 @@
 use std::{collections::HashMap, path::PathBuf, process::exit};
 
-use clang::Entity;
-use parser::{create_c_instance, create_index, parse_header_file};
+use clang::Index;
+use parser::parse_header_file;
 
 use crate::logger::{Logger, LoggerImpl};
 
-use super::{function::{Function, FunctionImpl}, header_reader::read_ast, import::{Import, Importable}};
+use super::{function::{Function, FunctionImpl}, header::{wrapper::wrap_header, Header}, header_reader::read_ast, import::{Import, Importable}};
 
-#[derive(Debug, Clone)]
-pub struct FileCode<'a> {
+pub struct FileCode {
 
     functions: HashMap<String, Function>,
-    imports: Vec<Entity<'a>>,
+    imports: Vec<Header>,
     seen_imports: Vec<Import>,
     source: PathBuf
     
@@ -22,16 +21,16 @@ pub trait FileCodeImpl {
     fn new(source: PathBuf) -> Self;
 
     fn add_function(&mut self, name: String, function: Function);
-    fn add_import(&mut self, import: Import);
+    fn add_import(&mut self, import: Import, index: &Index);
 
     fn get_functions(&self) -> &HashMap<String, Function>;
-    fn get_imports(&self) -> &Vec<Entity>;
+    fn get_imports(&self) -> &Vec<Header>;
     fn get_seen_imports(&self) -> &Vec<Import>;
     fn get_source(&self) -> &PathBuf;
     
 }
 
-impl FileCodeImpl for FileCode<'_> {
+impl FileCodeImpl for FileCode {
 
     fn new(source: PathBuf) -> Self {
         FileCode {
@@ -60,7 +59,7 @@ impl FileCodeImpl for FileCode<'_> {
         self.functions.insert(name, function);
     }
 
-    fn add_import(&mut self, import: Import) {
+    fn add_import(&mut self, import: Import, index: &Index) {
         // Don't include duplicate imports
         if self.seen_imports.contains(&import) {
             return;
@@ -75,21 +74,21 @@ impl FileCodeImpl for FileCode<'_> {
         // check for the file extension here
 
         // Gather the information from the .hpp or .h file
-        let c_instance = create_c_instance();
-        let index = create_index(&c_instance);
-        let translation_unit = parse_header_file(
+        let translation_unit: clang::TranslationUnit<'_> = parse_header_file(
             &import.get_from().to_str().unwrap().to_string(), 
-            &index
+            index
         );
-        let entity = translation_unit.get_entity();
-        read_ast(&entity);
+
+        let ast = read_ast(translation_unit.get_entity());
+        let wrapped_ast = wrap_header(ast);
+        self.imports.push(wrapped_ast);
     }
 
     fn get_functions(&self) -> &HashMap<String, Function> {
         &self.functions
     }
 
-    fn get_imports(&self) -> &Vec<Entity> {
+    fn get_imports(&self) -> &Vec<Header> {
         &self.imports
     }
 
