@@ -27,7 +27,7 @@ pub fn analyze_scope(source: &FileCode) {
     let functions = source.get_functions();
     let headers = source.get_imports();
 
-    for (function_name, function) in functions {
+    for (_, function) in functions {
         let body = function.get_body();
 
         for n in 0..body.len() {
