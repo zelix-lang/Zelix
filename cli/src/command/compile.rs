@@ -72,6 +72,12 @@ pub fn compile_command(path: Option<PathBuf>) -> PathBuf {
         source = final_path.clone();
     }
 
+    // Print in advance the first step of the compilation
+    // so the user doesn't think the system is stuck
+    Logger::log(&[
+        "  <black_bright>-></black_bright> <magenta_bright>Gathering imports</magenta_bright>",
+    ]);
+
     let imports: Vec<Import> = transpile(
         tokens,
         out_dir.clone(),

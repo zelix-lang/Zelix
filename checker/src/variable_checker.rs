@@ -27,6 +27,6 @@ fn check_variable_name(var_name: &String, trace: &String) {
     }
 }
 
-pub fn check_variable() {
-    
+pub fn check_variables() {
+
 }
