@@ -51,51 +51,43 @@ pub fn wrap_header(ast: Vec<Entity>) -> Header {
     for entity in ast {
         let kind = entity.get_kind();
 
-        match kind {
-            EntityKind::FunctionDecl => {
-                // Add the function to the header
-                result.add_function(
-                    entity.get_name().unwrap(),
-                     process_function(&entity)
-                );
+        if kind == EntityKind::FunctionTemplate || kind == EntityKind::FunctionDecl {
+            // Add the function to the header
+            result.add_function(
+                entity.get_name().unwrap(),
+                process_function(&entity)
+            );
+        } else if kind == EntityKind::ClassTemplate || kind == EntityKind::ClassDecl {
+            // Wrap the class
+            let class = Class::new();
+            // Add the class to the header
+            result.add_class(
+                entity.get_name().unwrap(),
+                class
+            );
+        } else if kind == EntityKind::Method {
+            // First find the class
+            let class_name = entity.get_semantic_parent()
+                    .and_then(|p| p.get_name())
+                    .unwrap_or_default();
+
+            // Find the class
+            let class_optional = result.find_class(&class_name);
+            if class_optional.is_none() {
+                // Class not found, skip
+                continue;
             }
 
-            EntityKind::ClassDecl => {
-                // Wrap the class
-                let class = Class::new();
-                // Add the class to the header
-                result.add_class(
-                    entity.get_name().unwrap(),
-                    class
-                );
-            }
+            let class = class_optional.unwrap();
 
-            EntityKind::Method => {
-                // First find the class
-                let class_name = entity.get_semantic_parent()
-                        .and_then(|p| p.get_name())
-                        .unwrap_or_default();
+            // Wrap the function
+            let function = process_function(&entity);
 
-                // Find the class
-                let class = result.find_class(&class_name)
-                    .unwrap_or_else(|| 
-                        panic!(
-                            "Class {} not found. This is likely a misconfiguration of the standard library", 
-                            class_name
-                        )
-                    );
-
-                // Wrap the function
-                let function = process_function(&entity);
-
-                // Add the method to the class
-                class.add_method(
-                    entity.get_name().unwrap(),
-                    function
-                );
-            }
-
-            _ => {}
+            // Add the method to the class
+            class.add_method(
+                entity.get_name().unwrap(),
+                function
+            );
         }
     }
 

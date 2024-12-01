@@ -1,6 +1,7 @@
 mod function_checker;
 mod main_function_checker;
 mod scope_checker;
+mod header_checker;
 pub mod variable_checker;
 
 use function_checker::analyze_functions;

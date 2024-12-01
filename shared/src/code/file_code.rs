@@ -64,7 +64,7 @@ impl FileCodeImpl for FileCode {
         if self.seen_imports.contains(&import) {
             return;
         }
-
+        
         self.seen_imports.push(import.clone());
 
         // Since imports to Surf files are always rendered before lexing

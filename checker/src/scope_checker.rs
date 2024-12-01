@@ -5,7 +5,9 @@ use shared::code::{file_code::{FileCode, FileCodeImpl}, function::FunctionImpl};
 use shared::token::token::TokenImpl;
 use shared::token::token_type::TokenType;
 
-fn throw_value_already_defined(name: &String, trace: &String) {
+use crate::variable_checker::check_variables;
+
+pub fn throw_value_already_defined(name: &String, trace: &String) {
     Logger::err(
         "Value already defined",
         &[
@@ -23,6 +25,7 @@ fn throw_value_already_defined(name: &String, trace: &String) {
 // Analyzes the source code to determine undefined variables
 pub fn analyze_scope(source: &FileCode) {
     let functions = source.get_functions();
+    let headers = source.get_imports();
 
     for (function_name, function) in functions {
         let body = function.get_body();
@@ -33,6 +36,13 @@ pub fn analyze_scope(source: &FileCode) {
 
             match token_type {
                 TokenType::Let => {
+                    // n + 1 to skip the let token
+                    check_variables(
+                        body,
+                        &(n + 1),
+                        &functions,
+                        &headers
+                    );
                 }
 
                 // No need to check in any other case
