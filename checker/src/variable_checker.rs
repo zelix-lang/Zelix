@@ -66,6 +66,8 @@ pub fn check_variables(
     let var_type = &variable_tokens[2];
     let equals = &variable_tokens[3];
 
+    check_variable_name(&var_name.get_value(), &var_name.build_trace());
+
     // The var name should be an unknown token (not a keyword)
     if
         var_name.get_token_type() != TokenType::Unknown
