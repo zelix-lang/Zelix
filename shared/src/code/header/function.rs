@@ -1,6 +1,6 @@
 use clang::TypeKind;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Function {
     return_type: TypeKind,
     params: Vec<TypeKind>,

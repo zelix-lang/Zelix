@@ -15,6 +15,7 @@ pub fn transpile_type(
     } else if token_type == TokenType::Bool {
         transpiled_code.push_str("bool ");
     } else {
+        // Static analyzer should catch errors in case this is undefined
         transpiled_code.push_str(token.get_value().as_str());
         transpiled_code.push_str(" ");
     }

@@ -27,19 +27,21 @@ pub fn transpile_variable(tokens: &Vec<Token>, n: usize, transpiled_code: &mut S
 
     transpiled_code.push_str(var_name);
     transpiled_code.push_str(" = ");
-    
-    if var_type.get_token_type() == TokenType::String {
-        // Add quotes
-        transpiled_code.push_str("\"");
-    }
 
     for token in var_value {
-        transpiled_code.push_str(&token.get_value());
-    }
+        let token_type = token.get_token_type();
+        let is_string = token_type == TokenType::StringLiteral;
 
-    if var_type.get_token_type() == TokenType::String {
-        // Add quotes
-        transpiled_code.push_str("\"");
+        if is_string {
+            transpiled_code.push_str("\"");
+        }
+
+        transpiled_code.push_str(&token.get_value());
+
+        if is_string {
+            transpiled_code.push_str("\"");
+        }
+
     }
 
     // Add 1 to skip the let token, we still need the semicolon

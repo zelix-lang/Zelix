@@ -2,9 +2,10 @@ use std::{collections::HashMap, process::exit};
 
 use fancy_regex::Regex;
 use lazy_static::lazy_static;
+use lexer::data_types::is_data_type;
 use shared::{code::{function::Function, header::Header, value_name::value_name::VALUE_NAME_REGEX}, logger::{Logger, LoggerImpl}, result::try_unwrap, token::{token::{Token, TokenImpl}, token_type::TokenType}};
 
-use crate::{header_checker::check_header_value_definition, scope_checker::throw_value_already_defined};
+use crate::{header_checker::{check_header_value_definition, find_imported_classes}, scope_checker::throw_value_already_defined};
 
 lazy_static! {
     // Used to print warnings for cammel case variable names
@@ -101,9 +102,6 @@ pub fn check_variables(
         exit(1);
     }
 
-    // The var type should be validated during transpilation
-    // No need to check it here
-
     // The equals should be an equals
     if equals.get_token_type() != TokenType::Assign {
         Logger::err(
@@ -129,4 +127,30 @@ pub fn check_variables(
             &var_name.build_trace()
         );
     }
+
+    // Check if the type is a data type or an imported object
+    if !is_data_type(var_type.get_token_type()) {
+        // Check if the variable name is in cammel case
+        let class_optional = find_imported_classes(
+            &var_type.get_value(),
+            imports
+        );
+
+        if class_optional.is_none() {
+            Logger::err(
+                "Invalid data type",
+                &[
+                    "The data type is not recognized"
+                ],
+                &[
+                    var_type.build_trace().as_str()
+                ]
+            );
+
+            exit(1);
+        }
+
+        return;
+    }
+        
 }

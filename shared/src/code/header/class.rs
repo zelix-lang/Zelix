@@ -2,6 +2,7 @@ use std::collections::HashMap;
 
 use super::function::Function;
 
+#[derive(Debug, Clone)]
 pub struct Class {
     methods: HashMap<String, Function>
 }
