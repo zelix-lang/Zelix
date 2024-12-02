@@ -1,4 +1,4 @@
-@import "@Surf:standard/io/print";
+import "@Surf:standard/io/print";
 
 fun main() -> nothing {
     let hello_b : Err = Err("Hello, world!");

@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 
 pub fn extract_import_path(raw: &String, start_point: &PathBuf) -> PathBuf {
-    let mut import_raw = raw.replacen("@import", "", 1);
+    let mut import_raw = raw.replacen("import", "", 1);
     import_raw = import_raw.trim().to_string();
 
     // Drop the semicolon and the quotes

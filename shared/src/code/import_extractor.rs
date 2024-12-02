@@ -6,7 +6,7 @@ lazy_static! {
     pub static ref IMPORT_REGEX : Regex = try_unwrap(
         // This regex also excludes the standard library imports
         // which are then processed by the lexer
-        Regex::new(r#"@import\s+"(?!@Surf:standard)[\s\S]*?"\s*;"#),
+        Regex::new(r#"import\s+"(?!@Surf:standard)[\s\S]*?"\s*;"#),
         "Failed to compile regex pattern for imports"
     );
 }

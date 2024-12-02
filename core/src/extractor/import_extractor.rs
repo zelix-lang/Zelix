@@ -20,8 +20,8 @@ pub fn extract_import(tokens: Vec<Token>) -> Import {
     let import_tokens : Vec<Token> = extract_sentence(tokens.clone(), TokenType::Semicolon);
 
     // A valid import should have be only 2 tokens long
-    // @import "file";
-    // But we don't receive the @import token so we just have to check
+    // import "file";
+    // But we don't receive the import token so we just have to check
     // if the length is 1
 
     if import_tokens.len() != 1 {
@@ -37,7 +37,7 @@ pub fn extract_import(tokens: Vec<Token>) -> Import {
         throw_invalid_import(
             &[
                 "Invalid import syntax!",
-                "Imports should be in the format: @import \"file\";",
+                "Imports should be in the format: import \"file\";",
                 trace.as_str()
             ],
         );
