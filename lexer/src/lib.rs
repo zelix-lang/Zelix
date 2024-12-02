@@ -230,8 +230,17 @@ impl LexerImpl for Lexer {
                 // Handle arrow operator ('->')
                 else if character == '>' {
                     if tokens_len == 0 || tokens[tokens_len - 1].get_token_type() != TokenType::Minus {
+                        tokens.push(
+                            Lexer::calculate(
+                                &character.to_string(),
+                                &file,
+                                &current_line,
+                                &current_column
+                            )
+                        );
                         continue;
                     }
+
                     tokens.pop();
                     tokens.push(
                         Lexer::calculate(
