@@ -12,6 +12,7 @@ use shared::{code::import::{Import, Importable}, logger::{Logger, LoggerImpl}, t
 
 use shared::code::{file_code::{FileCode, FileCodeImpl}, function::{Function, FunctionImpl}, param::{Param, ParamImpl}};
 use standard_locator::locate_standard;
+use token_splitter::extract_tokens_before;
 
 pub fn extract_parts(tokens: &Vec<Token>, source: PathBuf) -> FileCode {
 
@@ -82,13 +83,7 @@ pub fn extract_parts(tokens: &Vec<Token>, source: PathBuf) -> FileCode {
     let mut nested_operations = 0;
 
     let mut last_function_name = String::new();
-    let mut last_function_return_type: Token = Token::new(
-        TokenType::Unknown,
-        String::new(), 
-        String::new(),
-         0,
-          0
-    );
+    let mut last_function_return_type: Vec<Token> = Vec::new();
     let mut last_function_params: Vec<Param> = Vec::new();
     let mut last_function_body: Vec<Token> = Vec::new();
     let mut last_param_name = String::new();
@@ -263,17 +258,15 @@ pub fn extract_parts(tokens: &Vec<Token>, source: PathBuf) -> FileCode {
             expecting_arrow = false;
             expecting_return_type = true;
         } else if expecting_return_type {
-            if !is_data_type(token_type.clone()) {
-                Logger::err(
-                    "Invalid return type",
-                    &["Expecting a valid data type"],
-                    &[token.build_trace().as_str()]
-                );
+            // Not going to validate the return type here
+            // the static analyzer will do that
 
-                exit(1);
-            }
+            let return_type = extract_tokens_before(
+                &tokens[(n)..].to_vec(),
+                &TokenType::OpenCurly
+            );
 
-            last_function_return_type = token.clone();
+            last_function_return_type = return_type.clone();
             expecting_return_type = false;
             expecting_open_curly = true;
         } else if expecting_param_type_splitter {

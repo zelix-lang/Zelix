@@ -3,7 +3,7 @@ mod main_function_checker;
 mod scope_checker;
 mod header_checker;
 mod variable_checker;
-mod types;
+pub mod types;
 
 use function_checker::analyze_functions;
 use main_function_checker::check_main_function;

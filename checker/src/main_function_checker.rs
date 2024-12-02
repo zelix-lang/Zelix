@@ -22,7 +22,7 @@ pub fn check_main_function(functions: &HashMap<String, Function>) {
         exit(1);
     }
 
-    if main_function.get_return_type().get_token_type() != TokenType::Nothing {
+    if main_function.get_return_type().get(0).unwrap().get_token_type() != TokenType::Nothing {
         Logger::err(
             "Invalid return type for main function",
             &[

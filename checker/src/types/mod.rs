@@ -1,4 +1,4 @@
-mod parser;
+pub mod parser;
 use parser::parse_parametrized_type;
 use shared::token::token::Token;
 
@@ -9,13 +9,14 @@ use shared::token::token::Token;
 /// of the static analyzer, to ensure we don't
 /// transpile wrong code
 /// ------------------------------------------
+#[derive(Debug)]
 pub struct ParamType {
     // From Result<str>, the structure would be:
     pub name: String, // Result
     pub params: Vec<ParamType> // [str]
 }
 
-trait ParamTypeImpl {
+pub trait ParamTypeImpl {
     fn new(raw: &Vec<Token>) -> Self;
     fn get_name(&self) -> &String;
     fn get_params(&self) -> &Vec<ParamType>;

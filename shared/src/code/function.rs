@@ -6,7 +6,7 @@ use super::param::Param;
 pub struct Function {
     arguments: Vec<Param>,
     body: Vec<Token>,
-    return_type: Token,
+    return_type: Vec<Token>,
     trace: String,
     public: bool
 }
@@ -17,14 +17,14 @@ pub trait FunctionImpl {
         arguments: 
         Vec<Param>, 
         body: Vec<Token>, 
-        return_type: Token, 
+        return_type: Vec<Token>, 
         trace: String,
         public: bool
     ) -> Self;
 
     fn get_arguments(&self) -> &Vec<Param>;
     fn get_body(&self) -> &Vec<Token>;
-    fn get_return_type(&self) -> &Token;
+    fn get_return_type(&self) -> &Vec<Token>;
     fn get_trace(&self) -> &String;
     fn is_public(&self) -> bool;
 
@@ -36,7 +36,7 @@ impl FunctionImpl for Function {
         arguments: 
         Vec<Param>, 
         body: Vec<Token>, 
-        return_type: Token, 
+        return_type: Vec<Token>, 
         trace: String,
         public: bool
     ) -> Self {
@@ -57,7 +57,7 @@ impl FunctionImpl for Function {
         &self.body
     }
 
-    fn get_return_type(&self) -> &Token {
+    fn get_return_type(&self) -> &Vec<Token> {
         &self.return_type
     }
 

@@ -30,7 +30,7 @@ pub fn analyze_functions(
 
     // The return type of the main function must be Nothing
     let main_function = functions.get("main").unwrap();
-    if main_function.get_return_type().get_token_type() != TokenType::Nothing {
+    if main_function.get_return_type().get(0).unwrap().get_token_type() != TokenType::Nothing {
         Logger::err(
             "Invalid return type for main function",
             &[

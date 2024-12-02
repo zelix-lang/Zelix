@@ -1,11 +1,12 @@
 use std::{collections::HashMap, process::exit};
 
+use extractor::token_splitter::extract_tokens_before;
 use fancy_regex::Regex;
 use lazy_static::lazy_static;
 use lexer::data_types::is_data_type;
 use shared::{code::{function::Function, header::Header, value_name::value_name::VALUE_NAME_REGEX}, logger::{Logger, LoggerImpl}, result::try_unwrap, token::{token::{Token, TokenImpl}, token_type::TokenType}};
 
-use crate::{header_checker::{check_header_value_definition, find_imported_classes}, scope_checker::throw_value_already_defined};
+use crate::{header_checker::{check_header_value_definition, find_imported_classes}, scope_checker::throw_value_already_defined, types::parser::parse_parametrized_type};
 
 lazy_static! {
     // Used to print warnings for cammel case variable names
@@ -63,8 +64,17 @@ pub fn check_variables(
     let var_name = &variable_tokens[0];
     let var_name_value = var_name.get_value();
     let colon = &variable_tokens[1];
-    let var_type = &variable_tokens[2];
-    let equals = &variable_tokens[3];
+
+    let var_type_tokens = extract_tokens_before(
+        &tokens[3..].to_vec(),
+        &TokenType::Assign
+    );
+
+    let var_type_param_type = parse_parametrized_type(
+        &var_type_tokens
+    );
+
+    let equals = &variable_tokens[var_type_tokens.len() + 2];
 
     check_variable_name(&var_name.get_value(), &var_name.build_trace());
 
@@ -131,7 +141,8 @@ pub fn check_variables(
     }
 
     // Check if the type is a data type or an imported object
-    if !is_data_type(var_type.get_token_type()) {
+    // TODO!
+    /*if !is_data_type(var_type.get_token_type()) {
         // Check if the variable name is in cammel case
         let class_optional = find_imported_classes(
             &var_type.get_value(),
@@ -153,6 +164,6 @@ pub fn check_variables(
         }
 
         return;
-    }
+    }*/
         
 }

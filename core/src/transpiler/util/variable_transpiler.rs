@@ -1,6 +1,6 @@
 use shared::token::{token::{Token, TokenImpl}, token_type::TokenType};
 
-use extractor::sentence_extractor::extract_sentence;
+use extractor::{sentence_extractor::extract_sentence, token_splitter::extract_tokens_before};
 
 use super::type_transpiler::transpile_type;
 
@@ -19,17 +19,24 @@ pub fn transpile_variable(tokens: &Vec<Token>, n: usize, transpiled_code: &mut S
     // so we're left with 5 tokens
     // we're going to skip the first 4 so we get the value
 
-    let var_type = &sentence[2];
     let var_name = &sentence[0].get_value();
-    let var_value: &[Token] = &sentence[4..];
+    let var_type_tokens = extract_tokens_before(
+        &tokens[3..].to_vec(),
+        &TokenType::Assign
+    );
 
-    transpile_type(&var_type, transpiled_code);
+    // +2 for the space between the parametrized type
+    // +1 for the equals sign
+    let var_value: &[Token] = &sentence[(var_type_tokens.len() + 3)..];
+
+    transpile_type(&var_type_tokens, transpiled_code);
 
     transpiled_code.push_str(var_name);
     transpiled_code.push_str(" = ");
 
     for token in var_value {
         let token_type = token.get_token_type();
+        
         let is_string = token_type == TokenType::StringLiteral;
 
         if is_string {

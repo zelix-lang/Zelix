@@ -195,10 +195,12 @@ impl LexerImpl for Lexer {
                     if tokens_len == 0 {
                         continue; // Ensure there's a preceding token
                     }
-                    let last_token = &tokens[tokens_len - 1].clone();
+                    let last_token = tokens[tokens_len - 1].clone();
+                    let last_char = characters[i - 1].clone();
                     if
                         (
                             character == '=' &&
+                            last_char != ' ' &&
                             (
                                 last_token.get_token_type() == TokenType::Assign
                                 || last_token.get_token_type() == TokenType::LessThan
