@@ -10,7 +10,8 @@ members = [
     "lexer",
     "shared",
     "checker",
-    "parser"
+    "parser",
+    "extractor"
 ]
 
 [dependencies]

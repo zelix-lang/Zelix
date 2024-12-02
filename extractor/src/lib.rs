@@ -1,6 +1,7 @@
-mod import_extractor;
+pub mod import_extractor;
 pub mod sentence_extractor;
 mod standard_locator;
+
 use std::{path::PathBuf, process::exit};
 
 use import_extractor::extract_import;

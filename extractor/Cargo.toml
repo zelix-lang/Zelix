@@ -1,0 +1,8 @@
+[package]
+name = "extractor"
+edition = "2021"
+
+[dependencies]
+shared = { path = "../shared" }
+lexer = { path = "../lexer" }
+parser = { path = "../parser" }

@@ -1,6 +1,6 @@
 use shared::token::{token::{Token, TokenImpl}, token_type::TokenType};
 
-use crate::extractor::sentence_extractor::extract_sentence;
+use extractor::sentence_extractor::extract_sentence;
 
 use super::type_transpiler::transpile_type;
 

@@ -4,7 +4,7 @@ use std::path::PathBuf;
 
 use shared::token::token::Token;
 
-use crate::extractor::extract_parts;
+use extractor::extract_parts;
 use shared::code::file_code::FileCodeImpl;
 use shared::code::import::Import;
 use checker::analyze;
