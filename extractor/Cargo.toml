@@ -5,4 +5,4 @@ edition = "2021"
 [dependencies]
 shared = { path = "../shared" }
 lexer = { path = "../lexer" }
-parser = { path = "../parser" }
+c_parser = { path = "../c_parser" }

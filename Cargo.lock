@@ -7,7 +7,6 @@ name = "Surf-Rust"
 version = "0.1.0"
 dependencies = [
  "cli",
- "parser",
 ]
 
 [[package]]
@@ -114,6 +113,13 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1fd0f2584146f6f2ef48085050886acf353beff7305ebd1ae69500e27c67f64b"
 
 [[package]]
+name = "c_parser"
+version = "0.0.0"
+dependencies = [
+ "clang",
+]
+
+[[package]]
 name = "cfg-if"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -216,12 +222,12 @@ checksum = "5b63caa9aa9397e2d9480a9b13673856c78d8ac123288526c37d7839f2a86990"
 name = "core"
 version = "0.0.0"
 dependencies = [
+ "c_parser",
  "checker",
  "extractor",
  "fancy-regex",
  "lazy_static",
  "lexer",
- "parser",
  "shared",
 ]
 
@@ -275,8 +281,8 @@ checksum = "5443807d6dff69373d433ab9ef5378ad8df50ca6298caf15de6e52e24aaf54d5"
 name = "extractor"
 version = "0.0.0"
 dependencies = [
+ "c_parser",
  "lexer",
- "parser",
  "shared",
 ]
 
@@ -470,13 +476,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "parser"
-version = "0.0.0"
-dependencies = [
- "clang",
-]
-
-[[package]]
 name = "phf"
 version = "0.11.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -589,11 +588,11 @@ dependencies = [
 name = "shared"
 version = "0.0.0"
 dependencies = [
+ "c_parser",
  "clang",
  "fancy-regex",
  "inquire",
  "lazy_static",
- "parser",
 ]
 
 [[package]]

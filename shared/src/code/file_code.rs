@@ -1,7 +1,7 @@
 use std::{collections::HashMap, path::PathBuf, process::exit};
 
 use clang::Index;
-use parser::parse_header_file;
+use c_parser::parse_header_file;
 
 use crate::logger::{Logger, LoggerImpl};
 
