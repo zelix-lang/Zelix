@@ -124,6 +124,7 @@ name = "checker"
 version = "0.0.0"
 dependencies = [
  "clang",
+ "extractor",
  "fancy-regex",
  "lazy_static",
  "lexer",
