@@ -1,10 +1,11 @@
 use std::{collections::HashMap, process::exit};
 
+use c_parser::header::Header;
 use extractor::token_splitter::extract_tokens_before;
 use fancy_regex::Regex;
 use lazy_static::lazy_static;
 use lexer::data_types::is_data_type;
-use shared::{code::{function::Function, header::Header, value_name::value_name::VALUE_NAME_REGEX}, logger::{Logger, LoggerImpl}, result::try_unwrap, token::{token::{Token, TokenImpl}, token_type::TokenType}};
+use shared::{code::{function::Function, value_name::value_name::VALUE_NAME_REGEX}, logger::{Logger, LoggerImpl}, result::try_unwrap, token::{token::{Token, TokenImpl}, token_type::TokenType}};
 
 use crate::{header_checker::{check_header_value_definition, find_imported_classes}, scope_checker::throw_value_already_defined, types::parser::parse_parametrized_type};
 

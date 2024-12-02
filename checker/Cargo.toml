@@ -9,3 +9,4 @@ fancy-regex = "0.14.0"
 clang = "2.0.0"
 lexer = { path = "../lexer" }
 extractor = { path = "../extractor" }
+c_parser = { path = "../c_parser" }

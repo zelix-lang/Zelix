@@ -2,6 +2,10 @@
 // It's not inteded to execute or analyze Surf code, but to provide a way to parse
 // C and C++ header files which are needed for static analysis and code generation.
 
+pub mod wrapper;
+pub mod class;
+pub mod function;
+pub mod header;
 use clang::{Clang, Index, TranslationUnit};
 
 pub fn create_c_instance() -> Clang {

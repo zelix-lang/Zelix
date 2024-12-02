@@ -1,6 +1,6 @@
 use clang::{Entity, EntityKind, TypeKind};
 
-use super::{class::{Class, ClassImpl}, function::{Function, FunctionImpl}, Header, HeaderImpl};
+use crate::{class::{Class, ClassImpl}, function::{Function, FunctionImpl}, header::{Header, HeaderImpl}};
 
 fn find_data_type(entity: &Entity) -> TypeKind {
     // We're ensured that at this point the entity doesn't need its children ASTs

@@ -1,11 +1,6 @@
 use std::collections::HashMap;
 
-use class::Class;
-use function::Function;
-
-pub mod class;
-pub mod function;
-pub mod wrapper;
+use crate::{class::Class, function::Function};
 
 // Surf's custom wrapper for CLang's AST
 pub struct Header {

@@ -1,4 +1,4 @@
-use shared::code::header::{class::Class, Header, HeaderImpl};
+use c_parser::{class::Class, header::Header, header::HeaderImpl};
 
 pub fn find_imported_classes(check_for: &String, headers: &Vec<Header>) -> Option<Class> {
     for header in headers {
