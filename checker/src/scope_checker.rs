@@ -1,6 +1,6 @@
 use std::process::exit;
 
-use shared::logger::{Logger, LoggerImpl};
+use logger::{Logger, LoggerImpl};
 use shared::code::{file_code::{FileCode, FileCodeImpl}, function::FunctionImpl};
 use shared::token::token::TokenImpl;
 use shared::token::token_type::TokenType;

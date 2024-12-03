@@ -6,3 +6,4 @@ edition = "2021"
 shared = { path = "../shared" }
 lexer = { path = "../lexer" }
 c_parser = { path = "../c_parser" }
+logger = { path = "../logger" }

@@ -1,6 +1,7 @@
 use std::{fs::exists, path::PathBuf, process::exit};
 
-use shared::{env::STANDARD_LIBRARY_LOCATION, logger::{Logger, LoggerImpl}};
+use logger::{Logger, LoggerImpl};
+use shared::env::STANDARD_LIBRARY_LOCATION;
 
 pub fn locate_standard(name: String) -> PathBuf {
 

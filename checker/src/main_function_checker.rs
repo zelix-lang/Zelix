@@ -1,6 +1,7 @@
 use std::{collections::HashMap, process::exit};
 
-use shared::{logger::{Logger, LoggerImpl}, token::{token::TokenImpl, token_type::TokenType}};
+use logger::{Logger, LoggerImpl};
+use shared::token::{token::TokenImpl, token_type::TokenType};
 
 use shared::code::function::{Function, FunctionImpl};
 

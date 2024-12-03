@@ -10,3 +10,4 @@ clang = "2.0.0"
 lexer = { path = "../lexer" }
 extractor = { path = "../extractor" }
 c_parser = { path = "../c_parser" }
+logger = { path = "../logger" }

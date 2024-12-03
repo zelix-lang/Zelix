@@ -1,6 +1,7 @@
 use std::process::exit;
 
-use shared::{logger::{Logger, LoggerImpl}, token::{token::{Token, TokenImpl}, token_type::TokenType}};
+use logger::{Logger, LoggerImpl};
+use shared::token::{token::{Token, TokenImpl}, token_type::TokenType};
 
 // Useful to extract a sentence from a list of tokens
 // for example:

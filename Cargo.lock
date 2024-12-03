@@ -135,6 +135,7 @@ dependencies = [
  "fancy-regex",
  "lazy_static",
  "lexer",
+ "logger",
  "shared",
 ]
 
@@ -284,6 +285,7 @@ version = "0.0.0"
 dependencies = [
  "c_parser",
  "lexer",
+ "logger",
  "shared",
 ]
 
@@ -385,6 +387,7 @@ version = "0.0.0"
 dependencies = [
  "fancy-regex",
  "lazy_static",
+ "logger",
  "shared",
 ]
 

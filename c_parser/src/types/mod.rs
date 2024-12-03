@@ -1,4 +1,5 @@
 pub mod parser;
+
 use parser::parse_parametrized_type;
 use shared::token::token::Token;
 
