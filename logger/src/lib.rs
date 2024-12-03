@@ -1,25 +1,23 @@
+pub mod ansi;
 use fancy_regex::Regex;
 
 use crate::ansi::colors::{color_map, RESET};
 
-mod logger {
-    use lazy_static::lazy_static;
-    use fancy_regex::Regex;
+use lazy_static::lazy_static;
 
-    lazy_static! {
-        pub static ref CHAT_REGEX : Regex = Regex::new(r"<(\w+(:[#\w:]+)?)>(.*?)<\/\1>").unwrap();
+lazy_static! {
+    pub static ref CHAT_REGEX : Regex = Regex::new(r"<(\w+(:[#\w:]+)?)>(.*?)<\/\1>").unwrap();
+}
+
+pub fn add_prefix_to_text(prefix: Option<&str>, text: &[&str]) -> String {
+    let mut result = String::new();
+    let final_prefix = prefix.unwrap_or("<magenta_bright>   [info] | </magenta_bright>");
+
+    for line in text {
+        result.push_str(&format!("<black_bright>{}{}</black_bright>\n", final_prefix, line));
     }
 
-    pub fn add_prefix_to_text(prefix: Option<&str>, text: &[&str]) -> String {
-        let mut result = String::new();
-        let final_prefix = prefix.unwrap_or("<magenta_bright>   [info] | </magenta_bright>");
-
-        for line in text {
-            result.push_str(&format!("<black_bright>{}{}</black_bright>\n", final_prefix, line));
-        }
-
-        result.trim().to_string()
-    }
+    result.trim().to_string()
 }
 
 pub fn colorize(message: &str) -> String {
