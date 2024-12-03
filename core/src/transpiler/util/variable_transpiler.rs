@@ -30,7 +30,8 @@ pub fn transpile_variable(tokens: &Vec<Token>, n: usize, transpiled_code: &mut S
     // +1 for the equals sign
     let var_value: &[Token] = &sentence[(var_type_tokens.len() + 3)..];
 
-    transpile_type(&var_type_tokens, transpiled_code);
+    // Make the compiler automatically infer the type
+    transpiled_code.push_str("auto ");
 
     transpiled_code.push_str(var_name);
     transpiled_code.push_str(" = ");
@@ -42,7 +43,7 @@ pub fn transpile_variable(tokens: &Vec<Token>, n: usize, transpiled_code: &mut S
             transpile_type(&vec![token.clone()], transpiled_code);
             continue;
         }
-        
+
         let is_string = token_type == TokenType::StringLiteral;
 
         if is_string {
