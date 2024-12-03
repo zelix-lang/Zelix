@@ -14,7 +14,12 @@ pub fn transpile_functions(file_code: &FileCode, transpiled_code: &mut String) {
         }
 
         transpiled_code.push_str(name);
-        transpiled_code.push_str("() {\n");
+
+        if is_main {
+            transpiled_code.push_str("(int arg_count, char* args[]) {\n");
+        } else {
+            transpiled_code.push_str("() {\n");
+        }
 
         transpile_body(function.get_body(), transpiled_code);
 
