@@ -134,7 +134,7 @@ pub fn extract_parts(tokens: &Vec<Token>, source: PathBuf) -> FileCode {
                 let import = extract_import(
                     tokens.clone()[(n + 1)..].to_vec()
                 );
-    
+                
                 result.add_import(
                     import.clone(),
                     &index
@@ -145,7 +145,6 @@ pub fn extract_parts(tokens: &Vec<Token>, source: PathBuf) -> FileCode {
                 // +1 for the string literal
                 // total tokens skipped = 3
                 skip_to_index = n + 3;
-
                 continue;
             }
 
