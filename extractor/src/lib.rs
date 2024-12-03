@@ -8,7 +8,6 @@ use std::{path::PathBuf, process::exit};
 use code::token::{Token, TokenImpl};
 use code::token_type::TokenType;
 use import_extractor::extract_import;
-use lexer::data_types::is_data_type;
 use c_parser::{create_c_instance, create_index};
 use logger::{Logger, LoggerImpl};
 use shared::code::import::{Import, Importable};
@@ -72,13 +71,12 @@ pub fn extract_parts(tokens: &Vec<Token>, source: PathBuf) -> FileCode {
     let mut expecting_params = false;
     let mut expecting_param_type_splitter = false;
     let mut expecting_param_type = false;
-    let mut expecting_comma = false;
     let mut expecting_open_curly = false;
     let mut has_function_ended = false;
     let mut expecting_arrow = false;
     let mut expecting_return_type = false;
     let mut is_last_function_public = false;
-
+    let mut is_last_param_reference = false;
 
     // Used to count nested curly braces
     // This is useful because we could know when the function ends
@@ -90,9 +88,13 @@ pub fn extract_parts(tokens: &Vec<Token>, source: PathBuf) -> FileCode {
     let mut last_function_params: Vec<Param> = Vec::new();
     let mut last_function_body: Vec<Token> = Vec::new();
     let mut last_param_name = String::new();
+    let mut last_param_type_tokens: Vec<Token> = Vec::new();
 
     // Used to skip tokens
     let mut skip_to_index = 0;
+
+    // Used to determine nested levels in parameters
+    let mut nested_level: isize = 0;
 
     for n in skip_to_index..tokens.len() {
         if skip_to_index > 0 && skip_to_index > n {
@@ -214,30 +216,26 @@ pub fn extract_parts(tokens: &Vec<Token>, source: PathBuf) -> FileCode {
 
             expecting_open_paren = false;
             expecting_params = true;
-        } else if expecting_params || expecting_comma {
+        } else if expecting_params {
             if token_type == TokenType::CloseParen {
-                expecting_comma = false;
                 expecting_params = false;
                 expecting_arrow = true;
+                expecting_param_type_splitter = false;
                 expecting_open_curly = false;
                 
                 continue;
             }
 
-            if expecting_comma && token_type != TokenType::Comma {
-                Logger::err(
-                    "Invalid parameter declaration",
-                    &["Expecting a comma after the parameter type"],
-                    &[token.build_trace().as_str()]
-                );
-
-                exit(1);
-            }
-
             if token_type != TokenType::Unknown {
                 Logger::err(
                     "Invalid parameter name",
-                    &["Parameter name must be a valid identifier"],
+                    &[
+                        "Parameter name must be a valid identifier",
+                        format!(
+                            "Got {:?}",
+                            token_type
+                        ).as_str()
+                    ],
                     &[token.build_trace().as_str()]
                 );
 
@@ -276,7 +274,13 @@ pub fn extract_parts(tokens: &Vec<Token>, source: PathBuf) -> FileCode {
             if token_type != TokenType::Colon {
                 Logger::err(
                     "Invalid parameter declaration",
-                    &["Expecting a colon after the parameter name"],
+                    &[
+                        "Expecting a colon after the parameter name",
+                        format!(
+                            "Got {:?}",
+                            token_type
+                        ).as_str()
+                    ],
                     &[token.build_trace().as_str()]
                 );
 
@@ -286,30 +290,79 @@ pub fn extract_parts(tokens: &Vec<Token>, source: PathBuf) -> FileCode {
             expecting_param_type_splitter = false;
             expecting_param_type = true;
         } else if expecting_param_type {
-            if !is_data_type(token_type.clone()) {
-                Logger::err(
-                    "Invalid parameter type",
-                    &["Expecting a valid data type"],
-                    &[
-                        token.build_trace().as_str(),
-                        format!("Got a {:?}", token_type).as_str()
-                    ]
-                );
+            if token_type == TokenType::Ampersand {
+                if is_last_param_reference {
+                    Logger::err(
+                        "Multiple reference",
+                        &[
+                            "You can't have multiple references for a single parameter"
+                        ],
+                        &[
+                            token.build_trace().as_str()
+                        ]
+                    );
 
-                exit(1);
+                    exit(1);
+                }
+
+                is_last_param_reference = true;
+                // Wait for the parameter name
+                continue;
             }
 
-            last_function_params.push(
-                Param::new(
-                    last_param_name.clone(),
-                    token_type.clone(),
-                    token.build_trace()
-                )
-            );
+            if nested_level == 0 {
+                if token_type == TokenType::Comma || token_type == TokenType::CloseParen {
+                    if !last_param_type_tokens.is_empty() {
+                        last_function_params.push(
+                            Param::new(
+                                last_param_name.clone(),
+                                last_param_type_tokens.clone(),
+                                token.build_trace(),
+                                is_last_param_reference.clone()
+                            )
+                        );
+                    }
 
-            last_param_name.clear();
-            expecting_param_type = false;
-            expecting_comma = true;
+                    last_param_name.clear();
+                    last_param_type_tokens.clear();
+                    is_last_param_reference = false;
+                    expecting_param_type = false;
+
+                    if token_type == TokenType::CloseParen {
+                        expecting_params = false;
+                        expecting_arrow = true;
+                        expecting_open_curly = false;
+                            
+                        continue;
+                    }
+
+                    // Expect for another parameter
+                    expecting_params = true;
+
+                    continue;
+                }
+            }
+
+            if token_type == TokenType::LessThan {
+                nested_level += 1;
+            } else if token_type == TokenType::GreaterThan {
+                nested_level -= 1;
+
+                if nested_level < 0 {
+                    Logger::err(
+                        "Invalid token",
+                        &["Unexpected closing angle bracket"],
+                        &[token.build_trace().as_str()]
+                    );
+
+                    exit(1);
+                }
+            }
+
+            last_param_type_tokens.push(token.clone());
+
+            // We don't check if the parameter is a data type here
+            // that's done by the static analyzer
         } else if expecting_open_curly {
             if token_type != TokenType::OpenCurly {
                 Logger::err(
@@ -362,7 +415,6 @@ pub fn extract_parts(tokens: &Vec<Token>, source: PathBuf) -> FileCode {
                     expecting_params = false;
                     expecting_param_type_splitter = false;
                     expecting_param_type = false;
-                    expecting_comma = false;
                     expecting_open_curly = false;
                     expecting_arrow = false;
                     expecting_return_type = false;
