@@ -87,8 +87,8 @@ pub fn extract_parts(tokens: &Vec<Token>, source: PathBuf) -> FileCode {
     let mut last_function_return_type: Vec<Token> = Vec::new();
     let mut last_function_params: Vec<Param> = Vec::new();
     let mut last_function_body: Vec<Token> = Vec::new();
-    let mut last_param_name = String::new();
     let mut last_param_type_tokens: Vec<Token> = Vec::new();
+    let mut last_param_name = String::new();
 
     // Used to skip tokens
     let mut skip_to_index = 0;
@@ -266,7 +266,8 @@ pub fn extract_parts(tokens: &Vec<Token>, source: PathBuf) -> FileCode {
                 &tokens[(n)..].to_vec(),
                 &TokenType::OpenCurly
             );
-
+            
+            skip_to_index = n + return_type.len();
             last_function_return_type = return_type.clone();
             expecting_return_type = false;
             expecting_open_curly = true;
