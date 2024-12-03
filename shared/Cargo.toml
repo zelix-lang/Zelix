@@ -9,3 +9,5 @@ inquire = "0.7.5"
 clang = "2.0.0"
 c_parser = { path = "../c_parser" }
 logger = { path = "../logger" }
+code = { path = "../code" }
+util = { path = "../util" }

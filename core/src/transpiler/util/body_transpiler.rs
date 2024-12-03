@@ -1,4 +1,4 @@
-use shared::token::{token::{Token, TokenImpl}, token_type::TokenType};
+use code::{token::{Token, TokenImpl}, token_type::TokenType};
 
 use super::variable_transpiler::transpile_variable;
 

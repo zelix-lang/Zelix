@@ -1,13 +1,13 @@
-use std::path::PathBuf;
-
-use import::import_processor::process_imports;
-use regex_patterns::NUMBER_REGEX;
-use shared::token::{token::{Token, TokenImpl}, token_type::TokenType};
-use token_map::{KNOWN_TOKENS, PUNCTUATION_CHARS};
 mod regex_patterns;
 mod token_map;
 mod import;
 pub mod data_types;
+
+use std::path::PathBuf;
+use import::import_processor::process_imports;
+use regex_patterns::NUMBER_REGEX;
+use code::{token::{Token, TokenImpl}, token_type::TokenType};
+use token_map::{KNOWN_TOKENS, PUNCTUATION_CHARS};
 
 // Define the Lexer struct, tracking the parser state (string, escape, comments)
 pub struct Lexer {

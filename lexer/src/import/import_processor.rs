@@ -1,9 +1,12 @@
 use std::{collections::HashSet, fs::read_to_string, path::PathBuf, process::exit};
 
 use logger::{Logger, LoggerImpl};
-use shared::{
-    code::{
-        import_extractor::{extract_import_matches, IMPORT_REGEX},
+use util::{
+    import::{
+        import_extractor::{
+            extract_import_matches,
+            IMPORT_REGEX
+        },
         import_path_extractor::extract_imports_paths,
     },
     result::try_unwrap,

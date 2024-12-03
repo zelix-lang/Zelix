@@ -1,4 +1,4 @@
-use shared::token::{token::{Token, TokenImpl}, token_type::TokenType};
+use code::{token::{Token, TokenImpl}, token_type::TokenType};
 
 pub fn transpile_type(
     tokens: &Vec<Token>,

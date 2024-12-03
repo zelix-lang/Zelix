@@ -1,9 +1,8 @@
 use std::process::exit;
 
+use code::{token::TokenImpl, token_type::TokenType};
 use logger::{Logger, LoggerImpl};
 use shared::code::{file_code::{FileCode, FileCodeImpl}, function::FunctionImpl};
-use shared::token::token::TokenImpl;
-use shared::token::token_type::TokenType;
 
 use crate::variable_checker::check_variables;
 

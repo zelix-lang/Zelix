@@ -117,6 +117,9 @@ name = "c_parser"
 version = "0.0.0"
 dependencies = [
  "clang",
+ "code",
+ "lexer",
+ "logger",
 ]
 
 [[package]]
@@ -131,12 +134,14 @@ version = "0.0.0"
 dependencies = [
  "c_parser",
  "clang",
+ "code",
  "extractor",
  "fancy-regex",
  "lazy_static",
  "lexer",
  "logger",
  "shared",
+ "util",
 ]
 
 [[package]]
@@ -204,14 +209,24 @@ name = "cli"
 version = "0.0.0"
 dependencies = [
  "clap",
+ "code",
  "core",
  "emojis",
  "fancy-regex",
  "lazy_static",
  "lexer",
+ "logger",
  "serde",
  "serde_yml",
  "shared",
+ "util",
+]
+
+[[package]]
+name = "code"
+version = "0.0.0"
+dependencies = [
+ "util",
 ]
 
 [[package]]
@@ -226,6 +241,7 @@ version = "0.0.0"
 dependencies = [
  "c_parser",
  "checker",
+ "code",
  "extractor",
  "fancy-regex",
  "lazy_static",
@@ -284,9 +300,11 @@ name = "extractor"
 version = "0.0.0"
 dependencies = [
  "c_parser",
+ "code",
  "lexer",
  "logger",
  "shared",
+ "util",
 ]
 
 [[package]]
@@ -385,10 +403,11 @@ checksum = "bbd2bcb4c963f2ddae06a2efc7e9f3591312473c50c6685e1f298068316e66fe"
 name = "lexer"
 version = "0.0.0"
 dependencies = [
+ "code",
  "fancy-regex",
  "lazy_static",
  "logger",
- "shared",
+ "util",
 ]
 
 [[package]]
@@ -602,10 +621,12 @@ version = "0.0.0"
 dependencies = [
  "c_parser",
  "clang",
+ "code",
  "fancy-regex",
  "inquire",
  "lazy_static",
  "logger",
+ "util",
 ]
 
 [[package]]
@@ -700,6 +721,15 @@ name = "utf8parse"
 version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "06abde3611657adf66d383f00b093d7faecc7fa57071cce2578660c9f1010821"
+
+[[package]]
+name = "util"
+version = "0.0.0"
+dependencies = [
+ "fancy-regex",
+ "lazy_static",
+ "logger",
+]
 
 [[package]]
 name = "version_check"

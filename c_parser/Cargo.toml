@@ -4,4 +4,6 @@ edition = "2021"
 
 [dependencies]
 clang = "2.0.0"
-shared = { path = "../shared" }
+lexer = { path = "../lexer" }
+code = { path = "../code" }
+logger = { path = "../logger" }

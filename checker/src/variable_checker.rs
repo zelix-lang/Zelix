@@ -1,12 +1,14 @@
 use std::{collections::HashMap, process::exit};
 
-use c_parser::{class::ClassImpl, header::Header, types::parser::parse_parametrized_type};
+use c_parser::{class::ClassImpl, header::Header, types::{parser::parse_parametrized_type, ParamTypeImpl}};
+use code::{token::{Token, TokenImpl}, token_type::TokenType};
 use extractor::token_splitter::extract_tokens_before;
 use fancy_regex::Regex;
 use lazy_static::lazy_static;
 use lexer::data_types::is_data_type;
-use shared::{code::{function::Function, value_name::value_name::VALUE_NAME_REGEX}, result::try_unwrap, token::{token::{Token, TokenImpl}, token_type::TokenType}};
+use shared::code::{function::Function, value_name::value_name::VALUE_NAME_REGEX};
 use logger::{Logger, LoggerImpl};
+use util::result::try_unwrap;
 
 use crate::{header_checker::{check_header_value_definition, find_imported_classes}, scope_checker::throw_value_already_defined};
 

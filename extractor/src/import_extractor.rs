@@ -1,8 +1,9 @@
 use std::{path::PathBuf, process::exit};
 
+use code::{token::{Token, TokenImpl}, token_type::TokenType};
 use logger::{Logger, LoggerImpl};
-use shared::{path::retrieve_path, token::{token::{Token, TokenImpl}, token_type::TokenType}};
 use shared::code::import::{Import, Importable};
+use util::path::retrieve_path;
 use super::{sentence_extractor::extract_sentence, standard_locator::locate_standard};
 
 fn throw_invalid_import(details: &[&str]) {

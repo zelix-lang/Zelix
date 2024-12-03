@@ -10,3 +10,4 @@ c_parser = { path = "../c_parser" }
 extractor = { path = "../extractor" }
 fancy-regex = "0.14.0"
 lazy_static = "1.5.0"
+code = { path = "../code" }

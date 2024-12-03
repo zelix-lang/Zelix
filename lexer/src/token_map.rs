@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use shared::token::token_type::TokenType;
+use code::token_type::TokenType;
 
 lazy_static::lazy_static! {
     // A vector of punctuation characters to be used in tokenization or parsing

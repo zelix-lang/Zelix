@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use shared::logger::{Logger, LoggerImpl};
+use logger::{Logger, LoggerImpl};
 
 use super::compile::compile_command;
 

@@ -1,5 +1,5 @@
+use code::{token::{Token, TokenImpl}, token_type::TokenType};
 use lexer::data_types::is_data_type;
-use shared::token::{token::{Token, TokenImpl}, token_type::TokenType};
 
 use extractor::{sentence_extractor::extract_sentence, token_splitter::extract_tokens_before};
 

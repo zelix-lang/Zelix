@@ -1,7 +1,7 @@
 use std::process::exit;
 
+use code::{token::{Token, TokenImpl}, token_type::TokenType};
 use logger::{Logger, LoggerImpl};
-use shared::token::{token::{Token, TokenImpl}, token_type::TokenType};
 
 /// Splits tokens into different vectors using the provided identifier
 pub fn split_tokens(

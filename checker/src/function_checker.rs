@@ -1,9 +1,10 @@
 use std::{collections::HashMap, path::PathBuf, process::exit};
 
+use code::{token::TokenImpl, token_type::TokenType};
 use logger::{Logger, LoggerImpl};
-use shared::{path::discard_cwd, token::{token::TokenImpl, token_type::TokenType}};
 
 use shared::code::{function::{Function, FunctionImpl}, value_name::value_name::VALUE_NAME_REGEX};
+use util::path::discard_cwd;
 
 pub fn analyze_functions(
     // Pass by reference to avoid moving the value or cloning it 

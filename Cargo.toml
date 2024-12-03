@@ -12,7 +12,9 @@ members = [
     "checker",
     "c_parser",
     "extractor",
-    "logger"
+    "logger",
+    "code",
+    "util"
 ]
 
 [dependencies]

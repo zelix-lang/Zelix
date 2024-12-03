@@ -1,11 +1,9 @@
 use std::{fs::read_to_string, path::PathBuf, process::exit};
 
+use code::token::Token;
 use lexer::{Lexer, LexerImpl};
-use shared::{
-    logger::{Logger, LoggerImpl},
-    path::retrieve_path,
-    result::try_unwrap, token::token::Token,
-};
+use logger::{Logger, LoggerImpl};
+use util::{path::retrieve_path, result::try_unwrap};
 
 use std::{
     fs::{exists, metadata},

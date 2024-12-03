@@ -1,8 +1,9 @@
-use shared::code::import::{Import, Importable};
+use code::token::TokenImpl;
+use logger::{Logger, LoggerImpl};
+use shared::{code::import::{Import, Importable}, message::print_header};
+use util::{path::retrieve_path, result::try_unwrap};
 use core::transpiler::transpile::transpile;
 use std::{env::current_dir, fs::{remove_dir_all, remove_file}, os::unix::process::ExitStatusExt, path::PathBuf, process::{exit, ExitStatus}};
-
-use shared::{logger::{Logger, LoggerImpl}, message::print_header, path::retrieve_path, result::try_unwrap, token::token::TokenImpl};
 
 use crate::command::lexe_base::lexe_base;
 

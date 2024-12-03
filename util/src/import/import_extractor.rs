@@ -12,7 +12,7 @@ lazy_static! {
 }
 
 pub fn extract_import_matches(input: String) -> Vec<String> {
-    let matches: Vec<_> = IMPORT_REGEX.find_iter(input.as_str()).collect();
+    let matches : Vec<_> = IMPORT_REGEX.find_iter(input.as_str()).collect();
 
     matches.iter()
         .map(|m|

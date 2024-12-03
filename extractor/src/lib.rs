@@ -5,11 +5,13 @@ mod standard_locator;
 
 use std::{path::PathBuf, process::exit};
 
+use code::token::{Token, TokenImpl};
+use code::token_type::TokenType;
 use import_extractor::extract_import;
 use lexer::data_types::is_data_type;
 use c_parser::{create_c_instance, create_index};
 use logger::{Logger, LoggerImpl};
-use shared::{code::import::{Import, Importable}, token::{token::{Token, TokenImpl}, token_type::TokenType}};
+use shared::code::import::{Import, Importable};
 
 use shared::code::{file_code::{FileCode, FileCodeImpl}, function::{Function, FunctionImpl}, param::{Param, ParamImpl}};
 use standard_locator::locate_standard;

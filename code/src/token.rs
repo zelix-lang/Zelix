@@ -1,4 +1,4 @@
-use crate::path::discard_cwd;
+use util::path::discard_cwd;
 
 use super::token_type::TokenType;
 

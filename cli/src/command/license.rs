@@ -1,4 +1,4 @@
-use shared::logger::{Logger, LoggerImpl};
+use logger::{Logger, LoggerImpl};
 
 pub fn license_command(show_full: Option<bool>) {
 

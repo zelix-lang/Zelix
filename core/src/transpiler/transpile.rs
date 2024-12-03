@@ -2,8 +2,7 @@ use std::fs::File;
 use std::io::Write;
 use std::path::PathBuf;
 
-use shared::token::token::Token;
-
+use code::token::Token;
 use extractor::extract_parts;
 use shared::code::file_code::FileCodeImpl;
 use shared::code::import::Import;
