@@ -1,7 +1,7 @@
 pub mod parser;
 
 use parser::parse_parametrized_type;
-use code::token::Token;
+use super::token::Token;
 
 /// Stores data types that have parameters
 /// For example: Result<str>

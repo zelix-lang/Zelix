@@ -1,7 +1,7 @@
 use std::{collections::HashMap, process::exit};
 
-use c_parser::{class::ClassImpl, header::Header, types::{parser::parse_parametrized_type, ParamTypeImpl}};
-use code::{token::{Token, TokenImpl}, token_type::TokenType};
+use c_parser::{class::ClassImpl, header::Header};
+use code::{token::{Token, TokenImpl}, token_type::TokenType, types::{parser::parse_parametrized_type, ParamTypeImpl}};
 use extractor::token_splitter::extract_tokens_before;
 use fancy_regex::Regex;
 use lazy_static::lazy_static;

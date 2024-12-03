@@ -1,7 +1,7 @@
 use std::process::exit;
-
 use logger::{Logger, LoggerImpl};
-use code::{token::{Token, TokenImpl}, token_type::TokenType};
+
+use crate::{token::{Token, TokenImpl}, token_type::TokenType};
 
 use super::ParamType;
 

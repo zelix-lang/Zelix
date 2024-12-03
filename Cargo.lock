@@ -226,6 +226,7 @@ dependencies = [
 name = "code"
 version = "0.0.0"
 dependencies = [
+ "logger",
  "util",
 ]
 
