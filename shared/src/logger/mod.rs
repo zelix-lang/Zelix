@@ -1,5 +1,4 @@
 use fancy_regex::Regex;
-use logger::add_prefix_to_text;
 
 use crate::ansi::colors::{color_map, RESET};
 
