@@ -246,7 +246,25 @@ pub fn extract_parts(tokens: &Vec<Token>, source: PathBuf) -> FileCode {
             expecting_params = false;
             expecting_param_type_splitter = true;
         } else if expecting_arrow {
-            if token_type != TokenType::Arrow {
+            if token_type == TokenType::OpenCurly {
+                // Implicitly add a void return type
+                expecting_arrow = false;
+                expecting_return_type = false;
+                expecting_open_curly = false;
+                nested_operations = 1;
+
+                last_function_return_type = vec![
+                    Token::new(
+                        TokenType::Nothing,
+                        "nothing".to_string(),
+                        token.get_file(),
+                        token.get_line(),
+                        token.get_column()
+                    )
+                ];
+
+                continue;
+            } else if token_type != TokenType::Arrow {
                 Logger::err(
                     "Invalid function declaration",
                     &["Expecting an arrow after the function parameters"],
@@ -266,7 +284,7 @@ pub fn extract_parts(tokens: &Vec<Token>, source: PathBuf) -> FileCode {
                 &tokens[(n)..].to_vec(),
                 &TokenType::OpenCurly
             );
-            
+
             skip_to_index = n + return_type.len();
             last_function_return_type = return_type.clone();
             expecting_return_type = false;
