@@ -6,6 +6,8 @@ pub mod wrapper;
 pub mod class;
 pub mod function;
 pub mod header;
+pub mod types;
+
 use clang::{Clang, Index, TranslationUnit};
 
 pub fn create_c_instance() -> Clang {
