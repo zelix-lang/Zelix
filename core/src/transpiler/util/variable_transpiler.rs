@@ -1,3 +1,4 @@
+use lexer::data_types::is_data_type;
 use shared::token::{token::{Token, TokenImpl}, token_type::TokenType};
 
 use extractor::{sentence_extractor::extract_sentence, token_splitter::extract_tokens_before};
@@ -36,6 +37,11 @@ pub fn transpile_variable(tokens: &Vec<Token>, n: usize, transpiled_code: &mut S
 
     for token in var_value {
         let token_type = token.get_token_type();
+        
+        if is_data_type(token_type.clone()) {
+            transpile_type(&vec![token.clone()], transpiled_code);
+            continue;
+        }
         
         let is_string = token_type == TokenType::StringLiteral;
 

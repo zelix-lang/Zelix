@@ -1,13 +1,13 @@
 use std::{collections::HashMap, process::exit};
 
-use c_parser::header::Header;
+use c_parser::{class::ClassImpl, header::Header};
 use extractor::token_splitter::extract_tokens_before;
 use fancy_regex::Regex;
 use lazy_static::lazy_static;
 use lexer::data_types::is_data_type;
 use shared::{code::{function::Function, value_name::value_name::VALUE_NAME_REGEX}, logger::{Logger, LoggerImpl}, result::try_unwrap, token::{token::{Token, TokenImpl}, token_type::TokenType}};
 
-use crate::{header_checker::{check_header_value_definition, find_imported_classes}, scope_checker::throw_value_already_defined, types::parser::parse_parametrized_type};
+use crate::{header_checker::{check_header_value_definition, find_imported_classes}, scope_checker::throw_value_already_defined, types::{parser::parse_parametrized_type, ParamTypeImpl}};
 
 lazy_static! {
     // Used to print warnings for cammel case variable names
@@ -141,15 +141,18 @@ pub fn check_variables(
         );
     }
 
-    // Check if the type is a data type or an imported object
-    // TODO!
-    /*if !is_data_type(var_type.get_token_type()) {
+    let generic_params = var_type_param_type.get_params();
+
+    let raw_tokens = var_type_param_type.get_raw_tokens();
+    let var_type = &raw_tokens[0];
+
+    if !is_data_type(var_type.get_token_type()) {
         // Check if the variable name is in cammel case
         let class_optional = find_imported_classes(
             &var_type.get_value(),
-            imports
+             imports
         );
-
+    
         if class_optional.is_none() {
             Logger::err(
                 "Invalid data type",
@@ -160,11 +163,31 @@ pub fn check_variables(
                     var_type.build_trace().as_str()
                 ]
             );
-
+    
             exit(1);
         }
 
-        return;
-    }*/
+        let generic_count = class_optional.unwrap().get_generic_count();
+        let provided_count = generic_params.len();
+
+        if generic_count != provided_count {
+            Logger::err(
+                "Mismatched generic parameters",
+                &[
+                    format!(
+                        "The data type takes {} parameters, but {} were provided",
+                        generic_count,
+                        provided_count
+                    ).as_str()
+                ],
+                &[
+                    var_type.build_trace().as_str()
+                ]
+            );
+    
+            exit(1);
+        }
+
+    }
         
 }

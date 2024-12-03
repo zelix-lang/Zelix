@@ -37,6 +37,7 @@ pub fn parse_parametrized_type(raw: &Vec<Token>) -> ParamType {
         return ParamType {
             name: raw[0].get_value(),
             params: Vec::new(),
+            raw_tokens: raw.to_vec()
         };
     }
 
@@ -82,5 +83,5 @@ pub fn parse_parametrized_type(raw: &Vec<Token>) -> ParamType {
         params.push(parse_parametrized_type(&raw[start..raw.len() - 1].to_vec()));
     }
 
-    ParamType { name, params }
+    ParamType { name, params, raw_tokens: raw.to_vec() }
 }

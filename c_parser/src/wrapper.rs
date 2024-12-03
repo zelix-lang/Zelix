@@ -58,8 +58,20 @@ pub fn wrap_header(ast: Vec<Entity>) -> Header {
                 process_function(&entity)
             );
         } else if kind == EntityKind::ClassTemplate || kind == EntityKind::ClassDecl {
+            // Find generic types
+            let template_types: Vec<_> = entity
+                .get_children()
+                .iter()
+                .filter_map(|child| {
+                    if child.get_kind() == EntityKind::TemplateTypeParameter {
+                        child.get_name()
+                    } else {
+                        None
+                    }
+                })
+                .collect();
             // Wrap the class
-            let class = Class::new();
+            let class = Class::new(template_types.len());
             // Add the class to the header
             result.add_class(
                 entity.get_name().unwrap(),

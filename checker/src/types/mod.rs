@@ -12,14 +12,16 @@ use shared::token::token::Token;
 #[derive(Debug)]
 pub struct ParamType {
     // From Result<str>, the structure would be:
-    pub name: String, // Result
-    pub params: Vec<ParamType> // [str]
+    name: String, // Result
+    params: Vec<ParamType>, // [str],
+    raw_tokens: Vec<Token> // The raw tokens that make up this type
 }
 
 pub trait ParamTypeImpl {
     fn new(raw: &Vec<Token>) -> Self;
     fn get_name(&self) -> &String;
     fn get_params(&self) -> &Vec<ParamType>;
+    fn get_raw_tokens(&self) -> &Vec<Token>;
 }
 
 impl ParamTypeImpl for ParamType {
@@ -33,5 +35,9 @@ impl ParamTypeImpl for ParamType {
 
     fn get_params(&self) -> &Vec<ParamType> {
         &self.params
+    }
+
+    fn get_raw_tokens(&self) -> &Vec<Token> {
+        &self.raw_tokens
     }
 }
