@@ -2,8 +2,7 @@ use std::{collections::HashMap, path::PathBuf, process::exit};
 
 use clang::Index;
 use c_parser::{header::Header, parse_header_file, wrapper::wrap_header};
-
-use crate::logger::{Logger, LoggerImpl};
+use logger::{Logger, LoggerImpl};
 
 use super::{function::{Function, FunctionImpl}, header_reader::read_ast, import::{Import, Importable}};
 

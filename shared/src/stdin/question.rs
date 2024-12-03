@@ -1,7 +1,7 @@
 use fancy_regex::Regex;
 use inquire::Text;
 
-use crate::logger::{Logger, LoggerImpl};
+use logger::{Logger, LoggerImpl};
 
 pub fn question(prompt: &str, default_value: &str, rule_regex: Regex) -> String {
     loop {

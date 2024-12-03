@@ -1,6 +1,6 @@
 use std::process::exit;
 
-use crate::logger::{Logger, LoggerImpl};
+use logger::{Logger, LoggerImpl};
 
 pub fn try_unwrap<T, E>(result: Result<T, E>, error_message: &str) -> T
 where E: std::fmt::Debug, {
