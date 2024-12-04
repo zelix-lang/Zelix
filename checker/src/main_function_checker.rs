@@ -32,6 +32,23 @@ pub fn check_main_function(functions: &HashMap<String, HashMap<String, Function>
     }
 
     let main_function = main_function_optional.unwrap();
+
+    // Main functions should be public in order for it to be transpiled
+    // as a function and not an embedded lambda function
+    if !main_function.is_public() {
+        Logger::err(
+            "Main function must be public",
+            &[
+                "The main function must be public"
+            ],
+            &[
+                main_function.get_trace().as_str()
+            ]
+        );
+
+        exit(1);
+    }
+    
     if main_function.get_return_type().get(0).unwrap().get_token_type() != TokenType::Nothing {
         Logger::err(
             "Invalid return type for main function",
