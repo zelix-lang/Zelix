@@ -24,6 +24,19 @@ pub fn transpile(
 ) -> Vec<Import> {
 
     let mut transpiled_code = String::new();
+
+    // Transpile bindings as directives
+    for (binding, value) in bindings {
+        transpiled_code.push_str("#define ");
+        transpiled_code.push_str(&binding);
+        transpiled_code.push_str(" ");
+        
+        // Bindings are always strings only
+        transpiled_code.push_str("\"");
+        transpiled_code.push_str(&value);
+        transpiled_code.push_str("\"");
+        transpiled_code.push_str("\n");
+    }
     let file_code = extract_parts(&tokens, source);
 
     // Borrow to avoid moving the value or cloning it
