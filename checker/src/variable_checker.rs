@@ -6,7 +6,7 @@ use extractor::token_splitter::extract_tokens_before;
 use fancy_regex::Regex;
 use lazy_static::lazy_static;
 use lexer::data_types::is_data_type;
-use shared::code::{function::Function, value_name::value_name::VALUE_NAME_REGEX};
+use shared::code::{function::Function, value_name::value_name::{CPP_KEYWORDS, VALUE_NAME_REGEX}};
 use logger::{Logger, LoggerImpl};
 use util::result::try_unwrap;
 
@@ -89,6 +89,7 @@ pub fn check_variables(
             VALUE_NAME_REGEX.is_match(var_name.get_value().as_str()),
             "Failed to validate a variable name"
         )
+        || CPP_KEYWORDS.contains(&var_name.get_value().as_str())
     {
         Logger::err(
             "Invalid variable name",

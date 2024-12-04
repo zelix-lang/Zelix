@@ -1,7 +1,7 @@
 use std::{collections::{HashMap, HashSet}, process::exit};
 use logger::{Logger, LoggerImpl};
 
-use shared::code::{function::{Function, FunctionImpl}, value_name::value_name::VALUE_NAME_REGEX};
+use shared::code::{function::{Function, FunctionImpl}, value_name::value_name::{CPP_KEYWORDS, VALUE_NAME_REGEX}};
 
 pub fn analyze_functions(
     // Pass by reference to avoid moving the value or cloning it 
@@ -15,7 +15,10 @@ pub fn analyze_functions(
     // so we need to check for duplicated definitions across all files
     for (_, file_functions) in functions.iter() {
         for (name, function) in file_functions.iter() {
-            if !VALUE_NAME_REGEX.is_match(name.as_str()).unwrap_or(false) {
+            if 
+                !VALUE_NAME_REGEX.is_match(name.as_str()).unwrap_or(false)
+                || CPP_KEYWORDS.contains(&name.as_str())
+            {
                 Logger::err(
                     format!("Invalid function name: {}", name).as_str(),
                     &[
