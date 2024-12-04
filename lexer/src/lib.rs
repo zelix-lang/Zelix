@@ -47,7 +47,7 @@ impl LexerImpl for Lexer {
     fn tokenize(
         &mut self,
         contents: &mut String,
-        file_path: &PathBuf
+        file_path: &PathBuf,
     ) -> Vec<Token> {
         let mut result: Vec<Token> = self.tokenize_single_file(
             contents,

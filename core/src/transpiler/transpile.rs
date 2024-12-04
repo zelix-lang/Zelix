@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::fs::File;
 use std::io::Write;
 use std::path::PathBuf;
@@ -15,7 +16,12 @@ use super::util::import_transpiler::transpile_imports;
 /// This can be later compiled with G++, Clang++ or GCC
 
 // Returns a vector of imports that are needed for later compilation
-pub fn transpile(tokens: Vec<Token>, out_dir: PathBuf, source: PathBuf) -> Vec<Import> {
+pub fn transpile(
+    tokens: Vec<Token>,
+    out_dir: PathBuf,
+    source: PathBuf,
+    bindings: HashMap<String, String>
+) -> Vec<Import> {
 
     let mut transpiled_code = String::new();
     let file_code = extract_parts(&tokens, source);

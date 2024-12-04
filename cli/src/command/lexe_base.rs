@@ -1,4 +1,4 @@
-use std::{fs::read_to_string, path::PathBuf, process::exit};
+use std::{collections::HashMap, fs::read_to_string, path::PathBuf, process::exit};
 
 use code::token::Token;
 use lexer::{Lexer, LexerImpl};
@@ -10,9 +10,9 @@ use std::{
     env::current_dir
 };
 
-use crate::structs::surf_config_file::SurfConfigFile;
+use crate::{processor::process_bindings, structs::surf_config_file::SurfConfigFile};
 
-pub fn lexe_base(path: Option<PathBuf>) -> Vec<Token> {
+pub fn lexe_base(path: Option<PathBuf>) -> (Vec<Token>, HashMap<String, String>) {
     let final_path =
         retrieve_path(
             path.unwrap_or(
@@ -77,7 +77,7 @@ pub fn lexe_base(path: Option<PathBuf>) -> Vec<Token> {
         "Failed to parse the Surf.yml file",
     );
 
-    let main_file = final_path.join(config_file.main_file);
+    let main_file = final_path.join(&config_file.main_file);
 
     if !main_file.exists() {
         Logger::err(
@@ -96,5 +96,10 @@ pub fn lexe_base(path: Option<PathBuf>) -> Vec<Token> {
         "Failed to read the main file",
     );
 
-    Lexer::new().tokenize(&mut main_file_content, &main_file)
+    let bindings = process_bindings(&config_file);
+    
+    (
+        Lexer::new().tokenize(&mut main_file_content, &main_file),
+        bindings
+    )
 }

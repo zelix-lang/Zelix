@@ -35,7 +35,7 @@ pub fn compile_command(path: Option<PathBuf>) -> PathBuf {
     print_header();
     println!();
 
-    let tokens = lexe_base(path.clone());
+    let (tokens, bindings) = lexe_base(path.clone());
     let cwd = try_unwrap(
         current_dir(),
         "Failed to get current working directory",
@@ -82,7 +82,8 @@ pub fn compile_command(path: Option<PathBuf>) -> PathBuf {
     let imports: Vec<Import> = transpile(
         tokens,
         out_dir.clone(),
-        source
+        source,
+        bindings
     );
 
 
