@@ -4,8 +4,6 @@ use clang::Index;
 use c_parser::{header::Header, parse_header_file, wrapper::wrap_header};
 use logger::{Logger, LoggerImpl};
 
-use crate::random::create_random_prefix;
-
 use super::{function::{Function, FunctionImpl}, header_reader::read_ast, import::{Import, Importable}};
 
 pub struct FileCode {
@@ -13,10 +11,7 @@ pub struct FileCode {
     functions: HashMap<String, HashMap<String, Function>>,
     imports: Vec<Header>,
     seen_imports: Vec<Import>,
-    source: PathBuf,
-    // A random string used for prefixing
-    // functions, which avoids multiple redefinitions
-    prefix: String
+    source: PathBuf
     
 }
 
@@ -31,7 +26,6 @@ pub trait FileCodeImpl {
     fn get_imports(&self) -> &Vec<Header>;
     fn get_seen_imports(&self) -> &Vec<Import>;
     fn get_source(&self) -> &PathBuf;
-    fn get_prefix(&self) -> &String;
     
 }
 
@@ -42,8 +36,7 @@ impl FileCodeImpl for FileCode {
             functions: HashMap::new(),
             imports: Vec::new(),
             seen_imports: Vec::new(),
-            source,
-            prefix: create_random_prefix()
+            source
         }
     }
 
@@ -110,10 +103,6 @@ impl FileCodeImpl for FileCode {
 
     fn get_source(&self) -> &PathBuf {
         &self.source
-    }
-
-    fn get_prefix(&self) -> &String {
-        &self.prefix
     }
     
 }

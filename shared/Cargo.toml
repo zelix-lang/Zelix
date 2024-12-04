@@ -11,4 +11,3 @@ c_parser = { path = "../c_parser" }
 logger = { path = "../logger" }
 code = { path = "../code" }
 util = { path = "../util" }
-rand = "0.8.5"
