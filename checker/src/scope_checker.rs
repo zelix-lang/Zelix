@@ -26,8 +26,9 @@ pub fn analyze_scope(source: &FileCode) {
     let functions = source.get_functions();
     let headers = source.get_imports();
 
-    for (_, function) in functions {
-        let body = function.get_body();
+    for (_, file_functions) in functions {
+        for (_, function) in file_functions {
+            let body = function.get_body();
 
         for n in 0..body.len() {
             let token = &body[n];
@@ -39,7 +40,7 @@ pub fn analyze_scope(source: &FileCode) {
                     check_variables(
                         body,
                         &(n + 1),
-                        &functions,
+                        &file_functions,
                         &headers
                     );
                 }
@@ -47,6 +48,7 @@ pub fn analyze_scope(source: &FileCode) {
                 // No need to check in any other case
                 _ => {}
             }
+        }
         }
     }
 }

@@ -416,6 +416,7 @@ pub fn extract_parts(tokens: &Vec<Token>, source: PathBuf) -> FileCode {
 
                     result.add_function(
                         last_function_name.clone(),
+                        token.get_file(),
                         Function::new(
                             last_function_params.clone(),
                             last_function_body.clone(),

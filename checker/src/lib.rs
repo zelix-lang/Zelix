@@ -12,7 +12,7 @@ use shared::code::file_code::{FileCode, FileCodeImpl};
 
 pub fn analyze(code: &FileCode) {
 
-    analyze_functions(code.get_functions(), code.get_source());
+    analyze_functions(code.get_functions());
     check_main_function(code.get_functions());
     analyze_scope(code);
 
