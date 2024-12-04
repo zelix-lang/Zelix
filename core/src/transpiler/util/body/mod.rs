@@ -1,6 +1,8 @@
+mod variable_transpiler;
+
 use code::{token::{Token, TokenImpl}, token_type::TokenType};
 
-use super::variable_transpiler::transpile_variable;
+use variable_transpiler::transpile_variable;
 
 pub fn transpile_body(tokens: &Vec<Token>, transpiled_code: &mut String) {
     // Used to skip tokens

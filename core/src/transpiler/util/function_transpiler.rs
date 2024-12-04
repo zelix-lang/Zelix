@@ -1,6 +1,6 @@
 use shared::code::{file_code::{FileCode, FileCodeImpl}, function::{Function, FunctionImpl}, param::ParamImpl};
 
-use super::{body_transpiler::transpile_body, type_transpiler::transpile_type};
+use super::{body::transpile_body, type_transpiler::transpile_type};
 
 fn transpile_arguments(function: &Function, transpiled_code: &mut String) {
     for argument in function.get_arguments() {
@@ -62,7 +62,7 @@ pub fn transpile_functions(file_code: &FileCode, transpiled_code: &mut String) {
 
                 // Make the lambda isolated from the outer scope
                 // by adding "[]" instead of "[&]"
-                transpiled_code.push_str(" = [](auto ");
+                transpiled_code.push_str(" = [](");
                 transpile_arguments(private_function, transpiled_code);
                 transpiled_code.push_str(") {\n");
                 transpile_body(private_function.get_body(), transpiled_code);

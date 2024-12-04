@@ -3,7 +3,7 @@ use lexer::data_types::is_data_type;
 
 use extractor::{sentence_extractor::extract_sentence, token_splitter::extract_tokens_before};
 
-use super::type_transpiler::transpile_type;
+use crate::transpiler::util::type_transpiler::transpile_type;
 
 pub fn transpile_variable(tokens: &Vec<Token>, n: usize, transpiled_code: &mut String) -> usize {
     let sentence: Vec<Token> = extract_sentence(
