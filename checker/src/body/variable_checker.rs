@@ -22,7 +22,7 @@ lazy_static! {
 }
 
 fn check_variable_name(var_name: &String, trace: &String) {
-    if try_unwrap(
+    if !try_unwrap(
         CAMMEL_CASE_REGEX.is_match(var_name),
         "Failed to validate a variable name"
     ) {
