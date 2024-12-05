@@ -1,6 +1,7 @@
 pub mod import_extractor;
 pub mod sentence_extractor;
 pub mod token_splitter;
+pub mod return_extractor;
 mod standard_locator;
 
 use std::{path::PathBuf, process::exit};

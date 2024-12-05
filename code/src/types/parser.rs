@@ -38,7 +38,8 @@ pub fn parse_parametrized_type(raw: &Vec<Token>) -> ParamType {
         return ParamType {
             name: raw[0].get_value(),
             params: Vec::new(),
-            raw_tokens: raw.to_vec()
+            raw_tokens: raw.to_vec(),
+            is_reference: false
         };
     }
 
@@ -51,14 +52,23 @@ pub fn parse_parametrized_type(raw: &Vec<Token>) -> ParamType {
         );
         exit(1);
     }
+    
+    let is_reference = raw[0].get_token_type() == TokenType::Ampersand;
+    let mut raw_clone = raw.clone();
+
+    if is_reference {
+        raw_clone.remove(0);
+    }
 
     // Validate required token types in one traversal
-    assert_token_type(raw, 0, &TokenType::Unknown);
-    assert_token_type(raw, 1, &TokenType::LessThan);
-    assert_token_type(raw, raw.len() - 1, &TokenType::GreaterThan);
+    assert_token_type(&raw_clone, 0, &TokenType::Unknown);
+    assert_token_type(&raw_clone, 1, &TokenType::LessThan);
+    assert_token_type(&raw_clone, &raw_clone.len() - 1, &TokenType::GreaterThan);
+
+    // See if the type is a reference
 
     // Initialize parameters and extract inner tokens
-    let name = raw[0].get_value();
+    let name = &raw_clone[0].get_value();
     let mut params = Vec::new();
 
     // One-pass parsing for inner tokens
@@ -66,13 +76,13 @@ pub fn parse_parametrized_type(raw: &Vec<Token>) -> ParamType {
     // given a large enough input
     let mut depth = 0;
     let mut start = 2; // Start after '<'
-    for (i, token) in raw.iter().enumerate().skip(2).take(raw.len() - 3) {
+    for (i, token) in raw_clone.iter().enumerate().skip(2).take(&raw_clone.len() - 3) {
         match token.get_token_type() {
             TokenType::LessThan => depth += 1,
             TokenType::GreaterThan => depth -= 1,
             TokenType::Comma if depth == 0 => {
                 // Push parameter when depth is 0
-                params.push(parse_parametrized_type(&raw[start..i].to_vec()));
+                params.push(parse_parametrized_type(&raw_clone[start..i].to_vec()));
                 start = i + 1;
             }
             _ => {}
@@ -80,9 +90,15 @@ pub fn parse_parametrized_type(raw: &Vec<Token>) -> ParamType {
     }
 
     // Add the last parameter
-    if start < raw.len() - 1 {
-        params.push(parse_parametrized_type(&raw[start..raw.len() - 1].to_vec()));
+    if start < raw_clone.len() - 1 {
+        params.push(parse_parametrized_type(&raw_clone[start..&raw_clone.len() - 1].to_vec()));
     }
 
-    ParamType { name, params, raw_tokens: raw.to_vec() }
+    // Add the ampersand at the end if it's a reference
+    // this is done to match C++ syntax
+    if is_reference {
+        raw_clone.push(raw[0].clone());
+    }
+
+    ParamType { name: name.clone(), params, raw_tokens: raw_clone.to_vec(), is_reference }
 }

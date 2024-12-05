@@ -10,11 +10,12 @@ use super::token::Token;
 /// of the static analyzer, to ensure we don't
 /// transpile wrong code
 /// ------------------------------------------
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct ParamType {
     // From Result<str>, the structure would be:
     name: String, // Result
     params: Vec<ParamType>, // [str],
+    is_reference: bool, // If the type is a reference (e.g. &str)
     raw_tokens: Vec<Token> // The raw tokens that make up this type
 }
 
@@ -23,6 +24,7 @@ pub trait ParamTypeImpl {
     fn get_name(&self) -> &String;
     fn get_params(&self) -> &Vec<ParamType>;
     fn get_raw_tokens(&self) -> &Vec<Token>;
+    fn is_reference(&self) -> bool;
 }
 
 impl ParamTypeImpl for ParamType {
@@ -41,4 +43,9 @@ impl ParamTypeImpl for ParamType {
     fn get_raw_tokens(&self) -> &Vec<Token> {
         &self.raw_tokens
     }
+
+    fn is_reference(&self) -> bool {
+        self.is_reference
+    }
+    
 }

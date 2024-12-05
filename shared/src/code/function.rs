@@ -1,4 +1,4 @@
-use code::token::Token;
+use code::{token::Token, types::{parser::parse_parametrized_type, ParamType}};
 
 use super::param::Param;
 
@@ -6,7 +6,7 @@ use super::param::Param;
 pub struct Function {
     arguments: Vec<Param>,
     body: Vec<Token>,
-    return_type: Vec<Token>,
+    return_type: ParamType,
     trace: String,
     public: bool
 }
@@ -14,8 +14,7 @@ pub struct Function {
 pub trait FunctionImpl {
 
     fn new(
-        arguments: 
-        Vec<Param>, 
+        arguments: Vec<Param>, 
         body: Vec<Token>, 
         return_type: Vec<Token>, 
         trace: String,
@@ -24,7 +23,7 @@ pub trait FunctionImpl {
 
     fn get_arguments(&self) -> &Vec<Param>;
     fn get_body(&self) -> &Vec<Token>;
-    fn get_return_type(&self) -> &Vec<Token>;
+    fn get_return_type(&self) -> &ParamType;
     fn get_trace(&self) -> &String;
     fn is_public(&self) -> bool;
 
@@ -43,7 +42,7 @@ impl FunctionImpl for Function {
         Function {
             arguments,
             body,
-            return_type,
+            return_type: parse_parametrized_type(&return_type),
             trace,
             public
         }
@@ -57,7 +56,7 @@ impl FunctionImpl for Function {
         &self.body
     }
 
-    fn get_return_type(&self) -> &Vec<Token> {
+    fn get_return_type(&self) -> &ParamType {
         &self.return_type
     }
 

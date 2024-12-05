@@ -1,6 +1,6 @@
 use std::{collections::HashMap, process::exit};
 
-use code::{token::TokenImpl, token_type::TokenType};
+use code::{token::TokenImpl, token_type::TokenType, types::ParamTypeImpl};
 use logger::{Logger, LoggerImpl};
 
 use shared::code::function::{Function, FunctionImpl};
@@ -49,7 +49,7 @@ pub fn check_main_function(functions: &HashMap<String, HashMap<String, Function>
         exit(1);
     }
     
-    if main_function.get_return_type().get(0).unwrap().get_token_type() != TokenType::Nothing {
+    if main_function.get_return_type().get_raw_tokens().get(0).unwrap().get_token_type() != TokenType::Nothing {
         Logger::err(
             "Invalid return type for main function",
             &[

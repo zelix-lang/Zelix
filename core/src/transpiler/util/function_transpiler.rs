@@ -1,3 +1,4 @@
+use code::types::ParamTypeImpl;
 use shared::code::{file_code::{FileCode, FileCodeImpl}, function::{Function, FunctionImpl}, param::ParamImpl};
 
 use super::{body::transpile_body, type_transpiler::transpile_type};
@@ -39,7 +40,7 @@ pub fn transpile_functions(file_code: &FileCode, transpiled_code: &mut String) {
             if is_main {
                 transpiled_code.push_str("int ");
             } else {
-                transpile_type(function.get_return_type(), transpiled_code);
+                transpile_type(function.get_return_type().get_raw_tokens(), transpiled_code);
             }
 
             transpiled_code.push_str(function_name);
