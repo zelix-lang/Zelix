@@ -18,11 +18,11 @@ lazy_static! {
     // Used to print warnings for cammel case variable names
     // Surf encourages snake case variable names!
     pub static ref CAMMEL_CASE_REGEX: Regex = 
-        Regex::new(r"^[a-zA-Z][a-zA-Z0-9]*$").unwrap();
+        Regex::new(r"^[a-zA-Z][a-zA-Z0-9]{1,}$").unwrap();
 }
 
 fn check_variable_name(var_name: &String, trace: &String) {
-    if !try_unwrap(
+    if try_unwrap(
         CAMMEL_CASE_REGEX.is_match(var_name),
         "Failed to validate a variable name"
     ) {
