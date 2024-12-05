@@ -41,7 +41,7 @@ fn check_variable_name(var_name: &String, trace: &String) {
 
 pub fn check_variables(
     tokens: &Vec<Token>,
-    start: &usize,
+    start: usize,
     // Used to check if a value is already defined
     functions: &HashMap<String, Function>,
     imports: &Vec<Header>
@@ -52,7 +52,7 @@ pub fn check_variables(
     // Number of tokens: 7
 
     // The first token should be the variable name (We don't receive the let token)
-    let variable_tokens = tokens[*start..].to_vec();
+    let variable_tokens = &extract_tokens_before(&tokens[start..].to_vec(), &TokenType::Semicolon);
     if variable_tokens.len() < 4 {
         Logger::err(
             "Invalid variable definition",
@@ -60,7 +60,7 @@ pub fn check_variables(
                 "Variable definitions must have at least 4 tokens"
             ],
             &[
-                tokens[*start].build_trace().as_str()
+                tokens[start].build_trace().as_str()
             ]
         );
 
@@ -72,7 +72,9 @@ pub fn check_variables(
     let colon = &variable_tokens[1];
 
     let var_type_tokens = extract_tokens_before(
-        &tokens[3..].to_vec(),
+        // + 1 for the name
+        // + 1 for the colon
+        &variable_tokens[2..].to_vec(),
         &TokenType::Assign
     );
 
@@ -80,7 +82,10 @@ pub fn check_variables(
         &var_type_tokens
     );
 
-    let equals = &variable_tokens[var_type_tokens.len() + 2];
+    let var_type_tokens_len = var_type_tokens.len();
+
+    // The same 2 we extracted before
+    let equals = &variable_tokens[var_type_tokens_len + 2];
 
     check_variable_name(&var_name.get_value(), &var_name.build_trace());
 
@@ -123,6 +128,8 @@ pub fn check_variables(
 
     // The equals should be an equals
     if equals.get_token_type() != TokenType::Assign {
+        println!("{:?}", equals);
+
         Logger::err(
             "Invalid variable definition",
             &[

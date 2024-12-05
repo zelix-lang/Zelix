@@ -3,5 +3,7 @@ import "@Surf:standard/system/env";
 
 pub fun main() {
     let ok : Result<str, GenericErr> = get_env("SURF_STANDARD_PATH");
+    let my_string : String = String("Hello, world!");
     println(ok);
+    println(my_string);
 }

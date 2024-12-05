@@ -22,11 +22,13 @@ pub fn transpile_variable(tokens: &Vec<Token>, n: usize, transpiled_code: &mut S
 
     let var_name = &sentence[0].get_value();
     let var_type_tokens = extract_tokens_before(
-        &tokens[3..].to_vec(),
+        // +1 for the name
+        // +1 for the colon
+        &sentence[2..].to_vec(),
         &TokenType::Assign
     );
 
-    // +2 for the space between the parametrized type
+    // +2 that we extracted before
     // +1 for the equals sign
     let var_value: &[Token] = &sentence[(var_type_tokens.len() + 3)..];
 

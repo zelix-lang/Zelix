@@ -39,7 +39,7 @@ pub fn analyze_scope(source: &FileCode) {
                     // n + 1 to skip the let token
                     check_variables(
                         body,
-                        &(n + 1),
+                        n + 1,
                         &file_functions,
                         &headers
                     );
