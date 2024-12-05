@@ -9,3 +9,4 @@ c_parser = { path = "../c_parser" }
 logger = { path = "../logger" }
 util = { path = "../util" }
 code = { path = "../code" }
+clang = "2.0.0"

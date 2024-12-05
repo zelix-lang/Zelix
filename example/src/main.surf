@@ -1,5 +1,7 @@
 import "@Surf:standard/io/print";
+import "@Surf:standard/system/env";
 
 pub fun main() {
-    println("Hello, world!");
+    let ok : Result<str, GenericErr> = get_env("SURF_STANDARD_PATH");
+    println(ok);
 }

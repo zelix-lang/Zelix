@@ -11,10 +11,9 @@ use code::token_type::TokenType;
 use import_extractor::extract_import;
 use c_parser::{create_c_instance, create_index};
 use logger::{Logger, LoggerImpl};
-use shared::code::import::{Import, Importable};
 
 use shared::code::{file_code::{FileCode, FileCodeImpl}, function::{Function, FunctionImpl}, param::{Param, ParamImpl}};
-use standard_locator::locate_standard;
+use standard_locator::locate_and_import_package;
 use token_splitter::extract_tokens_before;
 
 pub fn extract_parts(tokens: &Vec<Token>, source: PathBuf) -> FileCode {
@@ -43,27 +42,10 @@ pub fn extract_parts(tokens: &Vec<Token>, source: PathBuf) -> FileCode {
     let index = create_index(&clang);
 
     // Add all the lang standard functions to the imports
-    result.add_import(
-        Import::new(
-            locate_standard("lang/panic.h".to_string()),
-            tokens[0].build_trace()
-        ),
-        &index
-    );
-
-    result.add_import(
-        Import::new(
-            locate_standard("lang/err.hpp".to_string()),
-            tokens[0].build_trace()
-        ),
-        &index
-    );
-
-    result.add_import(
-        Import::new(
-        locate_standard("lang/result.hpp".to_string()),
-            tokens[0].build_trace()
-        ),
+    locate_and_import_package(
+        "lang", 
+        &mut result,
+        tokens[0].build_trace(),
         &index
     );
 

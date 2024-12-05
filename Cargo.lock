@@ -301,6 +301,7 @@ name = "extractor"
 version = "0.0.0"
 dependencies = [
  "c_parser",
+ "clang",
  "code",
  "lexer",
  "logger",
