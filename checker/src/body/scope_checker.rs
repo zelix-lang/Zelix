@@ -4,7 +4,7 @@ use code::{token::TokenImpl, token_type::TokenType};
 use logger::{Logger, LoggerImpl};
 use shared::code::{file_code::{FileCode, FileCodeImpl}, function::FunctionImpl};
 
-use crate::variable_checker::check_variables;
+use super::variable_checker::check_variables;
 
 pub fn throw_value_already_defined(name: &String, trace: &String) {
     Logger::err(

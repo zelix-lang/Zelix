@@ -10,7 +10,9 @@ use shared::code::{function::Function, value_name::value_name::{CPP_KEYWORDS, VA
 use logger::{Logger, LoggerImpl};
 use util::result::try_unwrap;
 
-use crate::{header_checker::{check_header_value_definition, find_imported_classes}, scope_checker::throw_value_already_defined};
+use crate::header::header_checker::{check_header_value_definition, find_imported_classes};
+
+use super::scope_checker::throw_value_already_defined;
 
 lazy_static! {
     // Used to print warnings for cammel case variable names
