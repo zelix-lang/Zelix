@@ -14,6 +14,7 @@ pub fn transpile_imports(file_code: &FileCode, transpiled_code: &mut String) {
         transpiled_code.push_str("\"\n");
     }
 
-    // Add imports that are needed
-    transpiled_code.push_str("#include <string>\n");
+    // Including <string> is no longer needed
+    // the standard library mostly uses char* instead
+    // or Surf's custom String implementation
 }

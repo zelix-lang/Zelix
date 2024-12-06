@@ -13,7 +13,7 @@ pub fn transpile_type(
         } else if token_type == TokenType::Num {
             transpiled_code.push_str("double ");
         } else if token_type == TokenType::String {
-            transpiled_code.push_str("std::string ");
+            transpiled_code.push_str("char* ");
         } else if token_type == TokenType::Bool {
             transpiled_code.push_str("bool ");
         } else {
