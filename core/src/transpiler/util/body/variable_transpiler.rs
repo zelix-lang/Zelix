@@ -5,10 +5,14 @@ use extractor::{sentence_extractor::extract_sentence, token_splitter::extract_to
 
 use crate::transpiler::util::type_transpiler::transpile_type;
 
-pub fn transpile_variable(tokens: &Vec<Token>, n: usize, transpiled_code: &mut String) -> usize {
+pub fn transpile_variable(
+    tokens: &Vec<Token>,
+    start_at: usize,
+    transpiled_code: &mut String
+) -> usize {
     let sentence: Vec<Token> = extract_sentence(
         // Also skip the let token
-        tokens.clone()[(n + 1)..].to_vec(),
+        tokens.clone()[(start_at + 1)..].to_vec(),
         TokenType::Semicolon
     );
 
@@ -32,13 +36,15 @@ pub fn transpile_variable(tokens: &Vec<Token>, n: usize, transpiled_code: &mut S
     // +1 for the equals sign
     let var_value: &[Token] = &sentence[(var_type_tokens.len() + 3)..];
 
-    // Make the compiler automatically infer the type
-    transpiled_code.push_str("auto ");
+    transpile_type(&var_type_tokens, transpiled_code);
 
     transpiled_code.push_str(var_name);
     transpiled_code.push_str(" = ");
 
-    for token in var_value {
+    // Get the first token to check if it needs a data type
+    let first_token = &var_value[0];
+
+    for token in &var_value[1..] {
         let token_type = token.get_token_type();
         
         if is_data_type(token_type.clone()) {
@@ -61,5 +67,5 @@ pub fn transpile_variable(tokens: &Vec<Token>, n: usize, transpiled_code: &mut S
     }
 
     // Add 1 to skip the let token, we still need the semicolon
-    n + sentence.len() + 1
+    start_at + sentence.len() + 1
 }
