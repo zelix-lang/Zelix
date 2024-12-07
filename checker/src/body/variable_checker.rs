@@ -207,7 +207,6 @@ pub fn check_and_parse_variable(
 
     }
 
-    let mut is_reference_to_param = false;    
     // If the variable itself isn't a reference
     // whatever value it has won't be a reference if returned
     // so before checking lifetime, we'll check if the variable
@@ -229,10 +228,8 @@ pub fn check_and_parse_variable(
     }
 
     let is_reference_to_param = check_is_reference_to_param(
-        imports, 
         scopes, 
         parameters,
-        functions,
         &value_tokens
     );
 
