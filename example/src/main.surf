@@ -3,12 +3,12 @@ import "@Surf:standard/system/env";
 
 pub fun main() {
     // Get environment variables!
-    let ok : Result<str, GenericErr> = get_env("SURF_STANDARD_PATH");
+    let ok : Result<String, GenericErr> = get_env("SURF_STANDARD_PATH");
     let my_string : String = String(
         // String literals are represented as "&str" which is why they aren't long-lived
         //  to make a longer-lived value, use String(&str)
         "Hello, world!"
-    ); 
+    );
 
     println(ok); // Result(Some(String("/path/to/Surf-Standard")), None)
     println(my_string); // String("Hello, world!")

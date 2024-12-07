@@ -12,7 +12,7 @@ use util::result::try_unwrap;
 
 use crate::header::header_checker::{check_header_value_definition, find_imported_classes};
 
-use super::scope_checker::throw_value_already_defined;
+use super::{scope_checker::throw_value_already_defined, variable::{Variable, VariableImpl}};
 
 lazy_static! {
     // Used to print warnings for cammel case variable names
@@ -39,13 +39,14 @@ fn check_variable_name(var_name: &String, trace: &String) {
     }
 }
 
-pub fn check_variable(
+// Returns: Variable type, Variable name, Variable value
+pub fn check_and_parse_variable(
     tokens: &Vec<Token>,
     start: usize,
     // Used to check if a value is already defined
     functions: &HashMap<String, Function>,
     imports: &Vec<Header>
-) {
+) -> (Variable, Token) {
     // Variable definitions should be already validated by now
     // Example definition:
     // let my_var : str = "Hello, world!";
@@ -202,5 +203,19 @@ pub fn check_variable(
         }
 
     }
-        
+
+    // TODO: Validate that the variable's value matches the type
+
+    let parsed_variable = Variable::new(
+        var_type_param_type.clone(),
+        false,
+        false,
+        false
+    );
+
+    (
+        parsed_variable,
+        var_name.clone()
+    )
+    
 }

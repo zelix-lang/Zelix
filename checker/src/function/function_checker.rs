@@ -1,15 +1,11 @@
 use std::{collections::{HashMap, HashSet}, process::exit};
-use c_parser::header::Header;
 use logger::{Logger, LoggerImpl};
 
 use shared::code::{function::{Function, FunctionImpl}, value_name::value_name::{CPP_KEYWORDS, VALUE_NAME_REGEX}};
 
-use super::{function_return_checker::check_function_return, lifetime_checker::check_lifetime};
-
 pub fn analyze_functions(
     // Pass by reference to avoid moving the value or cloning it 
-    functions: &HashMap<String, HashMap<String, Function>>,
-    imports: &Vec<Header>
+    functions: &HashMap<String, HashMap<String, Function>>
 ) {
     // Save the functions we've seen so far so we can detect multiple definitions
     let mut seen_functions: HashSet<String> = HashSet::new();
@@ -53,8 +49,6 @@ pub fn analyze_functions(
                 seen_functions.insert(name.clone());
             }
 
-            check_function_return(function, imports);
-            check_lifetime(function, imports);
         }
     }
 

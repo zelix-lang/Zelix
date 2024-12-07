@@ -29,6 +29,15 @@ pub trait ParamTypeImpl {
 
 impl ParamTypeImpl for ParamType {
     fn new(raw: &Vec<Token>) -> Self {
+        if raw.len() < 1 {
+            return ParamType {
+                name: String::from("[NATIVE BUILT-IN]"),
+                params: Vec::new(),
+                is_reference: false,
+                raw_tokens: Vec::new(),
+            }
+        }
+
         parse_parametrized_type(raw)
     }
 
