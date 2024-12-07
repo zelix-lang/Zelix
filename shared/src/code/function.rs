@@ -1,10 +1,12 @@
+use std::collections::HashMap;
+
 use code::{token::Token, types::{parser::parse_parametrized_type, ParamType}};
 
 use super::param::Param;
 
 #[derive(Debug, Clone)]
 pub struct Function {
-    arguments: Vec<Param>,
+    arguments: HashMap<String, Param>,
     body: Vec<Token>,
     return_type: ParamType,
     trace: String,
@@ -14,14 +16,14 @@ pub struct Function {
 pub trait FunctionImpl {
 
     fn new(
-        arguments: Vec<Param>, 
+        arguments: HashMap<String, Param>, 
         body: Vec<Token>, 
         return_type: Vec<Token>, 
         trace: String,
         public: bool
     ) -> Self;
 
-    fn get_arguments(&self) -> &Vec<Param>;
+    fn get_arguments(&self) -> &HashMap<String, Param>;
     fn get_body(&self) -> &Vec<Token>;
     fn get_return_type(&self) -> &ParamType;
     fn get_trace(&self) -> &String;
@@ -32,8 +34,7 @@ pub trait FunctionImpl {
 impl FunctionImpl for Function {
 
     fn new(
-        arguments: 
-        Vec<Param>, 
+        arguments: HashMap<String, Param>, 
         body: Vec<Token>, 
         return_type: Vec<Token>, 
         trace: String,
@@ -48,7 +49,7 @@ impl FunctionImpl for Function {
         }
     }
 
-    fn get_arguments(&self) -> &Vec<Param> {
+    fn get_arguments(&self) -> &HashMap<String, Param> {
         &self.arguments
     }
 

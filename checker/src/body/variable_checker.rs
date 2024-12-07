@@ -6,13 +6,13 @@ use extractor::token_splitter::extract_tokens_before;
 use fancy_regex::Regex;
 use lazy_static::lazy_static;
 use lexer::data_types::is_data_type;
-use shared::code::{function::Function, value_name::value_name::{CPP_KEYWORDS, VALUE_NAME_REGEX}};
+use shared::code::{function::Function, param::Param, value_name::value_name::{CPP_KEYWORDS, VALUE_NAME_REGEX}};
 use logger::{Logger, LoggerImpl};
 use util::result::try_unwrap;
 
 use crate::header::header_checker::{check_header_value_definition, find_imported_classes};
 
-use super::{scope_checker::throw_value_already_defined, variable::{Variable, VariableImpl}};
+use super::{scope_checker::throw_value_already_defined, variable::{Variable, VariableImpl}, variable_value_checker::check_is_reference_to_param};
 
 lazy_static! {
     // Used to print warnings for cammel case variable names
@@ -45,7 +45,9 @@ pub fn check_and_parse_variable(
     start: usize,
     // Used to check if a value is already defined
     functions: &HashMap<String, Function>,
-    imports: &Vec<Header>
+    imports: &Vec<Header>,
+    scopes: &Vec<HashMap<String, Variable>>,
+    parameters: &HashMap<String, Param>
 ) -> (Variable, Token) {
     // Variable definitions should be already validated by now
     // Example definition:
@@ -71,6 +73,7 @@ pub fn check_and_parse_variable(
     let var_name = &variable_tokens[0];
     let var_name_value = var_name.get_value();
     let colon = &variable_tokens[1];
+    let value_tokens = variable_tokens[3..].to_vec();
 
     let var_type_tokens = extract_tokens_before(
         // + 1 for the name
@@ -204,12 +207,57 @@ pub fn check_and_parse_variable(
 
     }
 
+    let mut is_reference_to_param = false;    
+    // If the variable itself isn't a reference
+    // whatever value it has won't be a reference if returned
+    // so before checking lifetime, we'll check if the variable
+    // is a reference
+    let value_tokens_len = value_tokens.len();
+
+    if value_tokens_len == 0 {
+        Logger::err(
+            "Invalid variable definition",
+            &[
+                "Expected a value after the equals sign"
+            ],
+            &[
+                equals.build_trace().as_str()
+            ]
+        );
+
+        exit(1);
+    }
+
+    let is_reference_to_param = check_is_reference_to_param(
+        imports, 
+        scopes, 
+        parameters,
+        functions,
+        &value_tokens
+    );
+
+    if
+        !is_reference_to_param && var_type_param_type.is_reference()
+        || is_reference_to_param && !var_type_param_type.is_reference()
+    {
+        Logger::err(
+            "Invalid reference",
+            &[
+                "The variable is a reference, but the value is not"
+            ],
+            &[
+                equals.build_trace().as_str()
+            ]
+        );
+
+        exit(1);
+    }
+
     // TODO: Validate that the variable's value matches the type
 
     let parsed_variable = Variable::new(
         var_type_param_type.clone(),
-        false,
-        false,
+        is_reference_to_param,
         var_type_param_type.is_reference()
     );
 

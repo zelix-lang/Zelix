@@ -4,6 +4,7 @@ pub mod token_splitter;
 pub mod return_extractor;
 mod standard_locator;
 
+use std::collections::HashMap;
 use std::{path::PathBuf, process::exit};
 
 use code::token::{Token, TokenImpl};
@@ -68,7 +69,7 @@ pub fn extract_parts(tokens: &Vec<Token>, source: PathBuf) -> FileCode {
 
     let mut last_function_name = String::new();
     let mut last_function_return_type: Vec<Token> = Vec::new();
-    let mut last_function_params: Vec<Param> = Vec::new();
+    let mut last_function_params: HashMap<String, Param> = HashMap::new();
     let mut last_function_body: Vec<Token> = Vec::new();
     let mut last_param_type_tokens: Vec<Token> = Vec::new();
     let mut last_param_name = String::new();
@@ -314,9 +315,9 @@ pub fn extract_parts(tokens: &Vec<Token>, source: PathBuf) -> FileCode {
             if nested_level == 0 {
                 if token_type == TokenType::Comma || token_type == TokenType::CloseParen {
                     if !last_param_type_tokens.is_empty() {
-                        last_function_params.push(
+                        last_function_params.insert(
+                            last_param_name.clone(),
                             Param::new(
-                                last_param_name.clone(),
                                 last_param_type_tokens.clone(),
                                 token.build_trace(),
                                 is_last_param_reference.clone()

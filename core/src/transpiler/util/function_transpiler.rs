@@ -4,9 +4,9 @@ use shared::code::{file_code::{FileCode, FileCodeImpl}, function::{Function, Fun
 use super::{body::transpile_body, type_transpiler::transpile_type};
 
 fn transpile_arguments(function: &Function, transpiled_code: &mut String) {
-    for argument in function.get_arguments() {
+    for (name, argument) in function.get_arguments() {
         transpile_type(argument.get_data_type(), transpiled_code);
-        transpiled_code.push_str(argument.get_name());
+        transpiled_code.push_str(name);
         transpiled_code.push_str(", ");
     }
 

@@ -52,7 +52,9 @@ pub fn analyze_scope(source: &FileCode) {
                             body,
                             n + 1,
                             &file_functions,
-                            &headers
+                            &headers,
+                            &scope_variables,
+                            function.get_arguments()
                         );
 
                     // Check if the variable is already defined
