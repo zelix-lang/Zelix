@@ -210,7 +210,7 @@ pub fn check_and_parse_variable(
         var_type_param_type.clone(),
         false,
         false,
-        false
+        var_type_param_type.is_reference()
     );
 
     (
