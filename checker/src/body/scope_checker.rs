@@ -4,7 +4,7 @@ use code::{token::TokenImpl, token_type::TokenType};
 use logger::{Logger, LoggerImpl};
 use shared::code::{file_code::{FileCode, FileCodeImpl}, function::FunctionImpl};
 
-use super::variable_checker::check_variables;
+use super::variable_checker::check_variable;
 
 pub fn throw_value_already_defined(name: &String, trace: &String) {
     Logger::err(
@@ -27,6 +27,9 @@ pub fn analyze_scope(source: &FileCode) {
     let headers = source.get_imports();
 
     for (_, file_functions) in functions {
+        // Define a vector that contains the variables allowed in the current scope
+        // since there can be multiple scopes in a function
+        // we're going to have a Vec<
         for (_, function) in file_functions {
             let body = function.get_body();
 
@@ -37,7 +40,7 @@ pub fn analyze_scope(source: &FileCode) {
             match token_type {
                 TokenType::Let => {
                     // n + 1 to skip the let token
-                    check_variables(
+                    check_variable(
                         body,
                         n + 1,
                         &file_functions,

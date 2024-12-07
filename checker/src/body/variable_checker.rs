@@ -39,7 +39,7 @@ fn check_variable_name(var_name: &String, trace: &String) {
     }
 }
 
-pub fn check_variables(
+pub fn check_variable(
     tokens: &Vec<Token>,
     start: usize,
     // Used to check if a value is already defined
