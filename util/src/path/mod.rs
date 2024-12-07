@@ -21,7 +21,13 @@ pub fn discard_cwd(path: String) -> String {
         "Failed to get current working directory",
     );
 
-    let cwd_string = cwd.to_str().unwrap();
+    let mut cwd_string = cwd.to_str().unwrap().to_string();
+
+    // Add an "/" to the end of the cwd string if it doesn't have one
+    if !cwd_string.ends_with("/") {
+        cwd_string.push_str("/");
+    }
+
     
-    path.replace(cwd_string, "")
+    path.replace(cwd_string.as_str(), "")
 }
