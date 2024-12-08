@@ -1,6 +1,5 @@
 import "@Surf:standard/io/print";
 
 pub fun main() {
-    let my_result: Result<str, GenericErr> = Ok("Hello, world!");
     println("Hello, world!");
 }
