@@ -253,9 +253,7 @@ pub fn check_and_parse_variable(
     // TODO: Validate that the variable's value matches the type
 
     let parsed_variable = Variable::new(
-        var_type_param_type.clone(),
-        is_reference_to_param,
-        var_type_param_type.is_reference()
+        is_reference_to_param
     );
 
     (

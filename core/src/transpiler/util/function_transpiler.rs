@@ -19,7 +19,10 @@ fn transpile_arguments(function: &Function, transpiled_code: &mut String) {
 }
 
 pub fn transpile_functions(file_code: &FileCode, transpiled_code: &mut String) {
-    for (_, functions) in file_code.get_functions() {
+    let imports = file_code.get_imports();
+    let functions = file_code.get_functions();
+
+    for (_, functions) in functions {
         let public_functions:Vec<&String> = functions.keys()
             .filter(|key| functions.get(*key).unwrap().is_public())
             .collect();
@@ -66,11 +69,19 @@ pub fn transpile_functions(file_code: &FileCode, transpiled_code: &mut String) {
                 transpiled_code.push_str(" = [](");
                 transpile_arguments(private_function, transpiled_code);
                 transpiled_code.push_str(") {\n");
-                transpile_body(private_function.get_body(), transpiled_code);
+                transpile_body(
+                    private_function.get_body(),
+                    transpiled_code,
+                    imports
+                );
                 transpiled_code.push_str("};\n");
             }
 
-            transpile_body(function.get_body(), transpiled_code);
+            transpile_body(
+                function.get_body(),
+                transpiled_code,
+                imports
+            );
 
             if is_main {
                 transpiled_code.push_str("return 0;\n");

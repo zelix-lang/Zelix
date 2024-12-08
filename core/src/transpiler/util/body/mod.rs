@@ -1,10 +1,15 @@
 mod variable_transpiler;
 
+use c_parser::header::Header;
 use code::{token::{Token, TokenImpl}, token_type::TokenType};
 
 use variable_transpiler::transpile_variable;
 
-pub fn transpile_body(tokens: &Vec<Token>, transpiled_code: &mut String) {
+pub fn transpile_body(
+    tokens: &Vec<Token>,
+    transpiled_code: &mut String,
+    imports: &Vec<Header>
+) {
     // Used to skip tokens
     let mut skip_to_index = 0;
 
@@ -22,7 +27,12 @@ pub fn transpile_body(tokens: &Vec<Token>, transpiled_code: &mut String) {
         } else if token_type == TokenType::Let {
 
             // Add 2 to skip the let token and the semicolon
-            skip_to_index = transpile_variable(tokens, n, transpiled_code);
+            skip_to_index = transpile_variable(
+                tokens, 
+            n,
+                transpiled_code,
+                imports
+            );
             continue;
         }
 

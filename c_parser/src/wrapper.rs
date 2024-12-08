@@ -33,10 +33,10 @@ fn find_parameters(entity: &Entity) -> Vec<TypeKind> {
     result
 }
 
-fn process_function(entity: &Entity)-> Function {
+fn process_function(entity: &Entity, generic_count: usize)-> Function {
     // Wrap the function
     let return_type = find_data_type(entity);
-    let mut func = Function::new(&return_type);
+    let mut func = Function::new(&return_type, generic_count);
 
     for param in find_parameters(entity) {
         func.add_param(param);
@@ -51,25 +51,26 @@ pub fn wrap_header(ast: Vec<Entity>) -> Header {
     for entity in ast {
         let kind = entity.get_kind();
 
+        // Find generic types
+        let template_types: Vec<_> = entity
+            .get_children()
+            .iter()
+            .filter_map(|child| {
+                if child.get_kind() == EntityKind::TemplateTypeParameter {
+                    child.get_name()
+                } else {
+                    None
+                }
+            })
+            .collect();
+
         if kind == EntityKind::FunctionTemplate || kind == EntityKind::FunctionDecl {
             // Add the function to the header
             result.add_function(
                 entity.get_name().unwrap(),
-                process_function(&entity)
+                process_function(&entity, template_types.len())
             );
         } else if kind == EntityKind::ClassTemplate || kind == EntityKind::ClassDecl {
-            // Find generic types
-            let template_types: Vec<_> = entity
-                .get_children()
-                .iter()
-                .filter_map(|child| {
-                    if child.get_kind() == EntityKind::TemplateTypeParameter {
-                        child.get_name()
-                    } else {
-                        None
-                    }
-                })
-                .collect();
             // Wrap the class
             let class = Class::new(template_types.len());
             // Add the class to the header
@@ -93,7 +94,7 @@ pub fn wrap_header(ast: Vec<Entity>) -> Header {
             let class = class_optional.unwrap();
 
             // Wrap the function
-            let function = process_function(&entity);
+            let function = process_function(&entity, template_types.len());
 
             // Add the method to the class
             class.add_method(
