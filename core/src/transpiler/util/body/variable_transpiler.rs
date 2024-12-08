@@ -61,7 +61,10 @@ pub fn transpile_variable(
                         // let my_var : Result<String> = Result(...);
                         transpiled_code.push_str(&first_value);
                         // Make sure the compiler knows the type
-                        transpile_type(&var_type_tokens, transpiled_code);
+                        transpile_type(
+                            &var_type_tokens[1..].to_vec(), 
+                            transpiled_code
+                        );
                     }
 
                     break;

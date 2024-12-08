@@ -1,5 +1,25 @@
 import "@Surf:standard/io/print";
+import "@Surf:standard/system/env";
+import "@Surf:standard/heap/heap";
 
 pub fun main() {
-    println("Hello, world!");
+    // Get environment variables!
+    let ok : Result<String, GenericErr> = get_env("SURF_STANDARD_PATH");
+    let my_string : String = String(
+        // String literals are represented as "str" which is why they aren't long-lived
+        //  to make a longer-lived value, use String(str)
+        "Hello, world!"
+    );
+    
+    // Allocate a value in the computer's heap space
+    let my_awesome_heap_value : Heap<str> = Heap("Hello from the heap!");
+
+    println(ok); // Result(Some(String("/path/to/Surf-Standard")), None)
+    println(my_string); // String("Hello, world!")
+    // to_str() converts a String back to a &str
+    println(my_string.to_str()); // Hello, world!
+    println(my_string.split(" ")); // Vec[String("Hello,"), String("world!")]
+    println(my_awesome_heap_value); // Heap((Native memory); Hello from the heap!)
+    println(my_awesome_heap_value.unwrap()); // "Hello from the heap!"
+    // No need to free the heap memory, it frees on its own!
 }
