@@ -15,3 +15,4 @@ core = { path = "../core" }
 logger = { path = "../logger" }
 util = { path = "../util" }
 code = { path = "../code" }
+extractor = { path = "../extractor" }

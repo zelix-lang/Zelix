@@ -1,20 +1,15 @@
-pub mod import_extractor;
 pub mod sentence_extractor;
 pub mod token_splitter;
 pub mod return_extractor;
-mod standard_locator;
 
 use std::collections::HashMap;
 use std::{path::PathBuf, process::exit};
 
 use code::token::{Token, TokenImpl};
 use code::token_type::TokenType;
-use import_extractor::extract_import;
-use c_parser::{create_c_instance, create_index};
 use logger::{Logger, LoggerImpl};
 
 use shared::code::{file_code::{FileCode, FileCodeImpl}, function::{Function, FunctionImpl}, param::{Param, ParamImpl}};
-use standard_locator::locate_and_import_package;
 use token_splitter::extract_tokens_before;
 
 pub fn extract_parts(tokens: &Vec<Token>, source: PathBuf) -> FileCode {
@@ -38,17 +33,6 @@ pub fn extract_parts(tokens: &Vec<Token>, source: PathBuf) -> FileCode {
 
     let mut inside_function: bool = false;
     let mut result : FileCode = FileCode::new(source);
-
-    let clang = create_c_instance();
-    let index = create_index(&clang);
-
-    // Add all the lang standard functions to the imports
-    locate_and_import_package(
-        "lang", 
-        &mut result,
-        tokens[0].build_trace(),
-        &index
-    );
 
     let mut expecting_function_name = false;
     let mut expecting_open_paren = false;
@@ -114,24 +98,6 @@ pub fn extract_parts(tokens: &Vec<Token>, source: PathBuf) -> FileCode {
 
             exit(1);
         } else if !inside_function {
-            if token_type == TokenType::Import {
-                let import = extract_import(
-                    tokens.clone()[(n + 1)..].to_vec()
-                );
-                
-                result.add_import(
-                    import.clone(),
-                    &index
-                );
-    
-                // +1 because we skipped the import keyword
-                // +1 for the semicolon
-                // +1 for the string literal
-                // total tokens skipped = 3
-                skip_to_index = n + 3;
-                continue;
-            }
-
             if token_type == TokenType::Function {
                 if inside_function {
                     Logger::err(

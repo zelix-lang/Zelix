@@ -9,8 +9,6 @@ members = [
     "core",
     "lexer",
     "shared",
-    "checker",
-    "c_parser",
     "extractor",
     "logger",
     "code",

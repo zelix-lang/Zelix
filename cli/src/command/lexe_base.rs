@@ -12,7 +12,7 @@ use std::{
 
 use crate::{processor::process_bindings, structs::surf_config_file::SurfConfigFile};
 
-pub fn lexe_base(path: Option<PathBuf>) -> (Vec<Token>, HashMap<String, String>) {
+pub fn lexe_base(path: Option<PathBuf>) -> (Vec<Token>, HashMap<String, String>, PathBuf) {
     let final_path =
         retrieve_path(
             path.unwrap_or(
@@ -100,6 +100,7 @@ pub fn lexe_base(path: Option<PathBuf>) -> (Vec<Token>, HashMap<String, String>)
     
     (
         Lexer::new().tokenize(&mut main_file_content, &main_file),
-        bindings
+        bindings,
+        final_path
     )
 }

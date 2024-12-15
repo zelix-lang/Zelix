@@ -16,13 +16,6 @@ pub enum Commands {
         show_full: Option<bool>
     },
 
-    /// Compiles the project
-    Compile {
-        /// The path to the project
-        #[arg(short, long)]
-        path: Option<PathBuf>
-    },
-
     /// Runs the project
     Run {
         /// The path to the project
