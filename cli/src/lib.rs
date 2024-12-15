@@ -8,6 +8,7 @@ mod args;
 mod command;
 mod example;
 mod structs;
+mod processor;
 
 pub fn main() {
     let parsed_args = args::Args::parse();

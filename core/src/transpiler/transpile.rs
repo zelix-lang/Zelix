@@ -1,10 +1,10 @@
+use std::collections::HashMap;
 use std::fs::File;
 use std::io::Write;
 use std::path::PathBuf;
 
-use shared::token::token::Token;
-
-use crate::extractor::extract_parts;
+use code::token::Token;
+use extractor::extract_parts;
 use shared::code::file_code::FileCodeImpl;
 use shared::code::import::Import;
 use checker::analyze;
@@ -16,9 +16,27 @@ use super::util::import_transpiler::transpile_imports;
 /// This can be later compiled with G++, Clang++ or GCC
 
 // Returns a vector of imports that are needed for later compilation
-pub fn transpile(tokens: Vec<Token>, out_dir: PathBuf, source: PathBuf) -> Vec<Import> {
+pub fn transpile(
+    tokens: Vec<Token>,
+    out_dir: PathBuf,
+    source: PathBuf,
+    bindings: HashMap<String, String>
+) -> Vec<Import> {
 
     let mut transpiled_code = String::new();
+
+    // Transpile bindings as directives
+    for (binding, value) in bindings {
+        transpiled_code.push_str("#define ");
+        transpiled_code.push_str(&binding);
+        transpiled_code.push_str(" ");
+        
+        // Bindings are always strings only
+        transpiled_code.push_str("\"");
+        transpiled_code.push_str(&value);
+        transpiled_code.push_str("\"");
+        transpiled_code.push_str("\n");
+    }
     let file_code = extract_parts(&tokens, source);
 
     // Borrow to avoid moving the value or cloning it

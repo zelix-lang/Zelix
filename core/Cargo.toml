@@ -6,6 +6,8 @@ edition = "2021"
 shared = { path = "../shared" }
 lexer = { path = "../lexer" }
 checker = { path = "../checker" }
-parser = { path = "../parser" }
+c_parser = { path = "../c_parser" }
+extractor = { path = "../extractor" }
 fancy-regex = "0.14.0"
 lazy_static = "1.5.0"
+code = { path = "../code" }

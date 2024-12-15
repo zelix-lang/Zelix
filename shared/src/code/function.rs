@@ -1,12 +1,14 @@
-use crate::token::token::Token;
+use std::collections::HashMap;
+
+use code::{token::Token, types::{parser::parse_parametrized_type, ParamType}};
 
 use super::param::Param;
 
 #[derive(Debug, Clone)]
 pub struct Function {
-    arguments: Vec<Param>,
+    arguments: HashMap<String, Param>,
     body: Vec<Token>,
-    return_type: Token,
+    return_type: ParamType,
     trace: String,
     public: bool
 }
@@ -14,17 +16,16 @@ pub struct Function {
 pub trait FunctionImpl {
 
     fn new(
-        arguments: 
-        Vec<Param>, 
+        arguments: HashMap<String, Param>, 
         body: Vec<Token>, 
-        return_type: Token, 
+        return_type: Vec<Token>, 
         trace: String,
         public: bool
     ) -> Self;
 
-    fn get_arguments(&self) -> &Vec<Param>;
+    fn get_arguments(&self) -> &HashMap<String, Param>;
     fn get_body(&self) -> &Vec<Token>;
-    fn get_return_type(&self) -> &Token;
+    fn get_return_type(&self) -> &ParamType;
     fn get_trace(&self) -> &String;
     fn is_public(&self) -> bool;
 
@@ -33,23 +34,22 @@ pub trait FunctionImpl {
 impl FunctionImpl for Function {
 
     fn new(
-        arguments: 
-        Vec<Param>, 
+        arguments: HashMap<String, Param>, 
         body: Vec<Token>, 
-        return_type: Token, 
+        return_type: Vec<Token>, 
         trace: String,
         public: bool
     ) -> Self {
         Function {
             arguments,
             body,
-            return_type,
+            return_type: parse_parametrized_type(&return_type),
             trace,
             public
         }
     }
 
-    fn get_arguments(&self) -> &Vec<Param> {
+    fn get_arguments(&self) -> &HashMap<String, Param> {
         &self.arguments
     }
 
@@ -57,7 +57,7 @@ impl FunctionImpl for Function {
         &self.body
     }
 
-    fn get_return_type(&self) -> &Token {
+    fn get_return_type(&self) -> &ParamType {
         &self.return_type
     }
 

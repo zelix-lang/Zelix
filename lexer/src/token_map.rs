@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use shared::token::token_type::TokenType;
+use code::token_type::TokenType;
 
 lazy_static::lazy_static! {
     // A vector of punctuation characters to be used in tokenization or parsing
@@ -75,7 +75,7 @@ lazy_static::lazy_static! {
         map.insert(String::from("bool[]"), TokenType::BoolArray);
 
         // Imports
-        map.insert(String::from("@import"), TokenType::Import);
+        map.insert(String::from("import"), TokenType::Import);
 
         // Special annotations
         map.insert(String::from("[discrete]"), TokenType::Discrete);

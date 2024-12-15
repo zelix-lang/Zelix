@@ -1,7 +1,9 @@
 use std::{fs::{self, create_dir, create_dir_all}, path::PathBuf, process::exit};
 
 use globals::{BOOL_REGEX, DESC_REGEX, NAME_REGEX, ROCKET_EMOJI, VERSION_REGEX};
-use shared::{logger::{Logger, LoggerImpl}, message::print_header, path::retrieve_path, result::try_unwrap, stdin::question::question};
+use logger::{Logger, LoggerImpl};
+use shared::{message::print_header, stdin::question::question};
+use util::{path::retrieve_path, result::try_unwrap};
 use std::{env::current_dir, fs::exists};
 
 use crate::{example::example_program::{EXAMPLE_GIT_IGNORE, EXAMPLE_PROGRAM}, structs::surf_config_file::{SurfBinds, SurfConfigFile}};

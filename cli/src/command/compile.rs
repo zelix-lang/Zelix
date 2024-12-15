@@ -1,8 +1,9 @@
-use shared::code::import::{Import, Importable};
+use code::token::TokenImpl;
+use logger::{Logger, LoggerImpl};
+use shared::{code::import::{Import, Importable}, message::print_header};
+use util::{path::retrieve_path, result::try_unwrap};
 use core::transpiler::transpile::transpile;
 use std::{env::current_dir, fs::{remove_dir_all, remove_file}, os::unix::process::ExitStatusExt, path::PathBuf, process::{exit, ExitStatus}};
-
-use shared::{logger::{Logger, LoggerImpl}, message::print_header, path::retrieve_path, result::try_unwrap, token::token::TokenImpl};
 
 use crate::command::lexe_base::lexe_base;
 
@@ -34,7 +35,7 @@ pub fn compile_command(path: Option<PathBuf>) -> PathBuf {
     print_header();
     println!();
 
-    let tokens = lexe_base(path.clone());
+    let (tokens, bindings) = lexe_base(path.clone());
     let cwd = try_unwrap(
         current_dir(),
         "Failed to get current working directory",
@@ -81,7 +82,8 @@ pub fn compile_command(path: Option<PathBuf>) -> PathBuf {
     let imports: Vec<Import> = transpile(
         tokens,
         out_dir.clone(),
-        source
+        source,
+        bindings
     );
 
 

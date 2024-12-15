@@ -1,4 +1,4 @@
-use shared::token::token_type::TokenType;
+use code::token_type::TokenType;
 use lazy_static::lazy_static;
 
 lazy_static! {

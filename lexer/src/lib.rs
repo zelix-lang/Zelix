@@ -1,13 +1,15 @@
-use std::path::PathBuf;
-
-use import::import_processor::process_imports;
-use regex_patterns::NUMBER_REGEX;
-use shared::token::{token::{Token, TokenImpl}, token_type::TokenType};
-use token_map::{KNOWN_TOKENS, PUNCTUATION_CHARS};
 mod regex_patterns;
 mod token_map;
 mod import;
 pub mod data_types;
+
+use std::{fs::read_to_string, path::PathBuf, process::exit};
+use import::{build_chain_trace, check_import_is_valid, find_code_imports};
+use logger::{Logger, LoggerImpl};
+use regex_patterns::NUMBER_REGEX;
+use code::{token::{Token, TokenImpl}, token_type::TokenType};
+use token_map::{KNOWN_TOKENS, PUNCTUATION_CHARS};
+use util::result::try_unwrap;
 
 // Define the Lexer struct, tracking the parser state (string, escape, comments)
 pub struct Lexer {
@@ -19,7 +21,7 @@ pub struct Lexer {
 
 // Trait defining the behavior of a Lexer
 pub trait LexerImpl {
-    // Method to tokenize the input contents
+    // Method to tokenize the input contents (and all imports) into a list of Tokens
     fn tokenize(
         &mut self,
         contents: &mut String,
@@ -31,6 +33,12 @@ pub trait LexerImpl {
 
     // Helper method to calculate and return a Token from the current context
     fn calculate(current_token: &str, file: &String, line: &u32, col: &u32) -> Token;
+
+    fn tokenize_single_file(
+        &mut self,
+        contents: &mut String,
+        file: &PathBuf
+    ) -> Vec<Token>;
 }
 
 // Implementation of the LexerImpl trait for the Lexer struct
@@ -39,13 +47,87 @@ impl LexerImpl for Lexer {
     fn tokenize(
         &mut self,
         contents: &mut String,
+        file_path: &PathBuf,
+    ) -> Vec<Token> {
+        let mut result: Vec<Token> = self.tokenize_single_file(
+            contents,
+            file_path
+        );
+
+        // Save the imports we've seen to detect circular dependencies
+        let mut seen_imports: Vec<PathBuf> = Vec::new();
+
+        while let Some((index, _)) = find_code_imports(&result) {
+            // We have a huge advantage here, as tokens contain the file they came from
+            // Which saves us time trying to figure out where the imports are
+
+            // The find_code_imports functions ensures that there's always a next token
+            let import = &result[index + 1];
+            let raw_import_path = PathBuf::from(import.get_file());
+            let parent_optional = raw_import_path
+                .parent();
+
+            if parent_optional.is_none() {
+                continue;
+            }
+
+            let import_path = parent_optional.unwrap()
+                    // String literals aren't lexed with quotes
+                    // we don't have to remove quotes here
+                    .join(import.get_value());
+
+            check_import_is_valid(&import_path);
+            // Check if we've seen this import before
+            if seen_imports.contains(&import_path) {
+                Logger::err(
+                    "Circular dependency detected",
+                    &[
+                        "Separate dependencies into different files to avoid this issue",
+                    ],
+                    build_chain_trace(
+                        &seen_imports
+                    ).iter()
+                        .map(|x| x.as_str())
+                        .collect::<Vec<&str>>()
+                        .as_slice()
+                );
+
+                exit(1);
+            }
+
+            // Push the current import to the seen imports list
+            seen_imports.push(import_path.clone());
+
+            // Lexe the import file
+            let import_contents = try_unwrap(
+                read_to_string(
+                    &import_path
+                ),
+                &format!(
+                    "Failed to read import file: {:?}",
+                    import_path
+                )
+            );
+
+            // Replace the import token with the tokens from the import file
+            result.splice(
+                index..index + 3,
+                self.tokenize_single_file(
+                    &mut import_contents.clone(),
+                    &import_path
+                )
+            );
+        }
+
+        result
+    }
+
+    fn tokenize_single_file(
+        &mut self,
+        contents: &mut String,
         file_path: &PathBuf
     ) -> Vec<Token> {
         let file = file_path.to_str().unwrap().to_string();
-
-        // First replace all the imports
-        let processed_contents = process_imports(contents, file_path);
-        *contents = processed_contents;
 
         // Initialize variables for tokens, current token, and position tracking
         let mut tokens: Vec<Token> = Vec::new();
@@ -195,10 +277,12 @@ impl LexerImpl for Lexer {
                     if tokens_len == 0 {
                         continue; // Ensure there's a preceding token
                     }
-                    let last_token = &tokens[tokens_len - 1].clone();
+                    let last_token = tokens[tokens_len - 1].clone();
+                    let last_char = characters[i - 1].clone();
                     if
                         (
                             character == '=' &&
+                            last_char != ' ' &&
                             (
                                 last_token.get_token_type() == TokenType::Assign
                                 || last_token.get_token_type() == TokenType::LessThan
@@ -230,8 +314,17 @@ impl LexerImpl for Lexer {
                 // Handle arrow operator ('->')
                 else if character == '>' {
                     if tokens_len == 0 || tokens[tokens_len - 1].get_token_type() != TokenType::Minus {
+                        tokens.push(
+                            Lexer::calculate(
+                                &character.to_string(),
+                                &file,
+                                &current_line,
+                                &current_column
+                            )
+                        );
                         continue;
                     }
+
                     tokens.pop();
                     tokens.push(
                         Lexer::calculate(
@@ -259,6 +352,12 @@ impl LexerImpl for Lexer {
                 current_token.push(character);
             }
         }
+
+        // Once done, reset all flags for the next iteration
+        self.in_string = false;
+        self.in_escape = false;
+        self.in_comment = false;
+        self.in_block_comment = false;
 
         // Return the list of tokens
         tokens

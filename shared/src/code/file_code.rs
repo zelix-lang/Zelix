@@ -1,15 +1,14 @@
 use std::{collections::HashMap, path::PathBuf, process::exit};
 
 use clang::Index;
-use parser::parse_header_file;
+use c_parser::{header::Header, parse_header_file, wrapper::wrap_header};
+use logger::{Logger, LoggerImpl};
 
-use crate::logger::{Logger, LoggerImpl};
-
-use super::{function::{Function, FunctionImpl}, header::{wrapper::wrap_header, Header}, header_reader::read_ast, import::{Import, Importable}};
+use super::{function::{Function, FunctionImpl}, header_reader::read_ast, import::{Import, Importable}};
 
 pub struct FileCode {
 
-    functions: HashMap<String, Function>,
+    functions: HashMap<String, HashMap<String, Function>>,
     imports: Vec<Header>,
     seen_imports: Vec<Import>,
     source: PathBuf
@@ -20,10 +19,10 @@ pub trait FileCodeImpl {
 
     fn new(source: PathBuf) -> Self;
 
-    fn add_function(&mut self, name: String, function: Function);
+    fn add_function(&mut self, file: String, name: String, function: Function);
     fn add_import(&mut self, import: Import, index: &Index);
 
-    fn get_functions(&self) -> &HashMap<String, Function>;
+    fn get_functions(&self) -> &HashMap<String, HashMap<String, Function>>;
     fn get_imports(&self) -> &Vec<Header>;
     fn get_seen_imports(&self) -> &Vec<Import>;
     fn get_source(&self) -> &PathBuf;
@@ -41,8 +40,14 @@ impl FileCodeImpl for FileCode {
         }
     }
 
-    fn add_function(&mut self, name: String, function: Function) {
-        if self.functions.contains_key(&name) {
+    fn add_function(&mut self, name: String, file: String, function: Function) {
+        if !self.functions.contains_key(&file) {
+            self.functions.insert(file.clone(), HashMap::new());
+        }
+
+        let funcs = self.functions.get_mut(&file).unwrap();
+
+        if funcs.contains_key(&name) {
             Logger::err(
                 format!("Duplicate function name: {}", name).as_str(),
                 &[
@@ -56,7 +61,7 @@ impl FileCodeImpl for FileCode {
             exit(1);
         }
 
-        self.functions.insert(name, function);
+        funcs.insert(name, function);
     }
 
     fn add_import(&mut self, import: Import, index: &Index) {
@@ -84,7 +89,7 @@ impl FileCodeImpl for FileCode {
         self.imports.push(wrapped_ast);
     }
 
-    fn get_functions(&self) -> &HashMap<String, Function> {
+    fn get_functions(&self) -> &HashMap<String, HashMap<String, Function>> {
         &self.functions
     }
 

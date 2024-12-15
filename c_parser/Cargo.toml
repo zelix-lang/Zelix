@@ -1,0 +1,9 @@
+[package]
+name = "c_parser"
+edition = "2021"
+
+[dependencies]
+clang = "2.0.0"
+lexer = { path = "../lexer" }
+code = { path = "../code" }
+logger = { path = "../logger" }

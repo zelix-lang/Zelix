@@ -24,6 +24,8 @@ On top of that, certain restrictions apply to the code contributed to the Surf l
 - **You may not attempt to pull code that is not related to the Surf language**
 - All contributed code should have an explanation of what it does and why it was added, code that is self-explanatory is an exception.
 
+**Please, send any PRs to the `dev` branch, changes are only merged into the `main` branch after they have been reviewed and tested thoroughly.**
+
 ---
 
 ## 🚀 Getting Started
@@ -39,4 +41,4 @@ To submit code through a fork, follow these steps:
 5. Test your changes and ensure they work as expected
 6. Commit your changes
 7. Push your changes to your fork
-8. Create a pull request
+8. Create a pull request on the `dev` branch

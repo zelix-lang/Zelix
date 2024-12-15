@@ -10,9 +10,12 @@ members = [
     "lexer",
     "shared",
     "checker",
-    "parser"
+    "c_parser",
+    "extractor",
+    "logger",
+    "code",
+    "util"
 ]
 
 [dependencies]
 cli = { path = "cli" }
-parser = { path = "parser" }
