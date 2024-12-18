@@ -6,7 +6,6 @@ import (
 	args2 "surf/core/engine/args"
 	_type "surf/core/engine/type"
 	"surf/core/stack"
-	"surf/logger"
 	"surf/object"
 	"surf/tokenUtil"
 )
@@ -47,24 +46,7 @@ func CallStatement(
 		}
 	}
 
-	function, found, sameFile := ast.LocateFunction(*functions, firstToken.GetFile(), firstToken.GetValue())
-
-	if !found {
-		logger.TokenError(
-			firstToken,
-			"Undefined reference to function "+firstToken.GetValue(),
-			"The function "+firstToken.GetValue()+" was not found in the file",
-			"Add the function to the file",
-		)
-	}
-
-	if !sameFile && !function.IsPublic() {
-		logger.TokenError(
-			firstToken,
-			"Function "+firstToken.GetValue()+" is not public",
-			"Move the function to the current file or make it public",
-		)
-	}
+	function, _, _ := ast.LocateFunction(*functions, firstToken.GetFile(), firstToken.GetValue())
 
 	CallFun(
 		&function,
