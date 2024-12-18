@@ -24,13 +24,7 @@ Welcome to the official Surf repository! Here, you will find the source code of 
 
 ## 🎆 Installation
 
-To install Surf, **you'll need [CLang++](https://clang.llvm.org/) installed**. Installation steps may vary depending on your OS.
-Once installed, you can download the official Surf installer from the **Releases** pages.
-
-> **NOTE:**
-> If you have CLang installed, you can skip the CLang++ installation step, as CLang++ is included in the CLang package.
-> To further verify that CLang++ is installed, you can run `clang++ --version` in your terminal.
-
+To install Surf, you can download the official Surf installer from the **Releases** pages.
 Once the installer shows that the installation was successful, you may need to restart your terminal for changes to take effect.
 
 - **On Windows**: Just close and re-open the terminal (CMD, PowerShell, etc.)
