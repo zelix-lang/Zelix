@@ -7,6 +7,35 @@ import (
 	"surf/object"
 )
 
+// FromRawType converts a raw type to a SurfObjectType
+func FromRawType(
+	token code.Token,
+	variables *stack.StaticStack,
+) object.SurfObjectType {
+	tokenType := token.GetType()
+
+	switch tokenType {
+	case code.Bool:
+		return object.BooleanType
+	case code.String:
+		return object.StringType
+	case code.Num:
+		return object.IntType
+	case code.Dec:
+		return object.DecimalType
+	case code.Nothing:
+		return object.NothingType
+	default:
+		logger.TokenError(
+			token,
+			"Unexpected token",
+			"Expected a raw type",
+		)
+
+		return object.NothingType
+	}
+}
+
 // ToObjType converts a token type to a SurfObjectType
 func ToObjType(
 	token code.Token,

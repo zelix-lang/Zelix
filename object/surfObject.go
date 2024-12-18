@@ -8,6 +8,7 @@ const (
 	IntType
 	DecimalType
 	NothingType
+	ModType
 )
 
 type SurfObject struct {

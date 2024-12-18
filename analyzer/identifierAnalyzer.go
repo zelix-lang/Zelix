@@ -86,6 +86,7 @@ func AnalyzeIdentifier(
 			function,
 			functions,
 			firstToken,
+			true,
 			arguments...,
 		)
 	} else {

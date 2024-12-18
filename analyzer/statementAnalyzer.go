@@ -53,15 +53,6 @@ func AnalyzeStatement(
 		return lastValueType
 	}
 
-	if lastValueType == object.NothingType {
-		logger.TokenError(
-			remainingStatement[0],
-			"Illegal property access",
-			"Cannot access properties of a non-object",
-			"Check the object type",
-		)
-	}
-
 	if isArithmetic {
 		AnalyzeArithmetic(
 			remainingStatement,
@@ -70,6 +61,15 @@ func AnalyzeStatement(
 		)
 
 		return lastValueType
+	}
+
+	if lastValueType != object.ModType {
+		logger.TokenError(
+			remainingStatement[0],
+			"Illegal property access",
+			"Cannot access properties of a non-object",
+			"Check the object type",
+		)
 	}
 
 	// The only valid operation after all that has been processed

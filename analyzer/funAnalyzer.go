@@ -8,21 +8,33 @@ import (
 	"surf/logger"
 	"surf/object"
 	"surf/tokenUtil"
+	"surf/util"
 	"time"
 )
+
+// checkParamType checks if the given parameter type is valid
+func checkParamType(
+	paramType object.SurfObjectType,
+	trace code.Token,
+) {
+	if paramType == object.NothingType {
+		logger.TokenError(
+			trace,
+			"Invalid parameter type",
+			"Parameters cannot be of type 'nothing'",
+			"Check the function definition",
+		)
+	}
+}
 
 // AnalyzeFun analyzes the given function
 func AnalyzeFun(
 	function *ast.Function,
 	functions *map[string]map[string]*ast.Function,
 	trace code.Token,
+	checkArgs bool,
 	args ...object.SurfObjectType,
 ) object.SurfObjectType {
-	// Standard functions are not evaluated
-	if function.IsStd() {
-		return object.NothingType
-	}
-
 	function.SetTimesCalled(function.GetTimesCalled() + 1)
 	function.SetLastCalled(time.Now())
 
@@ -36,17 +48,55 @@ func AnalyzeFun(
 		)
 	}
 
-	if len(args) != len(function.GetParameters()) {
-		logger.TokenError(
-			trace,
-			"Invalid number of arguments",
-			"This function expects "+strconv.Itoa(len(function.GetParameters()))+" arguments",
-			"Add the missing arguments",
-		)
-	}
-
 	// Create a new StaticStack
 	variables := stack.NewStaticStack()
+	actualParams := function.GetParameters()
+
+	if checkArgs {
+		if len(args) != len(function.GetParameters()) {
+			logger.TokenError(
+				trace,
+				"Invalid number of arguments",
+				"This function expects "+strconv.Itoa(len(function.GetParameters()))+" arguments",
+				"Add the missing arguments",
+			)
+		}
+
+		// Store the arguments in the variables
+		argsKeys := util.MapKeys(actualParams)
+
+		for i, param := range argsKeys {
+			expected := tokenUtil.FromRawType(actualParams[param][0], variables)
+			value := args[i]
+
+			checkParamType(expected, trace)
+			if value != expected {
+				logger.TokenError(
+					trace,
+					"Mismatched parameter types",
+					"This function did not expect this parameter this time",
+					"Change the parameters of the function call",
+				)
+			}
+
+			variables.Append(param, value)
+		}
+	} else {
+		// Store the parameters without checking to avoid undefined references
+		argsKeys := util.MapKeys(actualParams)
+
+		for _, param := range argsKeys {
+			expected := tokenUtil.FromRawType(actualParams[param][0], variables)
+			checkParamType(expected, trace)
+			variables.Append(param, expected)
+		}
+	}
+
+	// Beyond this point, standard functions no longer
+	// need to be evaluated
+	if function.IsStd() {
+		return object.NothingType
+	}
 
 	// Used to skip tokens
 	skipToIndex := 0

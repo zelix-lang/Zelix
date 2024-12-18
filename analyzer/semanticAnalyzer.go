@@ -25,16 +25,12 @@ func AnalyzeFileCode(code *ast.FileCode, source string) {
 
 	// Analyze the main function
 	AnalyzeMainFunc(mainFunction)
-	AnalyzeFun(mainFunction, code.GetFunctions(), mainFunction.GetTrace())
 
 	// Analyze all other functions
-	for file, functions := range *code.GetFunctions() {
-		for name, function := range functions {
-			if file == source && name == "main" {
-				continue
-			}
-
-			AnalyzeFun(function, code.GetFunctions(), function.GetTrace())
+	for _, functions := range *code.GetFunctions() {
+		for _, function := range functions {
+			// During start phase, argument checking is not necessary
+			AnalyzeFun(function, code.GetFunctions(), function.GetTrace(), false)
 		}
 	}
 }
