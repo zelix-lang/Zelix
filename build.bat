@@ -18,10 +18,8 @@ if exist bin (
 
 :: Create the bin folder and build the project
 mkdir bin
-cd bin
 
-go build -o surf
+go build -o bin/surf
 echo -> ./bin/surf
 
-cd ..
 echo Done.

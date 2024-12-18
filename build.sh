@@ -11,16 +11,14 @@
 echo Building Surf...
 
 # Delete the bin folder if it exists
-if [ -d bin ] then
+if [ -d bin ]; then
     rm -r bin
 fi
 
 # Create the bin folder and build the project
 mkdir bin
-cd bin
 
-go build -o surf
+go build -o bin/surf
 echo "-> ./bin/surf"
 
-cd ..
 echo Done.
