@@ -73,6 +73,17 @@ Contributions are welcome! If you'd like to contribute to the Surf language, ple
 
 ---
 
+## 🎲 Building from Source
+
+To build Surf from source into an executable, you need to execute either one of the **build scripts**:
+
+- **On Windows**: `build.bat`
+- **On Linux/macOS**: `build.sh`
+
+After the build process is complete, you will find the executable in the `bin/` directory.
+
+---
+
 ## 📝 License
 
 This project is licensed under the GNU General Public License v3.0. See the [LICENSE](LICENSE) file for more information.
