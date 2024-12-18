@@ -49,7 +49,11 @@ func AnalyzeStatement(
 	// Analyze the rest of the statement
 	remainingStatement := statement[startAt:]
 
-	if lastValueType == object.NothingType && len(remainingStatement) > 0 {
+	if len(remainingStatement) == 0 {
+		return lastValueType
+	}
+
+	if lastValueType == object.NothingType {
 		logger.TokenError(
 			remainingStatement[0],
 			"Illegal property access",
@@ -64,7 +68,23 @@ func AnalyzeStatement(
 			variables,
 			functions,
 		)
+
+		return lastValueType
 	}
+
+	// The only valid operation after all that has been processed
+	// is property access, therefore the fist token of the remaining
+	// statement must be a dot
+	if remainingStatement[0].GetType() != code.Dot {
+		logger.TokenError(
+			remainingStatement[0],
+			"Invalid operation",
+			"Invalid operation after identifier",
+			"Check the statement",
+		)
+	}
+
+	// TODO! Parse property access
 
 	return lastValueType
 }
