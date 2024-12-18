@@ -31,7 +31,7 @@ func AnalyzeFun(
 		logger.TokenError(
 			trace,
 			"Stack overflow",
-			"This function has overflown their stack",
+			"This function has overflown its stack",
 			"Check for infinite loops",
 		)
 	}
