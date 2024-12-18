@@ -1,0 +1,9 @@
+import "@std/io/print";
+
+fun abc() -> num {
+    return 1;
+}
+
+fun main() {
+    println(1 + 2 + abc());
+}
