@@ -10,6 +10,10 @@
 
 Welcome to the official Surf repository! Here, you will find the source code of the Surf language. Have fun!
 
+> **NOTE**
+> This project is still in development and may not be stable.
+> **Surf is still not a language for production use.**
+
 ---
 
 ## 📦 Features
