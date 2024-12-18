@@ -1,18 +1,25 @@
 package cli
 
 import (
+	"fmt"
 	"github.com/urfave/cli/v2"
 	"os"
 	"surf/ansi"
+	"surf/ast"
+	"surf/checker"
+	"surf/lexer"
 	"surf/logger"
 	"surf/util"
+	"time"
 )
 
 // CheckCommand represents the check command of the Surf CLI
 // it checks a surf file
-func CheckCommand(context *cli.Context) (string, string) {
+func CheckCommand(context *cli.Context) (*ast.FileCode, string) {
 	// Get the file path
 	filePath := context.Args().First()
+
+	showTimer := context.Bool("timer")
 
 	if len(filePath) == 0 {
 		logger.Error("Empty file path")
@@ -48,5 +55,45 @@ func CheckCommand(context *cli.Context) (string, string) {
 		os.Exit(1)
 	}
 
-	return string(input), filePath
+	start := time.Now()
+
+	// Lex the input
+	tokens := lexer.Lex(string(input), filePath)
+
+	if showTimer {
+		fmt.Println(
+			ansi.Colorize(
+				"black_bright",
+				"~ Lexed ("+time.Since(start).String()+")",
+			),
+		)
+	}
+
+	start = time.Now()
+	// Parse the tokens into a FileCode
+	fileCode := ast.Parse(tokens)
+
+	if showTimer {
+		fmt.Println(
+			ansi.Colorize(
+				"black_bright",
+				"~ Parsed ("+time.Since(start).String()+")",
+			),
+		)
+	}
+
+	start = time.Now()
+	// Analyze the file code
+	checker.AnalyzeFileCode(*fileCode, filePath)
+
+	if showTimer {
+		fmt.Println(
+			ansi.Colorize(
+				"black_bright",
+				"~ Checked ("+time.Since(start).String()+")",
+			),
+		)
+	}
+
+	return fileCode, filePath
 }
