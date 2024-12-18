@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"github.com/urfave/cli/v2"
 	"os"
+	"surf/analyzer"
 	"surf/ansi"
 	"surf/ast"
-	"surf/checker"
 	"surf/lexer"
 	"surf/logger"
 	"surf/util"
@@ -84,7 +84,7 @@ func CheckCommand(context *cli.Context) (*ast.FileCode, string) {
 
 	start = time.Now()
 	// Analyze the file code
-	checker.AnalyzeFileCode(fileCode, filePath)
+	analyzer.AnalyzeFileCode(fileCode, filePath)
 
 	if showTimer {
 		fmt.Println(
