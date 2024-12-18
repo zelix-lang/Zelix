@@ -39,7 +39,7 @@ func Interpret(fileCode *ast.FileCode, sourceFile string) {
 
 	// Interpret the main function
 	fun.CallFun(
-		&main,
+		main,
 		runtime,
 		fileCode.GetFunctions(),
 		*code.NewToken(

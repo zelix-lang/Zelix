@@ -8,18 +8,32 @@ import (
 	"surf/logger"
 	"surf/object"
 	"surf/tokenUtil"
+	"time"
 )
 
 // AnalyzeFun analyzes the given function
 func AnalyzeFun(
-	function ast.Function,
-	functions *map[string]map[string]ast.Function,
+	function *ast.Function,
+	functions *map[string]map[string]*ast.Function,
 	trace code.Token,
 	args ...object.SurfObjectType,
 ) object.SurfObjectType {
 	// Standard functions are not evaluated
 	if function.IsStd() {
 		return object.NothingType
+	}
+
+	function.SetTimesCalled(function.GetTimesCalled() + 1)
+	function.SetLastCalled(time.Now())
+
+	// Check for stack overflows
+	if function.GetTimesCalled() > 1000 && time.Since(function.GetLastCalled()).Seconds() < 1 {
+		logger.TokenError(
+			trace,
+			"Stack overflow",
+			"This function has overflown their stack",
+			"Check for infinite loops",
+		)
 	}
 
 	if len(args) != len(function.GetParameters()) {

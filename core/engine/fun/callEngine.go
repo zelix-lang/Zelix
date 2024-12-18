@@ -13,7 +13,7 @@ import (
 func CallFun(
 	function *ast.Function,
 	runtime map[string]func(...object.SurfObject),
-	functions *map[string]map[string]ast.Function,
+	functions *map[string]map[string]*ast.Function,
 	trace code.Token,
 	args ...object.SurfObject,
 ) {

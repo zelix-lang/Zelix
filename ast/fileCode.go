@@ -9,11 +9,11 @@ import (
 type FileCode struct {
 	// functions holds the functions of the current file
 	// and of all the imported files.
-	functions map[string]map[string]Function
+	functions map[string]map[string]*Function
 }
 
 // GetFunctions returns the functions of the FileCode
-func (fc *FileCode) GetFunctions() *map[string]map[string]Function {
+func (fc *FileCode) GetFunctions() *map[string]map[string]*Function {
 	return &fc.functions
 }
 
@@ -23,7 +23,7 @@ func (fc *FileCode) AddFunction(trace code.Token, file string, name string, func
 
 	// Make sure the file exists in the map
 	if !ok {
-		fc.functions[file] = make(map[string]Function)
+		fc.functions[file] = make(map[string]*Function)
 		functions, _ = fc.functions[file]
 	}
 
@@ -38,16 +38,16 @@ func (fc *FileCode) AddFunction(trace code.Token, file string, name string, func
 		}
 	}
 
-	functions[name] = function
+	functions[name] = &function
 }
 
 // GetFunction returns a function from the FileCode
-func (fc *FileCode) GetFunction(file string, name string) (Function, bool) {
+func (fc *FileCode) GetFunction(file string, name string) (*Function, bool) {
 	// Make sure the file exists in the map
 	functions, ok := fc.functions[file]
 
 	if !ok {
-		return Function{}, false
+		return &Function{}, false
 	}
 
 	function, _ok := functions[name]
@@ -58,14 +58,14 @@ func (fc *FileCode) GetFunction(file string, name string) (Function, bool) {
 // along with a boolean indicating if the function was found
 // and another boolean indicating if the function was found in the same file
 func LocateFunction(
-	functions map[string]map[string]Function,
+	functions map[string]map[string]*Function,
 	file string,
 	name string,
-) (Function, bool, bool) {
+) (*Function, bool, bool) {
 	fileFunctions, ok := functions[file]
 	// Make sure the file exists in the map
 	if !ok {
-		return Function{}, false, false
+		return &Function{}, false, false
 	}
 
 	// Check if the function is in the current file
@@ -80,5 +80,5 @@ func LocateFunction(
 		}
 	}
 
-	return Function{}, false, false
+	return &Function{}, false, false
 }

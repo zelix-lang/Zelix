@@ -40,7 +40,7 @@ func checkStatement(
 	currentToken code.Token,
 	currentIndex int,
 	variables *stack.StaticStack,
-	functions *map[string]map[string]ast.Function,
+	functions *map[string]map[string]*ast.Function,
 ) {
 	*extractingIdentifier = false
 
@@ -86,7 +86,7 @@ func checkStatement(
 func AnalyzeArithmetic(
 	statement []code.Token,
 	variables *stack.StaticStack,
-	functions *map[string]map[string]ast.Function,
+	functions *map[string]map[string]*ast.Function,
 ) {
 	statementLen := len(statement)
 	if statementLen == 0 {

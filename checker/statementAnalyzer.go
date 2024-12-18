@@ -15,7 +15,7 @@ import (
 func AnalyzeStatement(
 	statement []code.Token,
 	variables *stack.StaticStack,
-	functions *map[string]map[string]ast.Function,
+	functions *map[string]map[string]*ast.Function,
 ) object.SurfObjectType {
 	// Used to know what to check for
 	isArithmetic := false

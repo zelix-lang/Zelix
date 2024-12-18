@@ -6,7 +6,7 @@ import (
 )
 
 // AnalyzeFileCode analyzes the given file code
-func AnalyzeFileCode(code ast.FileCode, source string) {
+func AnalyzeFileCode(code *ast.FileCode, source string) {
 	fileFunctions, found := (*code.GetFunctions())[source]
 
 	if !found {
@@ -25,11 +25,16 @@ func AnalyzeFileCode(code ast.FileCode, source string) {
 
 	// Analyze the main function
 	AnalyzeMainFunc(mainFunction)
+	AnalyzeFun(mainFunction, code.GetFunctions(), mainFunction.GetTrace())
 
-	if len(mainFunction.GetBody()) == 0 {
-		// No tokens to analyze
-		return
+	// Analyze all other functions
+	for file, functions := range *code.GetFunctions() {
+		for name, function := range functions {
+			if file == source && name == "main" {
+				continue
+			}
+
+			AnalyzeFun(function, code.GetFunctions(), function.GetTrace())
+		}
 	}
-
-	AnalyzeFun(mainFunction, code.GetFunctions(), mainFunction.GetBody()[0])
 }

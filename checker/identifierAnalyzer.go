@@ -15,7 +15,7 @@ import (
 func AnalyzeIdentifier(
 	statement []code.Token,
 	variables *stack.StaticStack,
-	functions *map[string]map[string]ast.Function,
+	functions *map[string]map[string]*ast.Function,
 	startAt *int,
 	lastValueType *object.SurfObjectType,
 	isArithmetic *bool,

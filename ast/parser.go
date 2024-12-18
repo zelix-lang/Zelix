@@ -13,7 +13,7 @@ var stdPath = os.Getenv("SURF_STANDARD_PATH")
 // Parse parses the given tokens into a FileCode
 func Parse(tokens []code.Token) *FileCode {
 	result := FileCode{
-		functions: make(map[string]map[string]Function),
+		functions: make(map[string]map[string]*Function),
 	}
 
 	// Used to keep track of the state of the parser

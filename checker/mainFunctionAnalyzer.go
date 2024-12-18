@@ -7,7 +7,7 @@ import (
 )
 
 // AnalyzeMainFunc analyzes the main function
-func AnalyzeMainFunc(function ast.Function) {
+func AnalyzeMainFunc(function *ast.Function) {
 	// Main function can't be public
 	// Technically, it can be, but it's better
 	// to enforce this rule because another function

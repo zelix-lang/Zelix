@@ -84,7 +84,7 @@ func CheckCommand(context *cli.Context) (*ast.FileCode, string) {
 
 	start = time.Now()
 	// Analyze the file code
-	checker.AnalyzeFileCode(*fileCode, filePath)
+	checker.AnalyzeFileCode(fileCode, filePath)
 
 	if showTimer {
 		fmt.Println(

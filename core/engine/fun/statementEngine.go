@@ -15,7 +15,7 @@ func CallStatement(
 	statement []code.Token,
 	runtime map[string]func(...object.SurfObject),
 	isStd bool,
-	functions *map[string]map[string]ast.Function,
+	functions *map[string]map[string]*ast.Function,
 	variables *stack.Stack,
 ) {
 	call := tokenUtil.ExtractTokensBefore(
@@ -49,7 +49,7 @@ func CallStatement(
 	function, _, _ := ast.LocateFunction(*functions, firstToken.GetFile(), firstToken.GetValue())
 
 	CallFun(
-		&function,
+		function,
 		runtime,
 		functions,
 		firstToken,
