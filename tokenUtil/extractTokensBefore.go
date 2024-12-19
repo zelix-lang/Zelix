@@ -48,10 +48,11 @@ func ExtractTokensBefore(
 	if !metDelimiter {
 		logger.TokenError(
 			tokens[len(tokens)-1],
-			"Expected a delimiter",
+			"Expected a "+TokenTypeToString(delimiter),
 			"Add a delimiter to the end of the list",
 		)
 	}
 
 	return result
+
 }
