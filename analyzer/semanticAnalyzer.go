@@ -1,6 +1,7 @@
 package analyzer
 
 import (
+	"os"
 	"surf/ast"
 	"surf/logger"
 )
@@ -13,6 +14,8 @@ func AnalyzeFileCode(code *ast.FileCode, source string) {
 		logger.Error("No functions in the file")
 		logger.Log("The file does not contain any functions")
 		logger.Help("Add a function to the file")
+
+		os.Exit(1)
 	}
 
 	mainFunction, found := fileFunctions["main"]
@@ -21,6 +24,8 @@ func AnalyzeFileCode(code *ast.FileCode, source string) {
 		logger.Error("No main function")
 		logger.Log("The file does not contain a main function")
 		logger.Help("Add a function named 'main' to the file")
+
+		os.Exit(1)
 	}
 
 	// Analyze the main function
