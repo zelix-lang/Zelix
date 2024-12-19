@@ -355,18 +355,6 @@ func lexSingleFile(input string, file string) []code.Token {
 			continue
 		}
 
-		if inString {
-			if char == '\\' {
-				inStringEscape = true
-				// Wait for the next character to dynamically
-				// construct the escape sequence
-				continue
-			}
-
-			currentToken.WriteRune(char)
-			continue
-		}
-
 		if inStringEscape {
 			// No need to create a strings.Builder here
 			// performance tradeoff is not worth it for a single character
@@ -375,7 +363,7 @@ func lexSingleFile(input string, file string) []code.Token {
 			escaped, err := strconv.Unquote(`"` + combined + `"`)
 
 			if err != nil {
-				logger.Error("Invalid escape sequence (" + combined + ")")
+				logger.Error("Invalid escape sequence: " + combined)
 
 				trace, indicator := util.BuildTrace(currentToken, i, input)
 				logger.Log("Full context:", trace, indicator)
@@ -386,6 +374,18 @@ func lexSingleFile(input string, file string) []code.Token {
 
 			currentToken.WriteString(escaped)
 			inStringEscape = false
+			continue
+		}
+
+		if inString {
+			if char == '\\' {
+				inStringEscape = true
+				// Wait for the next character to dynamically
+				// construct the escape sequence
+				continue
+			}
+
+			currentToken.WriteRune(char)
 			continue
 		}
 
