@@ -1,5 +1,13 @@
 import "@std/io/print";
 
-fun main() {
+mod MyMod {
+    fun MyMod() {
+        print("MyMod constructor\n");
+    }
+}
+
+pub fun main() {
     println("Hello, world!");
 }
+
+pub

@@ -453,5 +453,8 @@ func lexSingleFile(input string, file string) []code.Token {
 		currentToken.WriteRune(char)
 	}
 
+	// Push the last token
+	pushToken(&currentToken, &result, line, column, file, input, inputLength, decimalLiteral)
+
 	return result
 }

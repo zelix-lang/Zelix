@@ -15,6 +15,7 @@ var knownTokens = map[string]code.TokenType{
 	"else":     code.Else,
 	"elseif":   code.ElseIf,
 	"return":   code.Return,
+	"mod":      code.Mod,
 
 	// Operators and symbols
 	"=":  code.Assign,
@@ -54,7 +55,7 @@ var knownTokens = map[string]code.TokenType{
 	// Data types
 	"str":     code.String,
 	"num":     code.Num,
-	"dec":	   code.Dec,
+	"dec":     code.Dec,
 	"bool":    code.Bool,
 	"nothing": code.Nothing,
 

@@ -4,20 +4,24 @@ import (
 	"os"
 	"strings"
 	"surf/code"
+	"surf/concurrent"
 	"surf/logger"
+	"surf/object"
 )
 
 // The standard library's path
 var stdPath = os.Getenv("SURF_STANDARD_PATH")
 
 // Parse parses the given tokens into a FileCode
-func Parse(tokens []code.Token) *FileCode {
+func Parse(tokens []code.Token, allowMods bool) *FileCode {
 	result := FileCode{
 		functions: make(map[string]map[string]*Function),
+		modules:   make(map[string]*SurfMod),
 	}
 
 	// Used to keep track of the state of the parser
 	inFunction := false
+	inMod := false
 
 	// Start at block depth 1 because of the curly brace
 	// used to define the function's body
@@ -32,6 +36,7 @@ func Parse(tokens []code.Token) *FileCode {
 	expectingArgType := false
 	expectingArrow := false
 	expectingReturnType := false
+	expectingOpenCurly := false
 
 	// Used to keep track of the current function's metadata
 	currentFunctionName := ""
@@ -55,8 +60,8 @@ func Parse(tokens []code.Token) *FileCode {
 				)
 			}
 
-			// Make sure there is a next token
-			if i+1 >= len(tokens) {
+			// Make sure there is a next token and that it's in the same file
+			if i == len(tokens)-1 || tokens[i+1].GetFile() != token.GetFile() {
 				logger.TokenError(
 					token,
 					"Expected a function declaration after the public keyword",
@@ -66,6 +71,21 @@ func Parse(tokens []code.Token) *FileCode {
 
 			currentFunctionPublic = true
 		} else if expectingFun {
+			if tokenType == code.Mod {
+				if !allowMods {
+					logger.TokenError(
+						token,
+						"Modules are not allowed here",
+						"Remove the module declaration",
+					)
+				}
+
+				inMod = true
+				expectingFun = false
+				expectingFunName = true
+				continue
+			}
+
 			if tokenType != code.Function {
 				logger.TokenError(
 					token,
@@ -88,8 +108,27 @@ func Parse(tokens []code.Token) *FileCode {
 			}
 
 			currentFunctionName = token.GetValue()
+
+			if inMod {
+				expectingOpenCurly = true
+				expectingFunName = false
+				continue
+			}
+
 			expectingFunName = false
 			expectingOpenParen = true
+		} else if expectingOpenCurly {
+			// This case only happens for modules
+			if tokenType != code.OpenCurly {
+				logger.TokenError(
+					token,
+					"Expected an opening curly brace",
+					"Add an opening curly brace",
+				)
+			}
+
+			expectingOpenCurly = false
+			// Go directly to parse the body of the mod
 		} else if expectingOpenParen {
 			if tokenType != code.OpenParen {
 				logger.TokenError(
@@ -211,7 +250,7 @@ func Parse(tokens []code.Token) *FileCode {
 
 			currentFunctionReturnType = append(currentFunctionReturnType, token)
 		} else {
-			if !inFunction {
+			if !inFunction && !inMod {
 				logger.TokenError(
 					token,
 					"Unexpected token",
@@ -239,6 +278,49 @@ func Parse(tokens []code.Token) *FileCode {
 					// End of function
 					blockDepth = 1
 					inFunction = false
+
+					if inMod {
+						// Recursively parse the mod
+						// No risk of exponential complexity because
+						// we don't allow nested mods
+						modFunctions := Parse(currentFunctionBody, false)
+						privateFunctions := make(map[string]*Function)
+						publicFunctions := make(map[string]*Function)
+
+						for _, functions := range modFunctions.functions {
+							for name, function := range functions {
+								if function.public {
+									publicFunctions[name] = function
+								} else {
+									privateFunctions[name] = function
+								}
+							}
+						}
+
+						// Wrap the functions inside a SurfMod
+						mod := NewSurfMod(
+							concurrent.NewTypedConcurrentMap[string, object.SurfObject](),
+							publicFunctions,
+							privateFunctions,
+						)
+
+						result.modules[currentFunctionName] = &mod
+						inMod = false
+						expectingFun = true
+
+						resetFlags(
+							&currentFunctionName,
+							&currentFunctionReturnType,
+							&currentFunctionParameters,
+							&currentFunctionPublic,
+							&currentParameter,
+							&currentFunctionBody,
+						)
+
+						continue
+					}
+
+					inMod = false
 					expectingFun = true
 
 					// Create the function
@@ -258,19 +340,14 @@ func Parse(tokens []code.Token) *FileCode {
 						function,
 					)
 
-					// Reset the current function's metadata
-					currentFunctionName = ""
-					currentFunctionReturnType = nil
-					currentFunctionReturnType = []code.Token{}
-
-					currentFunctionParameters = make(map[string][]code.Token)
-					currentFunctionPublic = false
-					currentParameter = nil
-					currentParameter = []code.Token{}
-
-					currentFunctionBody = nil
-					currentFunctionBody = []code.Token{}
-
+					resetFlags(
+						&currentFunctionName,
+						&currentFunctionReturnType,
+						&currentFunctionParameters,
+						&currentFunctionPublic,
+						&currentParameter,
+						&currentFunctionBody,
+					)
 					continue
 				}
 			}
@@ -280,4 +357,27 @@ func Parse(tokens []code.Token) *FileCode {
 	}
 
 	return &result
+}
+
+// resetFlags resets the flags used to keep track of the parser's state
+func resetFlags(
+	currentFunctionName *string,
+	currentFunctionReturnType *[]code.Token,
+	currentFunctionParameters *map[string][]code.Token,
+	currentFunctionPublic *bool,
+	currentParameter *[]code.Token,
+	currentFunctionBody *[]code.Token,
+) {
+	// Reset the current function's metadata
+	*currentFunctionName = ""
+	*currentFunctionReturnType = nil
+	*currentFunctionReturnType = []code.Token{}
+
+	*currentFunctionParameters = make(map[string][]code.Token)
+	*currentFunctionPublic = false
+	*currentParameter = nil
+	*currentParameter = make([]code.Token, 0)
+
+	*currentFunctionBody = nil
+	*currentFunctionBody = make([]code.Token, 0)
 }

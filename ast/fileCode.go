@@ -10,6 +10,8 @@ type FileCode struct {
 	// functions holds the functions of the current file
 	// and of all the imported files.
 	functions map[string]map[string]*Function
+	// modules holds the defined modules in the file
+	modules map[string]*SurfMod
 }
 
 // GetFunctions returns the functions of the FileCode

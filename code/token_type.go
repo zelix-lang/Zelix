@@ -17,7 +17,8 @@ const (
 	Else
 	// ElseIf represents an else if token.
 	ElseIf
-
+	// Mod represents a mod token.
+	Mod
 	// Return represents a return token.
 	Return
 	// Assign represents an assignment token.
