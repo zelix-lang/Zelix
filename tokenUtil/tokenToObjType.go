@@ -7,51 +7,52 @@ import (
 	"surf/object"
 )
 
-// FromRawType converts a raw type to a SurfObjectType
+// FromRawType converts a raw token to a SurfObject
 func FromRawType(
 	token code.Token,
-	variables *stack.StaticStack,
-) object.SurfObjectType {
+	variables *stack.Stack,
+) object.SurfObject {
 	tokenType := token.GetType()
 
 	switch tokenType {
 	case code.Bool:
-		return object.BooleanType
+		return object.NewSurfObject(object.BooleanType, "")
 	case code.String:
-		return object.StringType
+		return object.NewSurfObject(object.StringType, "")
 	case code.Num:
-		return object.IntType
+		return object.NewSurfObject(object.IntType, "")
 	case code.Dec:
-		return object.DecimalType
-	case code.Nothing:
-		return object.NothingType
+		return object.NewSurfObject(object.DecimalType, "")
+		/*case code.Identifier:
+		todo!
+		*/
 	default:
 		logger.TokenError(
 			token,
 			"Unexpected token",
-			"Expected a raw type",
+			"Expected an identifier, a literal or a variable",
 		)
 
-		return object.NothingType
+		return object.NewSurfObject(object.NothingType, "")
 	}
 }
 
-// ToObjType converts a token type to a SurfObjectType
-func ToObjType(
+// ToObj converts a token to a SurfObject
+func ToObj(
 	token code.Token,
-	variables *stack.StaticStack,
-) object.SurfObjectType {
+	variables *stack.Stack,
+) object.SurfObject {
 	tokenType := token.GetType()
 
 	switch tokenType {
 	case code.BoolLiteral:
-		return object.BooleanType
+		return object.NewSurfObject(object.BooleanType, "")
 	case code.StringLiteral:
-		return object.StringType
+		return object.NewSurfObject(object.StringType, "")
 	case code.NumLiteral:
-		return object.IntType
+		return object.NewSurfObject(object.IntType, "")
 	case code.DecimalLiteral:
-		return object.DecimalType
+		return object.NewSurfObject(object.DecimalType, "")
 	case code.Identifier:
 		variable, found := variables.Load(token.GetValue())
 
@@ -72,6 +73,6 @@ func ToObjType(
 			"Expected an identifier, a literal or a variable",
 		)
 
-		return object.NothingType
+		return object.NewSurfObject(object.NothingType, "")
 	}
 }

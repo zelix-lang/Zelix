@@ -14,16 +14,16 @@ import (
 // returns
 func AnalyzeStatement(
 	statement []code.Token,
-	variables *stack.StaticStack,
+	variables *stack.Stack,
 	functions *map[string]map[string]*ast.Function,
-) object.SurfObjectType {
+) object.SurfObject {
 	// Used to know what to check for
 	isArithmetic := false
 	isFunCall := false
 
 	// Used to check property access
 	// i.e.: object.property
-	lastValueType := object.NothingType
+	lastValue := object.NewSurfObject(object.NothingType, nil)
 	startAt := 0
 
 	firstToken := statement[0]
@@ -36,13 +36,13 @@ func AnalyzeStatement(
 			variables,
 			functions,
 			&startAt,
-			&lastValueType,
+			&lastValue,
 			&isArithmetic,
 			&isFunCall,
 		)
 	default:
-		lastValueType = tokenUtil.ToObjType(firstToken, variables)
-		isArithmetic = lastValueType == object.IntType || lastValueType == object.DecimalType
+		lastValue = tokenUtil.ToObj(firstToken, variables)
+		isArithmetic = lastValue.GetType() == object.IntType || lastValue.GetType() == object.DecimalType
 		startAt = 1
 	}
 
@@ -50,7 +50,7 @@ func AnalyzeStatement(
 	remainingStatement := statement[startAt:]
 
 	if len(remainingStatement) == 0 {
-		return lastValueType
+		return lastValue
 	}
 
 	if isArithmetic {
@@ -60,10 +60,10 @@ func AnalyzeStatement(
 			functions,
 		)
 
-		return lastValueType
+		return lastValue
 	}
 
-	if lastValueType != object.ModType {
+	if lastValue.GetType() != object.ModType {
 		logger.TokenError(
 			remainingStatement[0],
 			"Illegal property access",
@@ -86,5 +86,5 @@ func AnalyzeStatement(
 
 	// TODO! Parse property access
 
-	return lastValueType
+	return lastValue
 }

@@ -39,7 +39,7 @@ func checkStatement(
 	lastStatement *[]code.Token,
 	currentToken code.Token,
 	currentIndex int,
-	variables *stack.StaticStack,
+	variables *stack.Stack,
 	functions *map[string]map[string]*ast.Function,
 ) {
 	*extractingIdentifier = false
@@ -55,7 +55,7 @@ func checkStatement(
 	}
 
 	// Analyze the last statement
-	dummyType := object.NothingType
+	dummyObj := object.NewSurfObject(object.NothingType, nil)
 	dummyBool := false
 	isArithmetic := false
 
@@ -64,7 +64,7 @@ func checkStatement(
 		variables,
 		functions,
 		&currentIndex,
-		&dummyType,
+		&dummyObj,
 		&isArithmetic,
 		&dummyBool,
 	)
@@ -85,7 +85,7 @@ func checkStatement(
 // AnalyzeArithmetic analyzes the given arithmetic expression
 func AnalyzeArithmetic(
 	statement []code.Token,
-	variables *stack.StaticStack,
+	variables *stack.Stack,
 	functions *map[string]map[string]*ast.Function,
 ) {
 	statementLen := len(statement)

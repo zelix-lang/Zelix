@@ -11,7 +11,7 @@ import (
 // AnalyzeVariableDeclaration analyzes the declaration of a variable
 func AnalyzeVariableDeclaration(
 	statement []code.Token,
-	variables *stack.StaticStack,
+	variables *stack.Stack,
 	functions *map[string]map[string]*ast.Function,
 ) {
 	if len(statement) < 5 {
@@ -93,7 +93,7 @@ func AnalyzeVariableDeclaration(
 		functions,
 	)
 
-	if value != expectedType {
+	if value.GetType() != expectedType.GetType() {
 		logger.TokenError(
 			varTypeTokens[0],
 			"Type mismatch",

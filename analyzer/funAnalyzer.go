@@ -14,10 +14,10 @@ import (
 
 // checkParamType checks if the given parameter type is valid
 func checkParamType(
-	paramType object.SurfObjectType,
+	paramType object.SurfObject,
 	trace code.Token,
 ) {
-	if paramType == object.NothingType {
+	if paramType.GetType() == object.NothingType {
 		logger.TokenError(
 			trace,
 			"Invalid parameter type",
@@ -49,7 +49,7 @@ func AnalyzeFun(
 	}
 
 	// Create a new StaticStack
-	variables := stack.NewStaticStack()
+	variables := stack.NewStack()
 	actualParams := function.GetParameters()
 
 	if checkArgs {
@@ -70,7 +70,7 @@ func AnalyzeFun(
 			value := args[i]
 
 			checkParamType(expected, trace)
-			if value != expected {
+			if value != expected.GetType() {
 				logger.TokenError(
 					trace,
 					"Mismatched parameter types",
@@ -79,7 +79,7 @@ func AnalyzeFun(
 				)
 			}
 
-			variables.Append(param, value)
+			variables.Append(param, object.NewSurfObject(value, nil))
 		}
 	} else {
 		// Store the parameters without checking to avoid undefined references

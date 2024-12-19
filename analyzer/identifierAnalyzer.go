@@ -14,10 +14,10 @@ import (
 // and next tokens
 func AnalyzeIdentifier(
 	statement []code.Token,
-	variables *stack.StaticStack,
+	variables *stack.Stack,
 	functions *map[string]map[string]*ast.Function,
 	startAt *int,
-	lastValueType *object.SurfObjectType,
+	lastValue *object.SurfObject,
 	isArithmetic *bool,
 	isFunCall *bool,
 ) {
@@ -73,28 +73,33 @@ func AnalyzeIdentifier(
 		arguments := make([]object.SurfObjectType, len(argumentsRaw))
 
 		for i, argument := range argumentsRaw {
-			arguments[i] = AnalyzeStatement(
+			argType := AnalyzeStatement(
 				argument,
 				variables,
 				functions,
 			)
+
+			arguments[i] = argType.GetType()
 		}
 
 		*startAt = skipped
 
-		*lastValueType = AnalyzeFun(
-			function,
-			functions,
-			firstToken,
-			true,
-			arguments...,
+		*lastValue = object.NewSurfObject(
+			AnalyzeFun(
+				function,
+				functions,
+				firstToken,
+				true,
+				arguments...,
+			),
+			nil,
 		)
 	} else {
-		*lastValueType = variable
+		*lastValue = variable
 		*startAt = 1
 	}
 
-	if *lastValueType == object.IntType || *lastValueType == object.DecimalType {
+	if (*lastValue).GetType() == object.IntType || (*lastValue).GetType() == object.DecimalType {
 		*isArithmetic = true
 	}
 
