@@ -69,6 +69,14 @@ func Parse(tokens []code.Token, allowMods bool) *FileCode {
 				)
 			}
 
+			if currentFunctionPublic {
+				logger.TokenError(
+					token,
+					"Cannot declare a function as public twice",
+					"Remove the extra public keyword",
+				)
+			}
+
 			currentFunctionPublic = true
 		} else if expectingFun {
 			if tokenType == code.Mod {
