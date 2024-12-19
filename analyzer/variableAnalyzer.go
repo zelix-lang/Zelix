@@ -1,12 +1,17 @@
 package analyzer
 
 import (
+	"regexp"
+	"surf/ansi"
 	"surf/ast"
 	"surf/code"
 	"surf/core/stack"
 	"surf/logger"
 	"surf/tokenUtil"
 )
+
+// A regex to match camelCase variable names
+var snakeCaseRegex, _ = regexp.Compile("^[a-z]+(_[a-z0-9]+)*$")
 
 // AnalyzeVariableDeclaration analyzes the declaration of a variable
 func AnalyzeVariableDeclaration(
@@ -25,6 +30,15 @@ func AnalyzeVariableDeclaration(
 
 	// The first token is the variable name
 	varName := statement[0]
+
+	if !snakeCaseRegex.MatchString(varName.GetValue()) {
+		logger.TokenWarning(
+			varName,
+			"Variable name is not in snake_case",
+			"Surf uses snake_case for variable names",
+			"Check "+ansi.Colorize("yellow", "[U-001]")+" in the style guide",
+		)
+	}
 
 	if varName.GetType() != code.Identifier {
 		logger.TokenError(

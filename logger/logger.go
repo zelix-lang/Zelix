@@ -9,6 +9,7 @@ import (
 var logLevel = ansi.Colorize("cyan_bright_bold", "LOG |")
 var errorLevel = ansi.Colorize("red_bright_bold", "ERROR |")
 var helpLevel = ansi.Colorize("green_bright_bold", "HELP |")
+var warningLevel = ansi.Colorize("yellow_bright_bold", "WARNING |")
 var helpPrefix = ansi.Colorize("black_bright", "  |>")
 
 // Log prints a set of messages to the console
@@ -32,6 +33,22 @@ func Error(message ...string) {
 func Help(message ...string) {
 	for _, m := range message {
 		println(helpPrefix, helpLevel, m)
+	}
+}
+
+// TokenWarning prints a warning message related to the given token
+// with its trace and help messages to the console
+// in O(n) time
+func TokenWarning(
+	token code.Token,
+	message string,
+	help ...string,
+) {
+	println(warningLevel, message)
+	Log("Full context:", token.GetTrace(), token.GetTraceContext(), token.GetTraceIndicator())
+
+	for _, h := range help {
+		Help(h)
 	}
 }
 
