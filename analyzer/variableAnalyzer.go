@@ -101,4 +101,7 @@ func AnalyzeVariableDeclaration(
 			"Change the value type",
 		)
 	}
+
+	// Put the variable in the stack
+	variables.Append(varName.GetValue(), expectedType)
 }
