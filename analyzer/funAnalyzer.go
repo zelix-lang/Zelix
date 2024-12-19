@@ -108,7 +108,7 @@ func AnalyzeFun(
 
 		tokenType := token.GetType()
 
-		if tokenType == code.Identifier {
+		if tokenType == code.Identifier || tokenType == code.Let {
 			// Extract the statement
 			statement := tokenUtil.ExtractTokensBefore(
 				function.GetBody()[i:],
@@ -122,6 +122,11 @@ func AnalyzeFun(
 			skipToIndex = i + len(statement) + 1
 
 			// Analyze the statement
+			if tokenType == code.Let {
+				AnalyzeVariableDeclaration(statement[1:], variables, functions)
+				continue
+			}
+
 			AnalyzeStatement(statement, variables, functions)
 			continue
 		}
