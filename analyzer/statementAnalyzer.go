@@ -30,6 +30,8 @@ func AnalyzeStatement(
 	firstTokenType := firstToken.GetType()
 
 	switch firstTokenType {
+	case code.New:
+		// TODO! Parse object creation
 	case code.Identifier:
 		AnalyzeIdentifier(
 			statement,

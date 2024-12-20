@@ -7,13 +7,14 @@ import (
 	"surf/concurrent"
 	"surf/logger"
 	"surf/object"
+	"surf/tokenUtil"
 )
 
 // The standard library's path
 var stdPath = os.Getenv("SURF_STANDARD_PATH")
 
 // Parse parses the given tokens into a FileCode
-func Parse(tokens []code.Token, allowMods bool) *FileCode {
+func Parse(tokens []code.Token, allowMods bool, allowInlineVars bool) *FileCode {
 	result := FileCode{
 		functions: make(map[string]map[string]*Function),
 		modules:   make(map[string]*SurfMod),
@@ -45,11 +46,45 @@ func Parse(tokens []code.Token, allowMods bool) *FileCode {
 	currentFunctionParameters := make(map[string][]code.Token)
 
 	var currentFunctionPublic bool
-	var currentParameter []code.Token
-	var currentFunctionBody []code.Token
+	currentParameter := make([]code.Token, 0)
+	currentFunctionBody := make([]code.Token, 0)
+
+	currentModVars := make([][]code.Token, 0)
+
+	// Used to skip tokens
+	skipToIndex := 0
 
 	for i, token := range tokens {
+		if i < skipToIndex {
+			continue
+		}
+
 		tokenType := token.GetType()
+
+		if tokenType == code.Let || tokenType == code.Const {
+			if !allowInlineVars && !inMod {
+				logger.TokenError(
+					token,
+					"Inline variable declarations are not allowed here",
+					"Remove the inline variable declaration",
+				)
+			}
+
+			// Extract the statement
+			statement := tokenUtil.ExtractTokensBefore(
+				tokens[i:],
+				code.Semicolon,
+				// Don't handle nested statements here
+				false,
+				code.Unknown,
+				code.Unknown,
+			)
+
+			currentModVars = append(currentModVars, statement)
+
+			skipToIndex = i + len(statement) + 1
+			continue
+		}
 
 		if tokenType == code.Pub {
 			if inFunction {
@@ -291,7 +326,7 @@ func Parse(tokens []code.Token, allowMods bool) *FileCode {
 						// Recursively parse the mod
 						// No risk of exponential complexity because
 						// we don't allow nested mods
-						modFunctions := Parse(currentFunctionBody, false)
+						modFunctions := Parse(currentFunctionBody, false, true)
 						privateFunctions := make(map[string]*Function)
 						publicFunctions := make(map[string]*Function)
 
@@ -310,6 +345,9 @@ func Parse(tokens []code.Token, allowMods bool) *FileCode {
 							concurrent.NewTypedConcurrentMap[string, object.SurfObject](),
 							publicFunctions,
 							privateFunctions,
+							currentFunctionName,
+							token.GetFile(),
+							currentModVars,
 						)
 
 						result.modules[currentFunctionName] = &mod

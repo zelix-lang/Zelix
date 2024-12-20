@@ -71,7 +71,7 @@ func CheckCommand(context *cli.Context) (*ast.FileCode, string) {
 
 	start = time.Now()
 	// Parse the tokens into a FileCode
-	fileCode := ast.Parse(tokens, true)
+	fileCode := ast.Parse(tokens, true, false)
 
 	if showTimer {
 		fmt.Println(

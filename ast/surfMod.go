@@ -1,6 +1,7 @@
 package ast
 
 import (
+	"surf/code"
 	"surf/concurrent"
 	"surf/object"
 )
@@ -8,10 +9,12 @@ import (
 // SurfMod represents a Surf module
 // a Surf module is somewhat similar to a class in OOP
 type SurfMod struct {
-	// Properties of the module
-	properties     *concurrent.TypedConcurrentMap[string, object.SurfObject]
-	publicMethods  map[string]*Function
-	privateMethods map[string]*Function
+	varDeclarations [][]code.Token
+	properties      *concurrent.TypedConcurrentMap[string, object.SurfObject]
+	publicMethods   map[string]*Function
+	privateMethods  map[string]*Function
+	name            string
+	file            string
 }
 
 // NewSurfMod creates a new Surf module
@@ -19,11 +22,17 @@ func NewSurfMod(
 	properties *concurrent.TypedConcurrentMap[string, object.SurfObject],
 	publicMethods map[string]*Function,
 	privateMethods map[string]*Function,
+	name string,
+	file string,
+	varDeclarations [][]code.Token,
 ) SurfMod {
 	return SurfMod{
-		properties:     properties,
-		publicMethods:  publicMethods,
-		privateMethods: privateMethods,
+		properties:      properties,
+		publicMethods:   publicMethods,
+		privateMethods:  privateMethods,
+		name:            name,
+		file:            file,
+		varDeclarations: varDeclarations,
 	}
 }
 
@@ -45,4 +54,19 @@ func (sm *SurfMod) SetProperty(name string, value object.SurfObject) {
 func (sm *SurfMod) GetMethod(name string) (*Function, bool, bool) {
 	method, found := sm.publicMethods[name]
 	return method, found, true
+}
+
+// GetName returns the name of the module
+func (sm *SurfMod) GetName() string {
+	return sm.name
+}
+
+// GetFile returns the file in which the module was defined
+func (sm *SurfMod) GetFile() string {
+	return sm.file
+}
+
+// GetVarDeclarations returns the variable declarations in the module
+func (sm *SurfMod) GetVarDeclarations() [][]code.Token {
+	return sm.varDeclarations
 }
