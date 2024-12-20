@@ -1,6 +1,9 @@
 package runtime
 
-import "surf/object"
+import (
+	"surf/ast"
+	"surf/object"
+)
 
 // Write writes the given string to the standard output
 // without a newline character
@@ -17,8 +20,11 @@ func Write(objects ...object.SurfObject) {
 			print(obj.GetValue().(int))
 		case object.BooleanType:
 			print(obj.GetValue().(bool))
+		case object.NothingType:
+			print("@Surf<Nothing>")
 		default:
-			panic("unhandled default case")
+			mod := obj.GetValue().(ast.SurfMod)
+			print(mod.GetName())
 		}
 	}
 }
