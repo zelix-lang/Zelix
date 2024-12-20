@@ -118,6 +118,9 @@ const (
 	// For represents a for token.
 	For
 
+	// New represents a new token.
+	New
+
 	// Break represents a break token.
 	Break
 	// Continue represents a continue token.
