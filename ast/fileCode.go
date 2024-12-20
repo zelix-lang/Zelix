@@ -84,3 +84,8 @@ func LocateFunction(
 
 	return &Function{}, false, false
 }
+
+// GetModules returns the modules of the FileCode
+func (fc *FileCode) GetModules() *map[string]*SurfMod {
+	return &fc.modules
+}

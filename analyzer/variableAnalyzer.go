@@ -18,6 +18,7 @@ func AnalyzeVariableDeclaration(
 	statement []code.Token,
 	variables *stack.Stack,
 	functions *map[string]map[string]*ast.Function,
+	mods *map[string]*ast.SurfMod,
 ) {
 	if len(statement) < 5 {
 		logger.TokenError(
@@ -105,6 +106,7 @@ func AnalyzeVariableDeclaration(
 		statement[(len(varTypeTokens)+3):],
 		variables,
 		functions,
+		mods,
 	)
 
 	if value.GetType() != expectedType.GetType() {

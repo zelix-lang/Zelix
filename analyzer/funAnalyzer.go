@@ -31,10 +31,11 @@ func checkParamType(
 func AnalyzeFun(
 	function *ast.Function,
 	functions *map[string]map[string]*ast.Function,
+	mods *map[string]*ast.SurfMod,
 	trace code.Token,
 	checkArgs bool,
-	args ...object.SurfObjectType,
-) object.SurfObjectType {
+	args ...object.SurfObject,
+) object.SurfObject {
 	function.SetTimesCalled(function.GetTimesCalled() + 1)
 	function.SetLastCalled(time.Now())
 
@@ -70,7 +71,7 @@ func AnalyzeFun(
 			value := args[i]
 
 			checkParamType(expected, trace)
-			if value != expected.GetType() {
+			if value.GetType() != expected.GetType() {
 				logger.TokenError(
 					trace,
 					"Mismatched parameter types",
@@ -79,7 +80,7 @@ func AnalyzeFun(
 				)
 			}
 
-			variables.Append(param, object.NewSurfObject(value, nil))
+			variables.Append(param, value)
 		}
 	} else {
 		// Store the parameters without checking to avoid undefined references
@@ -95,7 +96,7 @@ func AnalyzeFun(
 	// Beyond this point, standard functions no longer
 	// need to be evaluated
 	if function.IsStd() {
-		return object.NothingType
+		return object.NewSurfObject(object.NothingType, nil)
 	}
 
 	// Used to skip tokens
@@ -123,11 +124,11 @@ func AnalyzeFun(
 
 			// Analyze the statement
 			if tokenType == code.Let {
-				AnalyzeVariableDeclaration(statement[1:], variables, functions)
+				AnalyzeVariableDeclaration(statement[1:], variables, functions, mods)
 				continue
 			}
 
-			AnalyzeStatement(statement, variables, functions)
+			AnalyzeStatement(statement, variables, functions, mods)
 			continue
 		}
 
@@ -140,5 +141,5 @@ func AnalyzeFun(
 	}
 
 	// TODO! Parse return statements
-	return object.NothingType
+	return object.NewSurfObject(object.NothingType, nil)
 }

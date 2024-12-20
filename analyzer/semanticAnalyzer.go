@@ -35,7 +35,13 @@ func AnalyzeFileCode(code *ast.FileCode, source string) {
 	for _, functions := range *code.GetFunctions() {
 		for _, function := range functions {
 			// During start phase, argument checking is not necessary
-			AnalyzeFun(function, code.GetFunctions(), function.GetTrace(), false)
+			AnalyzeFun(
+				function,
+				code.GetFunctions(),
+				code.GetModules(),
+				function.GetTrace(),
+				false,
+			)
 		}
 	}
 }

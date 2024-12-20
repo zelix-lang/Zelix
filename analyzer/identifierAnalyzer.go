@@ -16,6 +16,7 @@ func AnalyzeIdentifier(
 	statement []code.Token,
 	variables *stack.Stack,
 	functions *map[string]map[string]*ast.Function,
+	mods *map[string]*ast.SurfMod,
 	startAt *int,
 	lastValue *object.SurfObject,
 	isArithmetic *bool,
@@ -70,33 +71,32 @@ func AnalyzeIdentifier(
 		// is also met, so no need to check it here
 
 		argumentsRaw, skipped := args.SplitArgs(call)
-		arguments := make([]object.SurfObjectType, len(argumentsRaw))
+		arguments := make([]object.SurfObject, len(argumentsRaw))
 
 		for i, argument := range argumentsRaw {
-			argType := AnalyzeStatement(
+			argValue := AnalyzeStatement(
 				argument,
 				variables,
 				functions,
+				mods,
 			)
 
-			arguments[i] = argType.GetType()
+			arguments[i] = argValue
 		}
 
-		*startAt = skipped
+		*startAt += skipped
 
-		*lastValue = object.NewSurfObject(
-			AnalyzeFun(
-				function,
-				functions,
-				firstToken,
-				true,
-				arguments...,
-			),
-			nil,
+		*lastValue = AnalyzeFun(
+			function,
+			functions,
+			mods,
+			firstToken,
+			true,
+			arguments...,
 		)
 	} else {
 		*lastValue = variable
-		*startAt = 1
+		*startAt += 1
 	}
 
 	if (*lastValue).GetType() == object.IntType || (*lastValue).GetType() == object.DecimalType {

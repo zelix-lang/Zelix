@@ -41,6 +41,7 @@ func checkStatement(
 	currentIndex int,
 	variables *stack.Stack,
 	functions *map[string]map[string]*ast.Function,
+	mods *map[string]*ast.SurfMod,
 ) {
 	*extractingIdentifier = false
 
@@ -63,6 +64,7 @@ func checkStatement(
 		*lastStatement,
 		variables,
 		functions,
+		mods,
 		&currentIndex,
 		&dummyObj,
 		&isArithmetic,
@@ -87,6 +89,7 @@ func AnalyzeArithmetic(
 	statement []code.Token,
 	variables *stack.Stack,
 	functions *map[string]map[string]*ast.Function,
+	mods *map[string]*ast.SurfMod,
 ) {
 	statementLen := len(statement)
 	if statementLen == 0 {
@@ -119,6 +122,7 @@ func AnalyzeArithmetic(
 					i,
 					variables,
 					functions,
+					mods,
 				)
 
 				continue
@@ -169,6 +173,7 @@ func AnalyzeArithmetic(
 			len(statement)-1,
 			variables,
 			functions,
+			mods,
 		)
 	}
 }

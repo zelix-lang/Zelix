@@ -16,6 +16,7 @@ func AnalyzeStatement(
 	statement []code.Token,
 	variables *stack.Stack,
 	functions *map[string]map[string]*ast.Function,
+	mods *map[string]*ast.SurfMod,
 ) object.SurfObject {
 	// Used to know what to check for
 	isArithmetic := false
@@ -31,17 +32,29 @@ func AnalyzeStatement(
 
 	switch firstTokenType {
 	case code.New:
-		// TODO! Parse object creation
+		AnalyzeObjectCreation(
+			statement,
+			variables,
+			functions,
+			mods,
+			&startAt,
+			&lastValue,
+		)
+
+		break
 	case code.Identifier:
 		AnalyzeIdentifier(
 			statement,
 			variables,
 			functions,
+			mods,
 			&startAt,
 			&lastValue,
 			&isArithmetic,
 			&isFunCall,
 		)
+
+		break
 	default:
 		lastValue = tokenUtil.ToObj(firstToken, variables)
 		isArithmetic = lastValue.GetType() == object.IntType || lastValue.GetType() == object.DecimalType
@@ -60,6 +73,7 @@ func AnalyzeStatement(
 			remainingStatement,
 			variables,
 			functions,
+			mods,
 		)
 
 		return lastValue

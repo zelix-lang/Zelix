@@ -15,6 +15,7 @@ type SurfMod struct {
 	privateMethods  map[string]*Function
 	name            string
 	file            string
+	public          bool
 }
 
 // NewSurfMod creates a new Surf module
@@ -25,6 +26,7 @@ func NewSurfMod(
 	name string,
 	file string,
 	varDeclarations [][]code.Token,
+	public bool,
 ) SurfMod {
 	return SurfMod{
 		properties:      properties,
@@ -33,6 +35,7 @@ func NewSurfMod(
 		name:            name,
 		file:            file,
 		varDeclarations: varDeclarations,
+		public:          public,
 	}
 }
 
@@ -53,7 +56,12 @@ func (sm *SurfMod) SetProperty(name string, value object.SurfObject) {
 // and a boolean indicating if the method is public
 func (sm *SurfMod) GetMethod(name string) (*Function, bool, bool) {
 	method, found := sm.publicMethods[name]
-	return method, found, true
+	if found {
+		return method, true, true
+	}
+
+	method, found = sm.privateMethods[name]
+	return method, found, false
 }
 
 // GetName returns the name of the module
@@ -69,4 +77,9 @@ func (sm *SurfMod) GetFile() string {
 // GetVarDeclarations returns the variable declarations in the module
 func (sm *SurfMod) GetVarDeclarations() [][]code.Token {
 	return sm.varDeclarations
+}
+
+// IsPublic checks if the module is public
+func (sm *SurfMod) IsPublic() bool {
+	return sm.public
 }
