@@ -1,0 +1,20 @@
+TO-DOs of The Surf Project
+-------------------------------------
+The following list contains the
+pending tasks that need to be done
+in the project.
+-------------------------------------
+They are not ordered using any
+specific criteria.
+-------------------------------------
+
+1. Implement wrapper/typeWrapper.go
+2. Implement static analysis for conditionals
+3. Implement static analysis for loops
+4. Change stored types in variables and functions to TypeWrapper
+5. Implement type-checking for variables that have modules as types
+6. Implement type-checking for modules variables
+7. Implement generic types for modules
+8. Start creating the Surf Custom IR builder
+9. Write a Surf Custom IR interpreter
+10. Write The Surf Programming Language Documentation
