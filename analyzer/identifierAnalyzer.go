@@ -7,16 +7,17 @@ import (
 	"surf/core/stack"
 	"surf/logger"
 	"surf/object"
+	"surf/token"
 	"surf/tokenUtil"
 )
 
 // AnalyzeIdentifier analyzes the given identifier
 // and next tokens
 func AnalyzeIdentifier(
-	statement []code.Token,
+	statement []token.Token,
 	variables *stack.Stack,
-	functions *map[string]map[string]*ast.Function,
-	mods *map[string]*ast.SurfMod,
+	functions *map[string]map[string]*code.Function,
+	mods *map[string]*code.SurfMod,
 	startAt *int,
 	lastValue *object.SurfObject,
 	isArithmetic *bool,
@@ -48,7 +49,7 @@ func AnalyzeIdentifier(
 		}
 
 		statementLen := len(statement)
-		if statementLen < 3 || statement[1].GetType() != code.OpenParen {
+		if statementLen < 3 || statement[1].GetType() != token.OpenParen {
 			logger.TokenError(
 				firstToken,
 				"Invalid function call",
@@ -61,10 +62,10 @@ func AnalyzeIdentifier(
 		// Extract all the tokens of the function invocation
 		call := tokenUtil.ExtractTokensBefore(
 			statement,
-			code.CloseParen,
+			token.CloseParen,
 			true,
-			code.OpenParen,
-			code.CloseParen,
+			token.OpenParen,
+			token.CloseParen,
 		)
 
 		// ExtractTokensBefore also checks the end closing parenthesis

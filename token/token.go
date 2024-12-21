@@ -1,4 +1,4 @@
-package code
+package token
 
 import (
 	"strconv"
@@ -8,7 +8,7 @@ import (
 
 // Token represents a small piece of the source code
 type Token struct {
-	tokenType      TokenType
+	tokenType      Type
 	value          string
 	file           string
 	line           int
@@ -19,7 +19,7 @@ type Token struct {
 }
 
 func NewToken(
-	tokenType TokenType,
+	tokenType Type,
 	value string,
 	file string,
 	line int,
@@ -48,7 +48,7 @@ func (t Token) String() string {
 }
 
 // GetType returns the type of the Token.
-func (t Token) GetType() TokenType {
+func (t Token) GetType() Type {
 	return t.tokenType
 }
 

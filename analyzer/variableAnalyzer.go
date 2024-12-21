@@ -7,6 +7,7 @@ import (
 	"surf/code"
 	"surf/core/stack"
 	"surf/logger"
+	"surf/token"
 	"surf/tokenUtil"
 )
 
@@ -15,10 +16,10 @@ var snakeCaseRegex, _ = regexp.Compile("^[a-z]+(_[a-z0-9]+)*$")
 
 // AnalyzeVariableDeclaration analyzes the declaration of a variable
 func AnalyzeVariableDeclaration(
-	statement []code.Token,
+	statement []token.Token,
 	variables *stack.Stack,
-	functions *map[string]map[string]*ast.Function,
-	mods *map[string]*ast.SurfMod,
+	functions *map[string]map[string]*code.Function,
+	mods *map[string]*code.SurfMod,
 ) {
 	if len(statement) < 5 {
 		logger.TokenError(
@@ -41,7 +42,7 @@ func AnalyzeVariableDeclaration(
 		)
 	}
 
-	if varName.GetType() != code.Identifier {
+	if varName.GetType() != token.Identifier {
 		logger.TokenError(
 			varName,
 			"Invalid variable name",
@@ -64,7 +65,7 @@ func AnalyzeVariableDeclaration(
 
 	colon := statement[1]
 
-	if colon.GetType() != code.Colon {
+	if colon.GetType() != token.Colon {
 		logger.TokenError(
 			colon,
 			"Invalid variable declaration",
@@ -76,10 +77,10 @@ func AnalyzeVariableDeclaration(
 	// Extract the type
 	varTypeTokens := tokenUtil.ExtractTokensBefore(
 		statement[2:],
-		code.Assign,
+		token.Assign,
 		false,
-		code.Unknown,
-		code.Unknown,
+		token.Unknown,
+		token.Unknown,
 	)
 
 	if len(varTypeTokens) == 0 {
@@ -92,7 +93,7 @@ func AnalyzeVariableDeclaration(
 	}
 
 	// Check if the type is valid
-	expectedType := tokenUtil.FromRawType(varTypeTokens[0], variables)
+	expectedType := tokenUtil.FromRawType(varTypeTokens[0], mods)
 	if !tokenUtil.IsValidType(varTypeTokens[0].GetType()) {
 		logger.TokenError(
 			varTypeTokens[0],

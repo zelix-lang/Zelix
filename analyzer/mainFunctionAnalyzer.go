@@ -1,13 +1,13 @@
 package analyzer
 
 import (
-	"surf/ast"
 	"surf/code"
 	"surf/logger"
+	"surf/token"
 )
 
 // AnalyzeMainFunc analyzes the main function
-func AnalyzeMainFunc(function *ast.Function) {
+func AnalyzeMainFunc(function *code.Function) {
 	// Main function can't be public
 	// Technically, it can be, but it's better
 	// to enforce this rule because another function
@@ -31,7 +31,7 @@ func AnalyzeMainFunc(function *ast.Function) {
 
 	returnType := function.GetReturnType()
 
-	if len(returnType) != 1 || returnType[0].GetType() != code.Nothing {
+	if len(returnType) != 1 || returnType[0].GetType() != token.Nothing {
 		logger.TokenError(
 			function.GetTrace(),
 			"Main function must return nothing",

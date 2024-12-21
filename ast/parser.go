@@ -7,6 +7,7 @@ import (
 	"surf/concurrent"
 	"surf/logger"
 	"surf/object"
+	"surf/token"
 	"surf/tokenUtil"
 )
 
@@ -14,7 +15,7 @@ import (
 var stdPath = os.Getenv("SURF_STANDARD_PATH")
 
 // Parse parses the given tokens into a FileCode
-func Parse(tokens []code.Token, allowMods bool, allowInlineVars bool) *FileCode {
+func Parse(tokens []token.Token, allowMods bool, allowInlineVars bool) *FileCode {
 	result := NewFileCode()
 
 	// Used to keep track of the state of the parser
@@ -39,29 +40,29 @@ func Parse(tokens []code.Token, allowMods bool, allowInlineVars bool) *FileCode 
 	// Used to keep track of the current function's metadata
 	currentFunctionName := ""
 	currentParameterName := ""
-	var currentFunctionReturnType []code.Token
-	currentFunctionParameters := make(map[string][]code.Token)
+	var currentFunctionReturnType []token.Token
+	currentFunctionParameters := make(map[string][]token.Token)
 
 	var currentFunctionPublic bool
-	currentParameter := make([]code.Token, 0)
-	currentFunctionBody := make([]code.Token, 0)
+	currentParameter := make([]token.Token, 0)
+	currentFunctionBody := make([]token.Token, 0)
 
-	currentModVars := make([][]code.Token, 0)
+	currentModVars := make([][]token.Token, 0)
 
 	// Used to skip tokens
 	skipToIndex := 0
 
-	for i, token := range tokens {
+	for i, unit := range tokens {
 		if i < skipToIndex {
 			continue
 		}
 
-		tokenType := token.GetType()
+		tokenType := unit.GetType()
 
-		if tokenType == code.Let || tokenType == code.Const {
+		if tokenType == token.Let || tokenType == token.Const {
 			if !allowInlineVars && !inMod {
 				logger.TokenError(
-					token,
+					unit,
 					"Inline variable declarations are not allowed here",
 					"Remove the inline variable declaration",
 				)
@@ -70,11 +71,11 @@ func Parse(tokens []code.Token, allowMods bool, allowInlineVars bool) *FileCode 
 			// Extract the statement
 			statement := tokenUtil.ExtractTokensBefore(
 				tokens[i:],
-				code.Semicolon,
+				token.Semicolon,
 				// Don't handle nested statements here
 				false,
-				code.Unknown,
-				code.Unknown,
+				token.Unknown,
+				token.Unknown,
 			)
 
 			currentModVars = append(currentModVars, statement)
@@ -83,19 +84,19 @@ func Parse(tokens []code.Token, allowMods bool, allowInlineVars bool) *FileCode 
 			continue
 		}
 
-		if tokenType == code.Pub {
+		if tokenType == token.Pub {
 			if inFunction {
 				logger.TokenError(
-					token,
+					unit,
 					"Cannot declare a public function inside another function",
 					"Move the function outside of the current function",
 				)
 			}
 
 			// Make sure there is a next token and that it's in the same file
-			if i == len(tokens)-1 || tokens[i+1].GetFile() != token.GetFile() {
+			if i == len(tokens)-1 || tokens[i+1].GetFile() != unit.GetFile() {
 				logger.TokenError(
-					token,
+					unit,
 					"Expected a function declaration after the public keyword",
 					"Add a function declaration after the public keyword",
 				)
@@ -103,7 +104,7 @@ func Parse(tokens []code.Token, allowMods bool, allowInlineVars bool) *FileCode 
 
 			if currentFunctionPublic {
 				logger.TokenError(
-					token,
+					unit,
 					"Cannot declare a function as public twice",
 					"Remove the extra public keyword",
 				)
@@ -111,10 +112,10 @@ func Parse(tokens []code.Token, allowMods bool, allowInlineVars bool) *FileCode 
 
 			currentFunctionPublic = true
 		} else if expectingFun {
-			if tokenType == code.Mod {
+			if tokenType == token.Mod {
 				if !allowMods {
 					logger.TokenError(
-						token,
+						unit,
 						"Modules are not allowed here",
 						"Remove the module declaration",
 					)
@@ -126,9 +127,9 @@ func Parse(tokens []code.Token, allowMods bool, allowInlineVars bool) *FileCode 
 				continue
 			}
 
-			if tokenType != code.Function {
+			if tokenType != token.Function {
 				logger.TokenError(
-					token,
+					unit,
 					"Expected a function declaration",
 					"Add a function declaration",
 				)
@@ -139,15 +140,15 @@ func Parse(tokens []code.Token, allowMods bool, allowInlineVars bool) *FileCode 
 			expectingFunName = true
 		} else if expectingFunName {
 			// Only allow identifiers as function names
-			if tokenType != code.Identifier {
+			if tokenType != token.Identifier {
 				logger.TokenError(
-					token,
+					unit,
 					"Expected a function name",
 					"Add a function name",
 				)
 			}
 
-			currentFunctionName = token.GetValue()
+			currentFunctionName = unit.GetValue()
 
 			if inMod {
 				expectingOpenCurly = true
@@ -159,9 +160,9 @@ func Parse(tokens []code.Token, allowMods bool, allowInlineVars bool) *FileCode 
 			expectingOpenParen = true
 		} else if expectingOpenCurly {
 			// This case only happens for modules
-			if tokenType != code.OpenCurly {
+			if tokenType != token.OpenCurly {
 				logger.TokenError(
-					token,
+					unit,
 					"Expected an opening curly brace",
 					"Add an opening curly brace",
 				)
@@ -170,9 +171,9 @@ func Parse(tokens []code.Token, allowMods bool, allowInlineVars bool) *FileCode 
 			expectingOpenCurly = false
 			// Go directly to parse the body of the mod
 		} else if expectingOpenParen {
-			if tokenType != code.OpenParen {
+			if tokenType != token.OpenParen {
 				logger.TokenError(
-					token,
+					unit,
 					"Expected an open parenthesis",
 					"Add an open parenthesis",
 				)
@@ -181,14 +182,14 @@ func Parse(tokens []code.Token, allowMods bool, allowInlineVars bool) *FileCode 
 			expectingOpenParen = false
 			expectingArgs = true
 		} else if expectingArgs {
-			if tokenType == code.CloseParen {
+			if tokenType == token.CloseParen {
 				// Parse the return type
 				if len(currentParameter) > 0 {
 					currentFunctionParameters[currentParameterName] = currentParameter
 				}
 
 				currentParameter = nil
-				currentParameter = []code.Token{}
+				currentParameter = []token.Token{}
 				expectingArgs = false
 				expectingArrow = true
 				continue
@@ -196,21 +197,21 @@ func Parse(tokens []code.Token, allowMods bool, allowInlineVars bool) *FileCode 
 
 			// Take the parameter's name
 			// only identifiers are allowed here
-			if tokenType != code.Identifier {
+			if tokenType != token.Identifier {
 				logger.TokenError(
-					token,
+					unit,
 					"Expected a parameter name",
 					"Add a parameter name",
 				)
 			}
 
-			currentParameterName = token.GetValue()
+			currentParameterName = unit.GetValue()
 			expectingArgs = false
 			expectingArgColon = true
 		} else if expectingArgColon {
-			if tokenType != code.Colon {
+			if tokenType != token.Colon {
 				logger.TokenError(
-					token,
+					unit,
 					"Expected a colon after the parameter name",
 					"Add a colon after the parameter name",
 				)
@@ -219,42 +220,42 @@ func Parse(tokens []code.Token, allowMods bool, allowInlineVars bool) *FileCode 
 			expectingArgColon = false
 			expectingArgType = true
 		} else if expectingArgType {
-			if tokenType == code.Comma {
+			if tokenType == token.Comma {
 				// Parse next parameter
 				if len(currentParameter) > 0 {
 					currentFunctionParameters[currentParameterName] = currentParameter
 				}
 
 				currentParameter = nil
-				currentParameter = []code.Token{}
+				currentParameter = []token.Token{}
 				expectingArgType = false
 				expectingArgs = true
 				continue
 			}
 
-			if tokenType == code.CloseParen {
+			if tokenType == token.CloseParen {
 				// Parse the return type
 				if len(currentParameter) > 0 {
 					currentFunctionParameters[currentParameterName] = currentParameter
 				}
 
 				currentParameter = nil
-				currentParameter = []code.Token{}
+				currentParameter = []token.Token{}
 				expectingArgs = false
 				expectingArrow = true
 				expectingArgType = false
 				continue
 			}
 
-			currentParameter = append(currentParameter, token)
+			currentParameter = append(currentParameter, unit)
 		} else if expectingArrow {
-			if tokenType == code.OpenCurly {
-				returnType := code.NewToken(
-					code.Nothing,
+			if tokenType == token.OpenCurly {
+				returnType := token.NewToken(
+					token.Nothing,
 					"nothing",
-					token.GetFile(),
-					token.GetLine(),
-					token.GetColumn(),
+					unit.GetFile(),
+					unit.GetLine(),
+					unit.GetColumn(),
 					"nothing",
 					0,
 					strings.Builder{},
@@ -271,9 +272,9 @@ func Parse(tokens []code.Token, allowMods bool, allowInlineVars bool) *FileCode 
 				continue
 			}
 
-			if tokenType != code.Arrow {
+			if tokenType != token.Arrow {
 				logger.TokenError(
-					token,
+					unit,
 					"Expected an arrow after the function parameters",
 					"Add an arrow after the function parameters",
 				)
@@ -282,33 +283,33 @@ func Parse(tokens []code.Token, allowMods bool, allowInlineVars bool) *FileCode 
 			expectingArrow = false
 			expectingReturnType = true
 		} else if expectingReturnType {
-			if tokenType == code.OpenCurly {
+			if tokenType == token.OpenCurly {
 				// End of return type
 				expectingReturnType = false
 				continue
 			}
 
-			currentFunctionReturnType = append(currentFunctionReturnType, token)
+			currentFunctionReturnType = append(currentFunctionReturnType, unit)
 		} else {
 			if !inFunction && !inMod {
 				logger.TokenError(
-					token,
+					unit,
 					"Unexpected token",
 					"Remove the token",
 					"You can't have a token outside of a function",
 				)
 			}
 
-			if tokenType == code.OpenCurly {
+			if tokenType == token.OpenCurly {
 				// Start of function body
 				blockDepth++
-			} else if tokenType == code.CloseCurly {
+			} else if tokenType == token.CloseCurly {
 				// End of function body
 				blockDepth--
 
 				if blockDepth < 0 {
 					logger.TokenError(
-						token,
+						unit,
 						"Unexpected closing curly brace",
 						"Remove the closing curly brace",
 					)
@@ -324,8 +325,8 @@ func Parse(tokens []code.Token, allowMods bool, allowInlineVars bool) *FileCode 
 						// No risk of exponential complexity because
 						// we don't allow nested mods
 						modFunctions := Parse(currentFunctionBody, false, true)
-						privateFunctions := make(map[string]*Function)
-						publicFunctions := make(map[string]*Function)
+						privateFunctions := make(map[string]*code.Function)
+						publicFunctions := make(map[string]*code.Function)
 
 						for _, functions := range *modFunctions.GetFunctions() {
 							for name, function := range functions {
@@ -338,12 +339,12 @@ func Parse(tokens []code.Token, allowMods bool, allowInlineVars bool) *FileCode 
 						}
 
 						// Wrap the functions inside a SurfMod
-						mod := NewSurfMod(
+						mod := code.NewSurfMod(
 							concurrent.NewTypedConcurrentMap[string, object.SurfObject](),
 							publicFunctions,
 							privateFunctions,
 							currentFunctionName,
-							token.GetFile(),
+							unit.GetFile(),
 							currentModVars,
 							currentFunctionPublic,
 						)
@@ -368,18 +369,18 @@ func Parse(tokens []code.Token, allowMods bool, allowInlineVars bool) *FileCode 
 					expectingFun = true
 
 					// Create the function
-					function := NewFunction(
+					function := code.NewFunction(
 						currentFunctionReturnType,
 						currentFunctionParameters,
 						currentFunctionBody,
 						currentFunctionPublic,
-						strings.HasPrefix(token.GetFile(), stdPath),
-						token,
+						strings.HasPrefix(unit.GetFile(), stdPath),
+						unit,
 					)
 
 					result.AddFunction(
-						token,
-						token.GetFile(),
+						unit,
+						unit.GetFile(),
 						currentFunctionName,
 						function,
 					)
@@ -396,7 +397,7 @@ func Parse(tokens []code.Token, allowMods bool, allowInlineVars bool) *FileCode 
 				}
 			}
 
-			currentFunctionBody = append(currentFunctionBody, token)
+			currentFunctionBody = append(currentFunctionBody, unit)
 		}
 	}
 
@@ -406,22 +407,22 @@ func Parse(tokens []code.Token, allowMods bool, allowInlineVars bool) *FileCode 
 // resetFlags resets the flags used to keep track of the parser's state
 func resetFlags(
 	currentFunctionName *string,
-	currentFunctionReturnType *[]code.Token,
-	currentFunctionParameters *map[string][]code.Token,
+	currentFunctionReturnType *[]token.Token,
+	currentFunctionParameters *map[string][]token.Token,
 	currentFunctionPublic *bool,
-	currentParameter *[]code.Token,
-	currentFunctionBody *[]code.Token,
+	currentParameter *[]token.Token,
+	currentFunctionBody *[]token.Token,
 ) {
 	// Reset the current function's metadata
 	*currentFunctionName = ""
 	*currentFunctionReturnType = nil
-	*currentFunctionReturnType = []code.Token{}
+	*currentFunctionReturnType = []token.Token{}
 
-	*currentFunctionParameters = make(map[string][]code.Token)
+	*currentFunctionParameters = make(map[string][]token.Token)
 	*currentFunctionPublic = false
 	*currentParameter = nil
-	*currentParameter = make([]code.Token, 0)
+	*currentParameter = make([]token.Token, 0)
 
 	*currentFunctionBody = nil
-	*currentFunctionBody = make([]code.Token, 0)
+	*currentFunctionBody = make([]token.Token, 0)
 }

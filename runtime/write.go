@@ -1,7 +1,7 @@
 package runtime
 
 import (
-	"surf/ast"
+	"surf/code"
 	"surf/object"
 )
 
@@ -23,7 +23,7 @@ func Write(objects ...object.SurfObject) {
 		case object.NothingType:
 			print("@Surf<Nothing>")
 		default:
-			mod := obj.GetValue().(ast.SurfMod)
+			mod := obj.GetValue().(code.SurfMod)
 			print(mod.GetName())
 		}
 	}

@@ -1,81 +1,83 @@
 package lexer
 
-import "surf/code"
+import (
+	"surf/token"
+)
 
-var knownTokens = map[string]code.TokenType{
+var knownTokens = map[string]token.Type{
 	// Keywords
-	"fun":      code.Function,
-	"let":      code.Let,
-	"const":    code.Const,
-	"while":    code.While,
-	"for":      code.For,
-	"break":    code.Break,
-	"continue": code.Continue,
-	"if":       code.If,
-	"else":     code.Else,
-	"elseif":   code.ElseIf,
-	"return":   code.Return,
-	"mod":      code.Mod,
-	"new":      code.New,
+	"fun":      token.Function,
+	"let":      token.Let,
+	"const":    token.Const,
+	"while":    token.While,
+	"for":      token.For,
+	"break":    token.Break,
+	"continue": token.Continue,
+	"if":       token.If,
+	"else":     token.Else,
+	"elseif":   token.ElseIf,
+	"return":   token.Return,
+	"mod":      token.Mod,
+	"new":      token.New,
 
 	// Operators and symbols
-	"=":  code.Assign,
-	"+":  code.Plus,
-	"-":  code.Minus,
-	"++": code.Increment,
-	"--": code.Decrement,
-	"*":  code.Asterisk,
-	"/":  code.Slash,
-	"<":  code.LessThan,
-	">":  code.GreaterThan,
-	"+=": code.AssignAdd,
-	"-=": code.AssignSub,
-	"/=": code.AssignSlash,
-	"*=": code.AssignAsterisk,
-	"==": code.Equal,
-	"!=": code.NotEqual,
-	">=": code.GreaterThanOrEqual,
-	"<=": code.LessThanOrEqual,
-	"&":  code.Ampersand,
-	"|":  code.Bar,
-	"^":  code.Xor,
-	"!":  code.Not,
-	",":  code.Comma,
-	";":  code.Semicolon,
-	"(":  code.OpenParen,
-	")":  code.CloseParen,
-	"{":  code.OpenCurly,
-	"}":  code.CloseCurly,
-	":":  code.Colon,
-	"->": code.Arrow,
-	"[":  code.OpenBracket,
-	"]":  code.CloseBracket,
-	".":  code.Dot,
-	"%":  code.Percent,
+	"=":  token.Assign,
+	"+":  token.Plus,
+	"-":  token.Minus,
+	"++": token.Increment,
+	"--": token.Decrement,
+	"*":  token.Asterisk,
+	"/":  token.Slash,
+	"<":  token.LessThan,
+	">":  token.GreaterThan,
+	"+=": token.AssignAdd,
+	"-=": token.AssignSub,
+	"/=": token.AssignSlash,
+	"*=": token.AssignAsterisk,
+	"==": token.Equal,
+	"!=": token.NotEqual,
+	">=": token.GreaterThanOrEqual,
+	"<=": token.LessThanOrEqual,
+	"&":  token.Ampersand,
+	"|":  token.Bar,
+	"^":  token.Xor,
+	"!":  token.Not,
+	",":  token.Comma,
+	";":  token.Semicolon,
+	"(":  token.OpenParen,
+	")":  token.CloseParen,
+	"{":  token.OpenCurly,
+	"}":  token.CloseCurly,
+	":":  token.Colon,
+	"->": token.Arrow,
+	"[":  token.OpenBracket,
+	"]":  token.CloseBracket,
+	".":  token.Dot,
+	"%":  token.Percent,
 
 	// Data types
-	"str":     code.String,
-	"num":     code.Num,
-	"dec":     code.Dec,
-	"bool":    code.Bool,
-	"nothing": code.Nothing,
+	"str":     token.String,
+	"num":     token.Num,
+	"dec":     token.Dec,
+	"bool":    token.Bool,
+	"nothing": token.Nothing,
 
 	// Access modifiers
-	"pub": code.Pub,
+	"pub": token.Pub,
 
 	// Boolean literals
-	"true":  code.BoolLiteral,
-	"false": code.BoolLiteral,
+	"true":  token.BoolLiteral,
+	"false": token.BoolLiteral,
 
 	// Imports
-	"import": code.Import,
+	"import": token.Import,
 }
 
-func GetKnownToken(entry string) (code.TokenType, bool) {
+func GetKnownToken(entry string) (token.Type, bool) {
 	val, ok := knownTokens[entry]
 
 	if !ok {
-		return code.Unknown, ok
+		return token.Unknown, ok
 	}
 
 	return val, ok

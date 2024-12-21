@@ -1,19 +1,19 @@
 package analyzer
 
 import (
-	"surf/ast"
 	"surf/code"
 	"surf/core/stack"
 	"surf/logger"
 	"surf/object"
+	"surf/token"
 	"surf/tokenUtil"
 )
 
 func AnalyzeObjectCreation(
-	statement []code.Token,
+	statement []token.Token,
 	variables *stack.Stack,
-	functions *map[string]map[string]*ast.Function,
-	mods *map[string]*ast.SurfMod,
+	functions *map[string]map[string]*code.Function,
+	mods *map[string]*code.SurfMod,
 	startAt *int,
 	lastValue *object.SurfObject,
 ) {
@@ -52,7 +52,7 @@ func AnalyzeObjectCreation(
 	}
 
 	// Validate the parentheses
-	if statement[2].GetType() != code.OpenParen {
+	if statement[2].GetType() != token.OpenParen {
 		logger.TokenError(
 			statement[2],
 			"Invalid object creation",
@@ -61,7 +61,7 @@ func AnalyzeObjectCreation(
 		)
 	}
 
-	if statement[len(statement)-1].GetType() != code.CloseParen {
+	if statement[len(statement)-1].GetType() != token.CloseParen {
 		logger.TokenError(
 			statement[len(statement)-1],
 			"Invalid object creation",
@@ -96,9 +96,9 @@ func AnalyzeObjectCreation(
 	argsRange := statement[3 : len(statement)-1]
 	argsRaw := tokenUtil.SplitTokens(
 		argsRange,
-		code.Comma,
-		code.OpenParen,
-		code.CloseParen,
+		token.Comma,
+		token.OpenParen,
+		token.CloseParen,
 	)
 
 	args := make([]object.SurfObject, len(argsRaw))

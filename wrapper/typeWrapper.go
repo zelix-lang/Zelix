@@ -1,8 +1,8 @@
 package wrapper
 
 import (
-	"surf/code"
 	"surf/logger"
+	"surf/token"
 )
 
 // TypeWrapper is a wrapper for a data type
@@ -13,7 +13,7 @@ type TypeWrapper struct {
 	parameters []TypeWrapper // [str, bool]
 }
 
-func NewTypeWrapper(tokens []code.Token, trace code.Token) TypeWrapper {
+func NewTypeWrapper(tokens []token.Token, trace token.Token) TypeWrapper {
 	// Parse the tokens
 	if len(tokens) == 0 {
 		logger.TokenError(

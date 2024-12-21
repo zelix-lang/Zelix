@@ -1,20 +1,20 @@
 package fun
 
 import (
-	"surf/ast"
 	"surf/code"
 	"surf/core/stack"
 	"surf/object"
+	"surf/token"
 	"surf/tokenUtil"
 	"surf/util"
 )
 
 // CallFun interprets a function and executes it
 func CallFun(
-	function *ast.Function,
+	function *code.Function,
 	runtime map[string]func(...object.SurfObject),
-	functions *map[string]map[string]*ast.Function,
-	trace code.Token,
+	functions *map[string]map[string]*code.Function,
+	trace token.Token,
 	args ...object.SurfObject,
 ) {
 	variables := stack.NewStack()
@@ -34,22 +34,22 @@ func CallFun(
 	// Used to skip indexes
 	skipToIndex := 0
 
-	for i, token := range function.GetBody() {
+	for i, unit := range function.GetBody() {
 		if i < skipToIndex && skipToIndex > 0 {
 			continue
 		}
 
-		tokenType := token.GetType()
+		tokenType := unit.GetType()
 
-		if tokenType == code.Identifier {
+		if tokenType == token.Identifier {
 			// Extract the statement
 			statement := tokenUtil.ExtractTokensBefore(
 				function.GetBody()[i:],
-				code.Semicolon,
+				token.Semicolon,
 				// Don't handle nested statements here
 				false,
-				code.Unknown,
-				code.Unknown,
+				token.Unknown,
+				token.Unknown,
 			)
 
 			CallStatement(statement, runtime, function.IsStd(), functions, variables)

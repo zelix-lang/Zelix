@@ -1,15 +1,15 @@
-package ast
+package code
 
 import (
-	"surf/code"
 	"surf/concurrent"
 	"surf/object"
+	"surf/token"
 )
 
 // SurfMod represents a Surf module
 // a Surf module is somewhat similar to a class in OOP
 type SurfMod struct {
-	varDeclarations [][]code.Token
+	varDeclarations [][]token.Token
 	properties      *concurrent.TypedConcurrentMap[string, object.SurfObject]
 	publicMethods   map[string]*Function
 	privateMethods  map[string]*Function
@@ -25,7 +25,7 @@ func NewSurfMod(
 	privateMethods map[string]*Function,
 	name string,
 	file string,
-	varDeclarations [][]code.Token,
+	varDeclarations [][]token.Token,
 	public bool,
 ) SurfMod {
 	return SurfMod{
@@ -75,7 +75,7 @@ func (sm *SurfMod) GetFile() string {
 }
 
 // GetVarDeclarations returns the variable declarations in the module
-func (sm *SurfMod) GetVarDeclarations() [][]code.Token {
+func (sm *SurfMod) GetVarDeclarations() [][]token.Token {
 	return sm.varDeclarations
 }
 

@@ -2,11 +2,11 @@ package analyzer
 
 import (
 	"strconv"
-	"surf/ast"
 	"surf/code"
 	"surf/core/stack"
 	"surf/logger"
 	"surf/object"
+	"surf/token"
 	"surf/tokenUtil"
 	"surf/util"
 	"time"
@@ -15,7 +15,7 @@ import (
 // checkParamType checks if the given parameter type is valid
 func checkParamType(
 	paramType object.SurfObject,
-	trace code.Token,
+	trace token.Token,
 ) {
 	if paramType.GetType() == object.NothingType {
 		logger.TokenError(
@@ -29,10 +29,10 @@ func checkParamType(
 
 // AnalyzeFun analyzes the given function
 func AnalyzeFun(
-	function *ast.Function,
-	functions *map[string]map[string]*ast.Function,
-	mods *map[string]*ast.SurfMod,
-	trace code.Token,
+	function *code.Function,
+	functions *map[string]map[string]*code.Function,
+	mods *map[string]*code.SurfMod,
+	trace token.Token,
 	checkArgs bool,
 	args ...object.SurfObject,
 ) object.SurfObject {
@@ -67,7 +67,7 @@ func AnalyzeFun(
 		argsKeys := util.MapKeys(actualParams)
 
 		for i, param := range argsKeys {
-			expected := tokenUtil.FromRawType(actualParams[param][0], variables)
+			expected := tokenUtil.FromRawType(actualParams[param][0], mods)
 			value := args[i]
 
 			checkParamType(expected, trace)
@@ -87,7 +87,7 @@ func AnalyzeFun(
 		argsKeys := util.MapKeys(actualParams)
 
 		for _, param := range argsKeys {
-			expected := tokenUtil.FromRawType(actualParams[param][0], variables)
+			expected := tokenUtil.FromRawType(actualParams[param][0], mods)
 			checkParamType(expected, trace)
 			variables.Append(param, expected)
 		}
@@ -102,28 +102,28 @@ func AnalyzeFun(
 	// Used to skip tokens
 	skipToIndex := 0
 
-	for i, token := range function.GetBody() {
+	for i, unit := range function.GetBody() {
 		if i < skipToIndex {
 			continue
 		}
 
-		tokenType := token.GetType()
+		tokenType := unit.GetType()
 
-		if tokenType == code.Identifier || tokenType == code.Let {
+		if tokenType == token.Identifier || tokenType == token.Let {
 			// Extract the statement
 			statement := tokenUtil.ExtractTokensBefore(
 				function.GetBody()[i:],
-				code.Semicolon,
+				token.Semicolon,
 				// Don't handle nested statements here
 				false,
-				code.Unknown,
-				code.Unknown,
+				token.Unknown,
+				token.Unknown,
 			)
 
 			skipToIndex = i + len(statement) + 1
 
 			// Analyze the statement
-			if tokenType == code.Let {
+			if tokenType == token.Let {
 				AnalyzeVariableDeclaration(statement[1:], variables, functions, mods)
 				continue
 			}
@@ -133,7 +133,7 @@ func AnalyzeFun(
 		}
 
 		logger.TokenError(
-			token,
+			unit,
 			"Unexpected token",
 			"Expected an identifier or a statement",
 			"Check the function body",

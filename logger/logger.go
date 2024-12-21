@@ -3,7 +3,7 @@ package logger
 import (
 	"os"
 	"surf/ansi"
-	"surf/code"
+	"surf/token"
 )
 
 var logLevel = ansi.Colorize("cyan_bright_bold", "LOG |")
@@ -40,7 +40,7 @@ func Help(message ...string) {
 // with its trace and help messages to the console
 // in O(n) time
 func TokenWarning(
-	token code.Token,
+	token token.Token,
 	message string,
 	help ...string,
 ) {
@@ -57,7 +57,7 @@ func TokenWarning(
 // and then exits the program with code 1
 // in O(n) time
 func TokenError(
-	token code.Token,
+	token token.Token,
 	message string,
 	help ...string,
 ) {

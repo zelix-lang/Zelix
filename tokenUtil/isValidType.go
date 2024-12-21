@@ -1,19 +1,21 @@
 package tokenUtil
 
-import "surf/code"
+import (
+	"surf/token"
+)
 
 // IsValidType checks if a token is a valid data type
-func IsValidType(tokenType code.TokenType) bool {
+func IsValidType(tokenType token.Type) bool {
 	switch tokenType {
-	case code.Bool:
+	case token.Bool:
 		return true
-	case code.String:
+	case token.String:
 		return true
-	case code.Num:
+	case token.Num:
 		return true
-	case code.Dec:
+	case token.Dec:
 		return true
-	case code.Nothing:
+	case token.Nothing:
 		return true
 	default:
 		return false

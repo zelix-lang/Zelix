@@ -1,25 +1,25 @@
-package ast
+package code
 
 import (
-	"surf/code"
+	"surf/token"
 	"time"
 )
 
 // Function represents a function in the abstract syntax tree (AST).
 type Function struct {
 	// returnType holds the tokens representing the return type of the function.
-	returnType []code.Token
+	returnType []token.Token
 	// parameters holds the tokens representing the parameters of the function.
 	// Each parameter is represented as a slice of tokens.
-	parameters map[string][]code.Token
+	parameters map[string][]token.Token
 	// body holds the tokens representing the body of the function.
-	body []code.Token
+	body []token.Token
 	// public holds whether the function is public or not.
 	public bool
 	// std holds whether the function is a standard library function or not.
 	std bool
 	// trace holds the token that triggered the creation of the function.
-	trace code.Token
+	trace token.Token
 	// timesCalled holds the number of times the function has been called.
 	timesCalled int
 	// lastCalled holds the time the function was last called.
@@ -28,12 +28,12 @@ type Function struct {
 
 // NewFunction creates a new Function
 func NewFunction(
-	returnType []code.Token,
-	parameters map[string][]code.Token,
-	body []code.Token,
+	returnType []token.Token,
+	parameters map[string][]token.Token,
+	body []token.Token,
 	public bool,
 	std bool,
-	trace code.Token,
+	trace token.Token,
 ) Function {
 	return Function{
 		returnType: returnType,
@@ -46,17 +46,17 @@ func NewFunction(
 }
 
 // GetReturnType returns the return type of the function.
-func (f *Function) GetReturnType() []code.Token {
+func (f *Function) GetReturnType() []token.Token {
 	return f.returnType
 }
 
 // GetParameters returns the parameters of the function.
-func (f *Function) GetParameters() map[string][]code.Token {
+func (f *Function) GetParameters() map[string][]token.Token {
 	return f.parameters
 }
 
 // GetBody returns the body of the function.
-func (f *Function) GetBody() []code.Token {
+func (f *Function) GetBody() []token.Token {
 	return f.body
 }
 
@@ -71,7 +71,7 @@ func (f *Function) IsStd() bool {
 }
 
 // GetTrace returns the token that triggered the creation of the function.
-func (f *Function) GetTrace() code.Token {
+func (f *Function) GetTrace() token.Token {
 	return f.trace
 }
 

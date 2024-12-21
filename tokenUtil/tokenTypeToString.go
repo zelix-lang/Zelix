@@ -1,45 +1,47 @@
 package tokenUtil
 
-import "surf/code"
+import (
+	"surf/token"
+)
 
 // TokenTypeToString converts a token type to a string
-func TokenTypeToString(_type code.TokenType) string {
+func TokenTypeToString(_type token.Type) string {
 	switch _type {
-	case code.Identifier:
+	case token.Identifier:
 		return "identifier"
-	case code.String:
+	case token.String:
 		return "string"
-	case code.Num, code.NumLiteral:
+	case token.Num, token.NumLiteral:
 		return "number"
-	case code.Colon:
+	case token.Colon:
 		return "colon"
-	case code.Comma:
+	case token.Comma:
 		return "comma"
-	case code.Semicolon:
+	case token.Semicolon:
 		return "semicolon"
-	case code.OpenParen:
+	case token.OpenParen:
 		return "left parenthesis"
-	case code.CloseParen:
+	case token.CloseParen:
 		return "right parenthesis"
-	case code.OpenCurly:
+	case token.OpenCurly:
 		return "left brace"
-	case code.CloseCurly:
+	case token.CloseCurly:
 		return "right brace"
-	case code.OpenBracket:
+	case token.OpenBracket:
 		return "left bracket"
-	case code.CloseBracket:
+	case token.CloseBracket:
 		return "right bracket"
-	case code.Plus:
+	case token.Plus:
 		return "plus"
-	case code.Minus:
+	case token.Minus:
 		return "minus"
-	case code.Asterisk:
+	case token.Asterisk:
 		return "asterisk"
-	case code.Slash:
+	case token.Slash:
 		return "slash"
-	case code.Assign:
+	case token.Assign:
 		return "assign"
-	case code.Equal:
+	case token.Equal:
 		return "equal"
 	default:
 		return "not yet implemented"

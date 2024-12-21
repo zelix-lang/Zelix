@@ -2,55 +2,55 @@ package _type
 
 import (
 	"strconv"
-	"surf/code"
 	"surf/core/stack"
 	"surf/logger"
 	"surf/object"
+	"surf/token"
 )
 
 // TranslateType translates a token to a Surf object
 func TranslateType(
-	token code.Token,
+	unit token.Token,
 	variables *stack.Stack,
 ) object.SurfObject {
-	tokenType := token.GetType()
-	value := token.GetValue()
+	tokenType := unit.GetType()
+	value := unit.GetValue()
 
 	switch tokenType {
-	case code.StringLiteral:
+	case token.StringLiteral:
 		return object.NewSurfObject(object.StringType, value)
-	case code.BoolLiteral:
+	case token.BoolLiteral:
 		return object.NewSurfObject(object.BooleanType, value == "true")
-	case code.DecimalLiteral:
+	case token.DecimalLiteral:
 		floatValue, err := strconv.ParseFloat(value, 64)
 
 		if err != nil {
 			logger.TokenError(
-				token,
+				unit,
 				"Invalid decimal value",
 				"Use a valid float value",
 			)
 		}
 
 		return object.NewSurfObject(object.DecimalType, floatValue)
-	case code.NumLiteral:
+	case token.NumLiteral:
 		intValue, err := strconv.Atoi(value)
 
 		if err != nil {
 			logger.TokenError(
-				token,
+				unit,
 				"Invalid number value",
 				"Use a valid integer value",
 			)
 		}
 
 		return object.NewSurfObject(object.IntType, intValue)
-	case code.Identifier:
+	case token.Identifier:
 		objectValue, found := variables.Load(value)
 
 		if !found {
 			logger.TokenError(
-				token,
+				unit,
 				"Undefined reference to variable "+value,
 				"The variable "+value+" was not found in the current scope",
 				"Add the variable to the current scope",
@@ -60,7 +60,7 @@ func TranslateType(
 		return objectValue
 	default:
 		logger.TokenError(
-			token,
+			unit,
 			"Invalid type",
 			"Use a valid type",
 		)

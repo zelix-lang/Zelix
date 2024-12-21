@@ -5,30 +5,41 @@ import (
 	"surf/core/stack"
 	"surf/logger"
 	"surf/object"
+	"surf/token"
 )
 
 // FromRawType converts a raw token to a SurfObject
 func FromRawType(
-	token code.Token,
-	variables *stack.Stack,
+	unit token.Token,
+	mods *map[string]*code.SurfMod,
 ) object.SurfObject {
-	tokenType := token.GetType()
+	tokenType := unit.GetType()
 
 	switch tokenType {
-	case code.Bool:
+	case token.Bool:
 		return object.NewSurfObject(object.BooleanType, "")
-	case code.String:
+	case token.String:
 		return object.NewSurfObject(object.StringType, "")
-	case code.Num:
+	case token.Num:
 		return object.NewSurfObject(object.IntType, "")
-	case code.Dec:
+	case token.Dec:
 		return object.NewSurfObject(object.DecimalType, "")
-		/*case code.Identifier:
-		  todo!
-		*/
+	case token.Identifier:
+		mod, found := (*mods)[unit.GetValue()]
+
+		if !found {
+			logger.TokenError(
+				unit,
+				"Undefined reference to module "+unit.GetValue(),
+				"The module "+unit.GetValue()+" was not found in the current scope",
+				"Add the variable to the current scope",
+			)
+		}
+
+		return object.NewSurfObject(object.ModType, mod)
 	default:
 		logger.TokenError(
-			token,
+			unit,
 			"Unexpected token",
 			"Expected an identifier, a literal or a variable",
 		)
@@ -39,28 +50,28 @@ func FromRawType(
 
 // ToObj converts a token to a SurfObject
 func ToObj(
-	token code.Token,
+	unit token.Token,
 	variables *stack.Stack,
 ) object.SurfObject {
-	tokenType := token.GetType()
+	tokenType := unit.GetType()
 
 	switch tokenType {
-	case code.BoolLiteral:
+	case token.BoolLiteral:
 		return object.NewSurfObject(object.BooleanType, "")
-	case code.StringLiteral:
+	case token.StringLiteral:
 		return object.NewSurfObject(object.StringType, "")
-	case code.NumLiteral:
+	case token.NumLiteral:
 		return object.NewSurfObject(object.IntType, "")
-	case code.DecimalLiteral:
+	case token.DecimalLiteral:
 		return object.NewSurfObject(object.DecimalType, "")
-	case code.Identifier:
-		variable, found := variables.Load(token.GetValue())
+	case token.Identifier:
+		variable, found := variables.Load(unit.GetValue())
 
 		if !found {
 			logger.TokenError(
-				token,
-				"Undefined reference to variable "+token.GetValue(),
-				"The variable "+token.GetValue()+" was not found in the current scope",
+				unit,
+				"Undefined reference to variable "+unit.GetValue(),
+				"The variable "+unit.GetValue()+" was not found in the current scope",
 				"Add the variable to the current scope",
 			)
 		}
@@ -68,7 +79,7 @@ func ToObj(
 		return variable
 	default:
 		logger.TokenError(
-			token,
+			unit,
 			"Unexpected token",
 			"Expected an identifier, a literal or a variable",
 		)

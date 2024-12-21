@@ -7,23 +7,24 @@ import (
 	_type "surf/core/engine/type"
 	"surf/core/stack"
 	"surf/object"
+	"surf/token"
 	"surf/tokenUtil"
 )
 
 // CallStatement interprets a statement and executes it
 func CallStatement(
-	statement []code.Token,
+	statement []token.Token,
 	runtime map[string]func(...object.SurfObject),
 	isStd bool,
-	functions *map[string]map[string]*ast.Function,
+	functions *map[string]map[string]*code.Function,
 	variables *stack.Stack,
 ) {
 	call := tokenUtil.ExtractTokensBefore(
 		statement,
-		code.CloseParen,
+		token.CloseParen,
 		true,
-		code.OpenParen,
-		code.CloseParen,
+		token.OpenParen,
+		token.CloseParen,
 	)
 
 	// At this point, only function invocations are allowed

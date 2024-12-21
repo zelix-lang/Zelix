@@ -1,7 +1,7 @@
 package args
 
 import (
-	"surf/code"
+	"surf/token"
 	"surf/tokenUtil"
 )
 
@@ -10,8 +10,8 @@ import (
 //
 //	function invocation
 func SplitArgs(
-	statement []code.Token,
-) ([][]code.Token, int) {
+	statement []token.Token,
+) ([][]token.Token, int) {
 	// Get the parameters
 	// Skip the first 2 tokens (the function name and the opening parenthesis)
 	// and the last token (the closing parenthesis)
@@ -20,8 +20,8 @@ func SplitArgs(
 	// Split by commas
 	return tokenUtil.SplitTokens(
 		parametersRaw,
-		code.Comma,
-		code.OpenParen,
-		code.CloseParen,
+		token.Comma,
+		token.OpenParen,
+		token.CloseParen,
 	), len(statement) + 1
 }

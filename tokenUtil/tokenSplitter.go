@@ -1,25 +1,25 @@
 package tokenUtil
 
 import (
-	"surf/code"
 	"surf/logger"
+	"surf/token"
 )
 
 // SplitTokens splits the given tokens
 // using the given delimiter
 func SplitTokens(
-	tokens []code.Token,
-	delimiter code.TokenType,
-	nestedStartDelimiter code.TokenType,
-	nestedEndDelimiter code.TokenType,
-) [][]code.Token {
-	result := make([][]code.Token, 0)
-	current := make([]code.Token, 0)
+	tokens []token.Token,
+	delimiter token.Type,
+	nestedStartDelimiter token.Type,
+	nestedEndDelimiter token.Type,
+) [][]token.Token {
+	result := make([][]token.Token, 0)
+	current := make([]token.Token, 0)
 
 	blockDepth := 0
 
-	for _, token := range tokens {
-		tokenType := token.GetType()
+	for _, unit := range tokens {
+		tokenType := unit.GetType()
 
 		if tokenType == nestedStartDelimiter {
 			blockDepth++
@@ -28,7 +28,7 @@ func SplitTokens(
 
 			if blockDepth < 0 {
 				logger.TokenError(
-					token,
+					unit,
 					"Unmatched delimiter",
 					"Match the delimiters",
 				)
@@ -38,18 +38,18 @@ func SplitTokens(
 		if tokenType == delimiter && blockDepth == 0 {
 			if len(current) == 0 {
 				logger.TokenError(
-					token,
+					unit,
 					"Empty statement",
 					"Add a statement to the list",
 				)
 			}
 
 			result = append(result, current)
-			current = make([]code.Token, 0)
+			current = make([]token.Token, 0)
 			continue
 		}
 
-		current = append(current, token)
+		current = append(current, unit)
 	}
 
 	if len(current) > 0 {

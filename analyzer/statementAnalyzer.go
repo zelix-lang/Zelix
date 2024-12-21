@@ -1,11 +1,11 @@
 package analyzer
 
 import (
-	"surf/ast"
 	"surf/code"
 	"surf/core/stack"
 	"surf/logger"
 	"surf/object"
+	"surf/token"
 	"surf/tokenUtil"
 )
 
@@ -13,10 +13,10 @@ import (
 // and returns the object type that the statement
 // returns
 func AnalyzeStatement(
-	statement []code.Token,
+	statement []token.Token,
 	variables *stack.Stack,
-	functions *map[string]map[string]*ast.Function,
-	mods *map[string]*ast.SurfMod,
+	functions *map[string]map[string]*code.Function,
+	mods *map[string]*code.SurfMod,
 ) object.SurfObject {
 	// Used to know what to check for
 	isArithmetic := false
@@ -31,7 +31,7 @@ func AnalyzeStatement(
 	firstTokenType := firstToken.GetType()
 
 	switch firstTokenType {
-	case code.New:
+	case token.New:
 		AnalyzeObjectCreation(
 			statement,
 			variables,
@@ -42,7 +42,7 @@ func AnalyzeStatement(
 		)
 
 		break
-	case code.Identifier:
+	case token.Identifier:
 		AnalyzeIdentifier(
 			statement,
 			variables,
@@ -91,7 +91,7 @@ func AnalyzeStatement(
 	// The only valid operation after all that has been processed
 	// is property access, therefore the fist token of the remaining
 	// statement must be a dot
-	if remainingStatement[0].GetType() != code.Dot {
+	if remainingStatement[0].GetType() != token.Dot {
 		logger.TokenError(
 			remainingStatement[0],
 			"Invalid operation",

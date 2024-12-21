@@ -1,11 +1,11 @@
-package code
+package token
 
-// TokenType represents the type of any token in the source code.
-type TokenType int
+// Type represents the type of any token in the source code.
+type Type int
 
 const (
 	// Function represents a function token.
-	Function TokenType = iota
+	Function Type = iota
 
 	// Let represents a let token.
 	Let

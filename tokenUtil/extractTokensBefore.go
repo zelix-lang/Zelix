@@ -1,23 +1,23 @@
 package tokenUtil
 
 import (
-	"surf/code"
 	"surf/logger"
+	"surf/token"
 )
 
 // ExtractTokensBefore returns the tokens before the first occurrence of the delimiter
 func ExtractTokensBefore(
-	tokens []code.Token,
-	delimiter code.TokenType,
+	tokens []token.Token,
+	delimiter token.Type,
 	handleNested bool,
-	nestedStartDelimiter code.TokenType,
-	nestedEndDelimiter code.TokenType,
-) []code.Token {
+	nestedStartDelimiter token.Type,
+	nestedEndDelimiter token.Type,
+) []token.Token {
 	// Used to know if the delimiter was found
 	metDelimiter := false
 
 	blockDepth := 0
-	result := make([]code.Token, 0)
+	result := make([]token.Token, 0)
 
 	for _, token := range tokens {
 		if handleNested {
