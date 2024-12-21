@@ -95,6 +95,28 @@ func AnalyzeStatement(
 		)
 	}
 
+	// Analyze reassignments
+	if remainingStatement[0].GetType() == token.Assign {
+		if isFunCall {
+			logger.TokenError(
+				remainingStatement[0],
+				"Invalid operation",
+				"Cannot assign to a method call",
+				"Check the statement",
+			)
+		}
+
+		AnalyzeType(
+			remainingStatement[1:],
+			variables,
+			functions,
+			mods,
+			lastValue,
+		)
+
+		return lastValue
+	}
+
 	// The only valid operation after all that has been processed
 	// is property access, therefore the fist token of the remaining
 	// statement must be a dot
@@ -107,12 +129,71 @@ func AnalyzeStatement(
 		)
 	}
 
-	/*props := tokenUtil.SplitTokens(
+	// Get tokens before an assignment
+	// i.e.: object.property = value
+	beforeAssignment := tokenUtil.ExtractTokensBefore(
 		remainingStatement[1:],
+		token.Assign,
+		false,
+		token.Unknown,
+		token.Unknown,
+		false,
+	)
+
+	// if beforeAssignment is empty, that means that
+	// the statement ends in a dot: "object.property."
+	// which is invalid
+	if len(beforeAssignment) == 0 {
+		logger.TokenError(
+			remainingStatement[0],
+			"Invalid operation",
+			"Invalid operation after identifier",
+			"Check the statement",
+		)
+	}
+
+	// +1 for the dot
+	// +1 for the assignment
+	afterAssignment := remainingStatement[len(beforeAssignment)+2:]
+
+	// Reset isFunCall to catch assignments to methods
+	isFunCall = false
+	props := tokenUtil.SplitTokens(
+		beforeAssignment,
 		token.Dot,
 		token.OpenParen,
 		token.CloseParen,
-	)*/
+	)
+
+	// Analyze all props
+	for _, prop := range props {
+		AnalyzePropAccess(
+			prop,
+			variables,
+			functions,
+			mods,
+			&lastValue,
+			&isFunCall,
+		)
+	}
+
+	if isFunCall && len(afterAssignment) > 0 {
+		logger.TokenError(
+			afterAssignment[0],
+			"Invalid operation",
+			"Cannot assign to a method call",
+			"Check the statement",
+		)
+	}
+
+	// Analyze assignment
+	AnalyzeType(
+		afterAssignment,
+		variables,
+		functions,
+		mods,
+		lastValue,
+	)
 
 	return lastValue
 }

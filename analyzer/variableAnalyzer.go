@@ -7,7 +7,6 @@ import (
 	"surf/code"
 	"surf/core/stack"
 	"surf/logger"
-	"surf/object"
 	"surf/token"
 	"surf/tokenUtil"
 )
@@ -117,33 +116,13 @@ func AnalyzeVariableDeclaration(
 	}
 
 	// Analyze the statement
-	value := AnalyzeStatement(
+	AnalyzeType(
 		statement[(len(varTypeTokens)+3):],
 		variables,
 		functions,
 		mods,
+		expectedType,
 	)
-
-	if isMod {
-		mod := expectedType.GetValue().(*code.SurfMod)
-		gotMod := value.GetValue().(*code.SurfMod)
-
-		if value.GetType() != object.ModType || gotMod.GetName() != mod.GetName() {
-			logger.TokenError(
-				varTypeTokens[0],
-				"Type mismatch",
-				"The module does not match the expected type",
-				"Change the module",
-			)
-		}
-	} else if value.GetType() != expectedType.GetType() {
-		logger.TokenError(
-			varTypeTokens[0],
-			"Type mismatch",
-			"The variable type does not match the value type",
-			"Change the value type",
-		)
-	}
 
 	// Put the variable in the stack
 	variables.Append(varName.GetValue(), expectedType)

@@ -109,7 +109,7 @@ func AnalyzeFun(
 
 		tokenType := unit.GetType()
 
-		if tokenType == token.Identifier || tokenType == token.Let {
+		if tokenType == token.Identifier || tokenType == token.Let || tokenType == token.Const || tokenType == token.New {
 			// Extract the statement
 			statement := tokenUtil.ExtractTokensBefore(
 				function.GetBody()[i:],

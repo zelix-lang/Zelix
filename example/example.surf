@@ -3,12 +3,18 @@ import "@std/io/print";
 pub mod MyMod {
     let my_var : num = 42;
 
+    fun asd() {}
+
     fun MyMod() {
+        this.my_var = 1;
         println("MyMod constructor");
     }
 }
 
 fun main() {
     let asd : MyMod = new MyMod();
+    asd = new MyMod();
+
+    new MyMod();
     println("Hello, world!");
 }
