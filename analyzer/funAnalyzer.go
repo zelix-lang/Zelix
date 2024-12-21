@@ -80,7 +80,7 @@ func AnalyzeFun(
 				)
 			}
 
-			variables.Append(param, value)
+			variables.Append(param, value, false)
 		}
 	} else {
 		// Store the parameters without checking to avoid undefined references
@@ -89,7 +89,7 @@ func AnalyzeFun(
 		for _, param := range argsKeys {
 			expected := tokenUtil.FromRawType(actualParams[param][0], mods)
 			checkParamType(expected, trace)
-			variables.Append(param, expected)
+			variables.Append(param, expected, false)
 		}
 	}
 
@@ -124,8 +124,8 @@ func AnalyzeFun(
 			skipToIndex = i + len(statement) + 1
 
 			// Analyze the statement
-			if tokenType == token.Let {
-				AnalyzeVariableDeclaration(statement[1:], variables, functions, mods)
+			if tokenType == token.Let || tokenType == token.Const {
+				AnalyzeVariableDeclaration(statement[1:], variables, functions, mods, tokenType == token.Const)
 				continue
 			}
 

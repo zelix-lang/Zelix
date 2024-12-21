@@ -69,7 +69,7 @@ func AnalyzePropAccess(
 			)
 		}
 
-		*lastValue = val
+		*lastValue = val.GetValue()
 		return
 	}
 

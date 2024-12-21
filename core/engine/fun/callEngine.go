@@ -27,6 +27,7 @@ func CallFun(
 		variables.Append(
 			key,
 			args[i],
+			false,
 		)
 	}
 

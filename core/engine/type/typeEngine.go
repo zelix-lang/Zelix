@@ -57,7 +57,7 @@ func TranslateType(
 			)
 		}
 
-		return objectValue
+		return objectValue.GetValue()
 	default:
 		logger.TokenError(
 			unit,

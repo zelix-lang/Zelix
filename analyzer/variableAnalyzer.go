@@ -20,6 +20,7 @@ func AnalyzeVariableDeclaration(
 	variables *stack.Stack,
 	functions *map[string]map[string]*code.Function,
 	mods *map[string]*code.SurfMod,
+	constant bool,
 ) {
 	if len(statement) < 5 {
 		logger.TokenError(
@@ -125,5 +126,5 @@ func AnalyzeVariableDeclaration(
 	)
 
 	// Put the variable in the stack
-	variables.Append(varName.GetValue(), expectedType)
+	variables.Append(varName.GetValue(), expectedType, constant)
 }

@@ -76,7 +76,7 @@ func ToObj(
 			)
 		}
 
-		return variable
+		return variable.GetValue()
 	default:
 		logger.TokenError(
 			unit,

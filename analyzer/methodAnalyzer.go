@@ -21,11 +21,11 @@ func AnalyzeMethod(
 	varTemplates := currentMod.GetVarDeclarations()
 
 	for _, template := range varTemplates {
-		AnalyzeVariableDeclaration(template[1:], variables, functions, mods)
+		AnalyzeVariableDeclaration(template[1:], variables, functions, mods, template[0].GetType() == token.Const)
 	}
 	// Add "this" to the stack
 	variables.CreateScope()
-	variables.Append("this", *lastValue)
+	variables.Append("this", *lastValue, true)
 
 	// Analyze the result
 	result := AnalyzeFun(

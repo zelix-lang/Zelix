@@ -98,7 +98,7 @@ func AnalyzeIdentifier(
 			arguments...,
 		)
 	} else {
-		*lastValue = variable
+		*lastValue = variable.GetValue()
 		*startAt += 1
 	}
 
