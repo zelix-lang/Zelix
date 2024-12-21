@@ -59,7 +59,7 @@ func Parse(tokens []token.Token, allowMods bool, allowInlineVars bool) *FileCode
 
 		tokenType := unit.GetType()
 
-		if tokenType == token.Let || tokenType == token.Const {
+		if (tokenType == token.Let || tokenType == token.Const) && !inFunction {
 			if !allowInlineVars && !inMod {
 				logger.TokenError(
 					unit,
@@ -76,6 +76,7 @@ func Parse(tokens []token.Token, allowMods bool, allowInlineVars bool) *FileCode
 				false,
 				token.Unknown,
 				token.Unknown,
+				true,
 			)
 
 			currentModVars = append(currentModVars, statement)

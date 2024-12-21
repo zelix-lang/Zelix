@@ -78,7 +78,7 @@ func AnalyzeObjectCreation(
 	// Check if the module has any constructor
 	constructor, constructorFound, constructorPublic := mod.GetMethod(modName.GetValue())
 	if !constructorFound {
-		*startAt += 3
+		*startAt += 4
 		// No constructor found, return the module
 		return
 	}
@@ -101,6 +101,7 @@ func AnalyzeObjectCreation(
 		token.CloseParen,
 	)
 
+	*startAt += len(argsRaw) + 4
 	args := make([]object.SurfObject, len(argsRaw))
 	for i, arg := range argsRaw {
 		args[i] = AnalyzeStatement(
@@ -111,13 +112,12 @@ func AnalyzeObjectCreation(
 		)
 	}
 
-	// Analyze the constructor call
-	AnalyzeFun(
-		constructor,
+	AnalyzeMethod(
+		*constructor,
 		functions,
 		mods,
+		lastValue,
 		modName,
-		true,
 		args...,
 	)
 

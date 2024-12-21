@@ -25,6 +25,7 @@ func CallStatement(
 		true,
 		token.OpenParen,
 		token.CloseParen,
+		true,
 	)
 
 	// At this point, only function invocations are allowed
@@ -53,7 +54,6 @@ func CallStatement(
 		function,
 		runtime,
 		functions,
-		firstToken,
 		args...,
 	)
 }

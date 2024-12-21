@@ -24,6 +24,13 @@ func NewTypeWrapper(tokens []token.Token, trace token.Token) TypeWrapper {
 	}
 
 	baseType := tokens[0]
+	parameters := make([]TypeWrapper, 0)
+
+	// Check if the data type has parameters
+	if len(tokens) > 1 {
+
+	}
+
 	return TypeWrapper{
 		baseType:   baseType.GetValue(),
 		parameters: parameters,

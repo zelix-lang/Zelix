@@ -33,7 +33,14 @@ func AnalyzeStatement(
 	switch firstTokenType {
 	case token.New:
 		AnalyzeObjectCreation(
-			statement,
+			tokenUtil.ExtractTokensBefore(
+				statement,
+				token.Dot,
+				true,
+				token.OpenParen,
+				token.CloseParen,
+				false,
+			),
 			variables,
 			functions,
 			mods,
@@ -100,7 +107,12 @@ func AnalyzeStatement(
 		)
 	}
 
-	// TODO! Parse property access
+	/*props := tokenUtil.SplitTokens(
+		remainingStatement[1:],
+		token.Dot,
+		token.OpenParen,
+		token.CloseParen,
+	)*/
 
 	return lastValue
 }

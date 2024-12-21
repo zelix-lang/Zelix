@@ -66,6 +66,7 @@ func AnalyzeIdentifier(
 			true,
 			token.OpenParen,
 			token.CloseParen,
+			true,
 		)
 
 		// ExtractTokensBefore also checks the end closing parenthesis
@@ -93,6 +94,7 @@ func AnalyzeIdentifier(
 			mods,
 			firstToken,
 			true,
+			stack.NewStack(),
 			arguments...,
 		)
 	} else {

@@ -12,6 +12,7 @@ func ExtractTokensBefore(
 	handleNested bool,
 	nestedStartDelimiter token.Type,
 	nestedEndDelimiter token.Type,
+	throwIfNotFound bool,
 ) []token.Token {
 	// Used to know if the delimiter was found
 	metDelimiter := false
@@ -19,17 +20,17 @@ func ExtractTokensBefore(
 	blockDepth := 0
 	result := make([]token.Token, 0)
 
-	for _, token := range tokens {
+	for _, unit := range tokens {
 		if handleNested {
-			if token.GetType() == nestedStartDelimiter {
+			if unit.GetType() == nestedStartDelimiter {
 				blockDepth++
 			}
-			if token.GetType() == nestedEndDelimiter {
+			if unit.GetType() == nestedEndDelimiter {
 				blockDepth--
 
 				if blockDepth < 0 {
 					logger.TokenError(
-						token,
+						unit,
 						"Unmatched delimiter",
 						"Match the delimiters",
 					)
@@ -37,15 +38,15 @@ func ExtractTokensBefore(
 			}
 		}
 
-		if token.GetType() == delimiter && blockDepth == 0 {
+		if unit.GetType() == delimiter && blockDepth == 0 {
 			metDelimiter = true
 			break
 		}
 
-		result = append(result, token)
+		result = append(result, unit)
 	}
 
-	if !metDelimiter {
+	if throwIfNotFound && !metDelimiter {
 		logger.TokenError(
 			tokens[len(tokens)-1],
 			"Expected a "+TokenTypeToString(delimiter),

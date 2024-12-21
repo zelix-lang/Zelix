@@ -3,6 +3,7 @@ package analyzer
 import (
 	"os"
 	"surf/ast"
+	"surf/core/stack"
 	"surf/logger"
 )
 
@@ -41,6 +42,7 @@ func AnalyzeFileCode(code *ast.FileCode, source string) {
 				code.GetModules(),
 				function.GetTrace(),
 				false,
+				stack.NewStack(),
 			)
 		}
 	}

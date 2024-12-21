@@ -1,13 +1,11 @@
 package core
 
 import (
-	"strings"
 	"surf/ast"
 	"surf/core/engine/fun"
 	"surf/logger"
 	"surf/object"
 	runtime2 "surf/runtime"
-	"surf/token"
 )
 
 // loadRuntime returns the runtime built-in functions
@@ -42,15 +40,5 @@ func Interpret(fileCode *ast.FileCode, sourceFile string) {
 		main,
 		runtime,
 		fileCode.GetFunctions(),
-		*token.NewToken(
-			token.Unknown,
-			"",
-			sourceFile,
-			0,
-			0,
-			"",
-			0,
-			*new(strings.Builder),
-		),
 	)
 }

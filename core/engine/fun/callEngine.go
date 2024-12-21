@@ -14,7 +14,6 @@ func CallFun(
 	function *code.Function,
 	runtime map[string]func(...object.SurfObject),
 	functions *map[string]map[string]*code.Function,
-	trace token.Token,
 	args ...object.SurfObject,
 ) {
 	variables := stack.NewStack()
@@ -50,6 +49,7 @@ func CallFun(
 				false,
 				token.Unknown,
 				token.Unknown,
+				true,
 			)
 
 			CallStatement(statement, runtime, function.IsStd(), functions, variables)

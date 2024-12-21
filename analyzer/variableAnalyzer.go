@@ -7,6 +7,7 @@ import (
 	"surf/code"
 	"surf/core/stack"
 	"surf/logger"
+	"surf/object"
 	"surf/token"
 	"surf/tokenUtil"
 )
@@ -81,6 +82,7 @@ func AnalyzeVariableDeclaration(
 		false,
 		token.Unknown,
 		token.Unknown,
+		true,
 	)
 
 	if len(varTypeTokens) == 0 {
@@ -94,7 +96,19 @@ func AnalyzeVariableDeclaration(
 
 	// Check if the type is valid
 	expectedType := tokenUtil.FromRawType(varTypeTokens[0], mods)
-	if !tokenUtil.IsValidType(varTypeTokens[0].GetType()) {
+	isMod := varTypeTokens[0].GetType() == token.Identifier
+
+	if isMod {
+		_, found := (*mods)[varTypeTokens[0].GetValue()]
+
+		if !found {
+			logger.TokenError(
+				varTypeTokens[0],
+				"Invalid type '"+varTypeTokens[0].GetValue()+"'",
+				"Change the type to a valid one",
+			)
+		}
+	} else if !tokenUtil.IsValidType(varTypeTokens[0].GetType()) {
 		logger.TokenError(
 			varTypeTokens[0],
 			"Invalid type '"+varTypeTokens[0].GetValue()+"'",
@@ -110,7 +124,19 @@ func AnalyzeVariableDeclaration(
 		mods,
 	)
 
-	if value.GetType() != expectedType.GetType() {
+	if isMod {
+		mod := expectedType.GetValue().(*code.SurfMod)
+		gotMod := value.GetValue().(*code.SurfMod)
+
+		if value.GetType() != object.ModType || gotMod.GetName() != mod.GetName() {
+			logger.TokenError(
+				varTypeTokens[0],
+				"Type mismatch",
+				"The module does not match the expected type",
+				"Change the module",
+			)
+		}
+	} else if value.GetType() != expectedType.GetType() {
 		logger.TokenError(
 			varTypeTokens[0],
 			"Type mismatch",

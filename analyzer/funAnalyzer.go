@@ -34,6 +34,7 @@ func AnalyzeFun(
 	mods *map[string]*code.SurfMod,
 	trace token.Token,
 	checkArgs bool,
+	variables *stack.Stack,
 	args ...object.SurfObject,
 ) object.SurfObject {
 	function.SetTimesCalled(function.GetTimesCalled() + 1)
@@ -50,7 +51,6 @@ func AnalyzeFun(
 	}
 
 	// Create a new StaticStack
-	variables := stack.NewStack()
 	actualParams := function.GetParameters()
 
 	if checkArgs {
@@ -118,6 +118,7 @@ func AnalyzeFun(
 				false,
 				token.Unknown,
 				token.Unknown,
+				true,
 			)
 
 			skipToIndex = i + len(statement) + 1
@@ -141,5 +142,8 @@ func AnalyzeFun(
 	}
 
 	// TODO! Parse return statements
+
+	// Destroy the scope
+	variables.DestroyScope()
 	return object.NewSurfObject(object.NothingType, nil)
 }
