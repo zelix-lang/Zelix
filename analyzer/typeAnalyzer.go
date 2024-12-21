@@ -8,9 +8,9 @@ import (
 	"surf/token"
 )
 
-// AnalyzeType analyzes the type of the given assignment
+// AnalyzeType analyzes the given type and makes sure it matches the expected type
 func AnalyzeType(
-	assignment []token.Token,
+	statement []token.Token,
 	variables *stack.Stack,
 	functions *map[string]map[string]*code.Function,
 	mods *map[string]*code.SurfMod,
@@ -20,7 +20,7 @@ func AnalyzeType(
 
 	// Analyze the type
 	value := AnalyzeStatement(
-		assignment,
+		statement,
 		variables,
 		functions,
 		mods,
@@ -31,7 +31,7 @@ func AnalyzeType(
 
 		if value.GetType() != object.ModType {
 			logger.TokenError(
-				assignment[0],
+				statement[0],
 				"Type mismatch",
 				"This type does not match the value type",
 				"Change the declaration or remove the assignment",
@@ -42,7 +42,7 @@ func AnalyzeType(
 
 		if value.GetType() != object.ModType || gotMod.GetName() != mod.GetName() {
 			logger.TokenError(
-				assignment[0],
+				statement[0],
 				"Type mismatch",
 				"This type does not match the value type",
 				"Change the declaration or remove the assignment",
@@ -50,7 +50,7 @@ func AnalyzeType(
 		}
 	} else if value.GetType() != expected.GetType() {
 		logger.TokenError(
-			assignment[0],
+			statement[0],
 			"Type mismatch",
 			"This type does not match the value type",
 			"Change the declaration or remove the assignment",
