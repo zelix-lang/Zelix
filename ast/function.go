@@ -26,6 +26,25 @@ type Function struct {
 	lastCalled time.Time
 }
 
+// NewFunction creates a new Function
+func NewFunction(
+	returnType []code.Token,
+	parameters map[string][]code.Token,
+	body []code.Token,
+	public bool,
+	std bool,
+	trace code.Token,
+) Function {
+	return Function{
+		returnType: returnType,
+		parameters: parameters,
+		body:       body,
+		public:     public,
+		std:        std,
+		trace:      trace,
+	}
+}
+
 // GetReturnType returns the return type of the function.
 func (f *Function) GetReturnType() []code.Token {
 	return f.returnType

@@ -14,6 +14,14 @@ type FileCode struct {
 	modules map[string]*SurfMod
 }
 
+// NewFileCode creates a new FileCode object
+func NewFileCode() FileCode {
+	return FileCode{
+		functions: make(map[string]map[string]*Function),
+		modules:   make(map[string]*SurfMod),
+	}
+}
+
 // GetFunctions returns the functions of the FileCode
 func (fc *FileCode) GetFunctions() *map[string]map[string]*Function {
 	return &fc.functions
@@ -88,4 +96,9 @@ func LocateFunction(
 // GetModules returns the modules of the FileCode
 func (fc *FileCode) GetModules() *map[string]*SurfMod {
 	return &fc.modules
+}
+
+// AddModule adds a new module to the FileCode
+func (fc *FileCode) AddModule(name string, module *SurfMod) {
+	fc.modules[name] = module
 }

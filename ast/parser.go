@@ -15,10 +15,7 @@ var stdPath = os.Getenv("SURF_STANDARD_PATH")
 
 // Parse parses the given tokens into a FileCode
 func Parse(tokens []code.Token, allowMods bool, allowInlineVars bool) *FileCode {
-	result := FileCode{
-		functions: make(map[string]map[string]*Function),
-		modules:   make(map[string]*SurfMod),
-	}
+	result := NewFileCode()
 
 	// Used to keep track of the state of the parser
 	inFunction := false
@@ -330,9 +327,9 @@ func Parse(tokens []code.Token, allowMods bool, allowInlineVars bool) *FileCode 
 						privateFunctions := make(map[string]*Function)
 						publicFunctions := make(map[string]*Function)
 
-						for _, functions := range modFunctions.functions {
+						for _, functions := range *modFunctions.GetFunctions() {
 							for name, function := range functions {
-								if function.public {
+								if function.IsPublic() {
 									publicFunctions[name] = function
 								} else {
 									privateFunctions[name] = function
@@ -351,7 +348,7 @@ func Parse(tokens []code.Token, allowMods bool, allowInlineVars bool) *FileCode 
 							currentFunctionPublic,
 						)
 
-						result.modules[currentFunctionName] = &mod
+						result.AddModule(currentFunctionName, &mod)
 						inMod = false
 						expectingFun = true
 
@@ -371,14 +368,14 @@ func Parse(tokens []code.Token, allowMods bool, allowInlineVars bool) *FileCode 
 					expectingFun = true
 
 					// Create the function
-					function := Function{
-						returnType: currentFunctionReturnType,
-						parameters: currentFunctionParameters,
-						body:       currentFunctionBody,
-						public:     currentFunctionPublic,
-						std:        strings.HasPrefix(token.GetFile(), stdPath),
-						trace:      token,
-					}
+					function := NewFunction(
+						currentFunctionReturnType,
+						currentFunctionParameters,
+						currentFunctionBody,
+						currentFunctionPublic,
+						strings.HasPrefix(token.GetFile(), stdPath),
+						token,
+					)
 
 					result.AddFunction(
 						token,
