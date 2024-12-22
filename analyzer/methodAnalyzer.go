@@ -11,7 +11,7 @@ import (
 func AnalyzeMethod(
 	method code.Function,
 	functions *map[string]map[string]*code.Function,
-	mods *map[string]*code.SurfMod,
+	mods *map[string]map[string]*code.SurfMod,
 	lastValue *object.SurfObject,
 	trace token.Token,
 	args ...object.SurfObject,

@@ -17,7 +17,7 @@ func AnalyzeIdentifier(
 	statement []token.Token,
 	variables *stack.Stack,
 	functions *map[string]map[string]*code.Function,
-	mods *map[string]*code.SurfMod,
+	mods *map[string]map[string]*code.SurfMod,
 	startAt *int,
 	lastValue *object.SurfObject,
 	isArithmetic *bool,

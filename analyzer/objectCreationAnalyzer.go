@@ -13,7 +13,7 @@ func AnalyzeObjectCreation(
 	statement []token.Token,
 	variables *stack.Stack,
 	functions *map[string]map[string]*code.Function,
-	mods *map[string]*code.SurfMod,
+	mods *map[string]map[string]*code.SurfMod,
 	startAt *int,
 	lastValue *object.SurfObject,
 ) {
@@ -31,7 +31,7 @@ func AnalyzeObjectCreation(
 	// At this point, the first token is always "new"
 	// no need to check it
 	modName := statement[1]
-	mod, modFound := (*mods)[modName.GetValue()]
+	mod, modFound, sameFile := code.FindMod(mods, modName.GetValue(), modName.GetFile())
 
 	if !modFound {
 		logger.TokenError(
@@ -43,7 +43,7 @@ func AnalyzeObjectCreation(
 	}
 
 	// Check access to the module
-	if !mod.IsPublic() && mod.GetFile() != modName.GetFile() {
+	if !mod.IsPublic() && !sameFile {
 		logger.TokenError(
 			modName,
 			"Module "+modName.GetValue()+" is not public",

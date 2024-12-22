@@ -14,7 +14,7 @@ func AnalyzePropAccess(
 	prop []token.Token,
 	variables *stack.Stack,
 	functions *map[string]map[string]*code.Function,
-	mods *map[string]*code.SurfMod,
+	mods *map[string]map[string]*code.SurfMod,
 	lastValue *object.SurfObject,
 	isFunCall *bool,
 	isAssignment bool,

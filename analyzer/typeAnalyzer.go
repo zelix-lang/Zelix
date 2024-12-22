@@ -13,7 +13,7 @@ func AnalyzeType(
 	statement []token.Token,
 	variables *stack.Stack,
 	functions *map[string]map[string]*code.Function,
-	mods *map[string]*code.SurfMod,
+	mods *map[string]map[string]*code.SurfMod,
 	expected object.SurfObject,
 ) {
 	isMod := expected.GetType() == object.ModType

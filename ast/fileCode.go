@@ -8,18 +8,18 @@ import (
 
 // FileCode is a representation of the file source code
 type FileCode struct {
-	// functions holds the functions of the current file
+	// functions holds the functions across all files
 	// and of all the imported files.
 	functions map[string]map[string]*code.Function
-	// modules holds the defined modules in the file
-	modules map[string]*code.SurfMod
+	// modules holds the defined modules across all files
+	modules map[string]map[string]*code.SurfMod
 }
 
 // NewFileCode creates a new FileCode object
 func NewFileCode() FileCode {
 	return FileCode{
 		functions: make(map[string]map[string]*code.Function),
-		modules:   make(map[string]*code.SurfMod),
+		modules:   make(map[string]map[string]*code.SurfMod),
 	}
 }
 
@@ -95,11 +95,16 @@ func LocateFunction(
 }
 
 // GetModules returns the modules of the FileCode
-func (fc *FileCode) GetModules() *map[string]*code.SurfMod {
+func (fc *FileCode) GetModules() *map[string]map[string]*code.SurfMod {
 	return &fc.modules
 }
 
 // AddModule adds a new module to the FileCode
-func (fc *FileCode) AddModule(name string, module *code.SurfMod) {
-	fc.modules[name] = module
+func (fc *FileCode) AddModule(file string, name string, module *code.SurfMod) {
+	// Ensure the file exists in the map
+	if _, ok := fc.modules[file]; !ok {
+		fc.modules[file] = make(map[string]*code.SurfMod)
+	}
+
+	fc.modules[file][name] = module
 }

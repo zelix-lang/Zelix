@@ -16,7 +16,7 @@ func AnalyzeStatement(
 	statement []token.Token,
 	variables *stack.Stack,
 	functions *map[string]map[string]*code.Function,
-	mods *map[string]*code.SurfMod,
+	mods *map[string]map[string]*code.SurfMod,
 ) object.SurfObject {
 	// Used to know what to check for
 	isArithmetic := false

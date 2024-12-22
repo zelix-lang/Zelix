@@ -39,6 +39,26 @@ func NewSurfMod(
 	}
 }
 
+// FindMod finds a module in the given map
+// and returns the module alongside a boolean
+// indicating if the module was found
+func FindMod(mods *map[string]map[string]*SurfMod, name string, file string) (*SurfMod, bool, bool) {
+	mod, found := (*mods)[file][name]
+	if found {
+		return mod, true, true
+	}
+
+	for _, fileMods := range *mods {
+		mod, found = fileMods[name]
+
+		if found {
+			return mod, true, false
+		}
+	}
+
+	return &SurfMod{}, false, false
+}
+
 // GetProperty returns the property with the given name
 // alongside a boolean indicating if the property was found
 func (sm *SurfMod) GetProperty(name string) (*object.SurfObject, bool) {

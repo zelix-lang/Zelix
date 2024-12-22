@@ -19,7 +19,7 @@ func AnalyzeVariableDeclaration(
 	statement []token.Token,
 	variables *stack.Stack,
 	functions *map[string]map[string]*code.Function,
-	mods *map[string]*code.SurfMod,
+	mods *map[string]map[string]*code.SurfMod,
 	constant bool,
 ) {
 	if len(statement) < 5 {
@@ -99,7 +99,15 @@ func AnalyzeVariableDeclaration(
 	isMod := varTypeTokens[0].GetType() == token.Identifier
 
 	if isMod {
-		_, found := (*mods)[varTypeTokens[0].GetValue()]
+		mod, found, sameFile := code.FindMod(mods, varTypeTokens[0].GetValue(), varTypeTokens[0].GetFile())
+
+		if !sameFile && !mod.IsPublic() {
+			logger.TokenError(
+				varTypeTokens[0],
+				"Module "+varTypeTokens[0].GetValue()+" is not public",
+				"Move the module to the current file or make it public",
+			)
+		}
 
 		if !found {
 			logger.TokenError(

@@ -11,7 +11,7 @@ import (
 // FromRawType converts a raw token to a SurfObject
 func FromRawType(
 	unit token.Token,
-	mods *map[string]*code.SurfMod,
+	mods *map[string]map[string]*code.SurfMod,
 ) object.SurfObject {
 	tokenType := unit.GetType()
 
@@ -25,7 +25,7 @@ func FromRawType(
 	case token.Dec:
 		return object.NewSurfObject(object.DecimalType, "")
 	case token.Identifier:
-		mod, found := (*mods)[unit.GetValue()]
+		mod, found, _ := code.FindMod(mods, unit.GetValue(), unit.GetFile())
 
 		if !found {
 			logger.TokenError(

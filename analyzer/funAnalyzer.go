@@ -31,7 +31,7 @@ func checkParamType(
 func AnalyzeFun(
 	function *code.Function,
 	functions *map[string]map[string]*code.Function,
-	mods *map[string]*code.SurfMod,
+	mods *map[string]map[string]*code.SurfMod,
 	trace token.Token,
 	checkArgs bool,
 	variables *stack.Stack,
