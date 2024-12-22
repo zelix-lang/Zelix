@@ -54,7 +54,7 @@ Once you've filled in the information, the project will be created and you can s
 ```
 my_project/
     src/
-        main.Zyro
+        main.zyro
     Zyro.yml
     .gitignore
 ```
