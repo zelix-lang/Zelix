@@ -100,10 +100,20 @@ func (fc *FileCode) GetModules() *map[string]map[string]*code.SurfMod {
 }
 
 // AddModule adds a new module to the FileCode
-func (fc *FileCode) AddModule(file string, name string, module *code.SurfMod) {
+func (fc *FileCode) AddModule(file string, name string, module *code.SurfMod, trace token.Token) {
 	// Ensure the file exists in the map
 	if _, ok := fc.modules[file]; !ok {
 		fc.modules[file] = make(map[string]*code.SurfMod)
+	} else {
+		// Check if the module is already defined
+		if _, ok := fc.modules[file][name]; ok {
+			logger.TokenError(
+				trace,
+				"Redefinition of module "+name,
+				"The module "+name+" has already been defined in this file",
+				"Change the name of the module",
+			)
+		}
 	}
 
 	fc.modules[file][name] = module
