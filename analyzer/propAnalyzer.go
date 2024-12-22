@@ -17,6 +17,7 @@ func AnalyzePropAccess(
 	mods *map[string]*code.SurfMod,
 	lastValue *object.SurfObject,
 	isFunCall *bool,
+	isAssignment bool,
 ) {
 	// No need to check for prop's length
 	// the token splitter ensures that
@@ -66,6 +67,15 @@ func AnalyzePropAccess(
 				"Illegal access",
 				"Cannot access private properties",
 				"Use setters and getters to access or modify the property",
+			)
+		}
+
+		if isAssignment && val.IsConstant() {
+			logger.TokenError(
+				prop[0],
+				"Cannot assign to constant",
+				"This property is constant",
+				"Remove the assignment or change the property's constant status",
 			)
 		}
 

@@ -12,9 +12,7 @@ pub mod MyMod {
 }
 
 fun main() {
-    let asd : MyMod = new MyMod();
-    asd = new MyMod();
+    const asd : MyMod = new MyMod();
 
-    new MyMod();
     println("Hello, world!");
 }

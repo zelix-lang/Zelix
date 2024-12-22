@@ -106,13 +106,16 @@ func AnalyzeStatement(
 			)
 		}
 
-		AnalyzeType(
-			remainingStatement[1:],
-			variables,
-			functions,
-			mods,
-			lastValue,
-		)
+		variable, _ := variables.Load(firstToken.GetValue())
+		// No need to check if it was found here, it was already checked
+
+		if variable.IsConstant() {
+			logger.TokenError(
+				remainingStatement[0],
+				"Cannot reassign constant",
+				"Check the variable declaration",
+			)
+		}
 
 		return lastValue
 	}
@@ -174,6 +177,7 @@ func AnalyzeStatement(
 			mods,
 			&lastValue,
 			&isFunCall,
+			len(afterAssignment) > 0,
 		)
 	}
 
