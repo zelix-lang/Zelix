@@ -3,8 +3,8 @@ package converter
 import (
 	"zyro/code/types"
 	"zyro/code/wrapper"
-	"zyro/core/stack"
 	"zyro/logger"
+	"zyro/stack"
 	"zyro/token"
 )
 

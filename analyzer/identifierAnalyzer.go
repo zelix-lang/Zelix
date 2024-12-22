@@ -6,8 +6,8 @@ import (
 	"zyro/code/mod"
 	"zyro/code/types"
 	"zyro/code/wrapper"
-	"zyro/core/stack"
 	"zyro/logger"
+	"zyro/stack"
 	"zyro/token"
 	"zyro/tokenUtil/splitter"
 )

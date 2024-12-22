@@ -4,8 +4,8 @@ import (
 	"zyro/code"
 	"zyro/code/mod"
 	"zyro/code/wrapper"
-	"zyro/core/stack"
 	"zyro/logger"
+	"zyro/stack"
 	"zyro/token"
 )
 
