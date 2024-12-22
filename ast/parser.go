@@ -6,7 +6,6 @@ import (
 	"zyro/code"
 	"zyro/code/mod"
 	"zyro/code/wrapper"
-	"zyro/concurrent"
 	"zyro/logger"
 	"zyro/token"
 	"zyro/tokenUtil/splitter"
@@ -14,6 +13,37 @@ import (
 
 // The standard library's path
 var stdPath = os.Getenv("ZYRO_STANDARD_PATH")
+
+// pushParameter pushes the current parameter to the parameters list
+func pushParameter(
+	unit token.Token,
+	currentParameter *[]token.Token,
+	currentParameterName *string,
+	currentFunctionParameters *map[string][]token.Token,
+	expectingArgType *bool,
+	expectingArgs *bool,
+) {
+	// No parameter name = No parameters, skip
+	if len(*currentParameterName) == 0 {
+		return
+	}
+
+	// Parse next parameter
+	if len(*currentParameter) == 0 {
+		logger.TokenError(
+			unit,
+			"Expected a data type",
+			"Add a data type",
+		)
+	}
+
+	(*currentFunctionParameters)[*currentParameterName] = *currentParameter
+	*currentParameterName = ""
+	*currentParameter = nil
+	*currentParameter = []token.Token{}
+	*expectingArgType = false
+	*expectingArgs = true
+}
 
 // Parse parses the given tokens into a FileCode
 func Parse(tokens []token.Token, allowMods bool, allowInlineVars bool) *FileCode {
@@ -187,13 +217,15 @@ func Parse(tokens []token.Token, allowMods bool, allowInlineVars bool) *FileCode
 			expectingArgs = true
 		} else if expectingArgs {
 			if tokenType == token.CloseParen {
-				// Parse the return type
-				if len(currentParameter) > 0 {
-					currentFunctionParameters[currentParameterName] = currentParameter
-				}
+				pushParameter(
+					unit,
+					&currentParameter,
+					&currentParameterName,
+					&currentFunctionParameters,
+					&expectingArgType,
+					&expectingArgs,
+				)
 
-				currentParameter = nil
-				currentParameter = []token.Token{}
 				expectingArgs = false
 				expectingArrow = true
 				continue
@@ -225,26 +257,28 @@ func Parse(tokens []token.Token, allowMods bool, allowInlineVars bool) *FileCode
 			expectingArgType = true
 		} else if expectingArgType {
 			if tokenType == token.Comma {
-				// Parse next parameter
-				if len(currentParameter) > 0 {
-					currentFunctionParameters[currentParameterName] = currentParameter
-				}
-
-				currentParameter = nil
-				currentParameter = []token.Token{}
-				expectingArgType = false
-				expectingArgs = true
+				pushParameter(
+					unit,
+					&currentParameter,
+					&currentParameterName,
+					&currentFunctionParameters,
+					&expectingArgType,
+					&expectingArgs,
+				)
 				continue
 			}
 
 			if tokenType == token.CloseParen {
 				// Parse the return type
-				if len(currentParameter) > 0 {
-					currentFunctionParameters[currentParameterName] = currentParameter
-				}
+				pushParameter(
+					unit,
+					&currentParameter,
+					&currentParameterName,
+					&currentFunctionParameters,
+					&expectingArgType,
+					&expectingArgs,
+				)
 
-				currentParameter = nil
-				currentParameter = []token.Token{}
 				expectingArgs = false
 				expectingArrow = true
 				expectingArgType = false
@@ -344,7 +378,7 @@ func Parse(tokens []token.Token, allowMods bool, allowInlineVars bool) *FileCode
 
 						// Wrap the functions inside a ZyroMod
 						module := mod.NewZyroMod(
-							concurrent.NewTypedConcurrentMap[string, wrapper.ZyroObject](),
+							make(map[string]*wrapper.ZyroObject),
 							publicFunctions,
 							privateFunctions,
 							currentFunctionName,
