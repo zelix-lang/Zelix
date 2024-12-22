@@ -5,10 +5,10 @@ import (
 	"zyro/code/mod"
 	"zyro/code/types"
 	"zyro/code/wrapper"
-	"zyro/core/engine/args"
 	"zyro/core/stack"
 	"zyro/logger"
 	"zyro/token"
+	"zyro/tokenUtil/splitter"
 )
 
 // AnalyzePropAccess analyzes the given property access
@@ -128,7 +128,7 @@ func AnalyzePropAccess(
 	}
 
 	argsRaw := prop[:len(prop)-1]
-	argsSplit, _ := args.SplitArgs(argsRaw)
+	argsSplit, _ := splitter.SplitArgs(argsRaw)
 	funArgs := make([]wrapper.ZyroObject, len(argsSplit))
 
 	for i, arg := range argsSplit {

@@ -1,8 +1,7 @@
-package args
+package splitter
 
 import (
 	"zyro/token"
-	"zyro/tokenUtil/splitter"
 )
 
 // SplitArgs splits the arguments into a slice of slices of tokens
@@ -16,7 +15,7 @@ func SplitArgs(statement []token.Token) ([][]token.Token, int) {
 	parametersRaw := statement[2:]
 
 	// Split by commas
-	return splitter.SplitTokens(
+	return SplitTokens(
 		parametersRaw,
 		token.Comma,
 		token.OpenParen,

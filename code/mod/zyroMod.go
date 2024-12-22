@@ -4,7 +4,6 @@ import (
 	"zyro/code"
 	"zyro/code/types"
 	"zyro/code/wrapper"
-	"zyro/concurrent"
 	"zyro/token"
 )
 
@@ -12,7 +11,7 @@ import (
 // a Zyro module is somewhat similar to a class in OOP
 type ZyroMod struct {
 	varDeclarations [][]token.Token
-	properties      *concurrent.TypedConcurrentMap[string, wrapper.ZyroObject]
+	properties      map[string]*wrapper.ZyroObject
 	methods         map[string]*code.Function
 	name            string
 	file            string
@@ -23,7 +22,7 @@ type ZyroMod struct {
 
 // NewZyroMod creates a new Zyro module
 func NewZyroMod(
-	properties *concurrent.TypedConcurrentMap[string, wrapper.ZyroObject],
+	properties map[string]*wrapper.ZyroObject,
 	publicMethods map[string]*code.Function,
 	privateMethods map[string]*code.Function,
 	name string,
@@ -78,13 +77,13 @@ func FindMod(mods *map[string]map[string]*ZyroMod, name string, file string) (*Z
 // GetProperty returns the property with the given name
 // alongside a boolean indicating if the property was found
 func (sm *ZyroMod) GetProperty(name string) (*wrapper.ZyroObject, bool) {
-	prop, found := sm.properties.Load(name)
+	prop, found := sm.properties[name]
 	return prop, found
 }
 
 // SetProperty sets the property with the given name
 func (sm *ZyroMod) SetProperty(name string, value wrapper.ZyroObject) {
-	sm.properties.Store(name, value)
+	sm.properties[name] = &value
 }
 
 // GetMethod returns the method with the given name

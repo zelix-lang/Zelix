@@ -6,7 +6,6 @@ import (
 	"zyro/code/mod"
 	"zyro/code/types"
 	"zyro/code/wrapper"
-	"zyro/core/engine/args"
 	"zyro/core/stack"
 	"zyro/logger"
 	"zyro/token"
@@ -74,7 +73,7 @@ func AnalyzeIdentifier(
 		// ExtractTokensBefore also checks the end closing parenthesis
 		// is also met, so no need to check it here
 
-		argumentsRaw, skipped := args.SplitArgs(call)
+		argumentsRaw, skipped := splitter.SplitArgs(call)
 		arguments := make([]wrapper.ZyroObject, len(argumentsRaw))
 
 		for i, argument := range argumentsRaw {

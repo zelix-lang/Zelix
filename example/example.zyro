@@ -1,10 +1,8 @@
 import "@std/io/print";
 
 // TODO: validate cases like this
-fun abc(a: ,) -> str {
+fun abc(a: str) {
 
 }
 
-fun main() {
-    let bcd : str = "Hello, World!";
-}
+fun main() {}
