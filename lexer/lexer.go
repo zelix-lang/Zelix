@@ -365,8 +365,8 @@ func lexSingleFile(input string, file string) []token.Token {
 			if err != nil {
 				logger.Error("Invalid escape sequence: " + combined)
 
-				trace, indicator := util.BuildTrace(currentToken, i, input)
-				logger.Log("Full context:", trace, indicator)
+				trace := util.BuildTrace(currentToken, i, input)
+				logger.Log("Full context:", trace)
 				logger.Help("Use a valid escape sequence")
 
 				os.Exit(1)
@@ -406,7 +406,7 @@ func lexSingleFile(input string, file string) []token.Token {
 			var arrowBuilder strings.Builder
 
 			arrowBuilder.WriteString(arrow)
-			pushToken(&arrowBuilder, &result, line, column, file, input, i, decimalLiteral)
+			pushToken(&arrowBuilder, &result, line, column, file, input, i-1, decimalLiteral)
 			decimalLiteral = false
 			continue
 		}
@@ -421,7 +421,7 @@ func lexSingleFile(input string, file string) []token.Token {
 			var incDecBuilder strings.Builder
 
 			incDecBuilder.WriteString(incDec)
-			pushToken(&incDecBuilder, &result, line, column, file, input, i, decimalLiteral)
+			pushToken(&incDecBuilder, &result, line, column, file, input, i-1, decimalLiteral)
 			decimalLiteral = false
 
 			continue
@@ -439,7 +439,7 @@ func lexSingleFile(input string, file string) []token.Token {
 		// Check for punctuation characters
 		if _, exists := punctuation[char]; exists {
 			// Push any remaining token
-			pushToken(&currentToken, &result, line, column, file, input, i, decimalLiteral)
+			pushToken(&currentToken, &result, line, column, file, input, i-1, decimalLiteral)
 			decimalLiteral = false
 
 			// Add the punctuation character as a token

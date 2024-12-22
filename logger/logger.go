@@ -45,7 +45,7 @@ func TokenWarning(
 	help ...string,
 ) {
 	println(warningLevel, message)
-	Log("Full context:", token.GetTrace(), token.GetTraceContext(), token.GetTraceIndicator())
+	Log("Full context:", token.GetTrace(), token.GetTraceContext())
 
 	for _, h := range help {
 		Help(h)
@@ -62,7 +62,7 @@ func TokenError(
 	help ...string,
 ) {
 	Error(message)
-	Log("Full context:", token.GetTrace(), token.GetTraceContext(), token.GetTraceIndicator())
+	Log("Full context:", token.GetTrace(), token.GetTraceContext())
 
 	for _, h := range help {
 		Help(h)

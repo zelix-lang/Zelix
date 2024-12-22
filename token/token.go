@@ -8,14 +8,13 @@ import (
 
 // Token represents a small piece of the source code
 type Token struct {
-	tokenType      Type
-	value          string
-	file           string
-	line           int
-	column         int
-	trace          string
-	traceContext   string
-	traceIndicator string
+	tokenType    Type
+	value        string
+	file         string
+	line         int
+	column       int
+	trace        string
+	traceContext string
 }
 
 func NewToken(
@@ -28,7 +27,7 @@ func NewToken(
 	currentIndex int,
 	currentToken strings.Builder,
 ) *Token {
-	context, indicator := util.BuildTrace(currentToken, currentIndex, input)
+	context := util.BuildTrace(currentToken, currentIndex, input)
 
 	return &Token{
 		tokenType,
@@ -38,7 +37,6 @@ func NewToken(
 		column,
 		"At " + file + ":" + strconv.Itoa(line) + ":" + strconv.Itoa(column),
 		context,
-		indicator,
 	}
 }
 
@@ -80,9 +78,4 @@ func (t Token) GetTrace() string {
 // GetTraceContext returns the trace context of the Token.
 func (t Token) GetTraceContext() string {
 	return t.traceContext
-}
-
-// GetTraceIndicator returns the trace indicator of the Token.
-func (t Token) GetTraceIndicator() string {
-	return t.traceIndicator
 }
