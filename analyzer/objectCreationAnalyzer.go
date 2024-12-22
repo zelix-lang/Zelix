@@ -32,7 +32,7 @@ func AnalyzeObjectCreation(
 	// At this point, the first token is always "new"
 	// no need to check it
 	modName := statement[1]
-	mod, modFound, sameFile := mod.FindMod(mods, modName.GetValue(), modName.GetFile())
+	module, modFound, sameFile := mod.FindMod(mods, modName.GetValue(), modName.GetFile())
 
 	if !modFound {
 		logger.TokenError(
@@ -44,7 +44,7 @@ func AnalyzeObjectCreation(
 	}
 
 	// Check access to the module
-	if !mod.IsPublic() && !sameFile {
+	if !module.IsPublic() && !sameFile {
 		logger.TokenError(
 			modName,
 			"Module "+modName.GetValue()+" is not public",
@@ -72,12 +72,12 @@ func AnalyzeObjectCreation(
 	}
 
 	*lastValue = wrapper.NewZyroObject(
-		mod.BuildDummyWrapper(),
-		mod,
+		module.BuildDummyWrapper(),
+		module,
 	)
 
 	// Check if the module has any constructor
-	constructor, constructorFound, constructorPublic := mod.GetMethod(modName.GetValue())
+	constructor, constructorFound, constructorPublic := module.GetMethod(modName.GetValue())
 	if !constructorFound {
 		*startAt += 4
 		// No constructor found, return the module
@@ -85,7 +85,7 @@ func AnalyzeObjectCreation(
 	}
 
 	// Check if the constructor is public
-	if !constructorPublic && mod.GetFile() != modName.GetFile() {
+	if !constructorPublic && module.GetFile() != modName.GetFile() {
 		logger.TokenError(
 			modName,
 			"Constructor "+modName.GetValue()+" is not public",

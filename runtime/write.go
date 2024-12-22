@@ -2,6 +2,7 @@ package runtime
 
 import (
 	"zyro/code/mod"
+	"zyro/code/types"
 	"zyro/code/wrapper"
 )
 
@@ -13,19 +14,19 @@ func Write(objects ...wrapper.ZyroObject) {
 		_type := typeWrapper.GetType()
 
 		switch _type {
-		case wrapper.StringType:
+		case types.StringType:
 			print(obj.GetValue().(string))
-		case wrapper.DecimalType:
+		case types.DecimalType:
 			print(obj.GetValue().(float64))
-		case wrapper.IntType:
+		case types.IntType:
 			print(obj.GetValue().(int))
-		case wrapper.BooleanType:
+		case types.BooleanType:
 			print(obj.GetValue().(bool))
-		case wrapper.NothingType:
+		case types.NothingType:
 			print("@Zyro<Nothing>")
 		default:
-			mod := obj.GetValue().(mod.ZyroMod)
-			print(mod.GetName())
+			module := obj.GetValue().(mod.ZyroMod)
+			print(module.GetName())
 		}
 	}
 }

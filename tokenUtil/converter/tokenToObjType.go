@@ -1,7 +1,6 @@
 package converter
 
 import (
-	"zyro/code/mod"
 	"zyro/code/types"
 	"zyro/code/wrapper"
 	"zyro/core/stack"
@@ -38,49 +37,6 @@ var dummyDecimalType = wrapper.ForceNewTypeWrapper(
 	[]wrapper.TypeWrapper{},
 	types.DecimalType,
 )
-
-// FromRawType converts a raw token to a ZyroObject
-func FromRawType(
-	unit token.Token,
-	mods *map[string]map[string]*mod.ZyroMod,
-) wrapper.ZyroObject {
-	tokenType := unit.GetType()
-
-	switch tokenType {
-	case token.Bool:
-		return wrapper.NewZyroObject(
-			dummyBoolType,
-			"",
-		)
-	case token.String:
-		return wrapper.NewZyroObject(dummyStringType, "")
-	case token.Num:
-		return wrapper.NewZyroObject(dummyIntType, "")
-	case token.Dec:
-		return wrapper.NewZyroObject(dummyDecimalType, "")
-	case token.Identifier:
-		module, found, _ := mod.FindMod(mods, unit.GetValue(), unit.GetFile())
-
-		if !found {
-			logger.TokenError(
-				unit,
-				"Undefined reference to module "+unit.GetValue(),
-				"The module "+unit.GetValue()+" was not found in the current scope",
-				"Add the variable to the current scope",
-			)
-		}
-
-		return wrapper.NewZyroObject(module.BuildDummyWrapper(), module)
-	default:
-		logger.TokenError(
-			unit,
-			"Unexpected token",
-			"Expected an identifier, a literal or a variable",
-		)
-
-		return wrapper.NewZyroObject(dummyNothingType, "")
-	}
-}
 
 // ToObj converts a token to a ZyroObject
 func ToObj(
