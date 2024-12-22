@@ -11,11 +11,11 @@ import (
 type SurfMod struct {
 	varDeclarations [][]token.Token
 	properties      *concurrent.TypedConcurrentMap[string, object.SurfObject]
-	publicMethods   map[string]*Function
-	privateMethods  map[string]*Function
+	methods         map[string]*Function
 	name            string
 	file            string
 	public          bool
+	trace           token.Token
 }
 
 // NewSurfMod creates a new Surf module
@@ -27,16 +27,27 @@ func NewSurfMod(
 	file string,
 	varDeclarations [][]token.Token,
 	public bool,
+	trace token.Token,
 ) SurfMod {
-	return SurfMod{
+	mod := SurfMod{
 		properties:      properties,
-		publicMethods:   publicMethods,
-		privateMethods:  privateMethods,
+		methods:         make(map[string]*Function),
 		name:            name,
 		file:            file,
 		varDeclarations: varDeclarations,
 		public:          public,
+		trace:           trace,
 	}
+
+	for key, value := range publicMethods {
+		mod.methods[key] = value
+	}
+
+	for key, value := range privateMethods {
+		mod.methods[key] = value
+	}
+
+	return mod
 }
 
 // FindMod finds a module in the given map
@@ -75,13 +86,12 @@ func (sm *SurfMod) SetProperty(name string, value object.SurfObject) {
 // alongside a boolean indicating if the method was found
 // and a boolean indicating if the method is public
 func (sm *SurfMod) GetMethod(name string) (*Function, bool, bool) {
-	method, found := sm.publicMethods[name]
+	method, found := sm.methods[name]
 	if found {
-		return method, true, true
+		return method, true, method.public
 	}
 
-	method, found = sm.privateMethods[name]
-	return method, found, false
+	return &Function{}, false, false
 }
 
 // GetName returns the name of the module
@@ -102,4 +112,14 @@ func (sm *SurfMod) GetVarDeclarations() [][]token.Token {
 // IsPublic checks if the module is public
 func (sm *SurfMod) IsPublic() bool {
 	return sm.public
+}
+
+// GetTrace returns the trace of the module
+func (sm *SurfMod) GetTrace() token.Token {
+	return sm.trace
+}
+
+// GetMethods returns the methods of the module
+func (sm *SurfMod) GetMethods() map[string]*Function {
+	return sm.methods
 }

@@ -14,6 +14,7 @@ func AnalyzeMethod(
 	mods *map[string]map[string]*code.SurfMod,
 	lastValue *object.SurfObject,
 	trace token.Token,
+	checkArgs bool,
 	args ...object.SurfObject,
 ) object.SurfObject {
 	variables := stack.NewStack()
@@ -33,7 +34,7 @@ func AnalyzeMethod(
 		functions,
 		mods,
 		trace,
-		true,
+		checkArgs,
 		variables,
 		args...,
 	)

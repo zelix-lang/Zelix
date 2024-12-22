@@ -146,6 +146,7 @@ func AnalyzePropAccess(
 		mods,
 		lastValue,
 		propName,
+		true,
 		funArgs...,
 	)
 }

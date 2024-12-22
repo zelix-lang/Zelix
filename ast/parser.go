@@ -348,6 +348,7 @@ func Parse(tokens []token.Token, allowMods bool, allowInlineVars bool) *FileCode
 							unit.GetFile(),
 							currentModVars,
 							currentFunctionPublic,
+							unit,
 						)
 
 						result.AddModule(unit.GetFile(), currentFunctionName, &mod, unit)

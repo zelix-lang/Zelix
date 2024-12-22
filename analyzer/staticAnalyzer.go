@@ -10,7 +10,7 @@ import (
 )
 
 // A regex to match camelCase variable names
-var snakeCaseRegex, _ = regexp.Compile("^[a-z]+(_[a-z0-9]+)*$")
+var snakeCaseRegex = regexp.MustCompile("^[a-z]+(_[a-z0-9]+)*$")
 
 // AnalyzeFileCode analyzes the given file code
 func AnalyzeFileCode(code *ast.FileCode, source string) {
@@ -36,6 +36,16 @@ func AnalyzeFileCode(code *ast.FileCode, source string) {
 
 	// Analyze the main function
 	AnalyzeMainFunc(mainFunction)
+
+	for _, mods := range *code.GetModules() {
+		for _, mod := range mods {
+			AnalyzeMod(
+				*mod,
+				code.GetFunctions(),
+				code.GetModules(),
+			)
+		}
+	}
 
 	// Analyze all other functions
 	for _, functions := range *code.GetFunctions() {
