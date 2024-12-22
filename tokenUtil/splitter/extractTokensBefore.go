@@ -1,8 +1,9 @@
-package tokenUtil
+package splitter
 
 import (
 	"zyro/logger"
 	"zyro/token"
+	"zyro/tokenUtil/marshall"
 )
 
 // ExtractTokensBefore returns the tokens before the first occurrence of the delimiter
@@ -49,7 +50,7 @@ func ExtractTokensBefore(
 	if throwIfNotFound && !metDelimiter {
 		logger.TokenError(
 			tokens[len(tokens)-1],
-			"Expected a "+TokenTypeToString(delimiter),
+			"Expected a "+marshall.TokenTypeToString(delimiter),
 			"Add a delimiter to the end of the list",
 		)
 	}

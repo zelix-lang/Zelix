@@ -2,8 +2,9 @@ package analyzer
 
 import (
 	"zyro/code"
+	"zyro/code/mod"
+	"zyro/code/wrapper"
 	"zyro/core/stack"
-	"zyro/object"
 	"zyro/token"
 )
 
@@ -11,14 +12,14 @@ import (
 func AnalyzeMethod(
 	method code.Function,
 	functions *map[string]map[string]*code.Function,
-	mods *map[string]map[string]*code.ZyroMod,
-	lastValue *object.ZyroObject,
+	mods *map[string]map[string]*mod.ZyroMod,
+	lastValue *wrapper.ZyroObject,
 	trace token.Token,
 	checkArgs bool,
-	args ...object.ZyroObject,
-) object.ZyroObject {
+	args ...wrapper.ZyroObject,
+) wrapper.ZyroObject {
 	variables := stack.NewStack()
-	currentMod := lastValue.GetValue().(*code.ZyroMod)
+	currentMod := lastValue.GetValue().(*mod.ZyroMod)
 	varTemplates := currentMod.GetVarDeclarations()
 
 	for _, template := range varTemplates {

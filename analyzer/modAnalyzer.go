@@ -4,17 +4,18 @@ import (
 	"regexp"
 	"zyro/ansi"
 	"zyro/code"
+	"zyro/code/mod"
+	"zyro/code/wrapper"
 	"zyro/logger"
-	"zyro/object"
 )
 
 var pascalCaseRegex = regexp.MustCompile(`^[A-Z][a-z]+(?:[A-Z][a-z]+)*$`)
 
 // AnalyzeMod analyzes the given mod template
 func AnalyzeMod(
-	mod code.ZyroMod,
+	mod mod.ZyroMod,
 	functions *map[string]map[string]*code.Function,
-	mods *map[string]map[string]*code.ZyroMod,
+	mods *map[string]map[string]*mod.ZyroMod,
 ) {
 	if !pascalCaseRegex.MatchString(mod.GetName()) {
 		logger.TokenWarning(
@@ -27,7 +28,7 @@ func AnalyzeMod(
 
 	// Analyze the mod's methods
 	for _, method := range mod.GetMethods() {
-		dummyObject := object.NewZyroObject(object.ModType, &mod)
+		dummyObject := wrapper.NewZyroObject(mod.BuildDummyWrapper(), &mod)
 
 		AnalyzeMethod(
 			*method,

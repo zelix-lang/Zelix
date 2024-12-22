@@ -2,9 +2,10 @@ package analyzer
 
 import (
 	"zyro/code"
+	"zyro/code/mod"
+	"zyro/code/wrapper"
 	"zyro/core/stack"
 	"zyro/logger"
-	"zyro/object"
 	"zyro/token"
 )
 
@@ -41,7 +42,7 @@ func checkStatement(
 	currentIndex int,
 	variables *stack.Stack,
 	functions *map[string]map[string]*code.Function,
-	mods *map[string]map[string]*code.ZyroMod,
+	mods *map[string]map[string]*mod.ZyroMod,
 ) {
 	*extractingIdentifier = false
 
@@ -56,7 +57,11 @@ func checkStatement(
 	}
 
 	// Analyze the last statement
-	dummyObj := object.NewZyroObject(object.NothingType, nil)
+	dummyObj := wrapper.NewZyroObject(
+		dummyNothingType,
+		nil,
+	)
+
 	dummyBool := false
 	isArithmetic := false
 
@@ -89,7 +94,7 @@ func AnalyzeArithmetic(
 	statement []token.Token,
 	variables *stack.Stack,
 	functions *map[string]map[string]*code.Function,
-	mods *map[string]map[string]*code.ZyroMod,
+	mods *map[string]map[string]*mod.ZyroMod,
 ) {
 	statementLen := len(statement)
 	if statementLen == 0 {

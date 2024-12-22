@@ -3,12 +3,14 @@ package analyzer
 import (
 	"zyro/ast"
 	"zyro/code"
+	"zyro/code/mod"
+	"zyro/code/types"
+	"zyro/code/wrapper"
 	"zyro/core/engine/args"
 	"zyro/core/stack"
 	"zyro/logger"
-	"zyro/object"
 	"zyro/token"
-	"zyro/tokenUtil"
+	"zyro/tokenUtil/splitter"
 )
 
 // AnalyzeIdentifier analyzes the given identifier
@@ -17,9 +19,9 @@ func AnalyzeIdentifier(
 	statement []token.Token,
 	variables *stack.Stack,
 	functions *map[string]map[string]*code.Function,
-	mods *map[string]map[string]*code.ZyroMod,
+	mods *map[string]map[string]*mod.ZyroMod,
 	startAt *int,
-	lastValue *object.ZyroObject,
+	lastValue *wrapper.ZyroObject,
 	isArithmetic *bool,
 	isFunCall *bool,
 ) {
@@ -60,7 +62,7 @@ func AnalyzeIdentifier(
 
 		// Parse and check the arguments
 		// Extract all the tokens of the function invocation
-		call := tokenUtil.ExtractTokensBefore(
+		call := splitter.ExtractTokensBefore(
 			statement,
 			token.CloseParen,
 			true,
@@ -73,7 +75,7 @@ func AnalyzeIdentifier(
 		// is also met, so no need to check it here
 
 		argumentsRaw, skipped := args.SplitArgs(call)
-		arguments := make([]object.ZyroObject, len(argumentsRaw))
+		arguments := make([]wrapper.ZyroObject, len(argumentsRaw))
 
 		for i, argument := range argumentsRaw {
 			argValue := AnalyzeStatement(
@@ -102,7 +104,8 @@ func AnalyzeIdentifier(
 		*startAt += 1
 	}
 
-	if (*lastValue).GetType() == object.IntType || (*lastValue).GetType() == object.DecimalType {
+	typeWrapper := (*lastValue).GetType()
+	if typeWrapper.GetType() == types.IntType || typeWrapper.GetType() == types.DecimalType {
 		*isArithmetic = true
 	}
 

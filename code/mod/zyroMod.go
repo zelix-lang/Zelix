@@ -1,8 +1,10 @@
-package code
+package mod
 
 import (
+	"zyro/code"
+	"zyro/code/types"
+	"zyro/code/wrapper"
 	"zyro/concurrent"
-	"zyro/object"
 	"zyro/token"
 )
 
@@ -10,33 +12,36 @@ import (
 // a Zyro module is somewhat similar to a class in OOP
 type ZyroMod struct {
 	varDeclarations [][]token.Token
-	properties      *concurrent.TypedConcurrentMap[string, object.ZyroObject]
-	methods         map[string]*Function
+	properties      *concurrent.TypedConcurrentMap[string, wrapper.ZyroObject]
+	methods         map[string]*code.Function
 	name            string
 	file            string
 	public          bool
 	trace           token.Token
+	templates       []wrapper.TypeWrapper
 }
 
 // NewZyroMod creates a new Zyro module
 func NewZyroMod(
-	properties *concurrent.TypedConcurrentMap[string, object.ZyroObject],
-	publicMethods map[string]*Function,
-	privateMethods map[string]*Function,
+	properties *concurrent.TypedConcurrentMap[string, wrapper.ZyroObject],
+	publicMethods map[string]*code.Function,
+	privateMethods map[string]*code.Function,
 	name string,
 	file string,
 	varDeclarations [][]token.Token,
 	public bool,
 	trace token.Token,
+	templates []wrapper.TypeWrapper,
 ) ZyroMod {
 	mod := ZyroMod{
 		properties:      properties,
-		methods:         make(map[string]*Function),
+		methods:         make(map[string]*code.Function),
 		name:            name,
 		file:            file,
 		varDeclarations: varDeclarations,
 		public:          public,
 		trace:           trace,
+		templates:       templates,
 	}
 
 	for key, value := range publicMethods {
@@ -72,26 +77,26 @@ func FindMod(mods *map[string]map[string]*ZyroMod, name string, file string) (*Z
 
 // GetProperty returns the property with the given name
 // alongside a boolean indicating if the property was found
-func (sm *ZyroMod) GetProperty(name string) (*object.ZyroObject, bool) {
+func (sm *ZyroMod) GetProperty(name string) (*wrapper.ZyroObject, bool) {
 	prop, found := sm.properties.Load(name)
 	return prop, found
 }
 
 // SetProperty sets the property with the given name
-func (sm *ZyroMod) SetProperty(name string, value object.ZyroObject) {
+func (sm *ZyroMod) SetProperty(name string, value wrapper.ZyroObject) {
 	sm.properties.Store(name, value)
 }
 
 // GetMethod returns the method with the given name
 // alongside a boolean indicating if the method was found
 // and a boolean indicating if the method is public
-func (sm *ZyroMod) GetMethod(name string) (*Function, bool, bool) {
+func (sm *ZyroMod) GetMethod(name string) (*code.Function, bool, bool) {
 	method, found := sm.methods[name]
 	if found {
-		return method, true, method.public
+		return method, true, method.IsPublic()
 	}
 
-	return &Function{}, false, false
+	return &code.Function{}, false, false
 }
 
 // GetName returns the name of the module
@@ -120,6 +125,21 @@ func (sm *ZyroMod) GetTrace() token.Token {
 }
 
 // GetMethods returns the methods of the module
-func (sm *ZyroMod) GetMethods() map[string]*Function {
+func (sm *ZyroMod) GetMethods() map[string]*code.Function {
 	return sm.methods
+}
+
+// GetTemplates returns the templates of the module
+func (sm *ZyroMod) GetTemplates() []wrapper.TypeWrapper {
+	return sm.templates
+}
+
+// BuildDummyWrapper builds a dummy type wrapper
+// that represents the module
+func (sm *ZyroMod) BuildDummyWrapper() wrapper.TypeWrapper {
+	return wrapper.ForceNewTypeWrapper(
+		sm.name,
+		sm.templates,
+		types.ModType,
+	)
 }

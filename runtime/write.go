@@ -1,29 +1,30 @@
 package runtime
 
 import (
-	"zyro/code"
-	"zyro/object"
+	"zyro/code/mod"
+	"zyro/code/wrapper"
 )
 
 // Write writes the given string to the standard output
 // without a newline character
-func Write(objects ...object.ZyroObject) {
+func Write(objects ...wrapper.ZyroObject) {
 	for _, obj := range objects {
-		_type := obj.GetType()
+		typeWrapper := obj.GetType()
+		_type := typeWrapper.GetType()
 
 		switch _type {
-		case object.StringType:
+		case wrapper.StringType:
 			print(obj.GetValue().(string))
-		case object.DecimalType:
+		case wrapper.DecimalType:
 			print(obj.GetValue().(float64))
-		case object.IntType:
+		case wrapper.IntType:
 			print(obj.GetValue().(int))
-		case object.BooleanType:
+		case wrapper.BooleanType:
 			print(obj.GetValue().(bool))
-		case object.NothingType:
+		case wrapper.NothingType:
 			print("@Zyro<Nothing>")
 		default:
-			mod := obj.GetValue().(code.ZyroMod)
+			mod := obj.GetValue().(mod.ZyroMod)
 			print(mod.GetName())
 		}
 	}
@@ -31,7 +32,7 @@ func Write(objects ...object.ZyroObject) {
 
 // Writeln writes the given string to the standard output
 // with a newline character
-func Writeln(objects ...object.ZyroObject) {
+func Writeln(objects ...wrapper.ZyroObject) {
 	Write(objects...)
 	println()
 }

@@ -41,7 +41,7 @@ func extractImportPath(
 	if strings.HasPrefix(importPathRaw, "@std") {
 		// Replace the import path with the standard library path
 		// and add the .zyro/ extension
-		importPathRaw = strings.Replace(importPathRaw, "@std", stdPath, 1) + ".zyro/"
+		importPathRaw = strings.Replace(importPathRaw, "@std", stdPath, 1) + ".zyro"
 		isStd = true
 	}
 

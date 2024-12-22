@@ -2,9 +2,11 @@ package analyzer
 
 import (
 	"zyro/code"
+	"zyro/code/mod"
+	"zyro/code/types"
+	"zyro/code/wrapper"
 	"zyro/core/stack"
 	"zyro/logger"
-	"zyro/object"
 	"zyro/token"
 )
 
@@ -13,10 +15,11 @@ func AnalyzeType(
 	statement []token.Token,
 	variables *stack.Stack,
 	functions *map[string]map[string]*code.Function,
-	mods *map[string]map[string]*code.ZyroMod,
-	expected object.ZyroObject,
+	mods *map[string]map[string]*mod.ZyroMod,
+	expected wrapper.ZyroObject,
 ) {
-	isMod := expected.GetType() == object.ModType
+	expectedTypeWrapper := expected.GetType()
+	isMod := expectedTypeWrapper.GetType() == types.ModType
 
 	// Analyze the type
 	value := AnalyzeStatement(
@@ -27,9 +30,10 @@ func AnalyzeType(
 	)
 
 	if isMod {
-		mod := expected.GetValue().(*code.ZyroMod)
+		module := expected.GetValue().(*mod.ZyroMod)
+		valueTypeWrapper := value.GetType()
 
-		if value.GetType() != object.ModType {
+		if valueTypeWrapper.GetType() != types.ModType {
 			logger.TokenError(
 				statement[0],
 				"Type mismatch",
@@ -38,9 +42,9 @@ func AnalyzeType(
 			)
 		}
 
-		gotMod := value.GetValue().(*code.ZyroMod)
+		gotMod := value.GetValue().(*mod.ZyroMod)
 
-		if value.GetType() != object.ModType || gotMod.GetName() != mod.GetName() {
+		if valueTypeWrapper.GetType() != types.ModType || gotMod.GetName() != module.GetName() {
 			logger.TokenError(
 				statement[0],
 				"Type mismatch",
@@ -48,7 +52,7 @@ func AnalyzeType(
 				"Change the declaration or remove the assignment",
 			)
 		}
-	} else if value.GetType() != expected.GetType() {
+	} else if !expectedTypeWrapper.Compare(value.GetType()) {
 		logger.TokenError(
 			statement[0],
 			"Type mismatch",

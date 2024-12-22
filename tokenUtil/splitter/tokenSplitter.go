@@ -1,4 +1,4 @@
-package tokenUtil
+package splitter
 
 import (
 	"zyro/logger"

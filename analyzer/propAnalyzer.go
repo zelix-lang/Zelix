@@ -2,10 +2,12 @@ package analyzer
 
 import (
 	"zyro/code"
+	"zyro/code/mod"
+	"zyro/code/types"
+	"zyro/code/wrapper"
 	"zyro/core/engine/args"
 	"zyro/core/stack"
 	"zyro/logger"
-	"zyro/object"
 	"zyro/token"
 )
 
@@ -14,8 +16,8 @@ func AnalyzePropAccess(
 	prop []token.Token,
 	variables *stack.Stack,
 	functions *map[string]map[string]*code.Function,
-	mods *map[string]map[string]*code.ZyroMod,
-	lastValue *object.ZyroObject,
+	mods *map[string]map[string]*mod.ZyroMod,
+	lastValue *wrapper.ZyroObject,
 	isFunCall *bool,
 	isAssignment bool,
 ) {
@@ -24,7 +26,8 @@ func AnalyzePropAccess(
 	// there parts are not empty
 
 	// Check the last value is a mod
-	if (*lastValue).GetType() != object.ModType {
+	valueTypeWrapper := (*lastValue).GetType()
+	if valueTypeWrapper.GetType() != types.ModType {
 		logger.TokenError(
 			prop[0],
 			"Illegal property access",
@@ -33,7 +36,7 @@ func AnalyzePropAccess(
 		)
 	}
 
-	mod := lastValue.GetValue().(*code.ZyroMod)
+	module := lastValue.GetValue().(*mod.ZyroMod)
 	propName := prop[0]
 
 	// Only identifiers are allowed as property names
@@ -61,7 +64,7 @@ func AnalyzePropAccess(
 
 		// Properties are private by default
 		// so we have to check access here
-		if mod.GetFile() != propName.GetFile() {
+		if module.GetFile() != propName.GetFile() {
 			logger.TokenError(
 				propName,
 				"Illegal access",
@@ -84,7 +87,7 @@ func AnalyzePropAccess(
 	}
 
 	// Check for constructor call
-	if propName.GetValue() == mod.GetName() {
+	if propName.GetValue() == module.GetName() {
 		logger.TokenError(
 			propName,
 			"Cannot access the constructor upon initialization",
@@ -93,7 +96,7 @@ func AnalyzePropAccess(
 	}
 
 	// Find the method
-	method, found, public := mod.GetMethod(propName.GetValue())
+	method, found, public := module.GetMethod(propName.GetValue())
 
 	if !found {
 		logger.TokenError(
@@ -104,7 +107,7 @@ func AnalyzePropAccess(
 	}
 
 	// Check access
-	if !public && mod.GetFile() != propName.GetFile() {
+	if !public && module.GetFile() != propName.GetFile() {
 		logger.TokenError(
 			propName,
 			"Illegal access",
@@ -126,7 +129,7 @@ func AnalyzePropAccess(
 
 	argsRaw := prop[:len(prop)-1]
 	argsSplit, _ := args.SplitArgs(argsRaw)
-	funArgs := make([]object.ZyroObject, len(argsSplit))
+	funArgs := make([]wrapper.ZyroObject, len(argsSplit))
 
 	for i, arg := range argsSplit {
 		funArgs[i] = AnalyzeStatement(

@@ -4,20 +4,22 @@ import (
 	"strconv"
 	"time"
 	"zyro/code"
+	"zyro/code/mod"
+	"zyro/code/types"
+	"zyro/code/wrapper"
 	"zyro/core/stack"
 	"zyro/logger"
-	"zyro/object"
 	"zyro/token"
-	"zyro/tokenUtil"
+	"zyro/tokenUtil/splitter"
 	"zyro/util"
 )
 
 // checkParamType checks if the given parameter type is valid
 func checkParamType(
-	paramType object.ZyroObject,
+	paramType wrapper.TypeWrapper,
 	trace token.Token,
 ) {
-	if paramType.GetType() == object.NothingType {
+	if paramType.GetType() == types.NothingType {
 		logger.TokenError(
 			trace,
 			"Invalid parameter type",
@@ -31,12 +33,12 @@ func checkParamType(
 func AnalyzeFun(
 	function *code.Function,
 	functions *map[string]map[string]*code.Function,
-	mods *map[string]map[string]*code.ZyroMod,
+	mods *map[string]map[string]*mod.ZyroMod,
 	trace token.Token,
 	checkArgs bool,
 	variables *stack.Stack,
-	args ...object.ZyroObject,
-) object.ZyroObject {
+	args ...wrapper.ZyroObject,
+) wrapper.ZyroObject {
 	function.SetTimesCalled(function.GetTimesCalled() + 1)
 	function.SetLastCalled(time.Now())
 
@@ -67,11 +69,11 @@ func AnalyzeFun(
 		argsKeys := util.MapKeys(actualParams)
 
 		for i, param := range argsKeys {
-			expected := tokenUtil.FromRawType(actualParams[param][0], mods)
+			expected := actualParams[param]
 			value := args[i]
 
 			checkParamType(expected, trace)
-			if value.GetType() != expected.GetType() {
+			if !expected.Compare(value.GetType()) {
 				logger.TokenError(
 					trace,
 					"Mismatched parameter types",
@@ -87,16 +89,18 @@ func AnalyzeFun(
 		argsKeys := util.MapKeys(actualParams)
 
 		for _, param := range argsKeys {
-			expected := tokenUtil.FromRawType(actualParams[param][0], mods)
+			expected := actualParams[param]
 			checkParamType(expected, trace)
-			variables.Append(param, expected, false)
+			dummyObj := wrapper.NewZyroObject(expected, nil)
+
+			variables.Append(param, dummyObj, false)
 		}
 	}
 
 	// Beyond this point, standard functions no longer
 	// need to be evaluated
 	if function.IsStd() {
-		return object.NewZyroObject(object.NothingType, nil)
+		return wrapper.NewZyroObject(dummyNothingType, nil)
 	}
 
 	// Used to skip tokens
@@ -111,7 +115,7 @@ func AnalyzeFun(
 
 		if tokenType == token.Identifier || tokenType == token.Let || tokenType == token.Const || tokenType == token.New {
 			// Extract the statement
-			statement := tokenUtil.ExtractTokensBefore(
+			statement := splitter.ExtractTokensBefore(
 				function.GetBody()[i:],
 				token.Semicolon,
 				// Don't handle nested statements here
@@ -145,5 +149,5 @@ func AnalyzeFun(
 
 	// Destroy the scope
 	variables.DestroyScope()
-	return object.NewZyroObject(object.NothingType, nil)
+	return wrapper.NewZyroObject(dummyNothingType, nil)
 }

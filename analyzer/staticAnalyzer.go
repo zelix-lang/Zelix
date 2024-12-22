@@ -5,12 +5,21 @@ import (
 	"regexp"
 	"zyro/ansi"
 	"zyro/ast"
+	"zyro/code/types"
+	"zyro/code/wrapper"
 	"zyro/core/stack"
 	"zyro/logger"
 )
 
 // A regex to match camelCase variable names
 var snakeCaseRegex = regexp.MustCompile("^[a-z]+(_[a-z0-9]+)*$")
+
+// A dummy "nothing" type wrapper
+var dummyNothingType = wrapper.ForceNewTypeWrapper(
+	"nothing",
+	[]wrapper.TypeWrapper{},
+	types.NothingType,
+)
 
 // AnalyzeFileCode analyzes the given file code
 func AnalyzeFileCode(code *ast.FileCode, source string) {

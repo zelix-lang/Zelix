@@ -2,20 +2,21 @@ package analyzer
 
 import (
 	"zyro/code"
+	"zyro/code/mod"
+	"zyro/code/wrapper"
 	"zyro/core/stack"
 	"zyro/logger"
-	"zyro/object"
 	"zyro/token"
-	"zyro/tokenUtil"
+	"zyro/tokenUtil/splitter"
 )
 
 func AnalyzeObjectCreation(
 	statement []token.Token,
 	variables *stack.Stack,
 	functions *map[string]map[string]*code.Function,
-	mods *map[string]map[string]*code.ZyroMod,
+	mods *map[string]map[string]*mod.ZyroMod,
 	startAt *int,
-	lastValue *object.ZyroObject,
+	lastValue *wrapper.ZyroObject,
 ) {
 	// The statement should have at least 4 tokens:
 	// new MyObject()
@@ -31,7 +32,7 @@ func AnalyzeObjectCreation(
 	// At this point, the first token is always "new"
 	// no need to check it
 	modName := statement[1]
-	mod, modFound, sameFile := code.FindMod(mods, modName.GetValue(), modName.GetFile())
+	mod, modFound, sameFile := mod.FindMod(mods, modName.GetValue(), modName.GetFile())
 
 	if !modFound {
 		logger.TokenError(
@@ -70,8 +71,8 @@ func AnalyzeObjectCreation(
 		)
 	}
 
-	*lastValue = object.NewZyroObject(
-		object.ModType,
+	*lastValue = wrapper.NewZyroObject(
+		mod.BuildDummyWrapper(),
 		mod,
 	)
 
@@ -94,7 +95,7 @@ func AnalyzeObjectCreation(
 
 	// Parse the arguments
 	argsRange := statement[3 : len(statement)-1]
-	argsRaw := tokenUtil.SplitTokens(
+	argsRaw := splitter.SplitTokens(
 		argsRange,
 		token.Comma,
 		token.OpenParen,
@@ -102,7 +103,7 @@ func AnalyzeObjectCreation(
 	)
 
 	*startAt += len(argsRaw) + 4
-	args := make([]object.ZyroObject, len(argsRaw))
+	args := make([]wrapper.ZyroObject, len(argsRaw))
 	for i, arg := range argsRaw {
 		args[i] = AnalyzeStatement(
 			arg,

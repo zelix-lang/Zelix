@@ -2,16 +2,17 @@ package code
 
 import (
 	"time"
+	"zyro/code/wrapper"
 	"zyro/token"
 )
 
 // Function represents a function in the abstract syntax tree (AST).
 type Function struct {
 	// returnType holds the tokens representing the return type of the function.
-	returnType []token.Token
+	returnType wrapper.TypeWrapper
 	// parameters holds the tokens representing the parameters of the function.
 	// Each parameter is represented as a slice of tokens.
-	parameters map[string][]token.Token
+	parameters map[string]wrapper.TypeWrapper
 	// body holds the tokens representing the body of the function.
 	body []token.Token
 	// public holds whether the function is public or not.
@@ -35,9 +36,15 @@ func NewFunction(
 	std bool,
 	trace token.Token,
 ) Function {
+	wrappers := make(map[string]wrapper.TypeWrapper)
+
+	for key, value := range parameters {
+		wrappers[key] = wrapper.NewTypeWrapper(value, trace, false)
+	}
+
 	return Function{
-		returnType: returnType,
-		parameters: parameters,
+		returnType: wrapper.NewTypeWrapper(returnType, trace, false),
+		parameters: wrappers,
 		body:       body,
 		public:     public,
 		std:        std,
@@ -46,12 +53,12 @@ func NewFunction(
 }
 
 // GetReturnType returns the return type of the function.
-func (f *Function) GetReturnType() []token.Token {
+func (f *Function) GetReturnType() wrapper.TypeWrapper {
 	return f.returnType
 }
 
 // GetParameters returns the parameters of the function.
-func (f *Function) GetParameters() map[string][]token.Token {
+func (f *Function) GetParameters() map[string]wrapper.TypeWrapper {
 	return f.parameters
 }
 

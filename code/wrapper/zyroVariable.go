@@ -1,15 +1,13 @@
-package code
-
-import "zyro/object"
+package wrapper
 
 // ZyroVariable represents a variable in a Zyro program
 type ZyroVariable struct {
 	constant bool
-	value    object.ZyroObject
+	value    ZyroObject
 }
 
 // NewZyroVariable creates a new Zyro variable
-func NewZyroVariable(constant bool, value object.ZyroObject) ZyroVariable {
+func NewZyroVariable(constant bool, value ZyroObject) ZyroVariable {
 	return ZyroVariable{
 		constant: constant,
 		value:    value,
@@ -22,6 +20,6 @@ func (sv *ZyroVariable) IsConstant() bool {
 }
 
 // GetValue returns the value of the variable
-func (sv *ZyroVariable) GetValue() object.ZyroObject {
+func (sv *ZyroVariable) GetValue() ZyroObject {
 	return sv.value
 }

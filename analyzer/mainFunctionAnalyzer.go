@@ -2,8 +2,8 @@ package analyzer
 
 import (
 	"zyro/code"
+	"zyro/code/types"
 	"zyro/logger"
-	"zyro/token"
 )
 
 // AnalyzeMainFunc analyzes the main function
@@ -31,7 +31,7 @@ func AnalyzeMainFunc(function *code.Function) {
 
 	returnType := function.GetReturnType()
 
-	if len(returnType) != 1 || returnType[0].GetType() != token.Nothing {
+	if returnType.GetType() != types.NothingType {
 		logger.TokenError(
 			function.GetTrace(),
 			"Main function must return nothing",

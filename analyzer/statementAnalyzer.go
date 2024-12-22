@@ -2,11 +2,14 @@ package analyzer
 
 import (
 	"zyro/code"
+	"zyro/code/mod"
+	"zyro/code/types"
+	"zyro/code/wrapper"
 	"zyro/core/stack"
 	"zyro/logger"
-	"zyro/object"
 	"zyro/token"
-	"zyro/tokenUtil"
+	"zyro/tokenUtil/converter"
+	"zyro/tokenUtil/splitter"
 )
 
 // AnalyzeStatement analyzes the given statement
@@ -16,15 +19,15 @@ func AnalyzeStatement(
 	statement []token.Token,
 	variables *stack.Stack,
 	functions *map[string]map[string]*code.Function,
-	mods *map[string]map[string]*code.ZyroMod,
-) object.ZyroObject {
+	mods *map[string]map[string]*mod.ZyroMod,
+) wrapper.ZyroObject {
 	// Used to know what to check for
 	isArithmetic := false
 	isFunCall := false
 
 	// Used to check property access
 	// i.e.: object.property
-	lastValue := object.NewZyroObject(object.NothingType, nil)
+	lastValue := wrapper.NewZyroObject(dummyNothingType, nil)
 	startAt := 0
 
 	firstToken := statement[0]
@@ -33,7 +36,7 @@ func AnalyzeStatement(
 	switch firstTokenType {
 	case token.New:
 		AnalyzeObjectCreation(
-			tokenUtil.ExtractTokensBefore(
+			splitter.ExtractTokensBefore(
 				statement,
 				token.Dot,
 				true,
@@ -63,8 +66,10 @@ func AnalyzeStatement(
 
 		break
 	default:
-		lastValue = tokenUtil.ToObj(firstToken, variables)
-		isArithmetic = lastValue.GetType() == object.IntType || lastValue.GetType() == object.DecimalType
+		lastValue = converter.ToObj(firstToken, variables)
+		valueTypeWrapper := lastValue.GetType()
+
+		isArithmetic = valueTypeWrapper.GetType() == types.IntType || valueTypeWrapper.GetType() == types.DecimalType
 		startAt = 1
 	}
 
@@ -86,7 +91,8 @@ func AnalyzeStatement(
 		return lastValue
 	}
 
-	if lastValue.GetType() != object.ModType {
+	valueTypeWrapper := lastValue.GetType()
+	if valueTypeWrapper.GetType() != types.ModType {
 		logger.TokenError(
 			remainingStatement[0],
 			"Illegal property access",
@@ -134,7 +140,7 @@ func AnalyzeStatement(
 
 	// Get tokens before an assignment
 	// i.e.: object.property = value
-	beforeAssignment := tokenUtil.ExtractTokensBefore(
+	beforeAssignment := splitter.ExtractTokensBefore(
 		remainingStatement[1:],
 		token.Assign,
 		false,
@@ -161,7 +167,7 @@ func AnalyzeStatement(
 
 	// Reset isFunCall to catch assignments to methods
 	isFunCall = false
-	props := tokenUtil.SplitTokens(
+	props := splitter.SplitTokens(
 		beforeAssignment,
 		token.Dot,
 		token.OpenParen,

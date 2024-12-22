@@ -1,20 +1,10 @@
 import "@std/io/print";
 
-pub mod MyMod {
-    let my_var : num = 42;
+// TODO: validate cases like this
+fun abc(a: ,) -> str {
 
-    fun asd() {}
-
-    fun MyMod() {
-        this.my_var = 1;
-        println("MyMod constructor");
-    }
 }
 
 fun main() {
-    let b : str = "abc\2";
-    const asd : MyMod = new MyMod();
-    asd = "asd";
-
-    println("Hello, world!");
+    let bcd : str = "Hello, World!";
 }

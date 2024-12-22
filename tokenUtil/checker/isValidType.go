@@ -1,4 +1,4 @@
-package tokenUtil
+package checker
 
 import (
 	"zyro/token"

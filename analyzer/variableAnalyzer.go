@@ -4,10 +4,14 @@ import (
 	"zyro/ansi"
 	"zyro/ast"
 	"zyro/code"
+	"zyro/code/mod"
+	"zyro/code/types"
+	"zyro/code/wrapper"
 	"zyro/core/stack"
 	"zyro/logger"
 	"zyro/token"
-	"zyro/tokenUtil"
+	"zyro/tokenUtil/checker"
+	"zyro/tokenUtil/splitter"
 )
 
 // AnalyzeVariableDeclaration analyzes the declaration of a variable
@@ -15,7 +19,7 @@ func AnalyzeVariableDeclaration(
 	statement []token.Token,
 	variables *stack.Stack,
 	functions *map[string]map[string]*code.Function,
-	mods *map[string]map[string]*code.ZyroMod,
+	mods *map[string]map[string]*mod.ZyroMod,
 	constant bool,
 ) {
 	if len(statement) < 5 {
@@ -72,7 +76,7 @@ func AnalyzeVariableDeclaration(
 	}
 
 	// Extract the type
-	varTypeTokens := tokenUtil.ExtractTokensBefore(
+	varTypeTokens := splitter.ExtractTokensBefore(
 		statement[2:],
 		token.Assign,
 		false,
@@ -91,13 +95,14 @@ func AnalyzeVariableDeclaration(
 	}
 
 	// Check if the type is valid
-	expectedType := tokenUtil.FromRawType(varTypeTokens[0], mods)
-	isMod := varTypeTokens[0].GetType() == token.Identifier
+	expectedWrapper := wrapper.NewTypeWrapper(varTypeTokens, varTypeTokens[0], false)
+	var expectedType wrapper.ZyroObject
+	isMod := expectedWrapper.GetType() == types.ModType
 
 	if isMod {
-		mod, found, sameFile := code.FindMod(mods, varTypeTokens[0].GetValue(), varTypeTokens[0].GetFile())
+		module, found, sameFile := mod.FindMod(mods, varTypeTokens[0].GetValue(), varTypeTokens[0].GetFile())
 
-		if !sameFile && !mod.IsPublic() {
+		if !sameFile && !module.IsPublic() {
 			logger.TokenError(
 				varTypeTokens[0],
 				"Module "+varTypeTokens[0].GetValue()+" is not public",
@@ -112,12 +117,18 @@ func AnalyzeVariableDeclaration(
 				"Change the type to a valid one",
 			)
 		}
-	} else if !tokenUtil.IsValidType(varTypeTokens[0].GetType()) {
-		logger.TokenError(
-			varTypeTokens[0],
-			"Invalid type '"+varTypeTokens[0].GetValue()+"'",
-			"Change the type to a valid one",
-		)
+
+		expectedType = wrapper.NewZyroObject(module.BuildDummyWrapper(), module)
+	} else {
+		if !checker.IsValidType(varTypeTokens[0].GetType()) {
+			logger.TokenError(
+				varTypeTokens[0],
+				"Invalid type '"+varTypeTokens[0].GetValue()+"'",
+				"Change the type to a valid one",
+			)
+		}
+
+		expectedType = wrapper.NewZyroObject(expectedWrapper, nil)
 	}
 
 	// Analyze the statement

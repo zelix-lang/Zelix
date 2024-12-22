@@ -4,11 +4,12 @@ import (
 	"os"
 	"strings"
 	"zyro/code"
+	"zyro/code/mod"
+	"zyro/code/wrapper"
 	"zyro/concurrent"
 	"zyro/logger"
-	"zyro/object"
 	"zyro/token"
-	"zyro/tokenUtil"
+	"zyro/tokenUtil/splitter"
 )
 
 // The standard library's path
@@ -70,7 +71,7 @@ func Parse(tokens []token.Token, allowMods bool, allowInlineVars bool) *FileCode
 			}
 
 			// Extract the statement
-			statement := tokenUtil.ExtractTokensBefore(
+			statement := splitter.ExtractTokensBefore(
 				tokens[i:],
 				token.Semicolon,
 				// Don't handle nested statements here
@@ -342,8 +343,8 @@ func Parse(tokens []token.Token, allowMods bool, allowInlineVars bool) *FileCode
 						}
 
 						// Wrap the functions inside a ZyroMod
-						mod := code.NewZyroMod(
-							concurrent.NewTypedConcurrentMap[string, object.ZyroObject](),
+						module := mod.NewZyroMod(
+							concurrent.NewTypedConcurrentMap[string, wrapper.ZyroObject](),
 							publicFunctions,
 							privateFunctions,
 							currentFunctionName,
@@ -351,9 +352,10 @@ func Parse(tokens []token.Token, allowMods bool, allowInlineVars bool) *FileCode
 							currentModVars,
 							currentFunctionPublic,
 							currentFunctionTrace,
+							[]wrapper.TypeWrapper{},
 						)
 
-						result.AddModule(unit.GetFile(), currentFunctionName, &mod, unit)
+						result.AddModule(unit.GetFile(), currentFunctionName, &module, unit)
 						inMod = false
 						expectingFun = true
 
