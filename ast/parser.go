@@ -42,6 +42,7 @@ func Parse(tokens []token.Token, allowMods bool, allowInlineVars bool) *FileCode
 	currentParameterName := ""
 	var currentFunctionReturnType []token.Token
 	currentFunctionParameters := make(map[string][]token.Token)
+	var currentFunctionTrace token.Token
 
 	var currentFunctionPublic bool
 	currentParameter := make([]token.Token, 0)
@@ -149,6 +150,7 @@ func Parse(tokens []token.Token, allowMods bool, allowInlineVars bool) *FileCode
 				)
 			}
 
+			currentFunctionTrace = unit
 			currentFunctionName = unit.GetValue()
 
 			if inMod {
@@ -348,7 +350,7 @@ func Parse(tokens []token.Token, allowMods bool, allowInlineVars bool) *FileCode
 							unit.GetFile(),
 							currentModVars,
 							currentFunctionPublic,
-							unit,
+							currentFunctionTrace,
 						)
 
 						result.AddModule(unit.GetFile(), currentFunctionName, &mod, unit)
@@ -377,7 +379,7 @@ func Parse(tokens []token.Token, allowMods bool, allowInlineVars bool) *FileCode
 						currentFunctionBody,
 						currentFunctionPublic,
 						strings.HasPrefix(unit.GetFile(), stdPath),
-						unit,
+						currentFunctionTrace,
 					)
 
 					result.AddFunction(
