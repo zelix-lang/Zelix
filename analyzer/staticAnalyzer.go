@@ -3,6 +3,7 @@ package analyzer
 import (
 	"os"
 	"regexp"
+	"surf/ansi"
 	"surf/ast"
 	"surf/core/stack"
 	"surf/logger"
@@ -38,7 +39,16 @@ func AnalyzeFileCode(code *ast.FileCode, source string) {
 
 	// Analyze all other functions
 	for _, functions := range *code.GetFunctions() {
-		for _, function := range functions {
+		for name, function := range functions {
+			if !snakeCaseRegex.MatchString(name) {
+				logger.TokenWarning(
+					function.GetTrace(),
+					"Function name is not in snake_case",
+					"Surf uses snake_case for functions' names",
+					"Check "+ansi.Colorize("yellow", "[U-002]")+" in the style guide",
+				)
+			}
+
 			// During start phase, argument checking is not necessary
 			AnalyzeFun(
 				function,
