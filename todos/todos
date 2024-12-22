@@ -8,7 +8,7 @@ They are not ordered using any
 specific criteria.
 -------------------------------------
 
-1. Implement wrapper/typeWrapper.go
+(COMPLETE) 1. Implement wrapper/typeWrapper.go
 2. Implement static analysis for conditionals
 3. Implement static analysis for loops
 4. Change stored types in variables and functions to TypeWrapper
