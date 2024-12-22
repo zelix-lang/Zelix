@@ -3,6 +3,7 @@ package wrapper
 import (
 	"surf/logger"
 	"surf/token"
+	"surf/tokenUtil"
 )
 
 // TypeWrapper is a wrapper for a data type
@@ -28,7 +29,33 @@ func NewTypeWrapper(tokens []token.Token, trace token.Token) TypeWrapper {
 
 	// Check if the data type has parameters
 	if len(tokens) > 1 {
+		if tokens[1].GetType() != token.LessThan {
+			logger.TokenError(
+				tokens[1],
+				"Invalid data type",
+				"Expected '<' after the base type",
+			)
+		}
 
+		if tokens[len(tokens)-1].GetType() != token.GreaterThan {
+			logger.TokenError(
+				tokens[len(tokens)-1],
+				"Invalid data type",
+				"Expected '>' at the end of the data type",
+			)
+		}
+	}
+
+	// Split by commas what's inside the '<' and '>'
+	// For example: Result<str, bool>
+	paramsTokens := tokenUtil.SplitTokens(
+		tokens[2:len(tokens)-1],
+		token.Comma,
+		token.LessThan,
+		token.GreaterThan,
+	)
+	for _, paramTokens := range paramsTokens {
+		parameters = append(parameters, NewTypeWrapper(paramTokens, trace))
 	}
 
 	return TypeWrapper{
