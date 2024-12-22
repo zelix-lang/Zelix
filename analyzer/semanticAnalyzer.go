@@ -2,10 +2,14 @@ package analyzer
 
 import (
 	"os"
+	"regexp"
 	"surf/ast"
 	"surf/core/stack"
 	"surf/logger"
 )
+
+// A regex to match camelCase variable names
+var snakeCaseRegex, _ = regexp.Compile("^[a-z]+(_[a-z0-9]+)*$")
 
 // AnalyzeFileCode analyzes the given file code
 func AnalyzeFileCode(code *ast.FileCode, source string) {

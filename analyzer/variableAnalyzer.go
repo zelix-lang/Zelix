@@ -1,7 +1,6 @@
 package analyzer
 
 import (
-	"regexp"
 	"surf/ansi"
 	"surf/ast"
 	"surf/code"
@@ -10,9 +9,6 @@ import (
 	"surf/token"
 	"surf/tokenUtil"
 )
-
-// A regex to match camelCase variable names
-var snakeCaseRegex, _ = regexp.Compile("^[a-z]+(_[a-z0-9]+)*$")
 
 // AnalyzeVariableDeclaration analyzes the declaration of a variable
 func AnalyzeVariableDeclaration(
