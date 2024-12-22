@@ -1,8 +1,8 @@
 package args
 
 import (
-	"surf/token"
-	"surf/tokenUtil"
+	"zyro/token"
+	"zyro/tokenUtil"
 )
 
 // SplitArgs splits the arguments into a slice of slices of tokens

@@ -1,13 +1,13 @@
 package runtime
 
 import (
-	"surf/code"
-	"surf/object"
+	"zyro/code"
+	"zyro/object"
 )
 
 // Write writes the given string to the standard output
 // without a newline character
-func Write(objects ...object.SurfObject) {
+func Write(objects ...object.ZyroObject) {
 	for _, obj := range objects {
 		_type := obj.GetType()
 
@@ -21,9 +21,9 @@ func Write(objects ...object.SurfObject) {
 		case object.BooleanType:
 			print(obj.GetValue().(bool))
 		case object.NothingType:
-			print("@Surf<Nothing>")
+			print("@Zyro<Nothing>")
 		default:
-			mod := obj.GetValue().(code.SurfMod)
+			mod := obj.GetValue().(code.ZyroMod)
 			print(mod.GetName())
 		}
 	}
@@ -31,7 +31,7 @@ func Write(objects ...object.SurfObject) {
 
 // Writeln writes the given string to the standard output
 // with a newline character
-func Writeln(objects ...object.SurfObject) {
+func Writeln(objects ...object.ZyroObject) {
 	Write(objects...)
 	println()
 }

@@ -1,7 +1,7 @@
 package tokenUtil
 
 import (
-	"surf/token"
+	"zyro/token"
 )
 
 // TokenTypeToString converts a token type to a string

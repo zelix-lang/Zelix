@@ -1,20 +1,20 @@
 package fun
 
 import (
-	"surf/ast"
-	"surf/code"
-	args2 "surf/core/engine/args"
-	_type "surf/core/engine/type"
-	"surf/core/stack"
-	"surf/object"
-	"surf/token"
-	"surf/tokenUtil"
+	"zyro/ast"
+	"zyro/code"
+	args2 "zyro/core/engine/args"
+	_type "zyro/core/engine/type"
+	"zyro/core/stack"
+	"zyro/object"
+	"zyro/token"
+	"zyro/tokenUtil"
 )
 
 // CallStatement interprets a statement and executes it
 func CallStatement(
 	statement []token.Token,
-	runtime map[string]func(...object.SurfObject),
+	runtime map[string]func(...object.ZyroObject),
 	isStd bool,
 	functions *map[string]map[string]*code.Function,
 	variables *stack.Stack,
@@ -33,7 +33,7 @@ func CallStatement(
 
 	// Split by commas
 	parameters, _ := args2.SplitArgs(call)
-	var args []object.SurfObject
+	var args []object.ZyroObject
 
 	for _, parameter := range parameters {
 		args = append(args, _type.TranslateType(parameter[0], variables))

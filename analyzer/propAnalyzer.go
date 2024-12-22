@@ -1,12 +1,12 @@
 package analyzer
 
 import (
-	"surf/code"
-	"surf/core/engine/args"
-	"surf/core/stack"
-	"surf/logger"
-	"surf/object"
-	"surf/token"
+	"zyro/code"
+	"zyro/core/engine/args"
+	"zyro/core/stack"
+	"zyro/logger"
+	"zyro/object"
+	"zyro/token"
 )
 
 // AnalyzePropAccess analyzes the given property access
@@ -14,8 +14,8 @@ func AnalyzePropAccess(
 	prop []token.Token,
 	variables *stack.Stack,
 	functions *map[string]map[string]*code.Function,
-	mods *map[string]map[string]*code.SurfMod,
-	lastValue *object.SurfObject,
+	mods *map[string]map[string]*code.ZyroMod,
+	lastValue *object.ZyroObject,
 	isFunCall *bool,
 	isAssignment bool,
 ) {
@@ -33,7 +33,7 @@ func AnalyzePropAccess(
 		)
 	}
 
-	mod := lastValue.GetValue().(*code.SurfMod)
+	mod := lastValue.GetValue().(*code.ZyroMod)
 	propName := prop[0]
 
 	// Only identifiers are allowed as property names
@@ -126,7 +126,7 @@ func AnalyzePropAccess(
 
 	argsRaw := prop[:len(prop)-1]
 	argsSplit, _ := args.SplitArgs(argsRaw)
-	funArgs := make([]object.SurfObject, len(argsSplit))
+	funArgs := make([]object.ZyroObject, len(argsSplit))
 
 	for i, arg := range argsSplit {
 		funArgs[i] = AnalyzeStatement(

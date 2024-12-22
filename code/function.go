@@ -1,8 +1,8 @@
 package code
 
 import (
-	"surf/token"
 	"time"
+	"zyro/token"
 )
 
 // Function represents a function in the abstract syntax tree (AST).

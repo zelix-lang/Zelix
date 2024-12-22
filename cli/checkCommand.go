@@ -4,17 +4,17 @@ import (
 	"fmt"
 	"github.com/urfave/cli/v2"
 	"os"
-	"surf/analyzer"
-	"surf/ansi"
-	"surf/ast"
-	"surf/lexer"
-	"surf/logger"
-	"surf/util"
 	"time"
+	"zyro/analyzer"
+	"zyro/ansi"
+	"zyro/ast"
+	"zyro/lexer"
+	"zyro/logger"
+	"zyro/util"
 )
 
-// CheckCommand represents the check command of the Surf CLI
-// it checks a surf file
+// CheckCommand represents the check command of the Zyro CLI
+// it checks a zyro/ file
 func CheckCommand(context *cli.Context) (*ast.FileCode, string) {
 	// Get the file path
 	filePath := context.Args().First()
@@ -25,7 +25,7 @@ func CheckCommand(context *cli.Context) (*ast.FileCode, string) {
 		logger.Error("Empty file path")
 		logger.Help(
 			"Provide a file path after the run command",
-			"For example: "+ansi.Colorize("green_bright_bold", "surf r file.surf"),
+			"For example: "+ansi.Colorize("green_bright_bold", "zyro/ r file.zyro/"),
 		)
 
 		os.Exit(1)

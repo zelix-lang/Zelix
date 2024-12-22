@@ -1,9 +1,9 @@
 package analyzer
 
 import (
-	"surf/code"
-	"surf/logger"
-	"surf/token"
+	"zyro/code"
+	"zyro/logger"
+	"zyro/token"
 )
 
 // AnalyzeMainFunc analyzes the main function

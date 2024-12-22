@@ -1,8 +1,8 @@
 package tokenUtil
 
 import (
-	"surf/logger"
-	"surf/token"
+	"zyro/logger"
+	"zyro/token"
 )
 
 // ExtractTokensBefore returns the tokens before the first occurrence of the delimiter

@@ -2,8 +2,8 @@ package logger
 
 import (
 	"os"
-	"surf/ansi"
-	"surf/token"
+	"zyro/ansi"
+	"zyro/token"
 )
 
 var logLevel = ansi.Colorize("cyan_bright_bold", "LOG |")

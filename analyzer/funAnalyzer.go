@@ -2,19 +2,19 @@ package analyzer
 
 import (
 	"strconv"
-	"surf/code"
-	"surf/core/stack"
-	"surf/logger"
-	"surf/object"
-	"surf/token"
-	"surf/tokenUtil"
-	"surf/util"
 	"time"
+	"zyro/code"
+	"zyro/core/stack"
+	"zyro/logger"
+	"zyro/object"
+	"zyro/token"
+	"zyro/tokenUtil"
+	"zyro/util"
 )
 
 // checkParamType checks if the given parameter type is valid
 func checkParamType(
-	paramType object.SurfObject,
+	paramType object.ZyroObject,
 	trace token.Token,
 ) {
 	if paramType.GetType() == object.NothingType {
@@ -31,12 +31,12 @@ func checkParamType(
 func AnalyzeFun(
 	function *code.Function,
 	functions *map[string]map[string]*code.Function,
-	mods *map[string]map[string]*code.SurfMod,
+	mods *map[string]map[string]*code.ZyroMod,
 	trace token.Token,
 	checkArgs bool,
 	variables *stack.Stack,
-	args ...object.SurfObject,
-) object.SurfObject {
+	args ...object.ZyroObject,
+) object.ZyroObject {
 	function.SetTimesCalled(function.GetTimesCalled() + 1)
 	function.SetLastCalled(time.Now())
 
@@ -96,7 +96,7 @@ func AnalyzeFun(
 	// Beyond this point, standard functions no longer
 	// need to be evaluated
 	if function.IsStd() {
-		return object.NewSurfObject(object.NothingType, nil)
+		return object.NewZyroObject(object.NothingType, nil)
 	}
 
 	// Used to skip tokens
@@ -145,5 +145,5 @@ func AnalyzeFun(
 
 	// Destroy the scope
 	variables.DestroyScope()
-	return object.NewSurfObject(object.NothingType, nil)
+	return object.NewZyroObject(object.NothingType, nil)
 }

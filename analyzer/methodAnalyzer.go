@@ -1,24 +1,24 @@
 package analyzer
 
 import (
-	"surf/code"
-	"surf/core/stack"
-	"surf/object"
-	"surf/token"
+	"zyro/code"
+	"zyro/core/stack"
+	"zyro/object"
+	"zyro/token"
 )
 
 // AnalyzeMethod analyzes a method call
 func AnalyzeMethod(
 	method code.Function,
 	functions *map[string]map[string]*code.Function,
-	mods *map[string]map[string]*code.SurfMod,
-	lastValue *object.SurfObject,
+	mods *map[string]map[string]*code.ZyroMod,
+	lastValue *object.ZyroObject,
 	trace token.Token,
 	checkArgs bool,
-	args ...object.SurfObject,
-) object.SurfObject {
+	args ...object.ZyroObject,
+) object.ZyroObject {
 	variables := stack.NewStack()
-	currentMod := lastValue.GetValue().(*code.SurfMod)
+	currentMod := lastValue.GetValue().(*code.ZyroMod)
 	varTemplates := currentMod.GetVarDeclarations()
 
 	for _, template := range varTemplates {

@@ -1,29 +1,29 @@
 package tokenUtil
 
 import (
-	"surf/code"
-	"surf/core/stack"
-	"surf/logger"
-	"surf/object"
-	"surf/token"
+	"zyro/code"
+	"zyro/core/stack"
+	"zyro/logger"
+	"zyro/object"
+	"zyro/token"
 )
 
-// FromRawType converts a raw token to a SurfObject
+// FromRawType converts a raw token to a ZyroObject
 func FromRawType(
 	unit token.Token,
-	mods *map[string]map[string]*code.SurfMod,
-) object.SurfObject {
+	mods *map[string]map[string]*code.ZyroMod,
+) object.ZyroObject {
 	tokenType := unit.GetType()
 
 	switch tokenType {
 	case token.Bool:
-		return object.NewSurfObject(object.BooleanType, "")
+		return object.NewZyroObject(object.BooleanType, "")
 	case token.String:
-		return object.NewSurfObject(object.StringType, "")
+		return object.NewZyroObject(object.StringType, "")
 	case token.Num:
-		return object.NewSurfObject(object.IntType, "")
+		return object.NewZyroObject(object.IntType, "")
 	case token.Dec:
-		return object.NewSurfObject(object.DecimalType, "")
+		return object.NewZyroObject(object.DecimalType, "")
 	case token.Identifier:
 		mod, found, _ := code.FindMod(mods, unit.GetValue(), unit.GetFile())
 
@@ -36,7 +36,7 @@ func FromRawType(
 			)
 		}
 
-		return object.NewSurfObject(object.ModType, mod)
+		return object.NewZyroObject(object.ModType, mod)
 	default:
 		logger.TokenError(
 			unit,
@@ -44,26 +44,26 @@ func FromRawType(
 			"Expected an identifier, a literal or a variable",
 		)
 
-		return object.NewSurfObject(object.NothingType, "")
+		return object.NewZyroObject(object.NothingType, "")
 	}
 }
 
-// ToObj converts a token to a SurfObject
+// ToObj converts a token to a ZyroObject
 func ToObj(
 	unit token.Token,
 	variables *stack.Stack,
-) object.SurfObject {
+) object.ZyroObject {
 	tokenType := unit.GetType()
 
 	switch tokenType {
 	case token.BoolLiteral:
-		return object.NewSurfObject(object.BooleanType, "")
+		return object.NewZyroObject(object.BooleanType, "")
 	case token.StringLiteral:
-		return object.NewSurfObject(object.StringType, "")
+		return object.NewZyroObject(object.StringType, "")
 	case token.NumLiteral:
-		return object.NewSurfObject(object.IntType, "")
+		return object.NewZyroObject(object.IntType, "")
 	case token.DecimalLiteral:
-		return object.NewSurfObject(object.DecimalType, "")
+		return object.NewZyroObject(object.DecimalType, "")
 	case token.Identifier:
 		variable, found := variables.Load(unit.GetValue())
 
@@ -84,6 +84,6 @@ func ToObj(
 			"Expected an identifier, a literal or a variable",
 		)
 
-		return object.NewSurfObject(object.NothingType, "")
+		return object.NewZyroObject(object.NothingType, "")
 	}
 }

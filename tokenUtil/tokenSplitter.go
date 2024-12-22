@@ -1,8 +1,8 @@
 package tokenUtil
 
 import (
-	"surf/logger"
-	"surf/token"
+	"zyro/logger"
+	"zyro/token"
 )
 
 // SplitTokens splits the given tokens

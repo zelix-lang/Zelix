@@ -3,17 +3,17 @@ package main
 import (
 	"github.com/urfave/cli/v2"
 	"os"
-	cli2 "surf/cli"
+	cli2 "zyro/cli"
 )
 
 func main() {
 	app := &cli.App{
-		Name:  "surf",
+		Name:  "zyro/",
 		Usage: "A blazingly fast programming language",
 		Commands: []*cli.Command{
 			{
 				Name:    "run",
-				Usage:   "Runs a surf file",
+				Usage:   "Runs a zyro/ file",
 				Aliases: []string{"r"},
 				Flags: []cli.Flag{
 					&cli.BoolFlag{
@@ -30,7 +30,7 @@ func main() {
 			},
 			{
 				Name:    "check",
-				Usage:   "Checks a surf file",
+				Usage:   "Checks a zyro/ file",
 				Aliases: []string{"c"},
 				Action: func(context *cli.Context) error {
 					cli2.CheckCommand(context)

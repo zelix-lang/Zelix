@@ -1,20 +1,20 @@
 package fun
 
 import (
-	"surf/code"
-	"surf/core/stack"
-	"surf/object"
-	"surf/token"
-	"surf/tokenUtil"
-	"surf/util"
+	"zyro/code"
+	"zyro/core/stack"
+	"zyro/object"
+	"zyro/token"
+	"zyro/tokenUtil"
+	"zyro/util"
 )
 
 // CallFun interprets a function and executes it
 func CallFun(
 	function *code.Function,
-	runtime map[string]func(...object.SurfObject),
+	runtime map[string]func(...object.ZyroObject),
 	functions *map[string]map[string]*code.Function,
-	args ...object.SurfObject,
+	args ...object.ZyroObject,
 ) {
 	variables := stack.NewStack()
 	// Create a new scope in the variables map

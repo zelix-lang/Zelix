@@ -3,16 +3,16 @@ package ast
 import (
 	"os"
 	"strings"
-	"surf/code"
-	"surf/concurrent"
-	"surf/logger"
-	"surf/object"
-	"surf/token"
-	"surf/tokenUtil"
+	"zyro/code"
+	"zyro/concurrent"
+	"zyro/logger"
+	"zyro/object"
+	"zyro/token"
+	"zyro/tokenUtil"
 )
 
 // The standard library's path
-var stdPath = os.Getenv("SURF_STANDARD_PATH")
+var stdPath = os.Getenv("ZYRO_STANDARD_PATH")
 
 // Parse parses the given tokens into a FileCode
 func Parse(tokens []token.Token, allowMods bool, allowInlineVars bool) *FileCode {
@@ -341,9 +341,9 @@ func Parse(tokens []token.Token, allowMods bool, allowInlineVars bool) *FileCode
 							}
 						}
 
-						// Wrap the functions inside a SurfMod
-						mod := code.NewSurfMod(
-							concurrent.NewTypedConcurrentMap[string, object.SurfObject](),
+						// Wrap the functions inside a ZyroMod
+						mod := code.NewZyroMod(
+							concurrent.NewTypedConcurrentMap[string, object.ZyroObject](),
 							publicFunctions,
 							privateFunctions,
 							currentFunctionName,

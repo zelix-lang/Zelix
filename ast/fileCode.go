@@ -1,9 +1,9 @@
 package ast
 
 import (
-	"surf/code"
-	"surf/logger"
-	"surf/token"
+	"zyro/code"
+	"zyro/logger"
+	"zyro/token"
 )
 
 // FileCode is a representation of the file source code
@@ -12,14 +12,14 @@ type FileCode struct {
 	// and of all the imported files.
 	functions map[string]map[string]*code.Function
 	// modules holds the defined modules across all files
-	modules map[string]map[string]*code.SurfMod
+	modules map[string]map[string]*code.ZyroMod
 }
 
 // NewFileCode creates a new FileCode object
 func NewFileCode() FileCode {
 	return FileCode{
 		functions: make(map[string]map[string]*code.Function),
-		modules:   make(map[string]map[string]*code.SurfMod),
+		modules:   make(map[string]map[string]*code.ZyroMod),
 	}
 }
 
@@ -95,15 +95,15 @@ func LocateFunction(
 }
 
 // GetModules returns the modules of the FileCode
-func (fc *FileCode) GetModules() *map[string]map[string]*code.SurfMod {
+func (fc *FileCode) GetModules() *map[string]map[string]*code.ZyroMod {
 	return &fc.modules
 }
 
 // AddModule adds a new module to the FileCode
-func (fc *FileCode) AddModule(file string, name string, module *code.SurfMod, trace token.Token) {
+func (fc *FileCode) AddModule(file string, name string, module *code.ZyroMod, trace token.Token) {
 	// Ensure the file exists in the map
 	if _, ok := fc.modules[file]; !ok {
-		fc.modules[file] = make(map[string]*code.SurfMod)
+		fc.modules[file] = make(map[string]*code.ZyroMod)
 	} else {
 		// Check if the module is already defined
 		if _, ok := fc.modules[file][name]; ok {

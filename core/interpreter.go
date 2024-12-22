@@ -1,16 +1,16 @@
 package core
 
 import (
-	"surf/ast"
-	"surf/core/engine/fun"
-	"surf/logger"
-	"surf/object"
-	runtime2 "surf/runtime"
+	"zyro/ast"
+	"zyro/core/engine/fun"
+	"zyro/logger"
+	"zyro/object"
+	runtime2 "zyro/runtime"
 )
 
 // loadRuntime returns the runtime built-in functions
-func loadRuntime() map[string]func(...object.SurfObject) {
-	runtime := make(map[string]func(...object.SurfObject))
+func loadRuntime() map[string]func(...object.ZyroObject) {
+	runtime := make(map[string]func(...object.ZyroObject))
 
 	// Println
 	runtime["impl_write"] = runtime2.Write

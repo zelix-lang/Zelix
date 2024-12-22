@@ -1,21 +1,21 @@
 package analyzer
 
 import (
-	"surf/code"
-	"surf/core/stack"
-	"surf/logger"
-	"surf/object"
-	"surf/token"
-	"surf/tokenUtil"
+	"zyro/code"
+	"zyro/core/stack"
+	"zyro/logger"
+	"zyro/object"
+	"zyro/token"
+	"zyro/tokenUtil"
 )
 
 func AnalyzeObjectCreation(
 	statement []token.Token,
 	variables *stack.Stack,
 	functions *map[string]map[string]*code.Function,
-	mods *map[string]map[string]*code.SurfMod,
+	mods *map[string]map[string]*code.ZyroMod,
 	startAt *int,
-	lastValue *object.SurfObject,
+	lastValue *object.ZyroObject,
 ) {
 	// The statement should have at least 4 tokens:
 	// new MyObject()
@@ -70,7 +70,7 @@ func AnalyzeObjectCreation(
 		)
 	}
 
-	*lastValue = object.NewSurfObject(
+	*lastValue = object.NewZyroObject(
 		object.ModType,
 		mod,
 	)
@@ -102,7 +102,7 @@ func AnalyzeObjectCreation(
 	)
 
 	*startAt += len(argsRaw) + 4
-	args := make([]object.SurfObject, len(argsRaw))
+	args := make([]object.ZyroObject, len(argsRaw))
 	for i, arg := range argsRaw {
 		args[i] = AnalyzeStatement(
 			arg,

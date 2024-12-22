@@ -3,7 +3,7 @@ package token
 import (
 	"strconv"
 	"strings"
-	"surf/util"
+	"zyro/util"
 )
 
 // Token represents a small piece of the source code

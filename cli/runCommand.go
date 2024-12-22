@@ -3,13 +3,13 @@ package cli
 import (
 	"fmt"
 	"github.com/urfave/cli/v2"
-	"surf/ansi"
-	"surf/core"
 	"time"
+	"zyro/ansi"
+	"zyro/core"
 )
 
-// RunCommand represents the run command of the Surf CLI
-// it runs a surf file
+// RunCommand represents the run command of the Zyro CLI
+// it runs a zyro/ file
 func RunCommand(context *cli.Context) {
 	showTimer := context.Bool("timer")
 	fileCode, filePath := CheckCommand(context)

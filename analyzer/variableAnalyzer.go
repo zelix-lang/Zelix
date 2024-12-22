@@ -1,13 +1,13 @@
 package analyzer
 
 import (
-	"surf/ansi"
-	"surf/ast"
-	"surf/code"
-	"surf/core/stack"
-	"surf/logger"
-	"surf/token"
-	"surf/tokenUtil"
+	"zyro/ansi"
+	"zyro/ast"
+	"zyro/code"
+	"zyro/core/stack"
+	"zyro/logger"
+	"zyro/token"
+	"zyro/tokenUtil"
 )
 
 // AnalyzeVariableDeclaration analyzes the declaration of a variable
@@ -15,7 +15,7 @@ func AnalyzeVariableDeclaration(
 	statement []token.Token,
 	variables *stack.Stack,
 	functions *map[string]map[string]*code.Function,
-	mods *map[string]map[string]*code.SurfMod,
+	mods *map[string]map[string]*code.ZyroMod,
 	constant bool,
 ) {
 	if len(statement) < 5 {
@@ -34,7 +34,7 @@ func AnalyzeVariableDeclaration(
 		logger.TokenWarning(
 			varName,
 			"Variable name is not in snake_case",
-			"Surf uses snake_case for variable names",
+			"Zyro uses snake_case for variable names",
 			"Check "+ansi.Colorize("yellow", "[U-001]")+" in the style guide",
 		)
 	}

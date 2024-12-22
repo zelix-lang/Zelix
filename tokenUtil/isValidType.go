@@ -1,7 +1,7 @@
 package tokenUtil
 
 import (
-	"surf/token"
+	"zyro/token"
 )
 
 // IsValidType checks if a token is a valid data type

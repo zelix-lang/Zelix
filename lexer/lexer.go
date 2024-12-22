@@ -6,9 +6,9 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"surf/logger"
-	"surf/token"
-	"surf/util"
+	"zyro/logger"
+	"zyro/token"
+	"zyro/util"
 )
 
 // Punctuation characters are meant to be separated tokens
@@ -29,7 +29,7 @@ var identifierRegex = regexp.MustCompile(`^[a-zA-Z_][a-zA-Z0-9_]*$`)
 var numberRegex = regexp.MustCompile(`^[0-9]+$`)
 
 // The standard library's path
-var stdPath = os.Getenv("SURF_STANDARD_PATH")
+var stdPath = os.Getenv("ZYRO_STANDARD_PATH")
 
 func extractImportPath(
 	result []token.Token,
@@ -40,8 +40,8 @@ func extractImportPath(
 
 	if strings.HasPrefix(importPathRaw, "@std") {
 		// Replace the import path with the standard library path
-		// and add the .surf extension
-		importPathRaw = strings.Replace(importPathRaw, "@std", stdPath, 1) + ".surf"
+		// and add the .zyro/ extension
+		importPathRaw = strings.Replace(importPathRaw, "@std", stdPath, 1) + ".zyro/"
 		isStd = true
 	}
 

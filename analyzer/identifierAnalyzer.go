@@ -1,14 +1,14 @@
 package analyzer
 
 import (
-	"surf/ast"
-	"surf/code"
-	"surf/core/engine/args"
-	"surf/core/stack"
-	"surf/logger"
-	"surf/object"
-	"surf/token"
-	"surf/tokenUtil"
+	"zyro/ast"
+	"zyro/code"
+	"zyro/core/engine/args"
+	"zyro/core/stack"
+	"zyro/logger"
+	"zyro/object"
+	"zyro/token"
+	"zyro/tokenUtil"
 )
 
 // AnalyzeIdentifier analyzes the given identifier
@@ -17,9 +17,9 @@ func AnalyzeIdentifier(
 	statement []token.Token,
 	variables *stack.Stack,
 	functions *map[string]map[string]*code.Function,
-	mods *map[string]map[string]*code.SurfMod,
+	mods *map[string]map[string]*code.ZyroMod,
 	startAt *int,
-	lastValue *object.SurfObject,
+	lastValue *object.ZyroObject,
 	isArithmetic *bool,
 	isFunCall *bool,
 ) {
@@ -73,7 +73,7 @@ func AnalyzeIdentifier(
 		// is also met, so no need to check it here
 
 		argumentsRaw, skipped := args.SplitArgs(call)
-		arguments := make([]object.SurfObject, len(argumentsRaw))
+		arguments := make([]object.ZyroObject, len(argumentsRaw))
 
 		for i, argument := range argumentsRaw {
 			argValue := AnalyzeStatement(

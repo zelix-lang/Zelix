@@ -1,4 +1,4 @@
-module surf
+module zyro
 
 go 1.23
 

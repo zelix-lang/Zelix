@@ -12,8 +12,9 @@ pub mod MyMod {
 }
 
 fun main() {
-    let b : str = "abc";
+    let b : str = "abc\2";
     const asd : MyMod = new MyMod();
+    asd = "asd";
 
     println("Hello, world!");
 }

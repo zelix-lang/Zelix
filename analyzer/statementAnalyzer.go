@@ -1,12 +1,12 @@
 package analyzer
 
 import (
-	"surf/code"
-	"surf/core/stack"
-	"surf/logger"
-	"surf/object"
-	"surf/token"
-	"surf/tokenUtil"
+	"zyro/code"
+	"zyro/core/stack"
+	"zyro/logger"
+	"zyro/object"
+	"zyro/token"
+	"zyro/tokenUtil"
 )
 
 // AnalyzeStatement analyzes the given statement
@@ -16,15 +16,15 @@ func AnalyzeStatement(
 	statement []token.Token,
 	variables *stack.Stack,
 	functions *map[string]map[string]*code.Function,
-	mods *map[string]map[string]*code.SurfMod,
-) object.SurfObject {
+	mods *map[string]map[string]*code.ZyroMod,
+) object.ZyroObject {
 	// Used to know what to check for
 	isArithmetic := false
 	isFunCall := false
 
 	// Used to check property access
 	// i.e.: object.property
-	lastValue := object.NewSurfObject(object.NothingType, nil)
+	lastValue := object.NewZyroObject(object.NothingType, nil)
 	startAt := 0
 
 	firstToken := statement[0]

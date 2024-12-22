@@ -2,25 +2,25 @@ package _type
 
 import (
 	"strconv"
-	"surf/core/stack"
-	"surf/logger"
-	"surf/object"
-	"surf/token"
+	"zyro/core/stack"
+	"zyro/logger"
+	"zyro/object"
+	"zyro/token"
 )
 
-// TranslateType translates a token to a Surf object
+// TranslateType translates a token to a Zyro object
 func TranslateType(
 	unit token.Token,
 	variables *stack.Stack,
-) object.SurfObject {
+) object.ZyroObject {
 	tokenType := unit.GetType()
 	value := unit.GetValue()
 
 	switch tokenType {
 	case token.StringLiteral:
-		return object.NewSurfObject(object.StringType, value)
+		return object.NewZyroObject(object.StringType, value)
 	case token.BoolLiteral:
-		return object.NewSurfObject(object.BooleanType, value == "true")
+		return object.NewZyroObject(object.BooleanType, value == "true")
 	case token.DecimalLiteral:
 		floatValue, err := strconv.ParseFloat(value, 64)
 
@@ -32,7 +32,7 @@ func TranslateType(
 			)
 		}
 
-		return object.NewSurfObject(object.DecimalType, floatValue)
+		return object.NewZyroObject(object.DecimalType, floatValue)
 	case token.NumLiteral:
 		intValue, err := strconv.Atoi(value)
 
@@ -44,7 +44,7 @@ func TranslateType(
 			)
 		}
 
-		return object.NewSurfObject(object.IntType, intValue)
+		return object.NewZyroObject(object.IntType, intValue)
 	case token.Identifier:
 		objectValue, found := variables.Load(value)
 
@@ -65,6 +65,6 @@ func TranslateType(
 			"Use a valid type",
 		)
 
-		return object.NewSurfObject(object.StringType, nil)
+		return object.NewZyroObject(object.StringType, nil)
 	}
 }

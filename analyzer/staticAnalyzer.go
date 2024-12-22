@@ -3,10 +3,10 @@ package analyzer
 import (
 	"os"
 	"regexp"
-	"surf/ansi"
-	"surf/ast"
-	"surf/core/stack"
-	"surf/logger"
+	"zyro/ansi"
+	"zyro/ast"
+	"zyro/core/stack"
+	"zyro/logger"
 )
 
 // A regex to match camelCase variable names
@@ -54,7 +54,7 @@ func AnalyzeFileCode(code *ast.FileCode, source string) {
 				logger.TokenWarning(
 					function.GetTrace(),
 					"Function name is not in snake_case",
-					"Surf uses snake_case for functions' names",
+					"Zyro uses snake_case for functions' names",
 					"Check "+ansi.Colorize("yellow", "[U-002]")+" in the style guide",
 				)
 			}

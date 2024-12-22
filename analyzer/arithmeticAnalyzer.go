@@ -1,11 +1,11 @@
 package analyzer
 
 import (
-	"surf/code"
-	"surf/core/stack"
-	"surf/logger"
-	"surf/object"
-	"surf/token"
+	"zyro/code"
+	"zyro/core/stack"
+	"zyro/logger"
+	"zyro/object"
+	"zyro/token"
 )
 
 var arithmeticOperators = map[token.Type]struct{}{
@@ -41,7 +41,7 @@ func checkStatement(
 	currentIndex int,
 	variables *stack.Stack,
 	functions *map[string]map[string]*code.Function,
-	mods *map[string]map[string]*code.SurfMod,
+	mods *map[string]map[string]*code.ZyroMod,
 ) {
 	*extractingIdentifier = false
 
@@ -56,7 +56,7 @@ func checkStatement(
 	}
 
 	// Analyze the last statement
-	dummyObj := object.NewSurfObject(object.NothingType, nil)
+	dummyObj := object.NewZyroObject(object.NothingType, nil)
 	dummyBool := false
 	isArithmetic := false
 
@@ -89,7 +89,7 @@ func AnalyzeArithmetic(
 	statement []token.Token,
 	variables *stack.Stack,
 	functions *map[string]map[string]*code.Function,
-	mods *map[string]map[string]*code.SurfMod,
+	mods *map[string]map[string]*code.ZyroMod,
 ) {
 	statementLen := len(statement)
 	if statementLen == 0 {

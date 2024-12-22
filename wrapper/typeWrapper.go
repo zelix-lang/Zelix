@@ -1,9 +1,9 @@
 package wrapper
 
 import (
-	"surf/logger"
-	"surf/token"
-	"surf/tokenUtil"
+	"zyro/logger"
+	"zyro/token"
+	"zyro/tokenUtil"
 )
 
 // TypeWrapper is a wrapper for a data type
