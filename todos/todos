@@ -11,10 +11,10 @@ specific criteria.
 (COMPLETE) 1. Implement wrapper/typeWrapper.go
 2. Implement static analysis for conditionals
 3. Implement static analysis for loops
-4. Change stored types in variables and functions to TypeWrapper
+(COMPLETE) 4. Change stored types in variables and functions to TypeWrapper
 (COMPLETE) 5. Implement type-checking for variables that have modules as types
 (COMPLETE) 6. Implement type-checking for modules variables
-7. Implement generic types for modules
+(CURRENTLY IMPLEMENTING) 7. Implement generic types for modules
 8. Start creating the Zyro Custom IR builder
 9. Write a Zyro Custom IR interpreter
 10. Write The Zyro Programming Language Documentation
