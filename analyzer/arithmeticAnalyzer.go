@@ -113,6 +113,9 @@ func AnalyzeArithmetic(
 	// Used to skip indexes
 	skipToIndex := 0
 
+	// The depth of parentheses
+	parenDepth := 0
+
 	for i, unit := range statement {
 		if i < skipToIndex {
 			continue
@@ -138,6 +141,21 @@ func AnalyzeArithmetic(
 		}
 
 		if expectingOperator {
+			if unit.GetType() == token.CloseParen {
+				parenDepth--
+
+				if parenDepth < 0 {
+					logger.TokenError(
+						unit,
+						"Invalid arithmetic expression",
+						"Unexpected closing parenthesis",
+						"Check the arithmetic expression",
+					)
+				}
+
+				continue
+			}
+
 			checkOperator(unit, statement[i:])
 			expectingOperator = false
 
@@ -147,17 +165,24 @@ func AnalyzeArithmetic(
 		tokenType := unit.GetType()
 
 		switch tokenType {
+		case token.OpenParen:
+			parenDepth++
+			continue
+		case token.CloseParen:
+			// If this case is reached, it means
+			// the code has something like: "()", which is invalid
+			logger.TokenError(
+				unit,
+				"Invalid arithmetic expression",
+				"An arithmetic expression must contain at least one number or variable",
+			)
 		case token.Identifier:
 			extractingIdentifier = true
 			lastStatement = append(lastStatement, unit)
-
-			break
-		case token.DecimalLiteral:
+			continue
+		case token.DecimalLiteral, token.NumLiteral:
 			expectingOperator = true
-			break
-		case token.NumLiteral:
-			expectingOperator = true
-			break
+			continue
 		default:
 			logger.TokenError(
 				unit,

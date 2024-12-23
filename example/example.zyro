@@ -1,14 +1,13 @@
 import "@std/io/print";
 
 mod Abc<T, E> {
-    let asd : num = 10;
+    let asd : num = 10 * (25 + 10 + (25 * 10 / (9 - 4)));
 
     fun Abc() {
-        new Abc(); // Stack overflow
+        println("My super cool constructor");
     }
 }
 
 fun main() {
     print("Hello, World!");
-
 }
