@@ -84,6 +84,11 @@ func Parse(tokens []token.Token, allowMods bool, allowInlineVars bool) *FileCode
 	// Used to skip tokens
 	skipToIndex := 0
 
+	// Used to parse generics in mods
+	inGeneric := false
+	genericDepth := 0
+	genericTokens := make([]token.Token, 0)
+
 	for i, unit := range tokens {
 		if i < skipToIndex {
 			continue
@@ -194,6 +199,30 @@ func Parse(tokens []token.Token, allowMods bool, allowInlineVars bool) *FileCode
 			expectingOpenParen = true
 		} else if expectingOpenCurly {
 			// This case only happens for modules
+			if tokenType == token.LessThan && !inGeneric && genericDepth == 0 {
+				inGeneric = true
+				genericDepth++
+				continue
+			} else if tokenType == token.GreaterThan && inGeneric {
+				genericDepth--
+
+				if genericDepth < 0 {
+					logger.TokenError(
+						unit,
+						"Unexpected closing angle bracket",
+						"Remove the closing angle bracket",
+					)
+				}
+
+				if genericDepth == 0 {
+					inGeneric = false
+					continue
+				}
+			} else if inGeneric {
+				genericTokens = append(genericTokens, unit)
+				continue
+			}
+
 			if tokenType != token.OpenCurly {
 				logger.TokenError(
 					unit,
@@ -376,6 +405,24 @@ func Parse(tokens []token.Token, allowMods bool, allowInlineVars bool) *FileCode
 							}
 						}
 
+						// Split and parse generics
+						genericParamsTokens := splitter.SplitTokens(
+							genericTokens,
+							token.Comma,
+							token.LessThan,
+							token.GreaterThan,
+						)
+
+						genericParams := make([]wrapper.TypeWrapper, len(genericParamsTokens))
+
+						for i, paramTokens := range genericParamsTokens {
+							genericParams[i] = wrapper.NewTypeWrapper(
+								paramTokens,
+								unit,
+								false,
+							)
+						}
+
 						// Wrap the functions inside a ZyroMod
 						module := mod.NewZyroMod(
 							make(map[string]*wrapper.ZyroObject),
@@ -386,7 +433,7 @@ func Parse(tokens []token.Token, allowMods bool, allowInlineVars bool) *FileCode
 							currentModVars,
 							currentFunctionPublic,
 							currentFunctionTrace,
-							[]wrapper.TypeWrapper{},
+							genericParams,
 						)
 
 						result.AddModule(unit.GetFile(), currentFunctionName, &module, unit)

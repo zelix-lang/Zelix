@@ -1,8 +1,8 @@
 import "@std/io/print";
 
-// TODO: validate cases like this
-fun abc(a: str) {
-
+mod Abc<T, E> {
 }
 
-fun main() {}
+fun main() {
+    print("Hello, World!");
+}
