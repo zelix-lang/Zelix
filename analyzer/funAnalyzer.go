@@ -49,6 +49,7 @@ func AnalyzeFun(
 			"Stack overflow",
 			"This function has overflown its stack",
 			"Check for infinite loops",
+			"Build more efficient algorithms that bring O(n) time complexity",
 		)
 	}
 
