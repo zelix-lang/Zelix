@@ -215,6 +215,14 @@ func Parse(tokens []token.Token, allowMods bool, allowInlineVars bool) *FileCode
 				}
 
 				if genericDepth == 0 {
+					if len(genericTokens) == 0 {
+						logger.TokenError(
+							unit,
+							"Expected at least one generic parameter",
+							"Add at least one generic parameter",
+						)
+					}
+
 					inGeneric = false
 					continue
 				}
