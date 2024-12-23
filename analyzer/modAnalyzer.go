@@ -7,6 +7,7 @@ import (
 	"zyro/code/mod"
 	"zyro/code/wrapper"
 	"zyro/logger"
+	"zyro/stack"
 )
 
 var pascalCaseRegex = regexp.MustCompile(`^[A-Z][a-z]+(?:[A-Z][a-z]+)*$`)
@@ -24,6 +25,12 @@ func AnalyzeMod(
 			"Zyro uses PascalCase for modules' names",
 			"Check "+ansi.Colorize("yellow", "[U-003]")+" in the style guide",
 		)
+	}
+
+	dummyStack := stack.NewStack()
+	// Check for variables redeclaration
+	for _, tokens := range mod.GetVarDeclarations() {
+		AnalyzeVariableDeclaration(tokens[1:], dummyStack, functions, mods, false)
 	}
 
 	// Analyze the mod's methods
