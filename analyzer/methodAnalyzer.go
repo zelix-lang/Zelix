@@ -10,7 +10,7 @@ import (
 
 // AnalyzeMethod analyzes a method call
 func AnalyzeMethod(
-	method code.Function,
+	method *code.Function,
 	functions *map[string]map[string]*code.Function,
 	mods *map[string]map[string]*mod.ZyroMod,
 	lastValue *wrapper.ZyroObject,
@@ -31,7 +31,7 @@ func AnalyzeMethod(
 
 	// Analyze the result
 	result := AnalyzeFun(
-		&method,
+		method,
 		functions,
 		mods,
 		trace,

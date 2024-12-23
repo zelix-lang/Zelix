@@ -114,7 +114,7 @@ func AnalyzeObjectCreation(
 	}
 
 	AnalyzeMethod(
-		*constructor,
+		constructor,
 		functions,
 		mods,
 		lastValue,

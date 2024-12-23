@@ -144,7 +144,7 @@ func AnalyzePropAccess(
 	*isFunCall = true
 
 	AnalyzeMethod(
-		*method,
+		method,
 		functions,
 		mods,
 		lastValue,

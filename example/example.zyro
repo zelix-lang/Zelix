@@ -1,8 +1,14 @@
 import "@std/io/print";
 
 mod Abc<T, E> {
+    let asd : num = 10;
+
+    fun Abc() {
+        new Abc(); // Stack overflow
+    }
 }
 
 fun main() {
     print("Hello, World!");
+
 }

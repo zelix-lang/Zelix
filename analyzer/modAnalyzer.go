@@ -38,7 +38,7 @@ func AnalyzeMod(
 		dummyObject := wrapper.NewZyroObject(mod.BuildDummyWrapper(), &mod)
 
 		AnalyzeMethod(
-			*method,
+			method,
 			functions,
 			mods,
 			&dummyObject,
