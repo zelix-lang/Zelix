@@ -226,6 +226,8 @@ func Parse(tokens []token.Token, allowMods bool, allowInlineVars bool) *FileCode
 					inGeneric = false
 					continue
 				}
+
+				genericTokens = append(genericTokens, unit)
 			} else if inGeneric {
 				genericTokens = append(genericTokens, unit)
 				continue
@@ -422,9 +424,8 @@ func Parse(tokens []token.Token, allowMods bool, allowInlineVars bool) *FileCode
 						)
 
 						genericParams := make([]wrapper.TypeWrapper, len(genericParamsTokens))
-
-						for i, paramTokens := range genericParamsTokens {
-							genericParams[i] = wrapper.NewTypeWrapper(
+						for n, paramTokens := range genericParamsTokens {
+							genericParams[n] = wrapper.NewTypeWrapper(
 								paramTokens,
 								unit,
 							)
@@ -456,6 +457,13 @@ func Parse(tokens []token.Token, allowMods bool, allowInlineVars bool) *FileCode
 							&currentFunctionBody,
 						)
 
+						genericTokens = nil
+						genericTokens = make([]token.Token, 0)
+						inGeneric = false
+						genericDepth = 0
+
+						currentModVars = nil
+						currentModVars = make([][]token.Token, 0)
 						continue
 					}
 
