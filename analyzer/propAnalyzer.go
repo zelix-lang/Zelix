@@ -151,7 +151,6 @@ func AnalyzePropAccess(
 		lastValue,
 		propName,
 		true,
-		dummyNothingType,
 		funArgs...,
 	)
 }

@@ -44,7 +44,6 @@ func AnalyzeMod(
 			&dummyObject,
 			mod.GetTrace(),
 			false,
-			dummyNothingType,
 		)
 	}
 

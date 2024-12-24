@@ -169,7 +169,6 @@ func AnalyzeObjectCreation(
 		lastValue,
 		modName,
 		true,
-		inferToType,
 		args...,
 	)
 

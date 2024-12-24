@@ -16,7 +16,6 @@ func AnalyzeMethod(
 	lastValue *wrapper.ZyroObject,
 	trace token.Token,
 	checkArgs bool,
-	inferToType wrapper.TypeWrapper,
 	args ...wrapper.ZyroObject,
 ) wrapper.ZyroObject {
 	variables := stack.NewStack()
