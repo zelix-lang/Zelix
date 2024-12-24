@@ -80,8 +80,8 @@ func AnalyzeObjectCreation(
 		} else {
 			// Extract the templates
 			templatesRaw := splitter.ExtractTokensBefore(
-				statement[2:],
-				token.GreaterThan,
+				statement[1:],
+				token.OpenParen,
 				true,
 				token.LessThan,
 				token.GreaterThan,
@@ -95,7 +95,7 @@ func AnalyzeObjectCreation(
 				templatesRaw[0],
 			)
 
-			lookForParenAt = 4 + len(templatesRaw)
+			lookForParenAt = len(templatesRaw) + 1
 		}
 
 	}
