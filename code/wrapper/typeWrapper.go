@@ -35,7 +35,6 @@ func ForceNewTypeWrapper(
 func NewTypeWrapper(
 	tokens []token.Token,
 	trace token.Token,
-	allowLiterals bool,
 ) TypeWrapper {
 	// Parse the tokens
 	if len(tokens) == 0 {
@@ -77,14 +76,14 @@ func NewTypeWrapper(
 		)
 
 		for _, paramTokens := range paramsTokens {
-			parameters = append(parameters, NewTypeWrapper(paramTokens, trace, false))
+			parameters = append(parameters, NewTypeWrapper(paramTokens, trace))
 		}
 	}
 
 	return TypeWrapper{
 		baseType:   baseType.GetValue(),
 		parameters: parameters,
-		objType:    inferrer.InferFromRawType(baseType, allowLiterals),
+		objType:    inferrer.InferFromRawType(baseType),
 	}
 }
 

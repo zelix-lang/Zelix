@@ -7,29 +7,8 @@ import (
 )
 
 // InferFromRawType infers a token's type
-func InferFromRawType(unit token.Token, allowLiterals bool) types.ZyroObjectType {
+func InferFromRawType(unit token.Token) types.ZyroObjectType {
 	tokenType := unit.GetType()
-
-	if allowLiterals {
-		switch tokenType {
-		case token.BoolLiteral:
-			return types.BooleanType
-		case token.StringLiteral:
-			return types.StringType
-		case token.NumLiteral:
-			return types.IntType
-		case token.DecimalLiteral:
-			return types.DecimalType
-		default:
-			logger.TokenError(
-				unit,
-				"Unexpected token",
-				"Expected an identifier, a literal or a variable",
-			)
-
-			return types.NothingType
-		}
-	}
 
 	switch tokenType {
 	case token.Nothing:
