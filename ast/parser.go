@@ -427,7 +427,6 @@ func Parse(tokens []token.Token, allowMods bool, allowInlineVars bool) *FileCode
 							genericParams[i] = wrapper.NewTypeWrapper(
 								paramTokens,
 								unit,
-								false,
 							)
 						}
 

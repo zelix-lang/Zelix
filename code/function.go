@@ -39,11 +39,11 @@ func NewFunction(
 	wrappers := make(map[string]wrapper.TypeWrapper)
 
 	for key, value := range parameters {
-		wrappers[key] = wrapper.NewTypeWrapper(value, trace, false)
+		wrappers[key] = wrapper.NewTypeWrapper(value, trace)
 	}
 
 	return Function{
-		returnType: wrapper.NewTypeWrapper(returnType, trace, false),
+		returnType: wrapper.NewTypeWrapper(returnType, trace),
 		parameters: wrappers,
 		body:       body,
 		public:     public,
