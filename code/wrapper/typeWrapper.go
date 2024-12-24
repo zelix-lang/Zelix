@@ -1,6 +1,7 @@
 package wrapper
 
 import (
+	"strings"
 	"zyro/code/types"
 	"zyro/logger"
 	"zyro/token"
@@ -119,4 +120,27 @@ func (tw *TypeWrapper) Compare(other TypeWrapper) bool {
 	}
 
 	return true
+}
+
+// Marshal converts the TypeWrapper to a string
+func (tw *TypeWrapper) Marshal() string {
+	if len(tw.parameters) == 0 {
+		return tw.baseType
+	}
+
+	builder := strings.Builder{}
+	builder.WriteString(tw.baseType)
+	builder.WriteString("<")
+
+	for i, param := range tw.parameters {
+		builder.WriteString(param.Marshal())
+
+		if i != len(tw.parameters)-1 {
+			builder.WriteString(", ")
+		}
+	}
+
+	builder.WriteString(">")
+
+	return builder.String()
 }

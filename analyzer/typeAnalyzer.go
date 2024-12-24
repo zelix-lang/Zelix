@@ -27,10 +27,10 @@ func AnalyzeType(
 		variables,
 		functions,
 		mods,
+		expectedTypeWrapper,
 	)
 
 	if isMod {
-		module := expected.GetValue().(*mod.ZyroMod)
 		valueTypeWrapper := value.GetType()
 
 		if valueTypeWrapper.GetType() != types.ModType {
@@ -39,25 +39,30 @@ func AnalyzeType(
 				"Type mismatch",
 				"This type does not match the value type",
 				"Change the declaration or remove the assignment",
+				"Expected: "+expectedTypeWrapper.Marshal(),
+				"Got: "+valueTypeWrapper.Marshal(),
 			)
 		}
 
-		gotMod := value.GetValue().(*mod.ZyroMod)
-
-		if valueTypeWrapper.GetType() != types.ModType || gotMod.GetName() != module.GetName() {
+		if !expectedTypeWrapper.Compare(valueTypeWrapper) {
 			logger.TokenError(
 				statement[0],
 				"Type mismatch",
 				"This type does not match the value type",
 				"Change the declaration or remove the assignment",
+				"Expected: "+expectedTypeWrapper.Marshal(),
+				"Got: "+valueTypeWrapper.Marshal(),
 			)
 		}
 	} else if !expectedTypeWrapper.Compare(value.GetType()) {
+		valueType := value.GetType()
 		logger.TokenError(
 			statement[0],
 			"Type mismatch",
 			"This type does not match the value type",
 			"Change the declaration or remove the assignment",
+			"Expected: "+expectedTypeWrapper.Marshal(),
+			"Got: "+valueType.Marshal(),
 		)
 	}
 }
