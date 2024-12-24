@@ -17,7 +17,6 @@ mod Bcd<C, D> {
 }
 
 fun main() {
-    // TODO: Fix this isn't throwing type mismatch error
     let my_instance : Bcd<num, bool> = new Bcd<>();
 
     print("Hello, World!");
