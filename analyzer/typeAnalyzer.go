@@ -45,7 +45,12 @@ func AnalyzeType(
 			)
 		}
 
-		if !expectedTypeWrapper.Compare(valueTypeWrapper) && expectedTypeWrapper.GetBaseType() != valueTypeWrapper.GetBaseType() && enforceGenericsMatch {
+		if !expectedTypeWrapper.Compare(valueTypeWrapper) {
+
+			if !enforceGenericsMatch && expectedTypeWrapper.GetBaseType() == valueTypeWrapper.GetBaseType() {
+				return
+			}
+
 			logger.TokenError(
 				statement[0],
 				"Type mismatch",
