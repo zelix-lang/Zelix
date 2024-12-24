@@ -134,7 +134,7 @@ func AnalyzeFun(
 				continue
 			}
 
-			AnalyzeStatement(statement, variables, functions, mods)
+			AnalyzeStatement(statement, variables, functions, mods, dummyNothingType)
 			continue
 		}
 

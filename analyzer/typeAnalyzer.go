@@ -17,6 +17,7 @@ func AnalyzeType(
 	functions *map[string]map[string]*code.Function,
 	mods *map[string]map[string]*mod.ZyroMod,
 	expected wrapper.ZyroObject,
+	enforceGenericsMatch bool,
 ) {
 	expectedTypeWrapper := expected.GetType()
 	isMod := expectedTypeWrapper.GetType() == types.ModType
@@ -44,7 +45,7 @@ func AnalyzeType(
 			)
 		}
 
-		if !expectedTypeWrapper.Compare(valueTypeWrapper) {
+		if !expectedTypeWrapper.Compare(valueTypeWrapper) && expectedTypeWrapper.GetBaseType() != valueTypeWrapper.GetBaseType() && enforceGenericsMatch {
 			logger.TokenError(
 				statement[0],
 				"Type mismatch",

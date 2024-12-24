@@ -95,9 +95,10 @@ func AnalyzeVariableDeclaration(
 	}
 
 	// Check if the type is valid
-	expectedWrapper := wrapper.NewTypeWrapper(varTypeTokens, varTypeTokens[0], false)
+	expectedWrapper := wrapper.NewTypeWrapper(varTypeTokens, varTypeTokens[0])
 	var expectedType wrapper.ZyroObject
 	isMod := expectedWrapper.GetType() == types.ModType
+	wasTypeInferred := false
 
 	if isMod {
 		module, found, sameFile := mod.FindMod(mods, varTypeTokens[0].GetValue(), varTypeTokens[0].GetFile())
@@ -118,7 +119,8 @@ func AnalyzeVariableDeclaration(
 			)
 		}
 
-		expectedType = wrapper.NewZyroObject(module.BuildDummyWrapper(), module)
+		expectedType = wrapper.NewZyroObject(expectedWrapper, module)
+		wasTypeInferred = true
 	} else {
 		if !checker.IsValidType(varTypeTokens[0].GetType()) {
 			logger.TokenError(
@@ -129,6 +131,7 @@ func AnalyzeVariableDeclaration(
 		}
 
 		expectedType = wrapper.NewZyroObject(expectedWrapper, nil)
+		wasTypeInferred = false
 	}
 
 	// Analyze the statement
@@ -138,6 +141,7 @@ func AnalyzeVariableDeclaration(
 		functions,
 		mods,
 		expectedType,
+		!wasTypeInferred,
 	)
 
 	// Put the variable in the stack

@@ -20,6 +20,7 @@ func AnalyzeStatement(
 	variables *stack.Stack,
 	functions *map[string]map[string]*code.Function,
 	mods *map[string]map[string]*mod.ZyroMod,
+	inferToType wrapper.TypeWrapper,
 ) wrapper.ZyroObject {
 	// Used to know what to check for
 	isArithmetic := false
@@ -49,6 +50,7 @@ func AnalyzeStatement(
 			mods,
 			&startAt,
 			&lastValue,
+			inferToType,
 		)
 
 		break
@@ -203,6 +205,7 @@ func AnalyzeStatement(
 		functions,
 		mods,
 		lastValue,
+		true,
 	)
 
 	return lastValue

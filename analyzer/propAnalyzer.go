@@ -137,6 +137,7 @@ func AnalyzePropAccess(
 			variables,
 			functions,
 			mods,
+			dummyNothingType,
 		)
 	}
 
@@ -150,6 +151,7 @@ func AnalyzePropAccess(
 		lastValue,
 		propName,
 		true,
+		dummyNothingType,
 		funArgs...,
 	)
 }

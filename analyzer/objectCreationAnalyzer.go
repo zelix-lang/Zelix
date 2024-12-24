@@ -17,6 +17,7 @@ func AnalyzeObjectCreation(
 	mods *map[string]map[string]*mod.ZyroMod,
 	startAt *int,
 	lastValue *wrapper.ZyroObject,
+	inferToType wrapper.TypeWrapper,
 ) {
 	// The statement should have at least 4 tokens:
 	// new MyObject()
@@ -52,10 +53,57 @@ func AnalyzeObjectCreation(
 		)
 	}
 
+	lookForParenAt := 2
+	if len(module.GetTemplates()) > 0 {
+		// At least: new MyObject<>() -> 6 tokens
+		if len(statement) < 6 || statement[2].GetType() != token.LessThan {
+			logger.TokenError(
+				statement[2],
+				"Invalid object creation",
+				"An object creation with templates must be followed by a less than sign",
+				"Add templates like: new MyObject<template1, template2>()",
+			)
+		}
+
+		if statement[3].GetType() == token.GreaterThan {
+			if inferToType.Compare(dummyNothingType) {
+				// Constructor was called without templates
+				logger.TokenError(
+					statement[3],
+					"Cannot infer type",
+					"You must specify the templates for the object",
+					"Add templates like: new MyObject<template1, template2>()",
+				)
+			}
+
+			lookForParenAt = 4
+		} else {
+			// Extract the templates
+			templatesRaw := splitter.ExtractTokensBefore(
+				statement[2:],
+				token.GreaterThan,
+				true,
+				token.LessThan,
+				token.GreaterThan,
+				true,
+			)
+
+			// len(templatesRaw) == 0 is impossible at this point
+
+			inferToType = wrapper.NewTypeWrapper(
+				templatesRaw,
+				templatesRaw[0],
+			)
+
+			lookForParenAt = 4 + len(templatesRaw)
+		}
+
+	}
+
 	// Validate the parentheses
-	if statement[2].GetType() != token.OpenParen {
+	if statement[lookForParenAt].GetType() != token.OpenParen {
 		logger.TokenError(
-			statement[2],
+			statement[lookForParenAt],
 			"Invalid object creation",
 			"An object creation must be followed by parentheses",
 			"Check the object creation",
@@ -94,7 +142,7 @@ func AnalyzeObjectCreation(
 	}
 
 	// Parse the arguments
-	argsRange := statement[3 : len(statement)-1]
+	argsRange := statement[(lookForParenAt + 1) : len(statement)-1]
 	argsRaw := splitter.SplitTokens(
 		argsRange,
 		token.Comma,
@@ -102,7 +150,7 @@ func AnalyzeObjectCreation(
 		token.CloseParen,
 	)
 
-	*startAt += len(argsRaw) + 4
+	*startAt += len(argsRaw) + 2 + lookForParenAt
 	args := make([]wrapper.ZyroObject, len(argsRaw))
 	for i, arg := range argsRaw {
 		args[i] = AnalyzeStatement(
@@ -110,6 +158,7 @@ func AnalyzeObjectCreation(
 			variables,
 			functions,
 			mods,
+			dummyNothingType,
 		)
 	}
 
@@ -120,6 +169,7 @@ func AnalyzeObjectCreation(
 		lastValue,
 		modName,
 		true,
+		inferToType,
 		args...,
 	)
 

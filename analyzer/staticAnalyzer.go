@@ -16,7 +16,7 @@ var snakeCaseRegex = regexp.MustCompile("^[a-z]+(_[a-z0-9]+)*$")
 
 // A dummy "nothing" type wrapper
 var dummyNothingType = wrapper.ForceNewTypeWrapper(
-	"nothing",
+	"dummy-nothing",
 	[]wrapper.TypeWrapper{},
 	types.NothingType,
 )

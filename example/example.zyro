@@ -1,6 +1,6 @@
 import "@std/io/print";
 
-mod Abc<T, E> {
+mod Abc<A, B> {
     let asd : num = 10 * (25 + 10 + (25 * 10 / (9 - 4)));
 
     fun Abc() {
@@ -8,6 +8,17 @@ mod Abc<T, E> {
     }
 }
 
+mod Bcd<C, D> {
+    let asd : num = 10 * (25 + 10 + (25 * 10 / (9 - 4)));
+
+    fun Bcd() {
+        println("My super cool constructor");
+    }
+}
+
 fun main() {
+    // TODO: Fix this isn't throwing type mismatch error
+    let my_instance : Bcd<num, bool> = new Abc<>();
+
     print("Hello, World!");
 }

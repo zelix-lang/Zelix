@@ -82,6 +82,7 @@ func AnalyzeIdentifier(
 				variables,
 				functions,
 				mods,
+				dummyNothingType,
 			)
 
 			arguments[i] = argValue
