@@ -31,6 +31,9 @@ var colors = map[string]string{
 	"magenta_bright_bold": "\033[1;95m",
 	"cyan_bright_bold":    "\033[1;96m",
 	"white_bright_bold":   "\033[1;97m",
+
+	// SPECIAL
+	"underline": "\033[4m",
 }
 
 // GetColor returns the ANSI escape code for a given color

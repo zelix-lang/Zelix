@@ -1,0 +1,23 @@
+import "@std/io/print";
+
+mod Abc<A, B> {
+    let asd : num = 10 * (25 + 10 + (25 * 10 / (9 - 4)));
+
+    fun Abc() {
+        println("My super cool constructor");
+    }
+}
+
+mod Bcd<C, D> {
+    let asd : num = 10 * (25 + 10 + (25 * 10 / (9 - 4)));
+
+    fun Bcd() {
+        println("My super cool constructor");
+    }
+}
+
+fun main() {
+    let my_instance : Bcd<A, B> = new Bcd<A, B>();
+
+    print("Hello, World!");
+}

@@ -2,11 +2,7 @@ package util
 
 import (
 	"strings"
-	"surf/ansi"
 )
-
-var indicatorBase = ansi.Colorize("magenta_bright", "~")
-var indicator = ansi.Colorize("magenta_bright", "^")
 
 // BuildTrace builds the trace of a character in the source code
 // in O(n) time
@@ -14,18 +10,14 @@ func BuildTrace(
 	currentToken strings.Builder,
 	currentIndex int,
 	input string,
-) (string, string) {
+) string {
 	// Use a builder for efficiency
-	var trace strings.Builder          // The trace itself
-	var traceIndicator strings.Builder // An indicator
-	// Both together make something like:
-	// pub fn main() { println!("Hello, World!"); }
-	// ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^~~
+	var trace strings.Builder // The trace itself
 
 	startAt := currentIndex - currentToken.Len()
 
 	// Add 25 tokens before the current token for context
-	for i := startAt - 25; i < startAt; i++ {
+	for i := startAt; i > startAt-25; i-- {
 		if i < 0 {
 			break
 		}
@@ -37,16 +29,22 @@ func BuildTrace(
 			break
 		}
 
-		traceIndicator.WriteString(indicatorBase)
 		trace.WriteByte(char)
+	}
+
+	// Invert the trace
+	traceStr := trace.String()
+	trace.Reset()
+
+	for i := len(traceStr) - 1; i >= 0; i-- {
+		trace.WriteByte(traceStr[i])
 	}
 
 	// Add the current token
 	trace.WriteString(currentToken.String())
-	traceIndicator.WriteString(strings.Repeat(indicator, currentToken.Len()))
 
 	// Add 25 tokens after the current token for context
-	for i := startAt + currentToken.Len(); i < startAt+currentToken.Len()+25; i++ {
+	for i := startAt + currentToken.Len() + 1; i < startAt+currentToken.Len()+25; i++ {
 		if i >= len(input) {
 			break
 		}
@@ -58,9 +56,8 @@ func BuildTrace(
 			break
 		}
 
-		traceIndicator.WriteString(indicatorBase)
 		trace.WriteByte(char)
 	}
 
-	return strings.Trim(trace.String(), " "), traceIndicator.String()
+	return strings.Trim(trace.String(), " ")
 }

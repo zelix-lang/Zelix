@@ -1,14 +1,15 @@
 package logger
 
 import (
+	"fluent/ansi"
+	"fluent/token"
 	"os"
-	"surf/ansi"
-	"surf/code"
 )
 
 var logLevel = ansi.Colorize("cyan_bright_bold", "LOG |")
 var errorLevel = ansi.Colorize("red_bright_bold", "ERROR |")
 var helpLevel = ansi.Colorize("green_bright_bold", "HELP |")
+var warningLevel = ansi.Colorize("yellow_bright_bold", "WARNING |")
 var helpPrefix = ansi.Colorize("black_bright", "  |>")
 
 // Log prints a set of messages to the console
@@ -35,17 +36,33 @@ func Help(message ...string) {
 	}
 }
 
+// TokenWarning prints a warning message related to the given token
+// with its trace and help messages to the console
+// in O(n) time
+func TokenWarning(
+	token token.Token,
+	message string,
+	help ...string,
+) {
+	println(warningLevel, message)
+	Log("Full context:", token.GetTrace(), token.GetTraceContext())
+
+	for _, h := range help {
+		Help(h)
+	}
+}
+
 // TokenError prints an error message related to the given token
 // with its trace and help messages to the console
 // and then exits the program with code 1
 // in O(n) time
 func TokenError(
-	token code.Token,
+	token token.Token,
 	message string,
 	help ...string,
 ) {
 	Error(message)
-	Log("Full context:", token.GetTrace(), token.GetTraceContext(), token.GetTraceIndicator())
+	Log("Full context:", token.GetTrace(), token.GetTraceContext())
 
 	for _, h := range help {
 		Help(h)

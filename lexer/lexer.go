@@ -1,14 +1,14 @@
 package lexer
 
 import (
+	"fluent/logger"
+	"fluent/token"
+	"fluent/util"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
-	"surf/code"
-	"surf/logger"
-	"surf/util"
 )
 
 // Punctuation characters are meant to be separated tokens
@@ -29,10 +29,10 @@ var identifierRegex = regexp.MustCompile(`^[a-zA-Z_][a-zA-Z0-9_]*$`)
 var numberRegex = regexp.MustCompile(`^[0-9]+$`)
 
 // The standard library's path
-var stdPath = os.Getenv("SURF_STANDARD_PATH")
+var stdPath = os.Getenv("FLUENT_STANDARD_PATH")
 
 func extractImportPath(
-	result []code.Token,
+	result []token.Token,
 	i int,
 ) (string, bool) {
 	importPathRaw := result[i].GetValue()
@@ -40,8 +40,8 @@ func extractImportPath(
 
 	if strings.HasPrefix(importPathRaw, "@std") {
 		// Replace the import path with the standard library path
-		// and add the .surf extension
-		importPathRaw = strings.Replace(importPathRaw, "@std", stdPath, 1) + ".surf"
+		// and add the .fluent/ extension
+		importPathRaw = strings.Replace(importPathRaw, "@std", stdPath, 1) + ".fluent"
 		isStd = true
 	}
 
@@ -60,14 +60,14 @@ func extractImportPath(
 
 // validateImport validates import statements
 func validateImport(
-	tokens []code.Token,
+	tokens []token.Token,
 	startAt int,
 ) {
 	// Get the tokens to be validated
 	importPathToken := tokens[startAt]
 	semicolonToken := tokens[startAt+1]
 
-	if importPathToken.GetType() != code.StringLiteral {
+	if importPathToken.GetType() != token.StringLiteral {
 		logger.TokenError(
 			importPathToken,
 			"Expected a string literal as an import path",
@@ -75,7 +75,7 @@ func validateImport(
 		)
 	}
 
-	if semicolonToken.GetType() != code.Semicolon {
+	if semicolonToken.GetType() != token.Semicolon {
 		logger.TokenError(
 			semicolonToken,
 			"Expected a semicolon after the import path",
@@ -111,7 +111,7 @@ func validateImport(
 // in O(1) time
 func pushToken(
 	currentToken *strings.Builder,
-	tokens *[]code.Token,
+	tokens *[]token.Token,
 	line int,
 	column int,
 	file string,
@@ -126,24 +126,24 @@ func pushToken(
 
 	// See if the current token is a known token
 	knownToken, ok := GetKnownToken(currentToken.String())
-	tokenType := code.Unknown
+	tokenType := token.Unknown
 
 	if ok {
 		tokenType = knownToken
 	} else if decimalLiteral {
-		tokenType = code.DecimalLiteral
+		tokenType = token.DecimalLiteral
 	} else if numberRegex.MatchString(currentToken.String()) {
-		tokenType = code.NumLiteral
+		tokenType = token.NumLiteral
 	} else {
 		// Check if the token is an identifier
 		if identifierRegex.MatchString(currentToken.String()) {
-			tokenType = code.Identifier
+			tokenType = token.Identifier
 		}
 	}
 
 	*tokens = append(
 		*tokens,
-		*code.NewToken(
+		*token.NewToken(
 			tokenType,
 			currentToken.String(),
 			file,
@@ -162,14 +162,14 @@ func pushToken(
 // containsImports
 // Checks if the tokens array contains any imports
 // in O(n) time
-func containsImports(token code.Token) bool {
-	return token.GetType() == code.Import
+func containsImports(unit token.Token) bool {
+	return unit.GetType() == token.Import
 }
 
 // Lex converts a string of source dode into
 // an array of tokens, processing imports
 // in O(n) time
-func Lex(input string, file string) []code.Token {
+func Lex(input string, file string) []token.Token {
 	// Lex the input
 	result := lexSingleFile(input, file)
 
@@ -179,8 +179,8 @@ func Lex(input string, file string) []code.Token {
 
 	// Process imports
 	for util.AnyMatch(result, containsImports) {
-		for i, token := range result {
-			if token.GetType() != code.Import {
+		for i, unit := range result {
+			if unit.GetType() != token.Import {
 				continue
 			}
 
@@ -206,7 +206,7 @@ func Lex(input string, file string) []code.Token {
 				var importChain []string
 
 				// Add the message to the chain so it also gets printed
-				importChain = append(importChain, "File "+token.GetFile()+" depends on its own: ")
+				importChain = append(importChain, "File "+unit.GetFile()+" depends on its own: ")
 
 				for spaces, _import := range seenImports {
 					importChain = append(
@@ -216,7 +216,7 @@ func Lex(input string, file string) []code.Token {
 				}
 
 				logger.TokenError(
-					token,
+					unit,
 					"Circular import detected",
 					importChain...,
 				)
@@ -252,7 +252,7 @@ func Lex(input string, file string) []code.Token {
 // lexSingleFile converts a string of source dode into
 // an array of tokens without processing imports
 // in O(n) time
-func lexSingleFile(input string, file string) []code.Token {
+func lexSingleFile(input string, file string) []token.Token {
 	// Used to keep track of the line and column
 	line := 1
 	column := 0
@@ -266,7 +266,7 @@ func lexSingleFile(input string, file string) []code.Token {
 	// Used to know if the current token is a decimal literal
 	decimalLiteral := false
 
-	var result []code.Token
+	var result []token.Token
 
 	// Use a builder for efficiency
 	var currentToken strings.Builder
@@ -328,8 +328,8 @@ func lexSingleFile(input string, file string) []code.Token {
 			if inString {
 				result = append(
 					result,
-					*code.NewToken(
-						code.StringLiteral,
+					*token.NewToken(
+						token.StringLiteral,
 						currentToken.String(),
 						file,
 						line,
@@ -355,6 +355,28 @@ func lexSingleFile(input string, file string) []code.Token {
 			continue
 		}
 
+		if inStringEscape {
+			// No need to create a strings.Builder here
+			// performance tradeoff is not worth it for a single character
+			// Construct the escape sequence
+			combined := "\\" + string(char)
+			escaped, err := strconv.Unquote(`"` + combined + `"`)
+
+			if err != nil {
+				logger.Error("Invalid escape sequence: " + combined)
+
+				trace := util.BuildTrace(currentToken, i, input)
+				logger.Log("Full context:", trace)
+				logger.Help("Use a valid escape sequence")
+
+				os.Exit(1)
+			}
+
+			currentToken.WriteString(escaped)
+			inStringEscape = false
+			continue
+		}
+
 		if inString {
 			if char == '\\' {
 				inStringEscape = true
@@ -364,28 +386,6 @@ func lexSingleFile(input string, file string) []code.Token {
 			}
 
 			currentToken.WriteRune(char)
-			continue
-		}
-
-		if inStringEscape {
-			// No need to create a strings.Builder here
-			// performance tradeoff is not worth it for a single character
-			// Construct the escape sequence
-			combined := "\\" + string(char)
-			escaped, err := strconv.Unquote(`"` + combined + `"`)
-
-			if err != nil {
-				logger.Error("Invalid escape sequence (" + combined + ")")
-
-				trace, indicator := util.BuildTrace(currentToken, i, input)
-				logger.Log("Full context:", trace, indicator)
-				logger.Help("Use a valid escape sequence")
-
-				os.Exit(1)
-			}
-
-			currentToken.WriteString(escaped)
-			inStringEscape = false
 			continue
 		}
 
@@ -406,7 +406,7 @@ func lexSingleFile(input string, file string) []code.Token {
 			var arrowBuilder strings.Builder
 
 			arrowBuilder.WriteString(arrow)
-			pushToken(&arrowBuilder, &result, line, column, file, input, i, decimalLiteral)
+			pushToken(&arrowBuilder, &result, line, column, file, input, i-1, decimalLiteral)
 			decimalLiteral = false
 			continue
 		}
@@ -421,7 +421,7 @@ func lexSingleFile(input string, file string) []code.Token {
 			var incDecBuilder strings.Builder
 
 			incDecBuilder.WriteString(incDec)
-			pushToken(&incDecBuilder, &result, line, column, file, input, i, decimalLiteral)
+			pushToken(&incDecBuilder, &result, line, column, file, input, i-1, decimalLiteral)
 			decimalLiteral = false
 
 			continue
@@ -439,7 +439,7 @@ func lexSingleFile(input string, file string) []code.Token {
 		// Check for punctuation characters
 		if _, exists := punctuation[char]; exists {
 			// Push any remaining token
-			pushToken(&currentToken, &result, line, column, file, input, i, decimalLiteral)
+			pushToken(&currentToken, &result, line, column, file, input, i-1, decimalLiteral)
 			decimalLiteral = false
 
 			// Add the punctuation character as a token
@@ -452,6 +452,9 @@ func lexSingleFile(input string, file string) []code.Token {
 
 		currentToken.WriteRune(char)
 	}
+
+	// Push the last token
+	pushToken(&currentToken, &result, line, column, file, input, inputLength, decimalLiteral)
 
 	return result
 }
