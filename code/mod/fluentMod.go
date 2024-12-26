@@ -61,7 +61,9 @@ func NewFluentMod(
 
 // FindMod finds a module in the given map
 // and returns the module alongside a boolean
-// indicating if the module was found
+// indicating if the module was found and
+// a boolean indicating if the module was found
+// in the same file
 func FindMod(mods *map[string]map[string]*FluentMod, name string, file string) (*FluentMod, bool, bool) {
 	mod, found := (*mods)[file][name]
 	if found {

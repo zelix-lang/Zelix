@@ -20,6 +20,8 @@ func AnalyzeType(
 	enforceGenericsMatch bool,
 ) {
 	expectedTypeWrapper := expected.GetType()
+	AnalyzeGeneric(expectedTypeWrapper, mods, statement[0])
+
 	isMod := expectedTypeWrapper.GetType() == types.ModType
 
 	// Analyze the type
@@ -31,9 +33,9 @@ func AnalyzeType(
 		expectedTypeWrapper,
 	)
 
-	if isMod {
-		valueTypeWrapper := value.GetType()
+	valueTypeWrapper := value.GetType()
 
+	if isMod {
 		if valueTypeWrapper.GetType() != types.ModType {
 			logger.TokenError(
 				statement[0],
@@ -60,15 +62,14 @@ func AnalyzeType(
 				"Got: "+valueTypeWrapper.Marshal(),
 			)
 		}
-	} else if !expectedTypeWrapper.Compare(value.GetType()) {
-		valueType := value.GetType()
+	} else if !expectedTypeWrapper.Compare(valueTypeWrapper) {
 		logger.TokenError(
 			statement[0],
 			"Type mismatch",
 			"This type does not match the value type",
 			"Change the declaration or remove the assignment",
 			"Expected: "+expectedTypeWrapper.Marshal(),
-			"Got: "+valueType.Marshal(),
+			"Got: "+valueTypeWrapper.Marshal(),
 		)
 	}
 }

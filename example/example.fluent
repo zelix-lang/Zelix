@@ -17,6 +17,6 @@ mod Bcd<C, D> {
 }
 
 fun main() {
-    new Bcd<A, B>().asd = "asd";
+    let a : Bcd<Abc<str, bool>, num> = new Bcd<Abc<str, bool>, num>(); // TODO! Validate generics (Currently implementing)
     print("Hello, World!");
 }

@@ -94,6 +94,7 @@ func AnalyzeObjectCreation(
 				templatesRaw[0],
 			)
 
+			AnalyzeGeneric(inferToType, mods, templatesRaw[0])
 			lookForParenAt = len(templatesRaw) + 1
 		}
 
