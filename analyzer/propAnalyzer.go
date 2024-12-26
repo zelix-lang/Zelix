@@ -38,21 +38,6 @@ func AnalyzePropAccess(
 	propName := prop[0]
 	variables := module.GetVariables()
 
-	if !module.IsInitialized() {
-		varDeclarations := module.GetVarDeclarations()
-
-		// Construct the module's variables stack
-		for _, varDecl := range varDeclarations {
-			AnalyzeVariableDeclaration(
-				varDecl[1:],
-				variables,
-				functions,
-				mods,
-				varDecl[0].GetType() == token.Const,
-			)
-		}
-	}
-
 	// Only identifiers are allowed as property names
 	if propName.GetType() != token.Identifier {
 		logger.TokenError(
