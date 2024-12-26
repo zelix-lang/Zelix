@@ -104,19 +104,20 @@ func AnalyzeVariableDeclaration(
 	if isMod {
 		module, found, sameFile := mod.FindMod(mods, varTypeTokens[0].GetValue(), varTypeTokens[0].GetFile())
 
+		if !found {
+			logger.TokenError(
+				varTypeTokens[0],
+				"Invalid type '"+varTypeTokens[0].GetValue()+"'",
+				"The module "+varTypeTokens[0].GetValue()+" was not found in the current scope",
+				"Import the module or define it in the current scope",
+			)
+		}
+
 		if !sameFile && !module.IsPublic() {
 			logger.TokenError(
 				varTypeTokens[0],
 				"Module "+varTypeTokens[0].GetValue()+" is not public",
 				"Move the module to the current file or make it public",
-			)
-		}
-
-		if !found {
-			logger.TokenError(
-				varTypeTokens[0],
-				"Invalid type '"+varTypeTokens[0].GetValue()+"'",
-				"Change the type to a valid one",
 			)
 		}
 
