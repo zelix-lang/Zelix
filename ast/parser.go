@@ -106,7 +106,7 @@ func Parse(tokens []token.Token, allowMods bool, allowInlineVars bool) *FileCode
 			}
 
 			// Extract the statement
-			statement := splitter.ExtractTokensBefore(
+			statement, _ := splitter.ExtractTokensBefore(
 				tokens[i:],
 				token.Semicolon,
 				// Don't handle nested statements here

@@ -39,21 +39,23 @@ var dummyDecimalType = wrapper.ForceNewTypeWrapper(
 )
 
 // ToObj converts a token to a FluentObject
+// and returns the inferred object
+// and a boolean indicating if it is a constant value
 func ToObj(
 	unit token.Token,
 	variables *stack.Stack,
-) wrapper.FluentObject {
+) (wrapper.FluentObject, bool) {
 	tokenType := unit.GetType()
 
 	switch tokenType {
 	case token.BoolLiteral:
-		return wrapper.NewFluentObject(dummyBoolType, "")
+		return wrapper.NewFluentObject(dummyBoolType, ""), true
 	case token.StringLiteral:
-		return wrapper.NewFluentObject(dummyStringType, "")
+		return wrapper.NewFluentObject(dummyStringType, ""), true
 	case token.NumLiteral:
-		return wrapper.NewFluentObject(dummyIntType, "")
+		return wrapper.NewFluentObject(dummyIntType, ""), true
 	case token.DecimalLiteral:
-		return wrapper.NewFluentObject(dummyDecimalType, "")
+		return wrapper.NewFluentObject(dummyDecimalType, ""), true
 	case token.Identifier:
 		variable, found := variables.Load(unit.GetValue())
 
@@ -66,7 +68,7 @@ func ToObj(
 			)
 		}
 
-		return variable.GetValue()
+		return variable.GetValue(), variable.IsConstant()
 	default:
 		logger.TokenError(
 			unit,
@@ -74,6 +76,6 @@ func ToObj(
 			"Expected an identifier, a literal or a variable",
 		)
 
-		return wrapper.NewFluentObject(dummyNothingType, "")
+		return wrapper.NewFluentObject(dummyNothingType, ""), true
 	}
 }

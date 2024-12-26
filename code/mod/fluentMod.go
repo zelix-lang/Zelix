@@ -4,6 +4,7 @@ import (
 	"fluent/code"
 	"fluent/code/types"
 	"fluent/code/wrapper"
+	"fluent/stack"
 	"fluent/token"
 )
 
@@ -18,6 +19,8 @@ type FluentMod struct {
 	public          bool
 	trace           token.Token
 	templates       []wrapper.TypeWrapper
+	variables       *stack.Stack
+	initialized     bool
 }
 
 // NewFluentMod creates a new Fluent module
@@ -41,6 +44,8 @@ func NewFluentMod(
 		public:          public,
 		trace:           trace,
 		templates:       templates,
+		variables:       stack.NewStack(),
+		initialized:     false,
 	}
 
 	for key, value := range publicMethods {
@@ -141,4 +146,14 @@ func (sm *FluentMod) BuildDummyWrapper() wrapper.TypeWrapper {
 		sm.templates,
 		types.ModType,
 	)
+}
+
+// GetVariables returns the variables stack of the module
+func (sm *FluentMod) GetVariables() *stack.Stack {
+	return sm.variables
+}
+
+// IsInitialized checks if the module is initialized
+func (sm *FluentMod) IsInitialized() bool {
+	return sm.initialized
 }

@@ -61,7 +61,7 @@ func AnalyzeIdentifier(
 
 		// Parse and check the arguments
 		// Extract all the tokens of the function invocation
-		call := splitter.ExtractTokensBefore(
+		call, _ := splitter.ExtractTokensBefore(
 			statement,
 			token.CloseParen,
 			true,

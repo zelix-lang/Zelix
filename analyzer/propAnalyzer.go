@@ -6,7 +6,6 @@ import (
 	"fluent/code/types"
 	"fluent/code/wrapper"
 	"fluent/logger"
-	"fluent/stack"
 	"fluent/token"
 	"fluent/tokenUtil/splitter"
 )
@@ -14,7 +13,6 @@ import (
 // AnalyzePropAccess analyzes the given property access
 func AnalyzePropAccess(
 	prop []token.Token,
-	variables *stack.Stack,
 	functions *map[string]map[string]*code.Function,
 	mods *map[string]map[string]*mod.FluentMod,
 	lastValue *wrapper.FluentObject,
@@ -38,6 +36,22 @@ func AnalyzePropAccess(
 
 	module := lastValue.GetValue().(*mod.FluentMod)
 	propName := prop[0]
+	variables := module.GetVariables()
+
+	if !module.IsInitialized() {
+		varDeclarations := module.GetVarDeclarations()
+
+		// Construct the module's variables stack
+		for _, varDecl := range varDeclarations {
+			AnalyzeVariableDeclaration(
+				varDecl[1:],
+				variables,
+				functions,
+				mods,
+				varDecl[0].GetType() == token.Const,
+			)
+		}
+	}
 
 	// Only identifiers are allowed as property names
 	if propName.GetType() != token.Identifier {
@@ -57,7 +71,7 @@ func AnalyzePropAccess(
 		if !found {
 			logger.TokenError(
 				prop[0],
-				"Property not found",
+				"Property '"+propName.GetValue()+"' not found",
 				"Check the property name",
 			)
 		}

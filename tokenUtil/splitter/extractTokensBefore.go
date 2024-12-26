@@ -14,7 +14,7 @@ func ExtractTokensBefore(
 	nestedStartDelimiter token.Type,
 	nestedEndDelimiter token.Type,
 	throwIfNotFound bool,
-) []token.Token {
+) ([]token.Token, bool) {
 	// Used to know if the delimiter was found
 	metDelimiter := false
 
@@ -55,6 +55,6 @@ func ExtractTokensBefore(
 		)
 	}
 
-	return result
+	return result, metDelimiter
 
 }

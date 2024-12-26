@@ -79,7 +79,7 @@ func AnalyzeObjectCreation(
 			lookForParenAt = 4
 		} else {
 			// Extract the templates
-			templatesRaw := splitter.ExtractTokensBefore(
+			templatesRaw, _ := splitter.ExtractTokensBefore(
 				statement[1:],
 				token.OpenParen,
 				true,
@@ -89,7 +89,6 @@ func AnalyzeObjectCreation(
 			)
 
 			// len(templatesRaw) == 0 is impossible at this point
-
 			inferToType = wrapper.NewTypeWrapper(
 				templatesRaw,
 				templatesRaw[0],
@@ -127,7 +126,7 @@ func AnalyzeObjectCreation(
 	// Check if the module has any constructor
 	constructor, constructorFound, constructorPublic := module.GetMethod(modName.GetValue())
 	if !constructorFound {
-		*startAt += 4
+		*startAt += lookForParenAt + 2
 		// No constructor found, return the module
 		return
 	}

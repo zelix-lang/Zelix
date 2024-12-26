@@ -25,6 +25,7 @@ func AnalyzeStatement(
 	// Used to know what to check for
 	isArithmetic := false
 	isFunCall := false
+	isLastValConstant := false
 
 	// Used to check property access
 	// i.e.: object.property
@@ -34,17 +35,19 @@ func AnalyzeStatement(
 	firstToken := statement[0]
 	firstTokenType := firstToken.GetType()
 
+	beforeDot, _ := splitter.ExtractTokensBefore(
+		statement,
+		token.Dot,
+		true,
+		token.OpenParen,
+		token.CloseParen,
+		false,
+	)
+
 	switch firstTokenType {
 	case token.New:
 		AnalyzeObjectCreation(
-			splitter.ExtractTokensBefore(
-				statement,
-				token.Dot,
-				true,
-				token.OpenParen,
-				token.CloseParen,
-				false,
-			),
+			beforeDot,
 			variables,
 			functions,
 			mods,
@@ -68,9 +71,8 @@ func AnalyzeStatement(
 
 		break
 	default:
-		lastValue = converter.ToObj(firstToken, variables)
+		lastValue, isLastValConstant = converter.ToObj(firstToken, variables)
 		valueTypeWrapper := lastValue.GetType()
-
 		isArithmetic = valueTypeWrapper.GetType() == types.IntType || valueTypeWrapper.GetType() == types.DecimalType
 		startAt = 1
 	}
@@ -94,119 +96,84 @@ func AnalyzeStatement(
 	}
 
 	valueTypeWrapper := lastValue.GetType()
-	if valueTypeWrapper.GetType() != types.ModType {
-		logger.TokenError(
-			remainingStatement[0],
-			"Illegal property access",
-			"Cannot access properties of a non-object",
-			"Check the object type",
-		)
-	}
 
-	// Analyze reassignments
-	if remainingStatement[0].GetType() == token.Assign {
-		if isFunCall {
+	switch remainingStatement[0].GetType() {
+	case token.Dot:
+		// Exclude the 1st character (either "." or "=")
+		beforeAssignment, isAssignment := splitter.ExtractTokensBefore(
+			remainingStatement[1:],
+			token.Assign,
+			false,
+			token.Unknown,
+			token.Unknown,
+			false,
+		)
+
+		isFunCall = false
+
+		if valueTypeWrapper.GetType() != types.ModType {
 			logger.TokenError(
 				remainingStatement[0],
-				"Invalid operation",
-				"Cannot assign to a method call",
+				"Illegal property access",
+				"Cannot access properties of a non-object",
+				"Check the object type",
+			)
+		}
+
+		props := splitter.SplitTokens(
+			beforeAssignment,
+			token.Dot,
+			token.OpenParen,
+			token.CloseParen,
+		)
+
+		// Analyze all props
+		for _, prop := range props {
+			AnalyzePropAccess(
+				prop,
+				functions,
+				mods,
+				&lastValue,
+				&isFunCall,
+				isAssignment,
+			)
+		}
+
+		if isAssignment && isFunCall {
+			logger.TokenError(
+				remainingStatement[0],
+				"Invalid statement",
+				"A function call cannot be assigned to a property",
 				"Check the statement",
 			)
 		}
-
-		variable, _ := variables.Load(firstToken.GetValue())
-		// No need to check if it was found here, it was already checked
-
-		if variable.IsConstant() {
+	case token.Assign:
+		if isLastValConstant {
 			logger.TokenError(
 				remainingStatement[0],
-				"Cannot reassign constant",
-				"Check the variable declaration",
+				"Invalid assignment",
+				"Cannot assign to a constant value",
+				"All literals also count as constant values",
+				"Check if you are reassigning a literal",
 			)
 		}
 
-		return lastValue
-	}
-
-	// The only valid operation after all that has been processed
-	// is property access, therefore the fist token of the remaining
-	// statement must be a dot
-	if remainingStatement[0].GetType() != token.Dot {
-		logger.TokenError(
-			remainingStatement[0],
-			"Invalid operation",
-			"Invalid operation after identifier",
-			"Check the statement",
-		)
-	}
-
-	// Get tokens before an assignment
-	// i.e.: object.property = value
-	beforeAssignment := splitter.ExtractTokensBefore(
-		remainingStatement[1:],
-		token.Assign,
-		false,
-		token.Unknown,
-		token.Unknown,
-		false,
-	)
-
-	// if beforeAssignment is empty, that means that
-	// the statement ends in a dot: "object.property."
-	// which is invalid
-	if len(beforeAssignment) == 0 {
-		logger.TokenError(
-			remainingStatement[0],
-			"Invalid operation",
-			"Invalid operation after identifier",
-			"Check the statement",
-		)
-	}
-
-	// +1 for the dot
-	// +1 for the assignment
-	afterAssignment := remainingStatement[len(beforeAssignment)+2:]
-
-	// Reset isFunCall to catch assignments to methods
-	isFunCall = false
-	props := splitter.SplitTokens(
-		beforeAssignment,
-		token.Dot,
-		token.OpenParen,
-		token.CloseParen,
-	)
-
-	// Analyze all props
-	for _, prop := range props {
-		AnalyzePropAccess(
-			prop,
+		AnalyzeType(
+			remainingStatement[1:],
 			variables,
 			functions,
 			mods,
-			&lastValue,
-			&isFunCall,
-			len(afterAssignment) > 0,
+			lastValue,
+			true,
 		)
-	}
-
-	if isFunCall && len(afterAssignment) > 0 {
+	default:
 		logger.TokenError(
-			afterAssignment[0],
-			"Invalid operation",
-			"Cannot assign to a method call",
+			remainingStatement[0],
+			"Invalid statement",
+			"This token was not expected at this position",
 			"Check the statement",
 		)
 	}
-
-	// Analyze assignment
-	AnalyzeType(
-		afterAssignment,
-		variables,
-		functions,
-		mods,
-		lastValue,
-		true,
-	)
 
 	return lastValue
 }

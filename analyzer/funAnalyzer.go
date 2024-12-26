@@ -116,7 +116,7 @@ func AnalyzeFun(
 
 		if tokenType == token.Identifier || tokenType == token.Let || tokenType == token.Const || tokenType == token.New {
 			// Extract the statement
-			statement := splitter.ExtractTokensBefore(
+			statement, _ := splitter.ExtractTokensBefore(
 				function.GetBody()[i:],
 				token.Semicolon,
 				// Don't handle nested statements here

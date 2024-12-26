@@ -77,7 +77,7 @@ func AnalyzeVariableDeclaration(
 	}
 
 	// Extract the type
-	varTypeTokens := splitter.ExtractTokensBefore(
+	varTypeTokens, _ := splitter.ExtractTokensBefore(
 		statement[2:],
 		token.Assign,
 		false,
