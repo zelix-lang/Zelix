@@ -17,7 +17,6 @@ mod Bcd<C, D> {
 }
 
 fun main() {
-   new Bcd<A, B>().asd = "asd";
-
+    new Bcd<A, B>().asd = "asd";
     print("Hello, World!");
 }
