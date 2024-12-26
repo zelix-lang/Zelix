@@ -4,6 +4,7 @@ import (
 	"fluent/logger"
 	"fluent/token"
 	"fluent/util"
+	"maps"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -173,9 +174,12 @@ func Lex(input string, file string) []token.Token {
 	// Lex the input
 	result := lexSingleFile(input, file)
 
-	// Save the seen imports in a slice
+	// Save the seen imports in a map (Use a map for O(1) lookup)
 	// to detect circular imports
-	var seenImports []string
+	seenImports := make(map[string]int)
+
+	// Processed stdlib imports (Use a map for O(1) lookup)
+	stdImports := make(map[string]int)
 
 	// Process imports
 	for util.AnyMatch(result, containsImports) {
@@ -193,26 +197,29 @@ func Lex(input string, file string) []token.Token {
 			// Remove the import statement
 			result = append(result[:i], result[i+3:]...)
 
-			// Check if we already have seen this import
-			if util.AnyMatch(seenImports, func(s string) bool {
-				return s == importPath
-			}) {
-				// Standard imports can't cause circular imports, skip
-				if isStd {
-					continue
-				}
+			if stdImports[importPath] == 1 {
+				// Already processed, skip
+				continue
+			}
 
+			// Check if we already have seen this import
+			_, circular := seenImports[importPath]
+
+			if circular {
 				// Build the import chain to print
 				var importChain []string
 
 				// Add the message to the chain so it also gets printed
 				importChain = append(importChain, "File "+unit.GetFile()+" depends on its own: ")
 
-				for spaces, _import := range seenImports {
+				spaces := 0
+				for key := range maps.Keys(seenImports) {
 					importChain = append(
 						importChain,
-						strings.Repeat(" ", spaces)+_import,
+						strings.Repeat(" ", spaces)+key,
 					)
+
+					spaces += 2
 				}
 
 				logger.TokenError(
@@ -240,8 +247,10 @@ func Lex(input string, file string) []token.Token {
 			// Insert the import tokens to the end of the result
 			result = append(result, importTokens...)
 
-			if !isStd {
-				seenImports = append(seenImports, importPath)
+			if isStd {
+				stdImports[importPath] = 1
+			} else {
+				seenImports[importPath] = 1
 			}
 		}
 	}
