@@ -1,13 +1,13 @@
 package analyzer
 
 import (
-	"zyro/code"
-	"zyro/code/mod"
-	"zyro/code/types"
-	"zyro/code/wrapper"
-	"zyro/logger"
-	"zyro/stack"
-	"zyro/token"
+	"fluent/code"
+	"fluent/code/mod"
+	"fluent/code/types"
+	"fluent/code/wrapper"
+	"fluent/logger"
+	"fluent/stack"
+	"fluent/token"
 )
 
 // AnalyzeType analyzes the given type and makes sure it matches the expected type
@@ -15,8 +15,8 @@ func AnalyzeType(
 	statement []token.Token,
 	variables *stack.Stack,
 	functions *map[string]map[string]*code.Function,
-	mods *map[string]map[string]*mod.ZyroMod,
-	expected wrapper.ZyroObject,
+	mods *map[string]map[string]*mod.FluentMod,
+	expected wrapper.FluentObject,
 	enforceGenericsMatch bool,
 ) {
 	expectedTypeWrapper := expected.GetType()

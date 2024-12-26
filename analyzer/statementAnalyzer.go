@@ -1,15 +1,15 @@
 package analyzer
 
 import (
-	"zyro/code"
-	"zyro/code/mod"
-	"zyro/code/types"
-	"zyro/code/wrapper"
-	"zyro/logger"
-	"zyro/stack"
-	"zyro/token"
-	"zyro/tokenUtil/converter"
-	"zyro/tokenUtil/splitter"
+	"fluent/code"
+	"fluent/code/mod"
+	"fluent/code/types"
+	"fluent/code/wrapper"
+	"fluent/logger"
+	"fluent/stack"
+	"fluent/token"
+	"fluent/tokenUtil/converter"
+	"fluent/tokenUtil/splitter"
 )
 
 // AnalyzeStatement analyzes the given statement
@@ -19,16 +19,16 @@ func AnalyzeStatement(
 	statement []token.Token,
 	variables *stack.Stack,
 	functions *map[string]map[string]*code.Function,
-	mods *map[string]map[string]*mod.ZyroMod,
+	mods *map[string]map[string]*mod.FluentMod,
 	inferToType wrapper.TypeWrapper,
-) wrapper.ZyroObject {
+) wrapper.FluentObject {
 	// Used to know what to check for
 	isArithmetic := false
 	isFunCall := false
 
 	// Used to check property access
 	// i.e.: object.property
-	lastValue := wrapper.NewZyroObject(dummyNothingType, nil)
+	lastValue := wrapper.NewFluentObject(dummyNothingType, nil)
 	startAt := 0
 
 	firstToken := statement[0]

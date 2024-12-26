@@ -1,21 +1,21 @@
 package wrapper
 
 import (
+	"fluent/code/types"
+	"fluent/logger"
+	"fluent/token"
+	"fluent/tokenUtil/inferrer"
+	"fluent/tokenUtil/splitter"
 	"strings"
-	"zyro/code/types"
-	"zyro/logger"
-	"zyro/token"
-	"zyro/tokenUtil/inferrer"
-	"zyro/tokenUtil/splitter"
 )
 
 // TypeWrapper is a wrapper for a data type
 // based on the given tokens
 // For example: Result<str, bool>
 type TypeWrapper struct {
-	baseType   string               // Result
-	parameters []TypeWrapper        // [str, bool]
-	objType    types.ZyroObjectType // The object type
+	baseType   string                 // Result
+	parameters []TypeWrapper          // [str, bool]
+	objType    types.FluentObjectType // The object type
 }
 
 // ForceNewTypeWrapper creates a new TypeWrapper
@@ -23,7 +23,7 @@ type TypeWrapper struct {
 func ForceNewTypeWrapper(
 	baseType string,
 	parameters []TypeWrapper,
-	objType types.ZyroObjectType,
+	objType types.FluentObjectType,
 ) TypeWrapper {
 	return TypeWrapper{
 		baseType:   baseType,
@@ -99,7 +99,7 @@ func (tw *TypeWrapper) GetParameters() []TypeWrapper {
 }
 
 // GetType returns the object type
-func (tw *TypeWrapper) GetType() types.ZyroObjectType {
+func (tw *TypeWrapper) GetType() types.FluentObjectType {
 	return tw.objType
 }
 

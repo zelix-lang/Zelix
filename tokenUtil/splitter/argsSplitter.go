@@ -1,7 +1,7 @@
 package splitter
 
 import (
-	"zyro/token"
+	"fluent/token"
 )
 
 // SplitArgs splits the arguments into a slice of slices of tokens

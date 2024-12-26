@@ -1,7 +1,7 @@
 package marshall
 
 import (
-	"zyro/token"
+	"fluent/token"
 )
 
 // TokenTypeToString converts a token type to a string

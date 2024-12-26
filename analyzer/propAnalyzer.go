@@ -1,14 +1,14 @@
 package analyzer
 
 import (
-	"zyro/code"
-	"zyro/code/mod"
-	"zyro/code/types"
-	"zyro/code/wrapper"
-	"zyro/logger"
-	"zyro/stack"
-	"zyro/token"
-	"zyro/tokenUtil/splitter"
+	"fluent/code"
+	"fluent/code/mod"
+	"fluent/code/types"
+	"fluent/code/wrapper"
+	"fluent/logger"
+	"fluent/stack"
+	"fluent/token"
+	"fluent/tokenUtil/splitter"
 )
 
 // AnalyzePropAccess analyzes the given property access
@@ -16,8 +16,8 @@ func AnalyzePropAccess(
 	prop []token.Token,
 	variables *stack.Stack,
 	functions *map[string]map[string]*code.Function,
-	mods *map[string]map[string]*mod.ZyroMod,
-	lastValue *wrapper.ZyroObject,
+	mods *map[string]map[string]*mod.FluentMod,
+	lastValue *wrapper.FluentObject,
 	isFunCall *bool,
 	isAssignment bool,
 ) {
@@ -36,7 +36,7 @@ func AnalyzePropAccess(
 		)
 	}
 
-	module := lastValue.GetValue().(*mod.ZyroMod)
+	module := lastValue.GetValue().(*mod.FluentMod)
 	propName := prop[0]
 
 	// Only identifiers are allowed as property names
@@ -129,7 +129,7 @@ func AnalyzePropAccess(
 
 	argsRaw := prop[:len(prop)-1]
 	argsSplit, _ := splitter.SplitArgs(argsRaw)
-	funArgs := make([]wrapper.ZyroObject, len(argsSplit))
+	funArgs := make([]wrapper.FluentObject, len(argsSplit))
 
 	for i, arg := range argsSplit {
 		funArgs[i] = AnalyzeStatement(

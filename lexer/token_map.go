@@ -1,7 +1,7 @@
 package lexer
 
 import (
-	"zyro/token"
+	"fluent/token"
 )
 
 var knownTokens = map[string]token.Type{

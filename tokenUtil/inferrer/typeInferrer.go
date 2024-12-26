@@ -1,13 +1,13 @@
 package inferrer
 
 import (
-	"zyro/code/types"
-	"zyro/logger"
-	"zyro/token"
+	"fluent/code/types"
+	"fluent/logger"
+	"fluent/token"
 )
 
 // InferFromRawType infers a token's type
-func InferFromRawType(unit token.Token) types.ZyroObjectType {
+func InferFromRawType(unit token.Token) types.FluentObjectType {
 	tokenType := unit.GetType()
 
 	switch tokenType {

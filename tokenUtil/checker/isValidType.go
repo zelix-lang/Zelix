@@ -1,7 +1,7 @@
 package checker
 
 import (
-	"zyro/token"
+	"fluent/token"
 )
 
 // IsValidType checks if a token is a valid data type

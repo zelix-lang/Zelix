@@ -1,9 +1,9 @@
 package code
 
 import (
+	"fluent/code/wrapper"
+	"fluent/token"
 	"time"
-	"zyro/code/wrapper"
-	"zyro/token"
 )
 
 // Function represents a function in the abstract syntax tree (AST).

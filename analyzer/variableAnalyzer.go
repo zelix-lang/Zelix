@@ -1,17 +1,18 @@
 package analyzer
 
 import (
-	"zyro/ansi"
-	"zyro/ast"
-	"zyro/code"
-	"zyro/code/mod"
-	"zyro/code/types"
-	"zyro/code/wrapper"
-	"zyro/logger"
-	"zyro/stack"
-	"zyro/token"
-	"zyro/tokenUtil/checker"
-	"zyro/tokenUtil/splitter"
+	"fluent/ansi"
+	"fluent/ast"
+	"fluent/code"
+	"fluent/code/mod"
+	"fluent/code/types"
+	"fluent/code/wrapper"
+	"fluent/logger"
+	"fluent/stack"
+	"fluent/token"
+	"fluent/tokenUtil/checker"
+	"fluent/tokenUtil/splitter"
+	"strconv"
 )
 
 // AnalyzeVariableDeclaration analyzes the declaration of a variable
@@ -19,7 +20,7 @@ func AnalyzeVariableDeclaration(
 	statement []token.Token,
 	variables *stack.Stack,
 	functions *map[string]map[string]*code.Function,
-	mods *map[string]map[string]*mod.ZyroMod,
+	mods *map[string]map[string]*mod.FluentMod,
 	constant bool,
 ) {
 	if len(statement) < 5 {
@@ -38,7 +39,7 @@ func AnalyzeVariableDeclaration(
 		logger.TokenWarning(
 			varName,
 			"Variable name is not in snake_case",
-			"Zyro uses snake_case for variable names",
+			"Fluent uses snake_case for variable names",
 			"Check "+ansi.Colorize("yellow", "[U-001]")+" in the style guide",
 		)
 	}
@@ -54,9 +55,9 @@ func AnalyzeVariableDeclaration(
 
 	// Check if the variable is already declared
 	_, varFound := variables.Load(varName.GetValue())
-	_, funFound, _ := ast.LocateFunction(*functions, varName.GetFile(), varName.GetValue())
+	fun, funFound, sameFile := ast.LocateFunction(*functions, varName.GetFile(), varName.GetValue())
 
-	if varFound || funFound {
+	if varFound || (funFound && (fun.IsPublic() || sameFile)) {
 		logger.TokenError(
 			varName,
 			"Redefinition of value '"+varName.GetValue()+"'",
@@ -96,7 +97,7 @@ func AnalyzeVariableDeclaration(
 
 	// Check if the type is valid
 	expectedWrapper := wrapper.NewTypeWrapper(varTypeTokens, varTypeTokens[0])
-	var expectedType wrapper.ZyroObject
+	var expectedType wrapper.FluentObject
 	isMod := expectedWrapper.GetType() == types.ModType
 	wasTypeInferred := false
 
@@ -119,7 +120,16 @@ func AnalyzeVariableDeclaration(
 			)
 		}
 
-		expectedType = wrapper.NewZyroObject(expectedWrapper, module)
+		if len(module.GetTemplates()) != len(expectedWrapper.GetParameters()) {
+			logger.TokenError(
+				varTypeTokens[0],
+				"Invalid number of templates",
+				"The module "+varTypeTokens[0].GetValue()+" expects "+strconv.Itoa(len(module.GetTemplates()))+" templates",
+				"Add the required templates",
+			)
+		}
+
+		expectedType = wrapper.NewFluentObject(expectedWrapper, module)
 		wasTypeInferred = true
 	} else {
 		if !checker.IsValidType(varTypeTokens[0].GetType()) {
@@ -130,7 +140,7 @@ func AnalyzeVariableDeclaration(
 			)
 		}
 
-		expectedType = wrapper.NewZyroObject(expectedWrapper, nil)
+		expectedType = wrapper.NewFluentObject(expectedWrapper, nil)
 		wasTypeInferred = false
 	}
 

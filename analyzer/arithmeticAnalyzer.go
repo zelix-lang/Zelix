@@ -1,12 +1,12 @@
 package analyzer
 
 import (
-	"zyro/code"
-	"zyro/code/mod"
-	"zyro/code/wrapper"
-	"zyro/logger"
-	"zyro/stack"
-	"zyro/token"
+	"fluent/code"
+	"fluent/code/mod"
+	"fluent/code/wrapper"
+	"fluent/logger"
+	"fluent/stack"
+	"fluent/token"
 )
 
 var arithmeticOperators = map[token.Type]struct{}{
@@ -42,7 +42,7 @@ func checkStatement(
 	currentIndex int,
 	variables *stack.Stack,
 	functions *map[string]map[string]*code.Function,
-	mods *map[string]map[string]*mod.ZyroMod,
+	mods *map[string]map[string]*mod.FluentMod,
 ) {
 	*extractingIdentifier = false
 
@@ -57,7 +57,7 @@ func checkStatement(
 	}
 
 	// Analyze the last statement
-	dummyObj := wrapper.NewZyroObject(
+	dummyObj := wrapper.NewFluentObject(
 		dummyNothingType,
 		nil,
 	)
@@ -94,7 +94,7 @@ func AnalyzeArithmetic(
 	statement []token.Token,
 	variables *stack.Stack,
 	functions *map[string]map[string]*code.Function,
-	mods *map[string]map[string]*mod.ZyroMod,
+	mods *map[string]map[string]*mod.FluentMod,
 ) {
 	statementLen := len(statement)
 	if statementLen == 0 {

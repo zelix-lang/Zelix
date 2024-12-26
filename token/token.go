@@ -1,9 +1,9 @@
 package token
 
 import (
+	"fluent/util"
 	"strconv"
 	"strings"
-	"zyro/util"
 )
 
 // Token represents a small piece of the source code

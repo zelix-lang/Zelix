@@ -1,25 +1,25 @@
 package analyzer
 
 import (
-	"zyro/code"
-	"zyro/code/mod"
-	"zyro/code/wrapper"
-	"zyro/stack"
-	"zyro/token"
+	"fluent/code"
+	"fluent/code/mod"
+	"fluent/code/wrapper"
+	"fluent/stack"
+	"fluent/token"
 )
 
 // AnalyzeMethod analyzes a method call
 func AnalyzeMethod(
 	method *code.Function,
 	functions *map[string]map[string]*code.Function,
-	mods *map[string]map[string]*mod.ZyroMod,
-	lastValue *wrapper.ZyroObject,
+	mods *map[string]map[string]*mod.FluentMod,
+	lastValue *wrapper.FluentObject,
 	trace token.Token,
 	checkArgs bool,
-	args ...wrapper.ZyroObject,
-) wrapper.ZyroObject {
+	args ...wrapper.FluentObject,
+) wrapper.FluentObject {
 	variables := stack.NewStack()
-	currentMod := lastValue.GetValue().(*mod.ZyroMod)
+	currentMod := lastValue.GetValue().(*mod.FluentMod)
 	varTemplates := currentMod.GetVarDeclarations()
 
 	for _, template := range varTemplates {

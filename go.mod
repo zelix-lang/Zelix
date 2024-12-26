@@ -1,4 +1,4 @@
-module zyro
+module fluent
 
 go 1.23
 

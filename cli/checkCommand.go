@@ -1,20 +1,20 @@
 package cli
 
 import (
+	"fluent/analyzer"
+	"fluent/ansi"
+	"fluent/ast"
+	"fluent/lexer"
+	"fluent/logger"
+	"fluent/util"
 	"fmt"
 	"github.com/urfave/cli/v2"
 	"os"
 	"time"
-	"zyro/analyzer"
-	"zyro/ansi"
-	"zyro/ast"
-	"zyro/lexer"
-	"zyro/logger"
-	"zyro/util"
 )
 
-// CheckCommand represents the check command of the Zyro CLI
-// it checks a zyro/ file
+// CheckCommand represents the check command of the Fluent CLI
+// it checks a fluent/ file
 func CheckCommand(context *cli.Context) (*ast.FileCode, string) {
 	// Get the file path
 	filePath := context.Args().First()
@@ -25,7 +25,7 @@ func CheckCommand(context *cli.Context) (*ast.FileCode, string) {
 		logger.Error("Empty file path")
 		logger.Help(
 			"Provide a file path after the run command",
-			"For example: "+ansi.Colorize("green_bright_bold", "zyro/ r file.zyro/"),
+			"For example: "+ansi.Colorize("green_bright_bold", "fluent/ r file.fluent/"),
 		)
 
 		os.Exit(1)

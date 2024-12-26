@@ -1,8 +1,8 @@
 package splitter
 
 import (
-	"zyro/logger"
-	"zyro/token"
+	"fluent/logger"
+	"fluent/token"
 )
 
 // SplitTokens splits the given tokens

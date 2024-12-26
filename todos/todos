@@ -1,4 +1,4 @@
-TO-DOs of The Zyro Project
+TO-DOs of The Fluent Project
 -------------------------------------
 The following list contains the
 pending tasks that need to be done
@@ -15,6 +15,6 @@ specific criteria.
 (COMPLETE) 5. Implement type-checking for variables that have modules as types
 (COMPLETE) 6. Implement type-checking for modules variables
 (CURRENTLY IMPLEMENTING) 7. Implement generic types for modules
-8. Start creating the Zyro Custom IR builder
-9. Write a Zyro Custom IR interpreter
-10. Write The Zyro Programming Language Documentation
+8. Start creating the Fluent Custom IR builder
+9. Write a Fluent Custom IR interpreter
+10. Write The Fluent Programming Language Documentation

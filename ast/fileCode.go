@@ -1,10 +1,10 @@
 package ast
 
 import (
-	"zyro/code"
-	"zyro/code/mod"
-	"zyro/logger"
-	"zyro/token"
+	"fluent/code"
+	"fluent/code/mod"
+	"fluent/logger"
+	"fluent/token"
 )
 
 // FileCode is a representation of the file source code
@@ -13,14 +13,14 @@ type FileCode struct {
 	// and of all the imported files.
 	functions map[string]map[string]*code.Function
 	// modules holds the defined modules across all files
-	modules map[string]map[string]*mod.ZyroMod
+	modules map[string]map[string]*mod.FluentMod
 }
 
 // NewFileCode creates a new FileCode object
 func NewFileCode() FileCode {
 	return FileCode{
 		functions: make(map[string]map[string]*code.Function),
-		modules:   make(map[string]map[string]*mod.ZyroMod),
+		modules:   make(map[string]map[string]*mod.FluentMod),
 	}
 }
 
@@ -96,15 +96,15 @@ func LocateFunction(
 }
 
 // GetModules returns the modules of the FileCode
-func (fc *FileCode) GetModules() *map[string]map[string]*mod.ZyroMod {
+func (fc *FileCode) GetModules() *map[string]map[string]*mod.FluentMod {
 	return &fc.modules
 }
 
 // AddModule adds a new module to the FileCode
-func (fc *FileCode) AddModule(file string, name string, module *mod.ZyroMod, trace token.Token) {
+func (fc *FileCode) AddModule(file string, name string, module *mod.FluentMod, trace token.Token) {
 	// Ensure the file exists in the map
 	if _, ok := fc.modules[file]; !ok {
-		fc.modules[file] = make(map[string]*mod.ZyroMod)
+		fc.modules[file] = make(map[string]*mod.FluentMod)
 	} else {
 		// Check if the module is already defined
 		if _, ok := fc.modules[file][name]; ok {

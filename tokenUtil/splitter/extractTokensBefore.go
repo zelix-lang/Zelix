@@ -1,9 +1,9 @@
 package splitter
 
 import (
-	"zyro/logger"
-	"zyro/token"
-	"zyro/tokenUtil/marshall"
+	"fluent/logger"
+	"fluent/token"
+	"fluent/tokenUtil/marshall"
 )
 
 // ExtractTokensBefore returns the tokens before the first occurrence of the delimiter

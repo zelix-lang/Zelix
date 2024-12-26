@@ -1,9 +1,9 @@
 package types
 
-type ZyroObjectType int
+type FluentObjectType int
 
 const (
-	BooleanType ZyroObjectType = iota
+	BooleanType FluentObjectType = iota
 	StringType
 	IntType
 	DecimalType

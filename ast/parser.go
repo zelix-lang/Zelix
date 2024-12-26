@@ -1,14 +1,14 @@
 package ast
 
 import (
+	"fluent/code"
+	"fluent/code/mod"
+	"fluent/code/wrapper"
+	"fluent/logger"
+	"fluent/token"
+	"fluent/tokenUtil/splitter"
 	"os"
 	"strings"
-	"zyro/code"
-	"zyro/code/mod"
-	"zyro/code/wrapper"
-	"zyro/logger"
-	"zyro/token"
-	"zyro/tokenUtil/splitter"
 )
 
 // The standard library's path
@@ -431,9 +431,9 @@ func Parse(tokens []token.Token, allowMods bool, allowInlineVars bool) *FileCode
 							)
 						}
 
-						// Wrap the functions inside a ZyroMod
-						module := mod.NewZyroMod(
-							make(map[string]*wrapper.ZyroObject),
+						// Wrap the functions inside a FluentMod
+						module := mod.NewFluentMod(
+							make(map[string]*wrapper.FluentObject),
 							publicFunctions,
 							privateFunctions,
 							currentFunctionName,

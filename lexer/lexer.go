@@ -1,14 +1,14 @@
 package lexer
 
 import (
+	"fluent/logger"
+	"fluent/token"
+	"fluent/util"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
-	"zyro/logger"
-	"zyro/token"
-	"zyro/util"
 )
 
 // Punctuation characters are meant to be separated tokens
@@ -40,8 +40,8 @@ func extractImportPath(
 
 	if strings.HasPrefix(importPathRaw, "@std") {
 		// Replace the import path with the standard library path
-		// and add the .zyro/ extension
-		importPathRaw = strings.Replace(importPathRaw, "@std", stdPath, 1) + ".zyro"
+		// and add the .fluent/ extension
+		importPathRaw = strings.Replace(importPathRaw, "@std", stdPath, 1) + ".fluent"
 		isStd = true
 	}
 

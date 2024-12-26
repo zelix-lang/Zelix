@@ -1,17 +1,17 @@
 package analyzer
 
 import (
+	"fluent/code"
+	"fluent/code/mod"
+	"fluent/code/types"
+	"fluent/code/wrapper"
+	"fluent/logger"
+	"fluent/stack"
+	"fluent/token"
+	"fluent/tokenUtil/splitter"
+	"fluent/util"
 	"strconv"
 	"time"
-	"zyro/code"
-	"zyro/code/mod"
-	"zyro/code/types"
-	"zyro/code/wrapper"
-	"zyro/logger"
-	"zyro/stack"
-	"zyro/token"
-	"zyro/tokenUtil/splitter"
-	"zyro/util"
 )
 
 // checkParamType checks if the given parameter type is valid
@@ -33,12 +33,12 @@ func checkParamType(
 func AnalyzeFun(
 	function *code.Function,
 	functions *map[string]map[string]*code.Function,
-	mods *map[string]map[string]*mod.ZyroMod,
+	mods *map[string]map[string]*mod.FluentMod,
 	trace token.Token,
 	checkArgs bool,
 	variables *stack.Stack,
-	args ...wrapper.ZyroObject,
-) wrapper.ZyroObject {
+	args ...wrapper.FluentObject,
+) wrapper.FluentObject {
 	function.SetTimesCalled(function.GetTimesCalled() + 1)
 	function.SetLastCalled(time.Now())
 
@@ -92,7 +92,7 @@ func AnalyzeFun(
 		for _, param := range argsKeys {
 			expected := actualParams[param]
 			checkParamType(expected, trace)
-			dummyObj := wrapper.NewZyroObject(expected, nil)
+			dummyObj := wrapper.NewFluentObject(expected, nil)
 
 			variables.Append(param, dummyObj, false)
 		}
@@ -101,7 +101,7 @@ func AnalyzeFun(
 	// Beyond this point, standard functions no longer
 	// need to be evaluated
 	if function.IsStd() {
-		return wrapper.NewZyroObject(dummyNothingType, nil)
+		return wrapper.NewFluentObject(dummyNothingType, nil)
 	}
 
 	// Used to skip tokens
@@ -150,5 +150,5 @@ func AnalyzeFun(
 
 	// Destroy the scope
 	variables.DestroyScope()
-	return wrapper.NewZyroObject(dummyNothingType, nil)
+	return wrapper.NewFluentObject(dummyNothingType, nil)
 }

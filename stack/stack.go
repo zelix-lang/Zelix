@@ -1,35 +1,35 @@
 package stack
 
 import (
-	"zyro/code/wrapper"
+	"fluent/code/wrapper"
 )
 
 // Stack represents a stack of variables for a function
 // it is concurrent by design
 type Stack struct {
-	internal []map[string]*wrapper.ZyroVariable
+	internal []map[string]*wrapper.FluentVariable
 }
 
 // NewStack creates a new stack
 func NewStack() *Stack {
 	return &Stack{
-		internal: make([]map[string]*wrapper.ZyroVariable, 0),
+		internal: make([]map[string]*wrapper.FluentVariable, 0),
 	}
 }
 
 // CreateScope creates a new scope in the stack
 func (s *Stack) CreateScope() {
-	s.internal = append(s.internal, make(map[string]*wrapper.ZyroVariable))
+	s.internal = append(s.internal, make(map[string]*wrapper.FluentVariable))
 }
 
 // Append appends a variable to the current scope
-func (s *Stack) Append(key string, value wrapper.ZyroObject, constant bool) {
+func (s *Stack) Append(key string, value wrapper.FluentObject, constant bool) {
 	if len(s.internal) == 0 {
 		s.CreateScope()
 	}
 
 	scope := s.internal[len(s.internal)-1]
-	newVar := wrapper.NewZyroVariable(constant, value)
+	newVar := wrapper.NewFluentVariable(constant, value)
 	scope[key] = &newVar
 
 	// Update the scope in the stack
@@ -46,7 +46,7 @@ func (s *Stack) DestroyScope() {
 }
 
 // Load retrieves a variable from the stack
-func (s *Stack) Load(key string) (*wrapper.ZyroVariable, bool) {
+func (s *Stack) Load(key string) (*wrapper.FluentVariable, bool) {
 	for _, scope := range s.internal {
 		value, found := scope[key]
 
@@ -56,6 +56,6 @@ func (s *Stack) Load(key string) (*wrapper.ZyroVariable, bool) {
 
 	}
 
-	dummyVar := wrapper.NewZyroVariable(false, wrapper.ZyroObject{})
+	dummyVar := wrapper.NewFluentVariable(false, wrapper.FluentObject{})
 	return &dummyVar, false
 }

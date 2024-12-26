@@ -1,15 +1,15 @@
 package analyzer
 
 import (
-	"zyro/ast"
-	"zyro/code"
-	"zyro/code/mod"
-	"zyro/code/types"
-	"zyro/code/wrapper"
-	"zyro/logger"
-	"zyro/stack"
-	"zyro/token"
-	"zyro/tokenUtil/splitter"
+	"fluent/ast"
+	"fluent/code"
+	"fluent/code/mod"
+	"fluent/code/types"
+	"fluent/code/wrapper"
+	"fluent/logger"
+	"fluent/stack"
+	"fluent/token"
+	"fluent/tokenUtil/splitter"
 )
 
 // AnalyzeIdentifier analyzes the given identifier
@@ -18,9 +18,9 @@ func AnalyzeIdentifier(
 	statement []token.Token,
 	variables *stack.Stack,
 	functions *map[string]map[string]*code.Function,
-	mods *map[string]map[string]*mod.ZyroMod,
+	mods *map[string]map[string]*mod.FluentMod,
 	startAt *int,
-	lastValue *wrapper.ZyroObject,
+	lastValue *wrapper.FluentObject,
 	isArithmetic *bool,
 	isFunCall *bool,
 ) {
@@ -74,7 +74,7 @@ func AnalyzeIdentifier(
 		// is also met, so no need to check it here
 
 		argumentsRaw, skipped := splitter.SplitArgs(call)
-		arguments := make([]wrapper.ZyroObject, len(argumentsRaw))
+		arguments := make([]wrapper.FluentObject, len(argumentsRaw))
 
 		for i, argument := range argumentsRaw {
 			argValue := AnalyzeStatement(

@@ -1,19 +1,19 @@
 package main
 
 import (
+	cli2 "fluent/cli"
 	"github.com/urfave/cli/v2"
 	"os"
-	cli2 "zyro/cli"
 )
 
 func main() {
 	app := &cli.App{
-		Name:  "zyro/",
+		Name:  "fluent/",
 		Usage: "A blazingly fast programming language",
 		Commands: []*cli.Command{
 			{
 				Name:    "run",
-				Usage:   "Runs a zyro/ file",
+				Usage:   "Runs a fluent/ file",
 				Aliases: []string{"r"},
 				Flags: []cli.Flag{
 					&cli.BoolFlag{
@@ -30,7 +30,7 @@ func main() {
 			},
 			{
 				Name:    "check",
-				Usage:   "Checks a zyro/ file",
+				Usage:   "Checks a fluent/ file",
 				Aliases: []string{"c"},
 				Action: func(context *cli.Context) error {
 					cli2.CheckCommand(context)

@@ -1,9 +1,9 @@
 package logger
 
 import (
+	"fluent/ansi"
+	"fluent/token"
 	"os"
-	"zyro/ansi"
-	"zyro/token"
 )
 
 var logLevel = ansi.Colorize("cyan_bright_bold", "LOG |")

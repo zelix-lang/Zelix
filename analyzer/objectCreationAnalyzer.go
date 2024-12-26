@@ -1,22 +1,22 @@
 package analyzer
 
 import (
-	"zyro/code"
-	"zyro/code/mod"
-	"zyro/code/wrapper"
-	"zyro/logger"
-	"zyro/stack"
-	"zyro/token"
-	"zyro/tokenUtil/splitter"
+	"fluent/code"
+	"fluent/code/mod"
+	"fluent/code/wrapper"
+	"fluent/logger"
+	"fluent/stack"
+	"fluent/token"
+	"fluent/tokenUtil/splitter"
 )
 
 func AnalyzeObjectCreation(
 	statement []token.Token,
 	variables *stack.Stack,
 	functions *map[string]map[string]*code.Function,
-	mods *map[string]map[string]*mod.ZyroMod,
+	mods *map[string]map[string]*mod.FluentMod,
 	startAt *int,
-	lastValue *wrapper.ZyroObject,
+	lastValue *wrapper.FluentObject,
 	inferToType wrapper.TypeWrapper,
 ) {
 	// The statement should have at least 4 tokens:
@@ -119,7 +119,7 @@ func AnalyzeObjectCreation(
 		)
 	}
 
-	*lastValue = wrapper.NewZyroObject(
+	*lastValue = wrapper.NewFluentObject(
 		module.BuildDummyWrapper(),
 		module,
 	)
@@ -151,7 +151,7 @@ func AnalyzeObjectCreation(
 	)
 
 	*startAt += len(argsRaw) + 2 + lookForParenAt
-	args := make([]wrapper.ZyroObject, len(argsRaw))
+	args := make([]wrapper.FluentObject, len(argsRaw))
 	for i, arg := range argsRaw {
 		args[i] = AnalyzeStatement(
 			arg,

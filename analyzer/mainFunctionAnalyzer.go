@@ -1,9 +1,9 @@
 package analyzer
 
 import (
-	"zyro/code"
-	"zyro/code/types"
-	"zyro/logger"
+	"fluent/code"
+	"fluent/code/types"
+	"fluent/logger"
 )
 
 // AnalyzeMainFunc analyzes the main function

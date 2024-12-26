@@ -1,14 +1,14 @@
 package analyzer
 
 import (
+	"fluent/ansi"
+	"fluent/ast"
+	"fluent/code/types"
+	"fluent/code/wrapper"
+	"fluent/logger"
+	"fluent/stack"
 	"os"
 	"regexp"
-	"zyro/ansi"
-	"zyro/ast"
-	"zyro/code/types"
-	"zyro/code/wrapper"
-	"zyro/logger"
-	"zyro/stack"
 )
 
 // A regex to match camelCase variable names
@@ -63,7 +63,7 @@ func AnalyzeFileCode(code *ast.FileCode, source string) {
 				logger.TokenWarning(
 					function.GetTrace(),
 					"Function name is not in snake_case",
-					"Zyro uses snake_case for functions' names",
+					"Fluent uses snake_case for functions' names",
 					"Check "+ansi.Colorize("yellow", "[U-002]")+" in the style guide",
 				)
 			}

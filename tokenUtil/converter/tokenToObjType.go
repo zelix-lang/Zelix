@@ -1,11 +1,11 @@
 package converter
 
 import (
-	"zyro/code/types"
-	"zyro/code/wrapper"
-	"zyro/logger"
-	"zyro/stack"
-	"zyro/token"
+	"fluent/code/types"
+	"fluent/code/wrapper"
+	"fluent/logger"
+	"fluent/stack"
+	"fluent/token"
 )
 
 var dummyBoolType = wrapper.ForceNewTypeWrapper(
@@ -38,22 +38,22 @@ var dummyDecimalType = wrapper.ForceNewTypeWrapper(
 	types.DecimalType,
 )
 
-// ToObj converts a token to a ZyroObject
+// ToObj converts a token to a FluentObject
 func ToObj(
 	unit token.Token,
 	variables *stack.Stack,
-) wrapper.ZyroObject {
+) wrapper.FluentObject {
 	tokenType := unit.GetType()
 
 	switch tokenType {
 	case token.BoolLiteral:
-		return wrapper.NewZyroObject(dummyBoolType, "")
+		return wrapper.NewFluentObject(dummyBoolType, "")
 	case token.StringLiteral:
-		return wrapper.NewZyroObject(dummyStringType, "")
+		return wrapper.NewFluentObject(dummyStringType, "")
 	case token.NumLiteral:
-		return wrapper.NewZyroObject(dummyIntType, "")
+		return wrapper.NewFluentObject(dummyIntType, "")
 	case token.DecimalLiteral:
-		return wrapper.NewZyroObject(dummyDecimalType, "")
+		return wrapper.NewFluentObject(dummyDecimalType, "")
 	case token.Identifier:
 		variable, found := variables.Load(unit.GetValue())
 
@@ -74,6 +74,6 @@ func ToObj(
 			"Expected an identifier, a literal or a variable",
 		)
 
-		return wrapper.NewZyroObject(dummyNothingType, "")
+		return wrapper.NewFluentObject(dummyNothingType, "")
 	}
 }

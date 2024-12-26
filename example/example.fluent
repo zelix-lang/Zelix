@@ -17,7 +17,7 @@ mod Bcd<C, D> {
 }
 
 fun main() {
-    let my_instance : Bcd<num, bool> = new Bcd<str, bool>();
+    let my_instance : Bcd<A, B> = new Bcd<A, B>();
 
     print("Hello, World!");
 }
