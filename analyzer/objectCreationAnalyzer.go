@@ -19,6 +19,8 @@ func AnalyzeObjectCreation(
 	lastValue *wrapper.FluentObject,
 	inferToType wrapper.TypeWrapper,
 ) {
+	finalType := inferToType
+
 	// The statement should have at least 4 tokens:
 	// new MyObject()
 	if len(statement) < 4 {
@@ -89,12 +91,12 @@ func AnalyzeObjectCreation(
 			)
 
 			// len(templatesRaw) == 0 is impossible at this point
-			inferToType = wrapper.NewTypeWrapper(
+			finalType = wrapper.NewTypeWrapper(
 				templatesRaw,
 				templatesRaw[0],
 			)
 
-			AnalyzeGeneric(inferToType, mods, templatesRaw[0])
+			AnalyzeGeneric(finalType, mods, templatesRaw[0])
 			lookForParenAt = len(templatesRaw) + 1
 		}
 
@@ -159,6 +161,15 @@ func AnalyzeObjectCreation(
 			functions,
 			mods,
 			dummyNothingType,
+		)
+	}
+
+	if !finalType.Compare(inferToType) {
+		logger.TokenError(
+			modName,
+			"Invalid object creation",
+			"The object creation does not match the expected type",
+			"Check the object creation",
 		)
 	}
 
