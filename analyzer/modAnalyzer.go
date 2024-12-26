@@ -6,7 +6,7 @@ import (
 	"fluent/code/mod"
 	"fluent/code/wrapper"
 	"fluent/logger"
-	"fluent/stack"
+	"fluent/token"
 	"regexp"
 )
 
@@ -27,10 +27,20 @@ func AnalyzeMod(
 		)
 	}
 
-	dummyStack := stack.NewStack()
-	// Check for variables redeclaration
-	for _, tokens := range mod.GetVarDeclarations() {
-		AnalyzeVariableDeclaration(tokens[1:], dummyStack, functions, mods, false)
+	if !mod.IsInitialized() {
+		variables := mod.GetVariables()
+		varDeclarations := mod.GetVarDeclarations()
+
+		// Construct the module's variables stack
+		for _, varDecl := range varDeclarations {
+			AnalyzeVariableDeclaration(
+				varDecl[1:],
+				variables,
+				functions,
+				mods,
+				varDecl[0].GetType() == token.Const,
+			)
+		}
 	}
 
 	// Analyze the mod's methods
