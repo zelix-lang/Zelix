@@ -29,7 +29,7 @@ var identifierRegex = regexp.MustCompile(`^[a-zA-Z_][a-zA-Z0-9_]*$`)
 var numberRegex = regexp.MustCompile(`^[0-9]+$`)
 
 // The standard library's path
-var stdPath = os.Getenv("ZYRO_STANDARD_PATH")
+var stdPath = os.Getenv("FLUENT_STANDARD_PATH")
 
 func extractImportPath(
 	result []token.Token,
