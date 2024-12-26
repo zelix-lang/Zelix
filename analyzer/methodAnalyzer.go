@@ -19,12 +19,7 @@ func AnalyzeMethod(
 	args ...wrapper.FluentObject,
 ) wrapper.FluentObject {
 	variables := stack.NewStack()
-	currentMod := lastValue.GetValue().(*mod.FluentMod)
-	varTemplates := currentMod.GetVarDeclarations()
 
-	for _, template := range varTemplates {
-		AnalyzeVariableDeclaration(template[1:], variables, functions, mods, template[0].GetType() == token.Const)
-	}
 	// Add "this" to the stack
 	variables.CreateScope()
 	variables.Append("this", *lastValue, true)
