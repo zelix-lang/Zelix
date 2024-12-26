@@ -146,6 +146,19 @@ func AnalyzeStatement(
 				"A function call cannot be assigned to a property",
 				"Check the statement",
 			)
+		} else if isAssignment {
+			// PropertyAnalyzer checks for reassignments
+			// of constant values, no need to check here
+			afterAssignment := remainingStatement[len(beforeAssignment)+2:]
+
+			AnalyzeType(
+				afterAssignment,
+				variables,
+				functions,
+				mods,
+				lastValue,
+				true,
+			)
 		}
 	case token.Assign:
 		if isLastValConstant {
