@@ -8,6 +8,35 @@ import (
 	"fluent/token"
 )
 
+// AnalyzeGenericInitialization analyzes the given generic initialization
+func AnalyzeGenericInitialization(
+	generics []wrapper.TypeWrapper,
+	mods *map[string]map[string]*mod.FluentMod,
+	trace token.Token,
+) {
+	for _, param := range generics {
+		baseType := param.GetType()
+
+		if baseType != types.ModType {
+			logger.TokenError(
+				trace,
+				"Invalid type",
+				"Generic Parameters cannot have",
+			)
+		}
+
+		baseName := param.GetBaseType()
+		module, found, sameFile := mod.FindMod(mods, baseName, trace.GetFile())
+		if found && (module.IsPublic() || sameFile) {
+			logger.TokenError(
+				trace,
+				"Invalid type",
+				"Generic parameters cannot be modules",
+			)
+		}
+	}
+}
+
 // AnalyzeGeneric analyzes the given generic templates
 func AnalyzeGeneric(
 	genericTemplate wrapper.TypeWrapper,

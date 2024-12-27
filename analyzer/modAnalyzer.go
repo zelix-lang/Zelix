@@ -27,6 +27,7 @@ func AnalyzeMod(
 		)
 	}
 
+	AnalyzeGenericInitialization(mod.GetTemplates(), mods, mod.GetTrace())
 	variables := mod.GetVariables()
 	varDeclarations := mod.GetVarDeclarations()
 
