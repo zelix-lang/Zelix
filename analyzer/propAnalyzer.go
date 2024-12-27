@@ -18,6 +18,7 @@ func AnalyzePropAccess(
 	lastValue *wrapper.FluentObject,
 	isFunCall *bool,
 	isAssignment bool,
+	inferToType wrapper.TypeWrapper,
 ) {
 	// No need to check for prop's length
 	// the token splitter ensures that
@@ -30,6 +31,15 @@ func AnalyzePropAccess(
 			prop[0],
 			"Illegal property access",
 			"Cannot access properties of a non-object",
+			"Check the object type",
+		)
+	}
+
+	if lastValue.GetValue() == nil {
+		logger.TokenError(
+			prop[0],
+			"Illegal property access",
+			"Cannot access properties of a generic object",
 			"Check the object type",
 		)
 	}
@@ -150,6 +160,7 @@ func AnalyzePropAccess(
 		lastValue,
 		propName,
 		true,
+		inferToType,
 		funArgs...,
 	)
 }

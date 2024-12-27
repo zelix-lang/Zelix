@@ -121,14 +121,60 @@ func AnalyzeObjectCreation(
 		)
 	}
 
+	generics := make(map[string]wrapper.TypeWrapper)
+	builtInMods := make(map[string]*mod.FluentMod)
+
+	for i, template := range module.GetTemplates() {
+		param := finalType.GetParameters()[i]
+		generics[template.GetBaseType()] = param
+		// Add dummy generics to the mods so things like:
+		// let a: T = abc;
+		// don't throw an error
+		newMod := mod.NewFluentMod(
+			make(map[string]*wrapper.FluentObject),
+			make(map[string]*code.Function),
+			make(map[string]*code.Function),
+			template.GetBaseType(),
+			modName.GetFile(),
+			make([][]token.Token, 0),
+			true,
+			modName,
+			[]wrapper.TypeWrapper{},
+		)
+
+		builtInMods[template.GetBaseType()] = &newMod
+	}
+
+	(*mods)["built-in"] = builtInMods
+	withoutGenerics := module.BuildWithoutGenerics(generics)
+
 	*lastValue = wrapper.NewFluentObject(
-		module.BuildDummyWrapper(),
-		module,
+		withoutGenerics.BuildDummyWrapper(),
+		&withoutGenerics,
 	)
 
 	// Check if the module has any constructor
-	constructor, constructorFound, constructorPublic := module.GetMethod(modName.GetValue())
+	constructor, constructorFound, constructorPublic := withoutGenerics.GetMethod(modName.GetValue())
+
+	// Parse the arguments
+	argsRange := statement[(lookForParenAt + 1) : len(statement)-1]
+	argsRaw := splitter.SplitTokens(
+		argsRange,
+		token.Comma,
+		token.OpenParen,
+		token.CloseParen,
+	)
+
 	if !constructorFound {
+		if len(argsRaw) > 0 {
+			logger.TokenError(
+				modName,
+				"Constructor "+modName.GetValue()+" not found",
+				"The constructor "+modName.GetValue()+" does not exist",
+				"Check the constructor name",
+			)
+		}
+
 		*startAt += lookForParenAt + 2
 		// No constructor found, return the module
 		return
@@ -143,16 +189,15 @@ func AnalyzeObjectCreation(
 		)
 	}
 
-	// Parse the arguments
-	argsRange := statement[(lookForParenAt + 1) : len(statement)-1]
-	argsRaw := splitter.SplitTokens(
-		argsRange,
-		token.Comma,
-		token.OpenParen,
-		token.CloseParen,
-	)
+	*startAt += 2 + lookForParenAt
+	for i, arg := range argsRaw {
+		*startAt += len(arg)
+		if i < len(argsRaw)-1 {
+			// +1 for the comma
+			*startAt += 1
+		}
+	}
 
-	*startAt += len(argsRaw) + 2 + lookForParenAt
 	args := make([]wrapper.FluentObject, len(argsRaw))
 	for i, arg := range argsRaw {
 		args[i] = AnalyzeStatement(
@@ -164,7 +209,7 @@ func AnalyzeObjectCreation(
 		)
 	}
 
-	if !finalType.Compare(inferToType) {
+	if !inferToType.Compare(dummyNothingType) && !finalType.Compare(inferToType) {
 		logger.TokenError(
 			modName,
 			"Invalid object creation",
@@ -180,7 +225,11 @@ func AnalyzeObjectCreation(
 		lastValue,
 		modName,
 		true,
+		finalType,
 		args...,
 	)
+
+	// Delete the built-in mods
+	delete(*mods, "built-in")
 
 }

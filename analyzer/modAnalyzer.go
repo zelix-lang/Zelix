@@ -27,20 +27,18 @@ func AnalyzeMod(
 		)
 	}
 
-	if !mod.IsInitialized() {
-		variables := mod.GetVariables()
-		varDeclarations := mod.GetVarDeclarations()
+	variables := mod.GetVariables()
+	varDeclarations := mod.GetVarDeclarations()
 
-		// Construct the module's variables stack
-		for _, varDecl := range varDeclarations {
-			AnalyzeVariableDeclaration(
-				varDecl[1:],
-				variables,
-				functions,
-				mods,
-				varDecl[0].GetType() == token.Const,
-			)
-		}
+	// Construct the module's variables stack
+	for _, varDecl := range varDeclarations {
+		AnalyzeVariableDeclaration(
+			varDecl[1:],
+			variables,
+			functions,
+			mods,
+			varDecl[0].GetType() == token.Const,
+		)
 	}
 
 	// Analyze the mod's methods
@@ -54,6 +52,7 @@ func AnalyzeMod(
 			&dummyObject,
 			mod.GetTrace(),
 			false,
+			mod.BuildDummyWrapper(),
 		)
 	}
 

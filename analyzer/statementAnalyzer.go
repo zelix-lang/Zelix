@@ -35,6 +35,12 @@ func AnalyzeStatement(
 	firstToken := statement[0]
 	firstTokenType := firstToken.GetType()
 
+	statementStr := ""
+
+	for _, v := range statement {
+		statementStr += v.GetValue()
+	}
+
 	beforeDot, _ := splitter.ExtractTokensBefore(
 		statement,
 		token.Dot,
@@ -136,6 +142,7 @@ func AnalyzeStatement(
 				&lastValue,
 				&isFunCall,
 				isAssignment,
+				inferToType,
 			)
 		}
 
@@ -157,7 +164,6 @@ func AnalyzeStatement(
 				functions,
 				mods,
 				lastValue,
-				true,
 			)
 		}
 	case token.Assign:
@@ -177,7 +183,6 @@ func AnalyzeStatement(
 			functions,
 			mods,
 			lastValue,
-			true,
 		)
 	default:
 		logger.TokenError(

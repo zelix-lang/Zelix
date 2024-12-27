@@ -12,7 +12,6 @@ import (
 	"fluent/token"
 	"fluent/tokenUtil/checker"
 	"fluent/tokenUtil/splitter"
-	"strconv"
 )
 
 // AnalyzeVariableDeclaration analyzes the declaration of a variable
@@ -95,66 +94,33 @@ func AnalyzeVariableDeclaration(
 		)
 	}
 
-	// Check if the type is valid
+	// Extract the type
 	expectedWrapper := wrapper.NewTypeWrapper(varTypeTokens, varTypeTokens[0])
-	var expectedType wrapper.FluentObject
+	var expectedType wrapper.TypeWrapper
 	isMod := expectedWrapper.GetType() == types.ModType
-	wasTypeInferred := false
 
-	if isMod {
-		module, found, sameFile := mod.FindMod(mods, varTypeTokens[0].GetValue(), varTypeTokens[0].GetFile())
-
-		if !found {
-			logger.TokenError(
-				varTypeTokens[0],
-				"Invalid type '"+varTypeTokens[0].GetValue()+"'",
-				"The module "+varTypeTokens[0].GetValue()+" was not found in the current scope",
-				"Import the module or define it in the current scope",
-			)
-		}
-
-		if !sameFile && !module.IsPublic() {
-			logger.TokenError(
-				varTypeTokens[0],
-				"Module "+varTypeTokens[0].GetValue()+" is not public",
-				"Move the module to the current file or make it public",
-			)
-		}
-
-		if len(module.GetTemplates()) != len(expectedWrapper.GetParameters()) {
-			logger.TokenError(
-				varTypeTokens[0],
-				"Invalid number of templates",
-				"The module "+varTypeTokens[0].GetValue()+" expects "+strconv.Itoa(len(module.GetTemplates()))+" templates",
-				"Add the required templates",
-			)
-		}
-
-		expectedType = wrapper.NewFluentObject(expectedWrapper, module)
-		wasTypeInferred = true
-	} else {
-		if !checker.IsValidType(varTypeTokens[0].GetType()) {
-			logger.TokenError(
-				varTypeTokens[0],
-				"Invalid type '"+varTypeTokens[0].GetValue()+"'",
-				"Change the type to a valid one",
-			)
-		}
-
-		expectedType = wrapper.NewFluentObject(expectedWrapper, nil)
-		wasTypeInferred = false
+	if !isMod && !checker.IsValidType(varTypeTokens[0].GetType()) {
+		logger.TokenError(
+			varTypeTokens[0],
+			"Invalid type '"+varTypeTokens[0].GetValue()+"'",
+			"Change the type to a valid one",
+		)
 	}
 
-	// Analyze the statement
-	AnalyzeType(
-		statement[(len(varTypeTokens)+3):],
+	expectedType = wrapper.NewTypeWrapper(varTypeTokens, varTypeTokens[0])
+	AnalyzeGeneric(expectedType, mods, varTypeTokens[0])
+
+	// +2 for the var name + the colon
+	// +1 for the equals sign
+	valueTokens := statement[3+len(varTypeTokens):]
+	// Interpret the statement to get a value
+	value := AnalyzeStatement(
+		valueTokens,
 		variables,
 		functions,
 		mods,
 		expectedType,
-		!wasTypeInferred,
 	)
 
-	// Put the variable in the stack
-	variables.Append(varName.GetValue(), expectedType, constant)
+	variables.Append(varName.GetValue(), value, constant)
 }

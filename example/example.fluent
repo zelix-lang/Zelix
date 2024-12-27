@@ -1,22 +1,11 @@
 import "@std/io/print";
 
-mod Abc<A, B> {
-    let asd : num = 10 * (25 + 10 + (25 * 10 / (9 - 4)));
-
-    fun Abc() {
-        println("My super cool constructor");
-    }
-}
-
-mod Bcd<C, D> {
-    let asd : num = 10 * (25 + 10 + (25 * 10 / (9 - 4)));
-
-    fun Bcd() {
-        println("My super cool constructor");
+mod Wrapper<T, U> {
+    fun wrap(value1: T, value2: U) -> U {
     }
 }
 
 fun main() {
-    let a : Bcd<Abc<str, bool>, num> = new Bcd<Abc<str, bool>, num>(); // TODO! Validate generics (Currently implementing)
-    print("Hello, World!");
+    let x: Wrapper<num, str> = new Wrapper<>();
+    x.wrap(42, "World!");
 }

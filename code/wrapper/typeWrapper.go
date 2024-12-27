@@ -2,6 +2,7 @@ package wrapper
 
 import (
 	"fluent/code/types"
+	"fluent/lexer"
 	"fluent/logger"
 	"fluent/token"
 	"fluent/tokenUtil/inferrer"
@@ -143,4 +144,70 @@ func (tw *TypeWrapper) Marshal() string {
 	builder.WriteString(">")
 
 	return builder.String()
+}
+
+// MarshalTokens converts the TypeWrapper to a list of tokens
+func (tw *TypeWrapper) MarshalTokens(trace token.Token) []token.Token {
+	result := make([]token.Token, 0)
+
+	knownToken, _ := lexer.GetKnownToken(tw.baseType)
+	result = append(
+		result,
+		token.ForceNewToken(
+			knownToken,
+			tw.baseType,
+			trace.GetFile(),
+			trace.GetLine(),
+			trace.GetColumn(),
+			trace.GetTrace(),
+			trace.GetTraceContext(),
+		),
+	)
+
+	result = append(
+		result,
+		token.ForceNewToken(
+			token.LessThan,
+			"<",
+			trace.GetFile(),
+			trace.GetLine(),
+			trace.GetColumn(),
+			trace.GetTrace(),
+			trace.GetTraceContext(),
+		),
+	)
+
+	for i, param := range tw.parameters {
+		result = append(result, param.MarshalTokens(trace)...)
+
+		if i != len(tw.parameters)-1 {
+			result = append(
+				result,
+				token.ForceNewToken(
+					token.Comma,
+					",",
+					trace.GetFile(),
+					trace.GetLine(),
+					trace.GetColumn(),
+					trace.GetTrace(),
+					trace.GetTraceContext(),
+				),
+			)
+		}
+	}
+
+	result = append(
+		result,
+		token.ForceNewToken(
+			token.GreaterThan,
+			">",
+			trace.GetFile(),
+			trace.GetLine(),
+			trace.GetColumn(),
+			trace.GetTrace(),
+			trace.GetTraceContext(),
+		),
+	)
+
+	return result
 }

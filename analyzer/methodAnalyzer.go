@@ -16,6 +16,7 @@ func AnalyzeMethod(
 	lastValue *wrapper.FluentObject,
 	trace token.Token,
 	checkArgs bool,
+	inferToType wrapper.TypeWrapper,
 	args ...wrapper.FluentObject,
 ) wrapper.FluentObject {
 	variables := stack.NewStack()

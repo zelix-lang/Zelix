@@ -17,6 +17,28 @@ type Token struct {
 	traceContext string
 }
 
+// ForceNewToken creates a new Token without any checks.
+func ForceNewToken(
+	tokenType Type,
+	value string,
+	file string,
+	line int,
+	column int,
+	trace string,
+	traceContext string,
+) Token {
+	return Token{
+		tokenType,
+		value,
+		file,
+		line,
+		column,
+		trace,
+		traceContext,
+	}
+}
+
+// NewToken creates a new Token.
 func NewToken(
 	tokenType Type,
 	value string,

@@ -17,7 +17,6 @@ func AnalyzeType(
 	functions *map[string]map[string]*code.Function,
 	mods *map[string]map[string]*mod.FluentMod,
 	expected wrapper.FluentObject,
-	enforceGenericsMatch bool,
 ) {
 	expectedTypeWrapper := expected.GetType()
 	AnalyzeGeneric(expectedTypeWrapper, mods, statement[0])
@@ -48,11 +47,6 @@ func AnalyzeType(
 		}
 
 		if !expectedTypeWrapper.Compare(valueTypeWrapper) {
-
-			if !enforceGenericsMatch && expectedTypeWrapper.GetBaseType() == valueTypeWrapper.GetBaseType() {
-				return
-			}
-
 			logger.TokenError(
 				statement[0],
 				"Type mismatch",

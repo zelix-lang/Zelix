@@ -53,6 +53,8 @@ func AnalyzeFun(
 		)
 	}
 
+	AnalyzeGeneric(function.GetReturnType(), mods, trace)
+
 	// Create a new StaticStack
 	actualParams := function.GetParameters()
 
@@ -75,11 +77,14 @@ func AnalyzeFun(
 
 			checkParamType(expected, trace)
 			if !expected.Compare(value.GetType()) {
+				valueType := value.GetType()
 				logger.TokenError(
 					trace,
 					"Mismatched parameter types",
 					"This function did not expect this parameter this time",
 					"Change the parameters of the function call",
+					"Expected: "+expected.Marshal(),
+					"Got: "+valueType.Marshal(),
 				)
 			}
 

@@ -6,6 +6,7 @@ import (
 	"fluent/code/wrapper"
 	"fluent/stack"
 	"fluent/token"
+	"fluent/tokenUtil/generic"
 )
 
 // FluentMod represents a Fluent module
@@ -155,7 +156,45 @@ func (sm *FluentMod) GetVariables() *stack.Stack {
 	return sm.variables
 }
 
-// IsInitialized checks if the module is initialized
-func (sm *FluentMod) IsInitialized() bool {
-	return sm.initialized
+// BuildWithoutGenerics builds a new module, replacing
+// generics with the given types
+func (sm *FluentMod) BuildWithoutGenerics(types map[string]wrapper.TypeWrapper) FluentMod {
+	templates := make([]wrapper.TypeWrapper, len(sm.templates))
+	properties := make(map[string]*wrapper.FluentObject)
+	publicMethods := make(map[string]*code.Function)
+	privateMethods := make(map[string]*code.Function)
+
+	for i, template := range sm.templates {
+		templates[i] = generic.ConvertGeneric(template, types)
+	}
+
+	for key, value := range sm.properties {
+		newValue := wrapper.NewFluentObject(
+			generic.ConvertGeneric(value.GetType(), types),
+			value.GetValue(),
+		)
+		properties[key] = &newValue
+	}
+
+	for key, value := range sm.methods {
+
+		newFunction := value.BuildWithoutGenerics(types)
+		if value.IsPublic() {
+			publicMethods[key] = &newFunction
+		} else {
+			privateMethods[key] = &newFunction
+		}
+	}
+
+	return NewFluentMod(
+		properties,
+		publicMethods,
+		privateMethods,
+		sm.name,
+		sm.file,
+		sm.varDeclarations,
+		sm.public,
+		sm.trace,
+		templates,
+	)
 }

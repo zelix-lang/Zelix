@@ -3,6 +3,8 @@ package code
 import (
 	"fluent/code/wrapper"
 	"fluent/token"
+	"fluent/tokenUtil/generic"
+	"fluent/tokenUtil/splitter"
 	"time"
 )
 
@@ -25,6 +27,25 @@ type Function struct {
 	timesCalled int
 	// lastCalled holds the time the function was last called.
 	lastCalled time.Time
+}
+
+// ForceNewFunction creates a new Function without any checks.
+func ForceNewFunction(
+	returnType wrapper.TypeWrapper,
+	parameters map[string]wrapper.TypeWrapper,
+	body []token.Token,
+	public bool,
+	std bool,
+	trace token.Token,
+) Function {
+	return Function{
+		returnType: returnType,
+		parameters: parameters,
+		body:       body,
+		public:     public,
+		std:        std,
+		trace:      trace,
+	}
 }
 
 // NewFunction creates a new Function
@@ -100,4 +121,51 @@ func (f *Function) SetTimesCalled(timesCalled int) {
 // SetLastCalled sets the time the function was last called.
 func (f *Function) SetLastCalled(lastCalled time.Time) {
 	f.lastCalled = lastCalled
+}
+
+// BuildWithoutGenerics builds a new function, replacing
+// generics in constants and vars declarations with the given types
+func (f *Function) BuildWithoutGenerics(types map[string]wrapper.TypeWrapper) Function {
+	params := f.GetParameters()
+	newParams := make(map[string]wrapper.TypeWrapper)
+
+	for key, value := range params {
+		newValue := generic.ConvertGeneric(value, types)
+		newParams[key] = newValue
+	}
+
+	body := f.body
+	newBody := make([]token.Token, 0)
+
+	for i, t := range f.GetBody() {
+		tokenType := t.GetType()
+
+		if tokenType == token.Let || tokenType == token.Const {
+			// Declarations go like:
+			// let my_var : str = "hello";
+			// we have to skip 3 tokens to get to the type
+			declaration, _ := splitter.ExtractTokensBefore(
+				body[i:],
+				token.Semicolon,
+				false,
+				token.Unknown,
+				token.Unknown,
+				true,
+			)
+
+			newBody = append(newBody, generic.ConvertVariableGenerics(declaration, types)...)
+			continue
+		}
+
+		newBody = append(newBody, t)
+	}
+
+	return Function{
+		returnType: generic.ConvertGeneric(f.returnType, types),
+		parameters: newParams,
+		body:       newBody,
+		public:     f.IsPublic(),
+		std:        f.IsStd(),
+		trace:      f.GetTrace(),
+	}
 }
