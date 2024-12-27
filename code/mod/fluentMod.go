@@ -185,8 +185,8 @@ func (sm *FluentMod) BuildWithoutGenerics(types map[string]wrapper.TypeWrapper) 
 	}
 
 	for key, value := range sm.methods {
-
 		newFunction := value.BuildWithoutGenerics(types)
+
 		if value.IsPublic() {
 			publicMethods[key] = &newFunction
 		} else {

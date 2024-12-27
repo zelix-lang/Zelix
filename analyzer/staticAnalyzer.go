@@ -46,7 +46,7 @@ func AnalyzeFileCode(code *ast.FileCode, source string) {
 	// Analyze the main function
 	AnalyzeMainFunc(mainFunction)
 
-	for _, mods := range *code.GetModules() {
+	/*for _, mods := range *code.GetModules() {
 		for _, mod := range mods {
 			AnalyzeMod(
 				*mod,
@@ -54,7 +54,7 @@ func AnalyzeFileCode(code *ast.FileCode, source string) {
 				code.GetModules(),
 			)
 		}
-	}
+	}*/
 
 	// Analyze all other functions
 	for _, functions := range *code.GetFunctions() {

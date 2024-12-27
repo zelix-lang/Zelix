@@ -3,6 +3,7 @@ package ast
 import (
 	"fluent/code"
 	"fluent/code/mod"
+	"fluent/code/types"
 	"fluent/code/wrapper"
 	"fluent/logger"
 	"fluent/token"
@@ -19,7 +20,7 @@ func pushParameter(
 	unit token.Token,
 	currentParameter *[]token.Token,
 	currentParameterName *string,
-	currentFunctionParameters *map[string][]token.Token,
+	currentFunctionParameters *[]code.FunctionParam,
 	expectingArgType *bool,
 	expectingArgs *bool,
 ) {
@@ -37,7 +38,13 @@ func pushParameter(
 		)
 	}
 
-	(*currentFunctionParameters)[*currentParameterName] = *currentParameter
+	param := code.NewFunctionParam(
+		*currentParameterName,
+		wrapper.ForceNewTypeWrapper("", make([]wrapper.TypeWrapper, 0), types.NothingType),
+		*currentParameter,
+	)
+
+	*currentFunctionParameters = append(*currentFunctionParameters, param)
 	*currentParameterName = ""
 	*currentParameter = nil
 	*currentParameter = []token.Token{}
@@ -72,7 +79,7 @@ func Parse(tokens []token.Token, allowMods bool, allowInlineVars bool) *FileCode
 	currentFunctionName := ""
 	currentParameterName := ""
 	var currentFunctionReturnType []token.Token
-	currentFunctionParameters := make(map[string][]token.Token)
+	currentFunctionParameters := make([]code.FunctionParam, 0)
 	var currentFunctionTrace token.Token
 
 	var currentFunctionPublic bool
@@ -510,7 +517,7 @@ func Parse(tokens []token.Token, allowMods bool, allowInlineVars bool) *FileCode
 func resetFlags(
 	currentFunctionName *string,
 	currentFunctionReturnType *[]token.Token,
-	currentFunctionParameters *map[string][]token.Token,
+	currentFunctionParameters *[]code.FunctionParam,
 	currentFunctionPublic *bool,
 	currentParameter *[]token.Token,
 	currentFunctionBody *[]token.Token,
@@ -520,7 +527,7 @@ func resetFlags(
 	*currentFunctionReturnType = nil
 	*currentFunctionReturnType = []token.Token{}
 
-	*currentFunctionParameters = make(map[string][]token.Token)
+	*currentFunctionParameters = make([]code.FunctionParam, 0)
 	*currentFunctionPublic = false
 	*currentParameter = nil
 	*currentParameter = make([]token.Token, 0)

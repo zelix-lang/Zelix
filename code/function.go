@@ -5,8 +5,19 @@ import (
 	"fluent/token"
 	"fluent/tokenUtil/generic"
 	"fluent/tokenUtil/splitter"
+	"log"
 	"time"
 )
+
+// FunctionParam represents a parameter in the abstract syntax tree (AST).
+type FunctionParam struct {
+	// name holds the name of the parameter.
+	name string
+	// typ holds the type of the parameter.
+	typ wrapper.TypeWrapper
+	// tokens holds the tokens representing the parameter.
+	tokens []token.Token
+}
 
 // Function represents a function in the abstract syntax tree (AST).
 type Function struct {
@@ -14,7 +25,7 @@ type Function struct {
 	returnType wrapper.TypeWrapper
 	// parameters holds the tokens representing the parameters of the function.
 	// Each parameter is represented as a slice of tokens.
-	parameters map[string]wrapper.TypeWrapper
+	parameters []FunctionParam
 	// body holds the tokens representing the body of the function.
 	body []token.Token
 	// public holds whether the function is public or not.
@@ -29,19 +40,32 @@ type Function struct {
 	lastCalled time.Time
 }
 
+// NewFunctionParam creates a new FunctionParam.
+func NewFunctionParam(name string, typ wrapper.TypeWrapper, tokens []token.Token) FunctionParam {
+	return FunctionParam{
+		name:   name,
+		typ:    typ,
+		tokens: tokens,
+	}
+}
+
 // NewFunction creates a new Function
 func NewFunction(
 	returnType []token.Token,
-	parameters map[string][]token.Token,
+	parameters []FunctionParam,
 	body []token.Token,
 	public bool,
 	std bool,
 	trace token.Token,
 ) Function {
-	wrappers := make(map[string]wrapper.TypeWrapper)
+	wrappers := make([]FunctionParam, len(parameters))
 
-	for key, value := range parameters {
-		wrappers[key] = wrapper.NewTypeWrapper(value, trace)
+	for i, val := range parameters {
+		wrappers[i] = FunctionParam{
+			name:   val.name,
+			typ:    wrapper.NewTypeWrapper(val.tokens, val.tokens[0]),
+			tokens: val.tokens,
+		}
 	}
 
 	return Function{
@@ -60,7 +84,7 @@ func (f *Function) GetReturnType() wrapper.TypeWrapper {
 }
 
 // GetParameters returns the parameters of the function.
-func (f *Function) GetParameters() map[string]wrapper.TypeWrapper {
+func (f *Function) GetParameters() []FunctionParam {
 	return f.parameters
 }
 
@@ -108,11 +132,17 @@ func (f *Function) SetLastCalled(lastCalled time.Time) {
 // generics in constants and vars declarations with the given types
 func (f *Function) BuildWithoutGenerics(types map[string]wrapper.TypeWrapper) Function {
 	params := f.GetParameters()
-	newParams := make(map[string]wrapper.TypeWrapper)
+	newParams := make([]FunctionParam, len(params))
 
 	for key, value := range params {
-		newValue := generic.ConvertGeneric(value, types)
-		newParams[key] = newValue
+		newValue := generic.ConvertGeneric(value.typ, types)
+		log.Printf("Converting parameter: %v from %v to %v", key, value, newValue)
+
+		newParams[key] = FunctionParam{
+			name:   value.name,
+			typ:    newValue,
+			tokens: value.tokens,
+		}
 	}
 
 	body := f.body
@@ -149,4 +179,19 @@ func (f *Function) BuildWithoutGenerics(types map[string]wrapper.TypeWrapper) Fu
 		std:        f.IsStd(),
 		trace:      f.GetTrace(),
 	}
+}
+
+// GetName returns the name of the parameter.
+func (p FunctionParam) GetName() string {
+	return p.name
+}
+
+// GetType returns the type of the parameter.
+func (p FunctionParam) GetType() wrapper.TypeWrapper {
+	return p.typ
+}
+
+// GetTokens returns the tokens of the parameter.
+func (p FunctionParam) GetTokens() []token.Token {
+	return p.tokens
 }

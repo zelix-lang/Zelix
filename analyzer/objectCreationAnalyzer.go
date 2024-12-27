@@ -122,30 +122,12 @@ func AnalyzeObjectCreation(
 	}
 
 	generics := make(map[string]wrapper.TypeWrapper)
-	builtInMods := make(map[string]*mod.FluentMod)
 
 	for i, template := range module.GetTemplates() {
 		param := finalType.GetParameters()[i]
 		generics[template.GetBaseType()] = param
-		// Add dummy generics to the mods so things like:
-		// let a: T = abc;
-		// don't throw an error
-		newMod := mod.NewFluentMod(
-			make(map[string]*wrapper.FluentObject),
-			make(map[string]*code.Function),
-			make(map[string]*code.Function),
-			template.GetBaseType(),
-			modName.GetFile(),
-			make([][]token.Token, 0),
-			true,
-			modName,
-			[]wrapper.TypeWrapper{},
-		)
-
-		builtInMods[template.GetBaseType()] = &newMod
 	}
 
-	(*mods)["built-in"] = builtInMods
 	withoutGenerics := module.BuildWithoutGenerics(generics)
 
 	*lastValue = wrapper.NewFluentObject(
@@ -227,8 +209,5 @@ func AnalyzeObjectCreation(
 		true,
 		args...,
 	)
-
-	// Delete the built-in mods
-	delete(*mods, "built-in")
 
 }

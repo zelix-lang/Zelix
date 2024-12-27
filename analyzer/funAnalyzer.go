@@ -9,7 +9,6 @@ import (
 	"fluent/stack"
 	"fluent/token"
 	"fluent/tokenUtil/splitter"
-	"fluent/util"
 	"strconv"
 	"time"
 )
@@ -69,10 +68,8 @@ func AnalyzeFun(
 		}
 
 		// Store the arguments in the variables
-		argsKeys := util.MapKeys(actualParams)
-
-		for i, param := range argsKeys {
-			expected := actualParams[param]
+		for i, param := range actualParams {
+			expected := param.GetType()
 			value := args[i]
 
 			checkParamType(expected, trace)
@@ -88,18 +85,16 @@ func AnalyzeFun(
 				)
 			}
 
-			variables.Append(param, value, false)
+			variables.Append(param.GetName(), value, false)
 		}
 	} else {
 		// Store the parameters without checking to avoid undefined references
-		argsKeys := util.MapKeys(actualParams)
-
-		for _, param := range argsKeys {
-			expected := actualParams[param]
+		for _, param := range actualParams {
+			expected := param.GetType()
 			checkParamType(expected, trace)
 			dummyObj := wrapper.NewFluentObject(expected, nil)
 
-			variables.Append(param, dummyObj, false)
+			variables.Append(param.GetName(), dummyObj, false)
 		}
 	}
 
