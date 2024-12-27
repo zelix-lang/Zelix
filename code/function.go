@@ -29,25 +29,6 @@ type Function struct {
 	lastCalled time.Time
 }
 
-// ForceNewFunction creates a new Function without any checks.
-func ForceNewFunction(
-	returnType wrapper.TypeWrapper,
-	parameters map[string]wrapper.TypeWrapper,
-	body []token.Token,
-	public bool,
-	std bool,
-	trace token.Token,
-) Function {
-	return Function{
-		returnType: returnType,
-		parameters: parameters,
-		body:       body,
-		public:     public,
-		std:        std,
-		trace:      trace,
-	}
-}
-
 // NewFunction creates a new Function
 func NewFunction(
 	returnType []token.Token,
