@@ -121,6 +121,9 @@ const (
 	// New represents a new token.
 	New
 
+	// In represents an in token.
+	In
+
 	// Break represents a break token.
 	Break
 	// Continue represents a continue token.

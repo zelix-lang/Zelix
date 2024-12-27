@@ -114,7 +114,21 @@ func AnalyzeFun(
 
 		tokenType := unit.GetType()
 
-		if tokenType == token.Identifier || tokenType == token.Let || tokenType == token.Const || tokenType == token.New {
+		if tokenType == token.For {
+			// Extract the loop declaration
+			declaration, _ := splitter.ExtractTokensBefore(
+				function.GetBody()[i:],
+				token.OpenCurly,
+				false,
+				token.Unknown,
+				token.Unknown,
+				true,
+			)
+
+			AnalyzeFor(declaration[1:], functions, mods, variables)
+			skipToIndex = i + len(declaration) + 1
+			continue
+		} else if tokenType == token.Identifier || tokenType == token.Let || tokenType == token.Const || tokenType == token.New {
 			// Extract the statement
 			statement, _ := splitter.ExtractTokensBefore(
 				function.GetBody()[i:],
@@ -135,6 +149,9 @@ func AnalyzeFun(
 			}
 
 			AnalyzeStatement(statement, variables, functions, mods, dummyNothingType)
+			continue
+		} else if tokenType == token.CloseCurly {
+			variables.DestroyScope()
 			continue
 		}
 

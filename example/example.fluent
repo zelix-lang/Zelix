@@ -1,11 +1,15 @@
 import "@std/io/print";
 
-mod Wrapper<T, U> {
-    fun wrap(value1: T, value2: U) -> U {
-    }
-}
-
 fun main() {
-    let x: Wrapper<num, str> = new Wrapper<>();
-    x.wrap(42, "World!");
+    for i in 1 : 20 {
+        // This does not print anything
+        // it is here just to test the checker
+        // doesn't throw undefined reference error
+        i;  // "i" exists in this scope
+    }
+
+    // This does not print anything
+    // it is here just to test the checker
+    // doesn't throw undefined reference error
+    i;  // "i" does not exist in this scope
 }

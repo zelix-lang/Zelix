@@ -19,6 +19,7 @@ var knownTokens = map[string]token.Type{
 	"return":   token.Return,
 	"mod":      token.Mod,
 	"new":      token.New,
+	"in":       token.In,
 
 	// Operators and symbols
 	"=":  token.Assign,
@@ -73,6 +74,7 @@ var knownTokens = map[string]token.Type{
 	"import": token.Import,
 }
 
+// GetKnownToken attempts to find known tokens
 func GetKnownToken(entry string) (token.Type, bool) {
 	val, ok := knownTokens[entry]
 
