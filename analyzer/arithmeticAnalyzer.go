@@ -14,6 +14,7 @@ var arithmeticOperators = map[token.Type]struct{}{
 	token.Minus:    {},
 	token.Asterisk: {},
 	token.Slash:    {},
+	token.Percent:  {},
 }
 
 // isOperator checks if the given token is an arithmetic operator
