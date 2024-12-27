@@ -462,6 +462,19 @@ func lexSingleFile(input string, file string) []token.Token {
 		currentToken.WriteRune(char)
 	}
 
+	if inBlockComment {
+		logger.Error(
+			"Unclosed block comment",
+		)
+
+		logger.Help(
+			"Close block comments like:",
+			"/* This is a block comment */",
+		)
+
+		os.Exit(1)
+	}
+
 	// Push the last token
 	pushToken(&currentToken, &result, line, column, file, input, inputLength, decimalLiteral)
 
