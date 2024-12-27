@@ -122,5 +122,18 @@ func AnalyzeVariableDeclaration(
 		expectedType,
 	)
 
+	if !expectedType.Compare(value.GetType()) {
+		valueType := value.GetType()
+
+		logger.TokenError(
+			varName,
+			"Type mismatch",
+			"This type does not match the value type",
+			"Change the declaration or remove the assignment",
+			"Expected: "+expectedType.Marshal(),
+			"Got: "+valueType.Marshal(),
+		)
+	}
+
 	variables.Append(varName.GetValue(), value, constant)
 }
