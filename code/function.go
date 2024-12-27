@@ -5,7 +5,6 @@ import (
 	"fluent/token"
 	"fluent/tokenUtil/generic"
 	"fluent/tokenUtil/splitter"
-	"log"
 	"time"
 )
 
@@ -136,7 +135,6 @@ func (f *Function) BuildWithoutGenerics(types map[string]wrapper.TypeWrapper) Fu
 
 	for key, value := range params {
 		newValue := generic.ConvertGeneric(value.typ, types)
-		log.Printf("Converting parameter: %v from %v to %v", key, value, newValue)
 
 		newParams[key] = FunctionParam{
 			name:   value.name,
