@@ -159,6 +159,7 @@ func (sm *FluentMod) GetVariables() *stack.Stack {
 // BuildWithoutGenerics builds a new module, replacing
 // generics with the given types
 func (sm *FluentMod) BuildWithoutGenerics(types map[string]wrapper.TypeWrapper) FluentMod {
+	varDeclarations := make([][]token.Token, 0)
 	templates := make([]wrapper.TypeWrapper, len(sm.templates))
 	properties := make(map[string]*wrapper.FluentObject)
 	publicMethods := make(map[string]*code.Function)
@@ -174,6 +175,13 @@ func (sm *FluentMod) BuildWithoutGenerics(types map[string]wrapper.TypeWrapper) 
 			value.GetValue(),
 		)
 		properties[key] = &newValue
+	}
+
+	for _, declaration := range sm.varDeclarations {
+		varDeclarations = append(
+			varDeclarations,
+			generic.ConvertVariableGenerics(declaration, types),
+		)
 	}
 
 	for key, value := range sm.methods {
@@ -192,7 +200,7 @@ func (sm *FluentMod) BuildWithoutGenerics(types map[string]wrapper.TypeWrapper) 
 		privateMethods,
 		sm.name,
 		sm.file,
-		sm.varDeclarations,
+		varDeclarations,
 		sm.public,
 		sm.trace,
 		templates,
