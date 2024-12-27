@@ -225,7 +225,6 @@ func AnalyzeObjectCreation(
 		lastValue,
 		modName,
 		true,
-		finalType,
 		args...,
 	)
 

@@ -142,7 +142,6 @@ func AnalyzeStatement(
 				&lastValue,
 				&isFunCall,
 				isAssignment,
-				inferToType,
 			)
 		}
 

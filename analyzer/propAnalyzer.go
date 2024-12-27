@@ -18,7 +18,6 @@ func AnalyzePropAccess(
 	lastValue *wrapper.FluentObject,
 	isFunCall *bool,
 	isAssignment bool,
-	inferToType wrapper.TypeWrapper,
 ) {
 	// No need to check for prop's length
 	// the token splitter ensures that
@@ -160,7 +159,6 @@ func AnalyzePropAccess(
 		lastValue,
 		propName,
 		true,
-		inferToType,
 		funArgs...,
 	)
 }

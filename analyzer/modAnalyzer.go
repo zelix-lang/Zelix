@@ -52,7 +52,6 @@ func AnalyzeMod(
 			&dummyObject,
 			mod.GetTrace(),
 			false,
-			mod.BuildDummyWrapper(),
 		)
 	}
 
