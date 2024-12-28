@@ -1,7 +1,9 @@
 import "@std/io/print";
 
+mod Abc {
+    let asd : num = 123;
+}
+
 fun main() {
-    let asd: dec = ((((((((((((((1.35)))))))))))))) % 2 * (46 +2 / 54);
-    let dd : dec = ((((((((((((((1.35)))))))))))))) asd;
-    print("Hello, world!");
+    new Abc().asd;
 }

@@ -159,7 +159,7 @@ func AnalyzeStatement(
 	case token.Dot:
 		// Exclude the 1st character (either "." or "=")
 		beforeAssignment, isAssignment := splitter.ExtractTokensBefore(
-			remainingStatement[startAt:],
+			remainingStatement[1:],
 			token.Assign,
 			false,
 			token.Unknown,
