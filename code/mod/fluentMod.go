@@ -155,11 +155,6 @@ func (sm *FluentMod) GetVariables() *stack.Stack {
 	return sm.variables
 }
 
-// SetVariables sets the variables stack of the module
-func (sm *FluentMod) SetVariables(variables *stack.Stack) {
-	sm.variables = variables
-}
-
 // BuildWithoutGenerics builds a new module, replacing
 // generics with the given types
 func (sm *FluentMod) BuildWithoutGenerics(types map[string]wrapper.TypeWrapper) FluentMod {
