@@ -32,7 +32,7 @@ func ExtractTokensBefore(
 				if blockDepth < 0 {
 					logger.TokenError(
 						unit,
-						"Unmatched delimiter",
+						"Unmatched "+marshall.TokenTypeToString(nestedEndDelimiter),
 						"Match the delimiters",
 					)
 				}

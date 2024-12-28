@@ -74,6 +74,7 @@ func ToObj(
 			unit,
 			"Unexpected token",
 			"Expected an identifier, a literal or a variable",
+			"Got "+unit.GetValue(),
 		)
 
 		return wrapper.NewFluentObject(dummyNothingType, ""), true

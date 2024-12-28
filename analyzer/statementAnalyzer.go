@@ -31,18 +31,45 @@ func AnalyzeStatement(
 	// i.e.: object.property
 	lastValue := wrapper.NewFluentObject(dummyNothingType, nil)
 	startAt := 0
+	hasProcessedParens := false
 
-	firstToken := statement[0]
+	firstToken := statement[startAt]
 	firstTokenType := firstToken.GetType()
 
-	statementStr := ""
+	if firstTokenType == token.OpenParen {
+		hasProcessedParens = true
+		statementBeforeParen, _ := splitter.ExtractTokensBefore(
+			statement,
+			token.CloseParen,
+			true,
+			token.OpenParen,
+			token.CloseParen,
+			true,
+		)
 
-	for _, v := range statement {
-		statementStr += v.GetValue()
+		startAt = len(statementBeforeParen) + 1
+		// Push the paren to the new statement
+		statementBeforeParen = append(statementBeforeParen, statement[startAt-1])
+
+		lastValue = AnalyzeStatement(
+			// Exclude the parentheses
+			statementBeforeParen[1:len(statementBeforeParen)-1],
+			variables,
+			functions,
+			mods,
+			inferToType,
+		)
 	}
 
+	if startAt == len(statement) {
+		return lastValue
+	}
+
+	firstToken = statement[startAt]
+	firstTokenType = firstToken.GetType()
+
 	beforeDot, _ := splitter.ExtractTokensBefore(
-		statement,
+		statement[startAt:],
 		token.Dot,
 		true,
 		token.OpenParen,
@@ -64,8 +91,18 @@ func AnalyzeStatement(
 
 		break
 	case token.Identifier:
+		lastType := lastValue.GetType()
+		if hasProcessedParens && (lastType.GetType() == types.IntType || lastType.GetType() == types.DecimalType) {
+			logger.TokenError(
+				firstToken,
+				"Invalid statement",
+				"An arithmetic operation must be performed on a variable or a number",
+				"Check the statement",
+			)
+		}
+
 		AnalyzeIdentifier(
-			statement,
+			beforeDot,
 			variables,
 			functions,
 			mods,
@@ -77,6 +114,21 @@ func AnalyzeStatement(
 
 		break
 	default:
+		if hasProcessedParens {
+			lastType := lastValue.GetType()
+			if lastType.GetType() == types.IntType || lastType.GetType() == types.DecimalType {
+				isArithmetic = true
+				break
+			} else {
+				logger.TokenError(
+					firstToken,
+					"Invalid statement",
+					"This token was not expected at this position",
+					"Check the statement",
+				)
+			}
+		}
+
 		lastValue, isLastValConstant = converter.ToObj(firstToken, variables)
 		valueTypeWrapper := lastValue.GetType()
 		isArithmetic = valueTypeWrapper.GetType() == types.IntType || valueTypeWrapper.GetType() == types.DecimalType
@@ -107,7 +159,7 @@ func AnalyzeStatement(
 	case token.Dot:
 		// Exclude the 1st character (either "." or "=")
 		beforeAssignment, isAssignment := splitter.ExtractTokensBefore(
-			remainingStatement[1:],
+			remainingStatement[startAt:],
 			token.Assign,
 			false,
 			token.Unknown,

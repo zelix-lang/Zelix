@@ -1,15 +1,7 @@
 import "@std/io/print";
 
 fun main() {
-    for i in 1 : 20 {
-        // This does not print anything
-        // it is here just to test the checker
-        // doesn't throw undefined reference error
-        i;  // "i" exists in this scope
-    }
-
-    // This does not print anything
-    // it is here just to test the checker
-    // doesn't throw undefined reference error
-    i;  // "i" does not exist in this scope
+    let asd: dec = ((((((((((((((1.35)))))))))))))) % 2 * (46 +2 / 54);
+    let dd : dec = ((((((((((((((1.35)))))))))))))) asd;
+    print("Hello, world!");
 }
