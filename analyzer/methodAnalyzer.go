@@ -36,7 +36,7 @@ func AnalyzeMethod(
 	)
 
 	// Remove "this" from the stack
-	variables.DestroyScope()
+	variables.DestroyScope(trace)
 
 	return result
 }

@@ -2,18 +2,27 @@ package stack
 
 import (
 	"fluent/code/wrapper"
+	"fluent/logger"
+	"fluent/token"
 )
 
 // Stack represents a stack of variables for a function
 // it is concurrent by design
 type Stack struct {
-	internal []map[string]*wrapper.FluentVariable
+	internal   []map[string]*wrapper.FluentVariable
+	loadedVars map[string]bool
 }
 
 // NewStack creates a new stack
 func NewStack() *Stack {
 	return &Stack{
 		internal: make([]map[string]*wrapper.FluentVariable, 0),
+		// Used to keep track of the variables that have been
+		// loaded (used), if the scope is destroyed and a
+		// variable is not in this map, it means that the
+		// variable was not used
+		// Use a map for O(1) lookup
+		loadedVars: make(map[string]bool),
 	}
 }
 
@@ -37,9 +46,25 @@ func (s *Stack) Append(key string, value wrapper.FluentObject, constant bool) {
 }
 
 // DestroyScope destroys the current scope
-func (s *Stack) DestroyScope() {
+func (s *Stack) DestroyScope(trace token.Token) {
 	if len(s.internal) == 0 {
 		return
+	}
+
+	lastScope := s.internal[len(s.internal)-1]
+
+	for key, _ := range lastScope {
+		_, found := s.loadedVars[key]
+		if !found {
+			logger.TokenWarning(
+				trace,
+				"Unused variable "+key,
+				"The variable "+key+" was declared but never used",
+				"Remove the variable declaration",
+			)
+		} else {
+			delete(s.loadedVars, key)
+		}
 	}
 
 	s.internal = s.internal[:len(s.internal)-1]
@@ -51,6 +76,8 @@ func (s *Stack) Load(key string) (*wrapper.FluentVariable, bool) {
 		value, found := scope[key]
 
 		if found {
+			// Mark the variable as used
+			s.loadedVars[key] = true
 			return value, true
 		}
 

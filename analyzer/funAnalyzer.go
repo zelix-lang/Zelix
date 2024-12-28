@@ -151,7 +151,7 @@ func AnalyzeFun(
 			AnalyzeStatement(statement, variables, functions, mods, dummyNothingType)
 			continue
 		} else if tokenType == token.CloseCurly {
-			variables.DestroyScope()
+			variables.DestroyScope(unit)
 			continue
 		}
 
@@ -166,6 +166,6 @@ func AnalyzeFun(
 	// TODO! Parse return statements
 
 	// Destroy the scope
-	variables.DestroyScope()
+	variables.DestroyScope(trace)
 	return wrapper.NewFluentObject(dummyNothingType, nil)
 }
