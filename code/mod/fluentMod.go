@@ -46,7 +46,6 @@ func NewFluentMod(
 		trace:           trace,
 		templates:       templates,
 		variables:       stack.NewStack(),
-		initialized:     false,
 	}
 
 	for key, value := range publicMethods {
@@ -154,6 +153,11 @@ func (sm *FluentMod) BuildDummyWrapper() wrapper.TypeWrapper {
 // GetVariables returns the variables stack of the module
 func (sm *FluentMod) GetVariables() *stack.Stack {
 	return sm.variables
+}
+
+// SetVariables sets the variables stack of the module
+func (sm *FluentMod) SetVariables(variables *stack.Stack) {
+	sm.variables = variables
 }
 
 // BuildWithoutGenerics builds a new module, replacing
