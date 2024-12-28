@@ -21,7 +21,6 @@ type FluentMod struct {
 	trace           token.Token
 	templates       []wrapper.TypeWrapper
 	variables       *stack.Stack
-	initialized     bool
 }
 
 // NewFluentMod creates a new Fluent module
@@ -158,6 +157,10 @@ func (sm *FluentMod) GetVariables() *stack.Stack {
 // BuildWithoutGenerics builds a new module, replacing
 // generics with the given types
 func (sm *FluentMod) BuildWithoutGenerics(types map[string]wrapper.TypeWrapper) FluentMod {
+	if len(sm.templates) == 0 {
+		return *sm
+	}
+
 	varDeclarations := make([][]token.Token, 0)
 	templates := make([]wrapper.TypeWrapper, len(sm.templates))
 	properties := make(map[string]*wrapper.FluentObject)
@@ -193,7 +196,7 @@ func (sm *FluentMod) BuildWithoutGenerics(types map[string]wrapper.TypeWrapper) 
 		}
 	}
 
-	return NewFluentMod(
+	newMod := NewFluentMod(
 		properties,
 		publicMethods,
 		privateMethods,
@@ -204,4 +207,6 @@ func (sm *FluentMod) BuildWithoutGenerics(types map[string]wrapper.TypeWrapper) 
 		sm.trace,
 		templates,
 	)
+
+	return newMod
 }
