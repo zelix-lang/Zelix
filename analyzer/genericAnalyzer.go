@@ -42,11 +42,18 @@ func AnalyzeGeneric(
 	genericTemplate wrapper.TypeWrapper,
 	mods *map[string]map[string]*mod.FluentMod,
 	trace token.Token,
+	isReturnType bool,
 ) {
 	baseType := genericTemplate.GetType()
 	params := genericTemplate.GetParameters()
 
-	if baseType == types.ModType {
+	if baseType == types.NothingType && !isReturnType {
+		logger.TokenError(
+			trace,
+			"Invalid type",
+			"Generic parameters cannot be of type 'nothing'",
+		)
+	} else if baseType == types.ModType {
 		// len(params) == 0 is always false, skip that condition
 		// and directly check the types
 		baseName := genericTemplate.GetBaseType()
@@ -79,7 +86,7 @@ func AnalyzeGeneric(
 		}
 
 		for _, param := range params {
-			AnalyzeGeneric(param, mods, trace)
+			AnalyzeGeneric(param, mods, trace, isReturnType)
 		}
 	} else if len(params) > 0 {
 		logger.TokenError(

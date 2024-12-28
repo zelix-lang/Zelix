@@ -130,8 +130,8 @@ func (sm *FluentMod) GetTrace() token.Token {
 }
 
 // GetMethods returns the methods of the module
-func (sm *FluentMod) GetMethods() map[string]*code.Function {
-	return sm.methods
+func (sm *FluentMod) GetMethods() *map[string]*code.Function {
+	return &sm.methods
 }
 
 // GetTemplates returns the templates of the module
@@ -155,10 +155,11 @@ func (sm *FluentMod) GetVariables() *stack.Stack {
 }
 
 // BuildWithoutGenerics builds a new module, replacing
-// generics with the given types
-func (sm *FluentMod) BuildWithoutGenerics(types map[string]wrapper.TypeWrapper) FluentMod {
+// generics with the given types and a boolean indicating
+// if any changes were made
+func (sm *FluentMod) BuildWithoutGenerics(types map[string]wrapper.TypeWrapper) (FluentMod, bool) {
 	if len(sm.templates) == 0 {
-		return *sm
+		return *sm, false
 	}
 
 	varDeclarations := make([][]token.Token, 0)
@@ -196,7 +197,7 @@ func (sm *FluentMod) BuildWithoutGenerics(types map[string]wrapper.TypeWrapper) 
 		}
 	}
 
-	newMod := NewFluentMod(
+	return NewFluentMod(
 		properties,
 		publicMethods,
 		privateMethods,
@@ -206,7 +207,5 @@ func (sm *FluentMod) BuildWithoutGenerics(types map[string]wrapper.TypeWrapper) 
 		sm.public,
 		sm.trace,
 		templates,
-	)
-
-	return newMod
+	), true
 }

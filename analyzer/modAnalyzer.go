@@ -43,7 +43,7 @@ func AnalyzeMod(
 	}
 
 	// Analyze the mod's methods
-	for _, method := range mod.GetMethods() {
+	for _, method := range *mod.GetMethods() {
 		dummyObject := wrapper.NewFluentObject(mod.BuildDummyWrapper(), &mod)
 
 		AnalyzeMethod(

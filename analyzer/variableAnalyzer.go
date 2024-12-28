@@ -108,7 +108,7 @@ func AnalyzeVariableDeclaration(
 	}
 
 	expectedType = wrapper.NewTypeWrapper(varTypeTokens, varTypeTokens[0])
-	AnalyzeGeneric(expectedType, mods, varTypeTokens[0])
+	AnalyzeGeneric(expectedType, mods, varTypeTokens[0], false)
 
 	// +2 for the var name + the colon
 	// +1 for the equals sign

@@ -96,7 +96,7 @@ func AnalyzeObjectCreation(
 				templatesRaw[0],
 			)
 
-			AnalyzeGeneric(finalType, mods, templatesRaw[0])
+			AnalyzeGeneric(finalType, mods, templatesRaw[0], false)
 			lookForParenAt = len(templatesRaw) + 1
 		}
 
@@ -128,7 +128,20 @@ func AnalyzeObjectCreation(
 		generics[template.GetBaseType()] = param
 	}
 
-	withoutGenerics := module.BuildWithoutGenerics(generics)
+	withoutGenerics, wereChangesMade := module.BuildWithoutGenerics(generics)
+
+	if wereChangesMade {
+		// Construct variables
+		for _, declaration := range withoutGenerics.GetVarDeclarations() {
+			AnalyzeVariableDeclaration(
+				declaration[1:],
+				withoutGenerics.GetVariables(),
+				functions,
+				mods,
+				declaration[0].GetType() == token.Const,
+			)
+		}
+	}
 
 	*lastValue = wrapper.NewFluentObject(
 		withoutGenerics.BuildDummyWrapper(),

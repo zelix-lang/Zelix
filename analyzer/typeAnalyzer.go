@@ -19,7 +19,7 @@ func AnalyzeType(
 	expected wrapper.FluentObject,
 ) {
 	expectedTypeWrapper := expected.GetType()
-	AnalyzeGeneric(expectedTypeWrapper, mods, statement[0])
+	AnalyzeGeneric(expectedTypeWrapper, mods, statement[0], false)
 
 	isMod := expectedTypeWrapper.GetType() == types.ModType
 

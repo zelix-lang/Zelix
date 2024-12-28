@@ -52,7 +52,7 @@ func AnalyzeFun(
 		)
 	}
 
-	AnalyzeGeneric(function.GetReturnType(), mods, trace)
+	AnalyzeGeneric(function.GetReturnType(), mods, trace, true)
 
 	// Create a new StaticStack
 	actualParams := function.GetParameters()
