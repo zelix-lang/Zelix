@@ -3,11 +3,61 @@ package analyzer
 import (
 	"fluent/code"
 	"fluent/code/mod"
+	"fluent/code/types"
 	"fluent/logger"
 	"fluent/stack"
 	"fluent/token"
 	"fluent/tokenUtil/splitter"
 )
+
+// boolOperators contains all the boolean operators
+// use a map for O(1) lookup time
+var boolOperators = map[token.Type]struct{}{
+	token.And: {},
+	token.Or:  {},
+	token.Not: {},
+}
+
+// analyzeSingleBool analyzes a single boolean expression
+func analyzeSingleBool(
+	unit token.Token,
+	variables *stack.Stack,
+	functions *map[string]map[string]*code.Function,
+	mods *map[string]map[string]*mod.FluentMod,
+) {
+	if unit.GetType() == token.Identifier {
+		// Retrieve variables
+		variable := AnalyzeStatement(
+			[]token.Token{unit},
+			variables,
+			functions,
+			mods,
+			dummyNothingType,
+		)
+
+		typeWrapper := variable.GetType()
+
+		if typeWrapper.GetType() != types.BooleanType {
+			logger.TokenError(
+				unit,
+				"Invalid type for boolean expression",
+				"This variable should be a boolean",
+				"Check the variable type and its value",
+			)
+		}
+
+		return
+	}
+
+	if unit.GetType() == token.BoolLiteral {
+		logger.TokenError(
+			unit,
+			"Invalid boolean expression",
+			"Expected a boolean expression",
+			"Check the boolean expression",
+		)
+	}
+}
 
 // AnalyzeBool analyzes the given boolean expression
 func AnalyzeBool(
@@ -27,15 +77,7 @@ func AnalyzeBool(
 	}
 
 	if len(statement) == 1 {
-		if statement[0].GetType() != token.BoolLiteral {
-			logger.TokenError(
-				statement[0],
-				"Invalid boolean expression",
-				"Expected a boolean expression",
-				"Check the boolean expression",
-			)
-		}
-
+		analyzeSingleBool(statement[0], variables, functions, mods)
 		return
 	}
 
@@ -61,10 +103,14 @@ func AnalyzeBool(
 		firstTokenType = firstToken.GetType()
 	}
 
+	hasProcessedParens := false
+	// The remaining statement after the negations
+	remainingStatement := statement[startAt:]
+
 	if firstTokenType == token.OpenParen {
 		// Recursively analyze the statement
 		statementBeforeParen, _ := splitter.ExtractTokensBefore(
-			statement[startAt:],
+			remainingStatement,
 			token.CloseParen,
 			true,
 			token.OpenParen,
@@ -72,7 +118,8 @@ func AnalyzeBool(
 			true,
 		)
 
-		startAt = len(statementBeforeParen) + 1
+		startAt += len(statementBeforeParen) + 1
+		hasProcessedParens = true
 
 		// Recursively analyze the statement inside the parentheses
 		AnalyzeBool(

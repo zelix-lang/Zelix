@@ -40,6 +40,8 @@ var knownTokens = map[string]token.Type{
 	">=": token.GreaterThanOrEqual,
 	"<=": token.LessThanOrEqual,
 	"&":  token.Ampersand,
+	"&&": token.And,
+	"||": token.Or,
 	"|":  token.Bar,
 	"^":  token.Xor,
 	"!":  token.Not,

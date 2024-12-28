@@ -445,6 +445,21 @@ func lexSingleFile(input string, file string) []token.Token {
 			}
 		}
 
+		// Handle "==", "!=", ">=", "<=", "->", "+=", "-=", "*=", "/=", "%="
+		if char == '=' && i-1 >= 0 && (input[i-1] == '=' || input[i-1] == '!' || input[i-1] == '>' || input[i-1] == '<' || input[i-1] == '-' || input[i-1] == '*' || input[i-1] == '/' || input[i-1] == '%') {
+			// Remove the last token
+			result = result[:len(result)-1]
+
+			// Create a new strings.Builder because pushToken takes a pointer
+			var eqBuilder strings.Builder
+
+			eqBuilder.WriteByte(input[i-1])
+			eqBuilder.WriteRune(char)
+			pushToken(&eqBuilder, &result, line, column, file, input, i-1, decimalLiteral)
+			decimalLiteral = false
+			continue
+		}
+
 		// Check for punctuation characters
 		if _, exists := punctuation[char]; exists {
 			// Push any remaining token

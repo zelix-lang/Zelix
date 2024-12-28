@@ -84,6 +84,10 @@ const (
 	Xor
 	// Not represents a not token.
 	Not
+	// Or represents an OR token.
+	Or
+	// And represents an AND token.
+	And
 
 	// OpenBracket represents an open bracket token.
 	OpenBracket
