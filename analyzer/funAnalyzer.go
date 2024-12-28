@@ -114,7 +114,24 @@ func AnalyzeFun(
 
 		tokenType := unit.GetType()
 
-		if tokenType == token.For {
+		if tokenType == token.If {
+			// Extract the "if" declaration
+			declaration, _ := splitter.ExtractTokensBefore(
+				function.GetBody()[i:],
+				token.OpenCurly,
+				false,
+				token.Unknown,
+				token.Unknown,
+				true,
+			)
+
+			AnalyzeBool(declaration[1:], variables, functions, mods, unit)
+			variables.CreateScope()
+
+			// Skip to the end of the if statement
+			skipToIndex = i + len(declaration) + 1
+			continue
+		} else if tokenType == token.For {
 			// Extract the loop declaration
 			declaration, _ := splitter.ExtractTokensBefore(
 				function.GetBody()[i:],

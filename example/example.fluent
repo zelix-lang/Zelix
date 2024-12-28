@@ -1,5 +1,5 @@
 import "@std/io/print";
 
 fun main() {
-    let asd: str = "Fluent";
+    if !true {}
 }
