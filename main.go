@@ -8,12 +8,12 @@ import (
 
 func main() {
 	app := &cli.App{
-		Name:  "fluent/",
+		Name:  "fluent",
 		Usage: "A blazingly fast programming language",
 		Commands: []*cli.Command{
 			{
 				Name:    "run",
-				Usage:   "Runs a fluent/ file",
+				Usage:   "Runs a fluent file",
 				Aliases: []string{"r"},
 				Flags: []cli.Flag{
 					&cli.BoolFlag{
@@ -30,7 +30,7 @@ func main() {
 			},
 			{
 				Name:    "check",
-				Usage:   "Checks a fluent/ file",
+				Usage:   "Checks a fluent file",
 				Aliases: []string{"c"},
 				Action: func(context *cli.Context) error {
 					cli2.CheckCommand(context)
