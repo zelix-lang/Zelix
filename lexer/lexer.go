@@ -23,6 +23,13 @@ var punctuation = map[rune]struct{}{
 	'|': {}, '^': {}, '[': {}, ']': {},
 }
 
+// Characters that make a combined assignment (+=, -=, *=, /=)
+// Use a map for O(1) lookup
+var combinedAssignment = map[rune]int{
+	'+': 1, '-': 1, '*': 1, '/': 1,
+	'!': 1, '>': 1, '<': 1, '=': 1,
+}
+
 // Regex to match identifiers
 var identifierRegex = regexp.MustCompile(`^[a-zA-Z_][a-zA-Z0-9_]*$`)
 
@@ -420,8 +427,8 @@ func lexSingleFile(input string, file string) []token.Token {
 			continue
 		}
 
-		// Handle increments and decrements
-		if (char == '+' || char == '-') && (i+1 < inputLength && rune(input[i-1]) == char) {
+		// Handle increments, decrements, and logical operators
+		if (char == '+' || char == '-' || char == '|' || char == '&') && (i+1 < inputLength && rune(input[i-1]) == char) {
 			// Remove the last token
 			result = result[:len(result)-1]
 
@@ -446,7 +453,7 @@ func lexSingleFile(input string, file string) []token.Token {
 		}
 
 		// Handle "==", "!=", ">=", "<=", "->", "+=", "-=", "*=", "/="
-		if char == '=' && i-1 >= 0 && (input[i-1] == '=' || input[i-1] == '!' || input[i-1] == '>' || input[i-1] == '<' || input[i-1] == '-' || input[i-1] == '*' || input[i-1] == '/') {
+		if char == '=' && i-1 >= 0 && combinedAssignment[rune(input[i-1])] == 1 {
 			// Remove the last token
 			result = result[:len(result)-1]
 
