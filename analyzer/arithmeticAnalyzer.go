@@ -24,7 +24,7 @@ func isOperator(token token.Token) bool {
 }
 
 // checkOperator checks if the given token is an arithmetic operator
-func checkOperator(token token.Token, statement []token.Token) {
+func checkArithmeticOperator(token token.Token, statement []token.Token) {
 	if !isOperator(token) || len(statement) == 1 {
 		logger.TokenError(
 			token,
@@ -103,7 +103,7 @@ func AnalyzeArithmetic(
 	}
 
 	// Check if there is an arithmetic operator
-	checkOperator(statement[0], statement)
+	checkArithmeticOperator(statement[0], statement)
 
 	// Used to check if the next token is an operator
 	expectingOperator := true
@@ -157,7 +157,7 @@ func AnalyzeArithmetic(
 				continue
 			}
 
-			checkOperator(unit, statement[i:])
+			checkArithmeticOperator(unit, statement[i:])
 			expectingOperator = false
 
 			continue
