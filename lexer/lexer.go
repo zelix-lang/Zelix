@@ -445,8 +445,8 @@ func lexSingleFile(input string, file string) []token.Token {
 			}
 		}
 
-		// Handle "==", "!=", ">=", "<=", "->", "+=", "-=", "*=", "/=", "%="
-		if char == '=' && i-1 >= 0 && (input[i-1] == '=' || input[i-1] == '!' || input[i-1] == '>' || input[i-1] == '<' || input[i-1] == '-' || input[i-1] == '*' || input[i-1] == '/' || input[i-1] == '%') {
+		// Handle "==", "!=", ">=", "<=", "->", "+=", "-=", "*=", "/="
+		if char == '=' && i-1 >= 0 && (input[i-1] == '=' || input[i-1] == '!' || input[i-1] == '>' || input[i-1] == '<' || input[i-1] == '-' || input[i-1] == '*' || input[i-1] == '/') {
 			// Remove the last token
 			result = result[:len(result)-1]
 
