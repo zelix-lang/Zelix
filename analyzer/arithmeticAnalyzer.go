@@ -18,14 +18,14 @@ var arithmeticOperators = map[token.Type]struct{}{
 }
 
 // isOperator checks if the given token is an arithmetic operator
-func isOperator(token token.Token) bool {
+func isArithmeticOperator(token token.Token) bool {
 	_, found := arithmeticOperators[token.GetType()]
 	return found
 }
 
 // checkOperator checks if the given token is an arithmetic operator
 func checkArithmeticOperator(token token.Token, statement []token.Token) {
-	if !isOperator(token) || len(statement) == 1 {
+	if !isArithmeticOperator(token) || len(statement) == 1 {
 		logger.TokenError(
 			token,
 			"Invalid arithmetic expression",
@@ -123,7 +123,7 @@ func AnalyzeArithmetic(
 		}
 
 		if extractingIdentifier {
-			if isOperator(unit) {
+			if isArithmeticOperator(unit) {
 				checkStatement(
 					&extractingIdentifier,
 					&lastStatement,
