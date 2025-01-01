@@ -479,6 +479,7 @@ func Parse(tokens []token.Token, allowMods bool, allowInlineVars bool) *FileCode
 
 					// Create the function
 					function := code.NewFunction(
+						currentFunctionName,
 						currentFunctionReturnType,
 						currentFunctionParameters,
 						currentFunctionBody,

@@ -10,8 +10,11 @@ import (
 	"fluent/token"
 	"fluent/tokenUtil/splitter"
 	"strconv"
-	"time"
 )
+
+// Store the functions that have already been checked
+// Use a map for O(1) lookup
+var calledFunctions = map[string]struct{}{}
 
 // checkParamType checks if the given parameter type is valid
 func checkParamType(
@@ -38,20 +41,7 @@ func AnalyzeFun(
 	variables *stack.Stack,
 	args ...wrapper.FluentObject,
 ) wrapper.FluentObject {
-	function.SetTimesCalled(function.GetTimesCalled() + 1)
-	function.SetLastCalled(time.Now())
-
-	// Check for stack overflows
-	if function.GetTimesCalled() > 1000 && time.Since(function.GetLastCalled()).Seconds() < 1 {
-		logger.TokenError(
-			trace,
-			"Stack overflow",
-			"This function has overflown its stack",
-			"Check for infinite loops",
-			"Build more efficient algorithms that bring O(n) time complexity",
-		)
-	}
-
+	// Still check params and return type
 	AnalyzeGeneric(function.GetReturnType(), mods, trace, true)
 
 	// Create a new StaticStack
@@ -98,10 +88,16 @@ func AnalyzeFun(
 		}
 	}
 
-	// Beyond this point, standard functions no longer
-	// need to be evaluated
-	if function.IsStd() {
-		return wrapper.NewFluentObject(dummyNothingType, nil)
+	returnValue := wrapper.NewFluentObject(
+		function.GetReturnType(),
+		nil,
+	)
+
+	// Check if the function has already been called
+	if _, ok := calledFunctions[function.GetName()]; ok {
+		// Stack overflow is caught at runtime, skip this check
+		// as it may target a recursive function incorrectly
+		return returnValue
 	}
 
 	// Used to skip tokens
@@ -184,5 +180,9 @@ func AnalyzeFun(
 
 	// Destroy the scope
 	variables.DestroyScope(trace)
-	return wrapper.NewFluentObject(dummyNothingType, nil)
+
+	// Mark the function as called
+	calledFunctions[function.GetName()] = struct{}{}
+
+	return returnValue
 }

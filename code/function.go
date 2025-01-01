@@ -5,7 +5,6 @@ import (
 	"fluent/token"
 	"fluent/tokenUtil/generic"
 	"fluent/tokenUtil/splitter"
-	"time"
 )
 
 // FunctionParam represents a parameter in the abstract syntax tree (AST).
@@ -20,6 +19,8 @@ type FunctionParam struct {
 
 // Function represents a function in the abstract syntax tree (AST).
 type Function struct {
+	// name holds the name of the function.
+	name string
 	// returnType holds the tokens representing the return type of the function.
 	returnType wrapper.TypeWrapper
 	// parameters holds the tokens representing the parameters of the function.
@@ -33,10 +34,6 @@ type Function struct {
 	std bool
 	// trace holds the token that triggered the creation of the function.
 	trace token.Token
-	// timesCalled holds the number of times the function has been called.
-	timesCalled int
-	// lastCalled holds the time the function was last called.
-	lastCalled time.Time
 }
 
 // NewFunctionParam creates a new FunctionParam.
@@ -50,6 +47,7 @@ func NewFunctionParam(name string, typ wrapper.TypeWrapper, tokens []token.Token
 
 // NewFunction creates a new Function
 func NewFunction(
+	name string,
 	returnType []token.Token,
 	parameters []FunctionParam,
 	body []token.Token,
@@ -68,6 +66,7 @@ func NewFunction(
 	}
 
 	return Function{
+		name:       name,
 		returnType: wrapper.NewTypeWrapper(returnType, trace),
 		parameters: wrappers,
 		body:       body,
@@ -105,26 +104,6 @@ func (f *Function) IsStd() bool {
 // GetTrace returns the token that triggered the creation of the function.
 func (f *Function) GetTrace() token.Token {
 	return f.trace
-}
-
-// GetTimesCalled returns the number of times the function has been called.
-func (f *Function) GetTimesCalled() int {
-	return f.timesCalled
-}
-
-// GetLastCalled returns the time the function was last called.
-func (f *Function) GetLastCalled() time.Time {
-	return f.lastCalled
-}
-
-// SetTimesCalled sets the number of times the function has been called.
-func (f *Function) SetTimesCalled(timesCalled int) {
-	f.timesCalled = timesCalled
-}
-
-// SetLastCalled sets the time the function was last called.
-func (f *Function) SetLastCalled(lastCalled time.Time) {
-	f.lastCalled = lastCalled
 }
 
 // BuildWithoutGenerics builds a new function, replacing
@@ -192,4 +171,9 @@ func (p FunctionParam) GetType() wrapper.TypeWrapper {
 // GetTokens returns the tokens of the parameter.
 func (p FunctionParam) GetTokens() []token.Token {
 	return p.tokens
+}
+
+// GetName returns the name of the function.
+func (f *Function) GetName() string {
+	return f.name
 }
