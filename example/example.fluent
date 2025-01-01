@@ -2,4 +2,5 @@ import "@std/io/print";
 
 fun main() {
     println("Hello, World!");
+    main();
 }

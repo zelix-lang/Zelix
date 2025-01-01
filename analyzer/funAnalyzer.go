@@ -100,6 +100,9 @@ func AnalyzeFun(
 		return returnValue
 	}
 
+	// Mark the function as called
+	calledFunctions[function.GetName()] = struct{}{}
+
 	// Used to skip tokens
 	skipToIndex := 0
 
@@ -177,12 +180,8 @@ func AnalyzeFun(
 	}
 
 	// TODO! Parse return statements
-
 	// Destroy the scope
 	variables.DestroyScope(trace)
-
-	// Mark the function as called
-	calledFunctions[function.GetName()] = struct{}{}
 
 	return returnValue
 }

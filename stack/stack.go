@@ -4,6 +4,7 @@ import (
 	"fluent/code/wrapper"
 	"fluent/logger"
 	"fluent/token"
+	"strings"
 )
 
 // Stack represents a stack of variables for a function
@@ -53,7 +54,13 @@ func (s *Stack) DestroyScope(trace token.Token) {
 
 	lastScope := s.internal[len(s.internal)-1]
 
-	for key, _ := range lastScope {
+	for key := range lastScope {
+		if strings.HasPrefix(key, "_") {
+			// Variables that start with an underscore
+			// are not checked for usage
+			continue
+		}
+
 		_, found := s.loadedVars[key]
 		if !found {
 			logger.TokenWarning(
@@ -61,6 +68,7 @@ func (s *Stack) DestroyScope(trace token.Token) {
 				"Unused variable "+key,
 				"The variable "+key+" was declared but never used",
 				"Remove the variable declaration",
+				"Or add an underscore to the variable name to ignore this warning",
 			)
 		} else {
 			delete(s.loadedVars, key)
