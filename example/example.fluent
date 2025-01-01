@@ -1,5 +1,5 @@
 import "@std/io/print";
 
 fun main() {
-    if "str" == "sb" {}
+    println("Hello, World!");
 }

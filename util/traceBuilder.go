@@ -59,5 +59,5 @@ func BuildTrace(
 		trace.WriteByte(char)
 	}
 
-	return strings.Trim(trace.String(), " ")
+	return strings.TrimSpace(trace.String())
 }

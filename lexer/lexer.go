@@ -37,12 +37,18 @@ var identifierRegex = regexp.MustCompile(`^[a-zA-Z_][a-zA-Z0-9_]*$`)
 var numberRegex = regexp.MustCompile(`^[0-9]+$`)
 
 // The standard library's path
-var stdPath = os.Getenv("FLUENT_STANDARD_PATH")
+var stdPath = os.Getenv("FLUENT_STDLIB_PATH")
 
 func extractImportPath(
 	result []token.Token,
 	i int,
 ) (string, bool) {
+	// Check if the stdlib env variable is set
+	if stdPath == "" {
+		logger.Error("FLUENT_STDLIB_PATH environment variable is not set")
+		os.Exit(1)
+	}
+
 	importPathRaw := result[i].GetValue()
 	isStd := false
 
@@ -127,24 +133,25 @@ func pushToken(
 	currentIndex int,
 	decimalLiteral bool,
 ) {
+	value := strings.TrimSpace(currentToken.String())
 	// Ignore empty tokens
-	if (strings.Trim(currentToken.String(), " ")) == "" {
+	if len(value) == 0 {
 		return
 	}
 
 	// See if the current token is a known token
-	knownToken, ok := GetKnownToken(currentToken.String())
+	knownToken, ok := GetKnownToken(value)
 	tokenType := token.Unknown
 
 	if ok {
 		tokenType = knownToken
 	} else if decimalLiteral {
 		tokenType = token.DecimalLiteral
-	} else if numberRegex.MatchString(currentToken.String()) {
+	} else if numberRegex.MatchString(value) {
 		tokenType = token.NumLiteral
 	} else {
 		// Check if the token is an identifier
-		if identifierRegex.MatchString(currentToken.String()) {
+		if identifierRegex.MatchString(value) {
 			tokenType = token.Identifier
 		}
 	}
@@ -153,7 +160,7 @@ func pushToken(
 		*tokens,
 		*token.NewToken(
 			tokenType,
-			currentToken.String(),
+			value,
 			file,
 			line,
 			column,

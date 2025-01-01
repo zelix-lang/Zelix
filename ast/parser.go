@@ -13,7 +13,7 @@ import (
 )
 
 // The standard library's path
-var stdPath = os.Getenv("FLUENT_STANDARD_PATH")
+var stdPath = os.Getenv("FLUENT_STDLIB_PATH")
 
 // pushParameter pushes the current parameter to the parameters list
 func pushParameter(
