@@ -1,5 +1,11 @@
 import "@std/io/print";
 
+fun abc(a: str, b: str) -> num {
+}
+
 fun main() {
-    println("Hello, World!");
+    let asd : dec = 1.35;
+
+    if abc("", "") == 1 {
+    }
 }

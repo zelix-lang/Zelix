@@ -15,9 +15,13 @@ import (
 // boolOperators contains all the boolean operators
 // use a map for O(1) lookup time
 var boolOperators = map[token.Type]struct{}{
-	token.And:   {},
-	token.Or:    {},
-	token.Equal: {},
+	token.And:                {},
+	token.Or:                 {},
+	token.Equal:              {},
+	token.LessThan:           {},
+	token.GreaterThan:        {},
+	token.LessThanOrEqual:    {},
+	token.GreaterThanOrEqual: {},
 }
 
 // isBooleanOperator checks if the given token is a boolean operator
@@ -120,6 +124,8 @@ func analyzeAssignmentTypes(lastValue *wrapper.TypeWrapper, newValue wrapper.Typ
 			"Cannot compare or join different types",
 			"This typically happens when you try to compare types that aren't compatible",
 			"For example: 1.2 == 1 or \"hello\" == 1",
+			"Expected: "+lastValue.Marshal(),
+			"Got: "+newValue.Marshal(),
 		)
 	}
 }
@@ -136,7 +142,7 @@ func analyzeBoolExpression(
 	expectingArithmeticOperator *bool,
 	lastValue *wrapper.TypeWrapper,
 ) {
-	firstToken := statement[*startAt]
+	firstToken := statement[0]
 	firstTokenType := firstToken.GetType()
 
 	if firstTokenType == token.OpenParen {
@@ -204,7 +210,6 @@ func analyzeBoolExpression(
 		if varFound {
 			value := variable.GetValue()
 			*lastValue = value.GetType()
-			*startAt += 1
 		} else {
 			// Parse the function call
 			argsRaw, _ := splitter.ExtractTokensBefore(
@@ -238,8 +243,7 @@ func analyzeBoolExpression(
 			*lastValue = newVal.GetType()
 		}
 
-		// Reassign for the next iteration
-		firstToken = statement[*startAt]
+		return
 	}
 
 	if firstTokenType == token.StringLiteral {
@@ -351,20 +355,6 @@ func AnalyzeBool(
 			continue
 		}
 
-		if expectingOperator {
-			checkBoolOperator(unit, remainingStatement[i:])
-
-			if unit.GetType() != token.Equal {
-				// Don't reset the last value for the equality operator
-				// as it can be used to compare different types
-				lastValue = dummyNothingType
-			}
-
-			expectingArithmeticOperator = false
-			expectingOperator = false
-			continue
-		}
-
 		if expectingArithmeticOperator {
 			if isBooleanOperator(unit) {
 				// Directly analyze the arithmetic expression
@@ -378,10 +368,25 @@ func AnalyzeBool(
 				// Reset the slice
 				lastArithmeticExpression = make([]token.Token, 0)
 				expectingArithmeticOperator = false
+				expectingOperator = false
 				continue
 			}
 
 			lastArithmeticExpression = append(lastArithmeticExpression, unit)
+			continue
+		}
+
+		if expectingOperator {
+			checkBoolOperator(unit, remainingStatement[i:])
+
+			if unit.GetType() != token.Equal {
+				// Don't reset the last value for the equality operator
+				// as it can be used to compare different types
+				lastValue = dummyNothingType
+			}
+
+			expectingArithmeticOperator = false
+			expectingOperator = false
 			continue
 		}
 
