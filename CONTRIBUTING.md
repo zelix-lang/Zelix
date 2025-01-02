@@ -28,6 +28,26 @@ On top of that, certain restrictions apply to the code contributed to the Fluent
 
 ---
 
+## 📝 Our standards
+
+Before you jump into editing and/or pulling code into the Fluent language,
+make sure your code follows our [Style Guide](STYLE_GUIDE.md),
+which provides a set of rules and guidelines to follow when writing code for the Fluent language.
+
+Also, please **Benchmark** your code before submitting it, we want
+to ensure that the code you submit is as fast as possible.
+
+This repository holds a built-in benchmarking tool that you can use to test your code.
+You may find it inside the `benchmark` directory.
+
+To use it, you can use the following command in your terminal:
+
+```bash
+go run benchmark/main.go path/to/your/file.go
+```
+
+---
+
 ## 🚀 Getting Started
 
 You may submit your code through a pull request. You can submit code independently or create a fork of the repository and submit your code through that fork.
