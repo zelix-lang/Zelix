@@ -36,6 +36,14 @@ func Help(message ...string) {
 	}
 }
 
+// Warning prints a set of warning messages to the console
+// in O(n) time
+func Warning(message ...string) {
+	for _, m := range message {
+		println(warningLevel, ansi.Colorize("yellow_bright", m))
+	}
+}
+
 // TokenWarning prints a warning message related to the given token
 // with its trace and help messages to the console
 // in O(n) time
@@ -44,7 +52,7 @@ func TokenWarning(
 	message string,
 	help ...string,
 ) {
-	println(warningLevel, message)
+	Warning(message)
 	Log("Full context:", token.GetTrace(), token.GetTraceContext())
 
 	for _, h := range help {

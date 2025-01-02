@@ -12,6 +12,24 @@ func main() {
 		Usage: "A blazingly fast programming language",
 		Commands: []*cli.Command{
 			{
+				Name:    "benchmark",
+				Usage:   "Runs the benchmarking tool",
+				Aliases: []string{"b"},
+				Flags: []cli.Flag{
+					&cli.IntFlag{
+						Name:     "times",
+						Value:    1000,
+						Usage:    "How many times should the code be tested",
+						Aliases:  []string{"t"},
+						Required: false,
+					},
+				},
+				Action: func(context *cli.Context) error {
+					cli2.BenchmarkCommand(context)
+					return nil
+				},
+			},
+			{
 				Name:    "run",
 				Usage:   "Runs a fluent file",
 				Aliases: []string{"r"},

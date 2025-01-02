@@ -37,13 +37,13 @@ which provides a set of rules and guidelines to follow when writing code for the
 Also, please **Benchmark** your code before submitting it, we want
 to ensure that the code you submit is as fast as possible.
 
-This repository holds a built-in benchmarking tool that you can use to test your code.
-You may find it inside the `benchmark` directory.
+This repository holds a built-in benchmarking tool that you can use to benchmark your code.
+This tool will run the static analyzer on the file located inside the `example` directory and output the results.
 
 To use it, you can use the following command in your terminal:
 
 ```bash
-go run benchmark/main.go path/to/your/file.go
+go run main.go -b
 ```
 
 ---
