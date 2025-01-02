@@ -113,8 +113,9 @@ func AnalyzeFun(
 
 		tokenType := unit.GetType()
 
-		if tokenType == token.If {
-			// Extract the "if" declaration
+		// If and while share the same logic, so we can combine them
+		if tokenType == token.If || tokenType == token.While {
+			// Extract the bool declaration
 			declaration, _ := splitter.ExtractTokensBefore(
 				function.GetBody()[i:],
 				token.OpenCurly,
