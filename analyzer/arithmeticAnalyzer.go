@@ -3,6 +3,7 @@ package analyzer
 import (
 	"fluent/code"
 	"fluent/code/mod"
+	"fluent/code/types"
 	"fluent/code/wrapper"
 	"fluent/logger"
 	"fluent/stack"
@@ -30,6 +31,7 @@ func checkArithmeticOperator(token token.Token, statement []token.Token) {
 			token,
 			"Invalid arithmetic expression",
 			"An arithmetic expression must start with a number or a variable",
+			"Got: "+token.GetValue(),
 			"Check the expression",
 		)
 	}
@@ -98,9 +100,36 @@ func AnalyzeArithmetic(
 	variables *stack.Stack,
 	functions *map[string]map[string]*code.Function,
 	mods *map[string]map[string]*mod.FluentMod,
+	lastValue *wrapper.FluentObject,
 ) {
 	statementLen := len(statement)
 	if statementLen == 0 {
+		return
+	}
+
+	// There is an edge case where this can be a boolean expression
+	// for example: 1.25 + 2.5 == 3.75
+	// since the first number is a decimal, this analyzer is called
+	// because the first token is a decimal, and it is most likely
+	// to be an arithmetic expression
+	if isBooleanOperator(statement[0]) {
+		// Directly call the boolean analyzer
+		AnalyzeBool(
+			statement[1:],
+			variables,
+			functions,
+			mods,
+			statement[0],
+		)
+
+		*lastValue = wrapper.NewFluentObject(
+			wrapper.ForceNewTypeWrapper(
+				"bool",
+				make([]wrapper.TypeWrapper, 0),
+				types.BooleanType,
+			),
+			true,
+		)
 		return
 	}
 
@@ -141,6 +170,27 @@ func AnalyzeArithmetic(
 
 			lastStatement = append(lastStatement, unit)
 			continue
+		}
+
+		if isBooleanOperator(unit) {
+			// Directly call the boolean analyzer
+			AnalyzeBool(
+				statement[1:],
+				variables,
+				functions,
+				mods,
+				unit,
+			)
+
+			*lastValue = wrapper.NewFluentObject(
+				wrapper.ForceNewTypeWrapper(
+					"bool",
+					make([]wrapper.TypeWrapper, 0),
+					types.BooleanType,
+				),
+				true,
+			)
+			return
 		}
 
 		if expectingOperator {

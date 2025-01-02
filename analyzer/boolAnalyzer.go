@@ -357,12 +357,15 @@ func AnalyzeBool(
 
 		if expectingArithmeticOperator {
 			if isBooleanOperator(unit) {
+				// Dummy object to pass to the arithmetic analyzer
+				dummyObject := wrapper.NewFluentObject(dummyNothingType, nil)
 				// Directly analyze the arithmetic expression
 				AnalyzeArithmetic(
 					lastArithmeticExpression,
 					variables,
 					functions,
 					mods,
+					&dummyObject,
 				)
 
 				// Reset the slice

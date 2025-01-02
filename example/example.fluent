@@ -1,6 +1,6 @@
 import "@std/io/print";
 
 fun main() {
-    println("Hello, World!");
+    let asd: bool = 1.2535 + 1.245 == 12.24;
     return;
 }

@@ -149,6 +149,7 @@ func AnalyzeStatement(
 			variables,
 			functions,
 			mods,
+			&lastValue,
 		)
 
 		return lastValue
