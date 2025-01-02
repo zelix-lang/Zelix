@@ -25,7 +25,7 @@ func CheckCommand(context *cli.Context) (*ast.FileCode, string) {
 		logger.Error("Empty file path")
 		logger.Help(
 			"Provide a file path after the run command",
-			"For example: "+ansi.Colorize("green_bright_bold", "fluent/ r file.fluent/"),
+			"For example: "+ansi.Colorize("green_bright_bold", "fluent r file.fluent"),
 		)
 
 		os.Exit(1)
