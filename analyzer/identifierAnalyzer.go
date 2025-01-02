@@ -23,6 +23,7 @@ func AnalyzeIdentifier(
 	lastValue *wrapper.FluentObject,
 	isArithmetic *bool,
 	isFunCall *bool,
+	isBool *bool,
 ) {
 	firstToken := statement[0]
 
@@ -110,4 +111,5 @@ func AnalyzeIdentifier(
 	}
 
 	*isFunCall = funFound
+	*isBool = typeWrapper.GetType() == types.BooleanType
 }

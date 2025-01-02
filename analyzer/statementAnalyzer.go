@@ -26,6 +26,7 @@ func AnalyzeStatement(
 	isArithmetic := false
 	isFunCall := false
 	isLastValConstant := false
+	isBool := false
 
 	// Used to check property access
 	// i.e.: object.property
@@ -78,6 +79,9 @@ func AnalyzeStatement(
 	)
 
 	switch firstTokenType {
+	case token.BoolLiteral:
+		isBool = true
+		break
 	case token.New:
 		AnalyzeObjectCreation(
 			beforeDot,
@@ -88,8 +92,6 @@ func AnalyzeStatement(
 			&lastValue,
 			inferToType,
 		)
-
-		break
 	case token.Identifier:
 		lastType := lastValue.GetType()
 		if hasProcessedParens && (lastType.GetType() == types.IntType || lastType.GetType() == types.DecimalType) {
@@ -110,9 +112,8 @@ func AnalyzeStatement(
 			&lastValue,
 			&isArithmetic,
 			&isFunCall,
+			&isBool,
 		)
-
-		break
 	default:
 		if hasProcessedParens {
 			lastType := lastValue.GetType()
@@ -148,6 +149,18 @@ func AnalyzeStatement(
 			variables,
 			functions,
 			mods,
+		)
+
+		return lastValue
+	}
+
+	if isBool {
+		AnalyzeBool(
+			remainingStatement,
+			variables,
+			functions,
+			mods,
+			remainingStatement[0],
 		)
 
 		return lastValue

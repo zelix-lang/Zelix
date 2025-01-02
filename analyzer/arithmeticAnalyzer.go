@@ -65,6 +65,7 @@ func checkStatement(
 
 	dummyBool := false
 	isArithmetic := false
+	isBool := false
 
 	AnalyzeIdentifier(
 		*lastStatement,
@@ -75,6 +76,7 @@ func checkStatement(
 		&dummyObj,
 		&isArithmetic,
 		&dummyBool,
+		&isBool,
 	)
 
 	if !isArithmetic {
