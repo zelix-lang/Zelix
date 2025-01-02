@@ -88,8 +88,9 @@ func AnalyzeFun(
 		}
 	}
 
+	functionReturnType := function.GetReturnType()
 	returnValue := wrapper.NewFluentObject(
-		function.GetReturnType(),
+		functionReturnType,
 		nil,
 	)
 
@@ -106,6 +107,14 @@ func AnalyzeFun(
 	// Used to skip tokens
 	skipToIndex := 0
 
+	//  Used to know if we're currently parsing a conditional statement
+	inConditional := false
+	conditionalCount := 0
+
+	// Used to keep track of function's validity
+	elseIfAllowed := false
+	hasReturn := false
+
 	for i, unit := range function.GetBody() {
 		if i < skipToIndex {
 			continue
@@ -114,7 +123,12 @@ func AnalyzeFun(
 		tokenType := unit.GetType()
 
 		// If and while share the same logic, so we can combine them
-		if tokenType == token.If || tokenType == token.While {
+		if tokenType == token.If || tokenType == token.ElseIf || tokenType == token.Else || tokenType == token.While {
+			if tokenType != token.While && tokenType != token.Else {
+				inConditional = true
+				conditionalCount++
+			}
+
 			// Extract the bool declaration
 			declaration, _ := splitter.ExtractTokensBefore(
 				function.GetBody()[i:],
@@ -125,6 +139,24 @@ func AnalyzeFun(
 				true,
 			)
 
+			if tokenType == token.Else {
+				if !elseIfAllowed {
+					logger.TokenError(
+						declaration[0],
+						"Unexpected conditional",
+						"An 'else if' statement must be preceded by an 'if' or 'else if' statement",
+						"Check the conditional statements",
+					)
+				}
+
+				elseIfAllowed = false
+				AnalyzeElse(declaration[1:])
+				// Skip to the end of the if statement
+				skipToIndex = i + len(declaration) + 1
+
+				continue
+			}
+
 			AnalyzeBool(declaration[1:], variables, functions, mods, unit)
 			variables.CreateScope()
 
@@ -132,6 +164,8 @@ func AnalyzeFun(
 			skipToIndex = i + len(declaration) + 1
 			continue
 		} else if tokenType == token.For {
+			elseIfAllowed = false
+
 			// Extract the loop declaration
 			declaration, _ := splitter.ExtractTokensBefore(
 				function.GetBody()[i:],
@@ -146,6 +180,8 @@ func AnalyzeFun(
 			skipToIndex = i + len(declaration) + 1
 			continue
 		} else if tokenType == token.Identifier || tokenType == token.Let || tokenType == token.Const || tokenType == token.New {
+			elseIfAllowed = false
+
 			// Extract the statement
 			statement, _ := splitter.ExtractTokensBefore(
 				function.GetBody()[i:],
@@ -169,6 +205,39 @@ func AnalyzeFun(
 			continue
 		} else if tokenType == token.CloseCurly {
 			variables.DestroyScope(unit)
+
+			if inConditional {
+				conditionalCount--
+				inConditional = conditionalCount > 0
+
+				// See if there is a next token and if it is an else if
+				if i+1 < len(function.GetBody()) {
+					nextToken := function.GetBody()[i+1]
+					elseIfAllowed = nextToken.GetType() == token.ElseIf || nextToken.GetType() == token.Else
+				}
+			}
+
+			continue
+		} else if tokenType == token.Return {
+			// Extract the statement
+			statement, _ := splitter.ExtractTokensBefore(
+				function.GetBody()[i:],
+				token.Semicolon,
+				// Don't handle nested statements here
+				false,
+				token.Unknown,
+				token.Unknown,
+				true,
+			)
+
+			skipToIndex = i + len(statement) + 1
+
+			// Analyze the statement
+			AnalyzeReturn(statement[1:], variables, functions, mods, returnValue)
+			if !hasReturn && !inConditional {
+				hasReturn = true
+			}
+
 			continue
 		}
 
@@ -180,7 +249,15 @@ func AnalyzeFun(
 		)
 	}
 
-	// TODO! Parse return statements
+	if !hasReturn && functionReturnType.GetType() != types.NothingType {
+		logger.TokenError(
+			trace,
+			"Missing return statement",
+			"This function must return a value",
+			"Add a return statement at the end of the function",
+		)
+	}
+
 	// Destroy the scope
 	variables.DestroyScope(trace)
 
