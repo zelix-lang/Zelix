@@ -24,7 +24,7 @@ func LicenseCommand(context *cli.Context) {
 	}
 
 	println("Copyright (C) 2024 Rodrigo R. & All Fluent Contributors")
-	println("This program comes with ABSOLUTELY NO WARRANTY; for details type `fluent/ license`.")
+	println("This program comes with ABSOLUTELY NO WARRANTY; for details type `fluent license`.")
 	println("This is free software, and you are welcome to redistribute it under certain conditions;")
-	println("type `fluent/ license --full` for details.")
+	println("type `fluent license --full` for details.")
 }

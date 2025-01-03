@@ -43,7 +43,7 @@ This tool will run the static analyzer on the file located inside the `example` 
 To use it, you can use the following command in your terminal:
 
 ```bash
-go run main.go -b
+go run main.go -bE
 ```
 
 ---

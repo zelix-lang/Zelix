@@ -14,7 +14,7 @@ import (
 )
 
 // CheckCommand represents the check command of the Fluent CLI
-// it checks a fluent/ file
+// it checks a fluent file
 func CheckCommand(context *cli.Context) (*ast.FileCode, string) {
 	// Get the file path
 	filePath := context.Args().First()

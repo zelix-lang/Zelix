@@ -14,7 +14,7 @@ func main() {
 			{
 				Name:    "benchmark",
 				Usage:   "Runs the benchmarking tool",
-				Aliases: []string{"b"},
+				Aliases: []string{"bE"},
 				Flags: []cli.Flag{
 					&cli.IntFlag{
 						Name:     "times",
@@ -26,6 +26,16 @@ func main() {
 				},
 				Action: func(context *cli.Context) error {
 					cli2.BenchmarkCommand(context)
+					return nil
+				},
+			},
+			{
+				Name:    "build",
+				Usage:   "Compiles your project into an executable",
+				Aliases: []string{"b"},
+				Flags:   []cli.Flag{},
+				Action: func(context *cli.Context) error {
+					cli2.BuildCommand(context)
 					return nil
 				},
 			},
