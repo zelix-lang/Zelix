@@ -10,6 +10,8 @@ import (
 type IrWrapper struct {
 	// runtime holds a map of runtime functions categorized by their names
 	runtime map[string][]string
+	// runtimeFunctions holds a map of runtime functions that allows quick lookup
+	runtimeFunctions map[*code.Function]string
 	// functions holds a map of functions categorized by their names
 	functions map[*code.Function]string
 	// globalVars holds a map of global variables categorized by their names
@@ -21,10 +23,11 @@ type IrWrapper struct {
 // NewIrWrapper creates a new IrWrapper
 func NewIrWrapper() *IrWrapper {
 	return &IrWrapper{
-		runtime:    make(map[string][]string),
-		functions:  make(map[*code.Function]string),
-		globalVars: make(map[string]*wrapper.FluentObject),
-		mods:       make(map[*mod.FluentMod]*int),
+		runtime:          make(map[string][]string),
+		functions:        make(map[*code.Function]string),
+		globalVars:       make(map[string]*wrapper.FluentObject),
+		mods:             make(map[*mod.FluentMod]*int),
+		runtimeFunctions: make(map[*code.Function]string),
 	}
 }
 
@@ -49,6 +52,7 @@ func (ir *IrWrapper) AddRuntimeFunction(name string, function *code.Function) {
 		ir.runtime[name] = make([]string, 0)
 	}
 
+	ir.runtimeFunctions[function] = name
 	ir.runtime[name] = append(ir.runtime[name], function.GetName())
 }
 
@@ -89,4 +93,10 @@ func (ir *IrWrapper) GetMods() map[*mod.FluentMod]*int {
 // GetMod gets a mod from the IrWrapper
 func (ir *IrWrapper) GetMod(mod *mod.FluentMod) *int {
 	return ir.mods[mod]
+}
+
+// GetRuntimeFunction checks if a function is runtime and returns its path
+func (ir *IrWrapper) GetRuntimeFunction(fun *code.Function) (string, bool) {
+	function, found := ir.runtimeFunctions[fun]
+	return function, found
 }

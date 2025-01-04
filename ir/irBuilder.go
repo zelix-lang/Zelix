@@ -86,5 +86,5 @@ func EmitIR(fileCode ast.FileCode) string {
 		}
 	}
 
-	return engine.MarshalIrWrapper(ir, &fileCode)
+	return engine.MarshalIrWrapper(ir, &fileCode, counter)
 }

@@ -3,6 +3,8 @@ package function
 import (
 	"fluent/ast"
 	"fluent/ir/wrapper"
+	"fluent/token"
+	"fluent/tokenUtil/splitter"
 	"strings"
 )
 
@@ -11,6 +13,7 @@ func MarshalFunctions(
 	ir *wrapper.IrWrapper,
 	fileCode *ast.FileCode,
 	builder *strings.Builder,
+	counter int,
 ) {
 	// Get all functions
 	functions := ir.GetFunctions()
@@ -52,11 +55,57 @@ func MarshalFunctions(
 
 		builder.WriteByte('\n')
 
+		// Used to skip tokens
+		skipToIndex := 0
+
 		// Write the function's body
-		// todo!()
+		body := function.GetBody()
+		for i, unit := range body {
+			if i < skipToIndex {
+				continue
+			}
+
+			tokenType := unit.GetType()
+
+			switch tokenType {
+			case token.If:
+			case token.ElseIf:
+			case token.Else:
+			case token.While:
+			case token.For:
+			case token.Return:
+			case token.New:
+			case token.Identifier:
+				statement, _ := splitter.ExtractTokensBefore(
+					body[i:],
+					token.Semicolon,
+					false,
+					token.Unknown,
+					token.Unknown,
+					true,
+				)
+
+				MarshalStatement(
+					statement,
+					builder,
+					&counter,
+					ir,
+					fileCode,
+					&skipToIndex,
+				)
+			default:
+				continue
+			}
+		}
+
+		// Add ret_main for the main function
+		if realName == "main" {
+			builder.WriteString("ret_main\n")
+		}
 
 		// Write the end of the function
 		builder.WriteString("endf ")
 		builder.WriteString(realName)
+		builder.WriteByte('\n')
 	}
 }
