@@ -19,7 +19,7 @@ func MarshalRuntime(
 
 		// Add the functions to the instruction
 		for _, function := range functions {
-			builder.WriteString(function.GetName())
+			builder.WriteString(function)
 			builder.WriteByte(' ')
 		}
 

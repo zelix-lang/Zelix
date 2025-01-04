@@ -7,6 +7,7 @@ import (
 	"fluent/ir/wrapper"
 	"os"
 	"path"
+	"strconv"
 	"strings"
 )
 
@@ -56,12 +57,13 @@ func EmitIR(fileCode ast.FileCode) string {
 		for _, mod := range mods {
 			ir.AddMod(mod)
 
-			// Iterate over the mod's functions
-			for name, function := range *mod.GetMethods() {
+			// Iterate over all functions and compute the counter
+			for _, function := range *mod.GetMethods() {
 				// Increment the counter
 				counter++
 
-				ir.AddFunction(name, function)
+				// Save the function to the IR
+				ir.AddFunction("x"+strconv.Itoa(counter), function)
 			}
 		}
 	}
@@ -78,8 +80,11 @@ func EmitIR(fileCode ast.FileCode) string {
 
 			// Increment the counter
 			counter++
+
+			// Save the function to the IR
+			ir.AddFunction("x"+strconv.Itoa(counter), function)
 		}
 	}
 
-	return engine.MarshalIrWrapper(ir)
+	return engine.MarshalIrWrapper(ir, &fileCode)
 }

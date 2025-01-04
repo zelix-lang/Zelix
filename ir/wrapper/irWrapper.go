@@ -9,9 +9,9 @@ import (
 // IrWrapper represents a wrapper for Fluent IR
 type IrWrapper struct {
 	// runtime holds a map of runtime functions categorized by their names
-	runtime map[string][]*code.Function
+	runtime map[string][]string
 	// functions holds a map of functions categorized by their names
-	functions map[string]*code.Function
+	functions map[*code.Function]string
 	// globalVars holds a map of global variables categorized by their names
 	globalVars map[string]*wrapper.FluentObject
 	// mods holds a map of FluentMod objects and the times each one of them has been built
@@ -21,8 +21,8 @@ type IrWrapper struct {
 // NewIrWrapper creates a new IrWrapper
 func NewIrWrapper() *IrWrapper {
 	return &IrWrapper{
-		runtime:    make(map[string][]*code.Function),
-		functions:  make(map[string]*code.Function),
+		runtime:    make(map[string][]string),
+		functions:  make(map[*code.Function]string),
 		globalVars: make(map[string]*wrapper.FluentObject),
 		mods:       make(map[*mod.FluentMod]*int),
 	}
@@ -30,25 +30,30 @@ func NewIrWrapper() *IrWrapper {
 
 // AddFunction adds a function to the IrWrapper
 func (ir *IrWrapper) AddFunction(name string, function *code.Function) {
-	ir.functions[name] = function
+	ir.functions[function] = name
 }
 
 // GetFunction gets a function from the IrWrapper
-func (ir *IrWrapper) GetFunction(name string) *code.Function {
-	return ir.functions[name]
+func (ir *IrWrapper) GetFunction(function *code.Function) string {
+	return ir.functions[function]
+}
+
+// GetFunctions gets all functions from the IrWrapper
+func (ir *IrWrapper) GetFunctions() map[*code.Function]string {
+	return ir.functions
 }
 
 // AddRuntimeFunction adds a runtime function to the IrWrapper
 func (ir *IrWrapper) AddRuntimeFunction(name string, function *code.Function) {
 	if _, found := ir.runtime[name]; !found {
-		ir.runtime[name] = make([]*code.Function, 0)
+		ir.runtime[name] = make([]string, 0)
 	}
 
-	ir.runtime[name] = append(ir.runtime[name], function)
+	ir.runtime[name] = append(ir.runtime[name], function.GetName())
 }
 
 // GetRuntimeFunctions gets all runtime functions from the IrWrapper
-func (ir *IrWrapper) GetRuntimeFunctions() map[string][]*code.Function {
+func (ir *IrWrapper) GetRuntimeFunctions() map[string][]string {
 	return ir.runtime
 }
 
