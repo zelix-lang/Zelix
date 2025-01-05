@@ -7,10 +7,7 @@ import (
 
 // MarshalRuntime adds the runtime instructions to the IR string
 // based on the given IrWrapper
-func MarshalRuntime(
-	ir *wrapper.IrWrapper,
-	builder *strings.Builder,
-) {
+func MarshalRuntime(ir *wrapper.IrWrapper, builder *strings.Builder) {
 	// Iterate over all runtime functions
 	for name, functions := range ir.GetRuntimeFunctions() {
 		builder.WriteString("runtime ")

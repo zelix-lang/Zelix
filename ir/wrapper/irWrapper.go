@@ -16,8 +16,10 @@ type IrWrapper struct {
 	functions map[*code.Function]string
 	// globalVars holds a map of global variables categorized by their names
 	globalVars map[string]*wrapper.FluentObject
-	// mods holds a map of FluentMod objects and the times each one of them has been built
-	mods map[*mod.FluentMod]*int
+	// mods holds a map of FluentMod objects and their counts
+	mods map[*mod.FluentMod]int
+	// modsProps holds a map of FluentMod properties and their counts
+	modsProps map[*mod.FluentMod]map[string]int
 }
 
 // NewIrWrapper creates a new IrWrapper
@@ -26,8 +28,9 @@ func NewIrWrapper() *IrWrapper {
 		runtime:          make(map[string][]string),
 		functions:        make(map[*code.Function]string),
 		globalVars:       make(map[string]*wrapper.FluentObject),
-		mods:             make(map[*mod.FluentMod]*int),
+		mods:             make(map[*mod.FluentMod]int),
 		runtimeFunctions: make(map[*code.Function]string),
+		modsProps:        make(map[*mod.FluentMod]map[string]int),
 	}
 }
 
@@ -77,21 +80,17 @@ func (ir *IrWrapper) GetGlobalVars() map[string]*wrapper.FluentObject {
 }
 
 // AddMod adds a mod to the IrWrapper
-func (ir *IrWrapper) AddMod(mod *mod.FluentMod) {
-	if _, found := ir.mods[mod]; !found {
-		ir.mods[mod] = new(int)
-	}
-
-	*ir.mods[mod]++
+func (ir *IrWrapper) AddMod(mod *mod.FluentMod, counter int) {
+	ir.mods[mod] = counter
 }
 
 // GetMods gets all mods from the IrWrapper
-func (ir *IrWrapper) GetMods() map[*mod.FluentMod]*int {
+func (ir *IrWrapper) GetMods() map[*mod.FluentMod]int {
 	return ir.mods
 }
 
 // GetMod gets a mod from the IrWrapper
-func (ir *IrWrapper) GetMod(mod *mod.FluentMod) *int {
+func (ir *IrWrapper) GetMod(mod *mod.FluentMod) int {
 	return ir.mods[mod]
 }
 
@@ -99,4 +98,18 @@ func (ir *IrWrapper) GetMod(mod *mod.FluentMod) *int {
 func (ir *IrWrapper) GetRuntimeFunction(fun *code.Function) (string, bool) {
 	function, found := ir.runtimeFunctions[fun]
 	return function, found
+}
+
+// AddModProp adds a mod property to the IrWrapper
+func (ir *IrWrapper) AddModProp(mod *mod.FluentMod, prop string, counter int) {
+	if _, found := ir.modsProps[mod]; !found {
+		ir.modsProps[mod] = make(map[string]int)
+	}
+
+	ir.modsProps[mod][prop] = counter
+}
+
+// GetModProp gets a mod property from the IrWrapper
+func (ir *IrWrapper) GetModProp(mod *mod.FluentMod, prop string) int {
+	return ir.modsProps[mod][prop]
 }

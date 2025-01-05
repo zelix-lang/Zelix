@@ -55,7 +55,8 @@ func EmitIR(fileCode ast.FileCode) string {
 
 	for _, mods := range *totalMods {
 		for _, mod := range mods {
-			ir.AddMod(mod)
+			counter++
+			ir.AddMod(mod, counter)
 
 			// Iterate over all functions and compute the counter
 			for _, function := range *mod.GetMethods() {

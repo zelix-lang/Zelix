@@ -7,9 +7,7 @@ import (
 )
 
 // BuildObject builds a statement into a FluentObject
-func BuildObject(
-	statement []token.Token,
-) wrapper.FluentObject {
+func BuildObject(statement []token.Token) wrapper.FluentObject {
 	// Manage single token statements
 	if len(statement) == 1 {
 		unit := statement[0]

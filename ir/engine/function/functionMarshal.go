@@ -3,6 +3,7 @@ package function
 import (
 	"fluent/ast"
 	"fluent/ir/wrapper"
+	"fluent/stack"
 	"fluent/token"
 	"fluent/tokenUtil/splitter"
 	"strings"
@@ -14,6 +15,7 @@ func MarshalFunctions(
 	fileCode *ast.FileCode,
 	builder *strings.Builder,
 	counter int,
+	variables *stack.Stack,
 ) {
 	// Get all functions
 	functions := ir.GetFunctions()
@@ -92,6 +94,7 @@ func MarshalFunctions(
 					ir,
 					fileCode,
 					&skipToIndex,
+					variables,
 				)
 			default:
 				continue

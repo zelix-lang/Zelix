@@ -5,9 +5,11 @@ import (
 	"fluent/ir/engine/function"
 	"fluent/ir/engine/runtime"
 	"fluent/ir/wrapper"
+	"fluent/stack"
 	"strings"
 )
 
+// MarshalIrWrapper marshals the IR wrapper into a string
 func MarshalIrWrapper(
 	ir *wrapper.IrWrapper,
 	fileCode *ast.FileCode,
@@ -17,7 +19,7 @@ func MarshalIrWrapper(
 	builder := strings.Builder{}
 
 	runtime.MarshalRuntime(ir, &builder)
-	function.MarshalFunctions(ir, fileCode, &builder, counter)
+	function.MarshalFunctions(ir, fileCode, &builder, counter, &stack.Stack{})
 
 	return builder.String()
 }

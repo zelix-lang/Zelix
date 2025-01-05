@@ -3,8 +3,10 @@ package function
 import (
 	"fluent/ast"
 	"fluent/code/types"
+	wrapper2 "fluent/code/wrapper"
 	builder2 "fluent/ir/engine/builder"
 	"fluent/ir/wrapper"
+	"fluent/stack"
 	"fluent/token"
 	"fluent/tokenUtil/splitter"
 	"strconv"
@@ -19,8 +21,17 @@ func MarshalStatement(
 	ir *wrapper.IrWrapper,
 	fileCode *ast.FileCode,
 	skipToIndex *int,
-) {
+	variables *stack.Stack,
+) wrapper2.FluentObject {
 	//startAt := 0
+	lastValue := wrapper2.NewFluentObject(
+		wrapper2.ForceNewTypeWrapper(
+			"nothing",
+			make([]wrapper2.TypeWrapper, 0),
+			types.NothingType,
+		),
+		nil,
+	)
 
 	// Use the first token to figure out what kind of statement this is
 	firstToken := statement[0]
@@ -100,26 +111,31 @@ func MarshalStatement(
 			builder.WriteByte(' ')
 			builder.WriteString(firstToken.GetValue())
 			builder.WriteByte(' ')
-
-			// Add all arguments
-			for i := range argsSplit {
-				// Retrieve the counter for this argument
-				counterNum := argsMap[i]
-
-				// Add the argument
-				builder.WriteString("x")
-				builder.WriteString(strconv.Itoa(counterNum))
-
-				if i < len(argsSplit)-1 {
-					builder.WriteByte(' ')
-				}
-			}
-
-			builder.WriteByte('\n')
 		} else {
-			// TODO!
+			// Retrieve the computed function
+			function := ir.GetFunction(fun)
+
+			// Write the function name
+			builder.WriteString("call ")
+			builder.WriteString(function)
+			builder.WriteByte(' ')
 		}
 
+		// Add all arguments
+		for i := range argsSplit {
+			// Retrieve the counter for this argument
+			counterNum := argsMap[i]
+
+			// Add the argument
+			builder.WriteString("x")
+			builder.WriteString(strconv.Itoa(counterNum))
+
+			if i < len(argsSplit)-1 {
+				builder.WriteByte(' ')
+			}
+		}
+
+		builder.WriteByte('\n')
 		// Destroy the arguments from the registry
 		for i := range argsSplit {
 			// Retrieve the counter for this argument
@@ -130,5 +146,9 @@ func MarshalStatement(
 			builder.WriteString(strconv.Itoa(counterNum))
 			builder.WriteByte('\n')
 		}
+	} else {
+
 	}
+
+	return lastValue
 }
