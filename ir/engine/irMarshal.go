@@ -4,6 +4,7 @@ import (
 	"fluent/ast"
 	"fluent/ir/engine/function"
 	"fluent/ir/engine/runtime"
+	"fluent/ir/engine/structure"
 	"fluent/ir/wrapper"
 	"fluent/stack"
 	"strings"
@@ -19,7 +20,8 @@ func MarshalIrWrapper(
 	builder := strings.Builder{}
 
 	runtime.MarshalRuntime(ir, &builder)
-	function.MarshalFunctions(ir, fileCode, &builder, counter, &stack.Stack{})
+	structure.MarshalMods(ir, &builder, &counter, fileCode)
+	function.MarshalFunctions(ir, fileCode, &builder, &counter, &stack.Stack{})
 
 	return builder.String()
 }

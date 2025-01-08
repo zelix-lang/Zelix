@@ -34,10 +34,7 @@ func ForceNewTypeWrapper(
 }
 
 // NewTypeWrapper creates a new TypeWrapper
-func NewTypeWrapper(
-	tokens []token.Token,
-	trace token.Token,
-) TypeWrapper {
+func NewTypeWrapper(tokens []token.Token, trace token.Token) TypeWrapper {
 	// Parse the tokens
 	if len(tokens) == 0 {
 		logger.TokenError(

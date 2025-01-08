@@ -197,7 +197,14 @@ func AnalyzeFun(
 
 			// Analyze the statement
 			if tokenType == token.Let || tokenType == token.Const {
-				AnalyzeVariableDeclaration(statement[1:], variables, functions, mods, tokenType == token.Const)
+				AnalyzeVariableDeclaration(
+					statement[1:],
+					variables,
+					functions,
+					mods,
+					tokenType == token.Const,
+					statement[0],
+				)
 				continue
 			}
 

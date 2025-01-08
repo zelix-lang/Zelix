@@ -121,14 +121,7 @@ func AnalyzeObjectCreation(
 		)
 	}
 
-	generics := make(map[string]wrapper.TypeWrapper)
-
-	for i, template := range module.GetTemplates() {
-		param := finalType.GetParameters()[i]
-		generics[template.GetBaseType()] = param
-	}
-
-	withoutGenerics, wereChangesMade := module.BuildWithoutGenerics(generics)
+	withoutGenerics, wereChangesMade := module.BuildWithoutGenerics(finalType)
 
 	if wereChangesMade {
 		// Construct variables

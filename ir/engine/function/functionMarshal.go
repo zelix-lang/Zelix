@@ -14,7 +14,7 @@ func MarshalFunctions(
 	ir *wrapper.IrWrapper,
 	fileCode *ast.FileCode,
 	builder *strings.Builder,
-	counter int,
+	counter *int,
 	variables *stack.Stack,
 ) {
 	// Get all functions
@@ -90,7 +90,7 @@ func MarshalFunctions(
 				MarshalStatement(
 					statement,
 					builder,
-					&counter,
+					counter,
 					ir,
 					fileCode,
 					&skipToIndex,

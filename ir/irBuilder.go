@@ -27,11 +27,7 @@ func buildRuntimeInstructions(
 	// Delete slashes from the beginning of the path
 	rawPath = strings.TrimPrefix(rawPath, "/")
 	rawNoSuffix := strings.TrimSuffix(rawPath, ".fluent")
-	includePath := path.Join(
-		stdPath,
-		"include",
-		rawNoSuffix+".c",
-	)
+	includePath := path.Join(stdPath, "include", rawNoSuffix+".c")
 
 	// See if a C implementation exists
 	if _, err := os.Stat(includePath); err != nil {
@@ -80,7 +76,9 @@ func EmitIR(fileCode ast.FileCode) string {
 			}
 
 			// Increment the counter
-			counter++
+			if function.GetName() != "main" {
+				counter++
+			}
 
 			// Save the function to the IR
 			ir.AddFunction("x"+strconv.Itoa(counter), function)

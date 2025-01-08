@@ -157,7 +157,15 @@ func (sm *FluentMod) GetVariables() *stack.Stack {
 // BuildWithoutGenerics builds a new module, replacing
 // generics with the given types and a boolean indicating
 // if any changes were made
-func (sm *FluentMod) BuildWithoutGenerics(types map[string]wrapper.TypeWrapper) (FluentMod, bool) {
+func (sm *FluentMod) BuildWithoutGenerics(typeWrapper wrapper.TypeWrapper) (FluentMod, bool) {
+	generics := make(map[string]wrapper.TypeWrapper)
+
+	// Build the generics map
+	for i, template := range sm.GetTemplates() {
+		genericParam := typeWrapper.GetParameters()[i]
+		generics[template.GetBaseType()] = genericParam
+	}
+
 	if len(sm.templates) == 0 {
 		return *sm, false
 	}
@@ -169,12 +177,12 @@ func (sm *FluentMod) BuildWithoutGenerics(types map[string]wrapper.TypeWrapper) 
 	privateMethods := make(map[string]*code.Function)
 
 	for i, template := range sm.templates {
-		templates[i] = generic.ConvertGeneric(template, types)
+		templates[i] = generic.ConvertGeneric(template, generics)
 	}
 
 	for key, value := range sm.properties {
 		newValue := wrapper.NewFluentObject(
-			generic.ConvertGeneric(value.GetType(), types),
+			generic.ConvertGeneric(value.GetType(), generics),
 			value.GetValue(),
 		)
 		properties[key] = &newValue
@@ -183,12 +191,12 @@ func (sm *FluentMod) BuildWithoutGenerics(types map[string]wrapper.TypeWrapper) 
 	for _, declaration := range sm.varDeclarations {
 		varDeclarations = append(
 			varDeclarations,
-			generic.ConvertVariableGenerics(declaration, types),
+			generic.ConvertVariableGenerics(declaration, generics),
 		)
 	}
 
 	for key, value := range sm.methods {
-		newFunction := value.BuildWithoutGenerics(types)
+		newFunction := value.BuildWithoutGenerics(generics)
 
 		if value.IsPublic() {
 			publicMethods[key] = &newFunction
