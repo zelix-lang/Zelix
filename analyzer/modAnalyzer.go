@@ -39,6 +39,7 @@ func AnalyzeMod(
 			functions,
 			mods,
 			varDecl[0].GetType() == token.Const,
+			varDecl[0],
 		)
 	}
 

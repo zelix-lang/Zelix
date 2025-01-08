@@ -139,6 +139,7 @@ func AnalyzeObjectCreation(
 				functions,
 				mods,
 				declaration[0].GetType() == token.Const,
+				declaration[0],
 			)
 		}
 	}

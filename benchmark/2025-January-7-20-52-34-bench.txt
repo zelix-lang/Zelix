@@ -1,0 +1,140 @@
+The Fluent Programming Language
+--------------------------------
+
+Started at: 2025-01-07 20:52:11.043087741 -0500 -05 m=+1.586508462
+Times: 120
+Running on linux amd64
+
+=== example.fluent ===
+import "@std/io/print";
+
+mod A {
+}
+
+fun main() {
+    println("Hello, world!");
+}
+Time 1: 206.932999ms
+Time 2: 222.439249ms
+Time 3: 202.550992ms
+Time 4: 184.168034ms
+Time 5: 196.217331ms
+Time 6: 183.011806ms
+Time 7: 179.364743ms
+Time 8: 190.298249ms
+Time 9: 189.257048ms
+Time 10: 188.35679ms
+Time 11: 190.550378ms
+Time 12: 193.077459ms
+Time 13: 178.032653ms
+Time 14: 180.432554ms
+Time 15: 197.101457ms
+Time 16: 197.601036ms
+Time 17: 187.561295ms
+Time 18: 185.128289ms
+Time 19: 198.698179ms
+Time 20: 183.224126ms
+Time 21: 198.311815ms
+Time 22: 216.54182ms
+Time 23: 182.601209ms
+Time 24: 228.581757ms
+Time 25: 202.297749ms
+Time 26: 202.463553ms
+Time 27: 218.160541ms
+Time 28: 202.448887ms
+Time 29: 241.187203ms
+Time 30: 246.733819ms
+Time 31: 206.889771ms
+Time 32: 194.902774ms
+Time 33: 202.335255ms
+Time 34: 192.802355ms
+Time 35: 191.689288ms
+Time 36: 172.253956ms
+Time 37: 192.882604ms
+Time 38: 200.203478ms
+Time 39: 203.881341ms
+Time 40: 189.55772ms
+Time 41: 184.739413ms
+Time 42: 213.514325ms
+Time 43: 196.220059ms
+Time 44: 178.364754ms
+Time 45: 181.207869ms
+Time 46: 205.839004ms
+Time 47: 205.34278ms
+Time 48: 200.027897ms
+Time 49: 240.538446ms
+Time 50: 200.742378ms
+Time 51: 249.467427ms
+Time 52: 220.798744ms
+Time 53: 176.76587ms
+Time 54: 185.874132ms
+Time 55: 170.767587ms
+Time 56: 207.176962ms
+Time 57: 188.52679ms
+Time 58: 209.512399ms
+Time 59: 180.918237ms
+Time 60: 191.892041ms
+Time 61: 195.279433ms
+Time 62: 185.122846ms
+Time 63: 197.642597ms
+Time 64: 202.37912ms
+Time 65: 185.332092ms
+Time 66: 168.373834ms
+Time 67: 192.472078ms
+Time 68: 192.895667ms
+Time 69: 180.678123ms
+Time 70: 210.600743ms
+Time 71: 200.422157ms
+Time 72: 198.591187ms
+Time 73: 186.464366ms
+Time 74: 203.272815ms
+Time 75: 193.373665ms
+Time 76: 209.385289ms
+Time 77: 206.745273ms
+Time 78: 197.471695ms
+Time 79: 190.472721ms
+Time 80: 180.017351ms
+Time 81: 232.018044ms
+Time 82: 214.357878ms
+Time 83: 197.618642ms
+Time 84: 191.76144ms
+Time 85: 193.281614ms
+Time 86: 182.04723ms
+Time 87: 207.370917ms
+Time 88: 193.506784ms
+Time 89: 194.036604ms
+Time 90: 196.062431ms
+Time 91: 168.961973ms
+Time 92: 204.436799ms
+Time 93: 182.103175ms
+Time 94: 184.692904ms
+Time 95: 182.186287ms
+Time 96: 179.664653ms
+Time 97: 202.917393ms
+Time 98: 202.420191ms
+Time 99: 172.346502ms
+Time 100: 196.061943ms
+Time 101: 193.162536ms
+Time 102: 176.748135ms
+Time 103: 194.832521ms
+Time 104: 200.012887ms
+Time 105: 206.320779ms
+Time 106: 170.759559ms
+Time 107: 194.917867ms
+Time 108: 190.554509ms
+Time 109: 207.422183ms
+Time 110: 188.837801ms
+Time 111: 195.883708ms
+Time 112: 203.155484ms
+Time 113: 191.86439ms
+Time 114: 197.711954ms
+Time 115: 203.760734ms
+Time 116: 195.396843ms
+Time 117: 191.7634ms
+Time 118: 177.004245ms
+Time 119: 208.232906ms
+Time 120: 198.324327ms
+Average: 196.254015ms
+=== END OF example.fluent ===
+
+Ended at: 2025-01-07 20:52:34.595035761 -0500 -05 m=+25.138457459

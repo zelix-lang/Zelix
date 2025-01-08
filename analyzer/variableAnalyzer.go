@@ -21,10 +21,11 @@ func AnalyzeVariableDeclaration(
 	functions *map[string]map[string]*code.Function,
 	mods *map[string]map[string]*mod.FluentMod,
 	constant bool,
+	trace token.Token,
 ) {
 	if len(statement) < 5 {
 		logger.TokenError(
-			statement[0],
+			trace,
 			"Invalid variable declaration",
 			"A variable declaration must have the form 'var name = value'",
 			"Check the variable declaration",
