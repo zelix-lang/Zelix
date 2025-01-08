@@ -1,5 +1,12 @@
 import "@std/io/print";
 
+mod B {
+}
+
+mod Abc {
+    let;
+}
+
 fun main() {
     println("Hello, world!");
 }
