@@ -15,6 +15,7 @@ func MarshalSingleMod(
 	builder *strings.Builder,
 	counter *int,
 	fileCode *ast.FileCode,
+	comment string,
 ) {
 	// Build variables that have mods with generics
 	props := module.GetVarDeclarations()
@@ -41,6 +42,8 @@ func MarshalSingleMod(
 	// Write the mod with its counter
 	builder.WriteString("mod x")
 	builder.WriteString(strconv.Itoa(modCounter))
+	builder.WriteString(" ; ")
+	builder.WriteString(comment)
 	builder.WriteRune('\n')
 
 	// Marshal properties
@@ -76,6 +79,7 @@ func MarshalMods(
 			continue
 		}
 
-		MarshalSingleMod(module, ir, builder, counter, fileCode)
+		dummyWrapper := module.BuildDummyWrapper()
+		MarshalSingleMod(module, ir, builder, counter, fileCode, dummyWrapper.Marshal())
 	}
 }

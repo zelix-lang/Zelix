@@ -12,6 +12,62 @@ import (
 	"strings"
 )
 
+func MarshalTypeWrapperGenerics(
+	param wrapper2.TypeWrapper,
+	firstToken token.Token,
+	builder *strings.Builder,
+	counter *int,
+	fileCode *ast.FileCode,
+	ir *wrapper.IrWrapper,
+) {
+	// See if it's a mod
+	if param.GetType() != types.ModType {
+		return
+	}
+
+	// See if it has templates
+	if len(param.GetParameters()) < 1 {
+		return
+	}
+
+	// Get the mod
+	nestedMod, _, _ := mod.FindMod(
+		fileCode.GetModules(),
+		param.GetBaseType(),
+		firstToken.GetFile(),
+	)
+
+	// Build without generics
+	builtMod, _ := nestedMod.BuildWithoutGenerics(param)
+	actualWrapper := builtMod.BuildDummyWrapper()
+
+	// Mark this mod as built
+	modCounter, _ := ir.GetMod(&builtMod)
+
+	if modCounter == -1 {
+		// Add the mod to the IR
+		*counter++
+		ir.AddMod(&builtMod, *counter)
+	}
+
+	ir.AddGenericMod(actualWrapper.Marshal(), &builtMod)
+
+	// Marshall the parameters of the parameter
+	for _, template := range param.GetParameters() {
+		MarshalTypeWrapperGenerics(
+			template,
+			firstToken,
+			builder,
+			counter,
+			fileCode,
+			ir,
+		)
+	}
+
+	// Recursively marshal the mod
+	MarshalSingleMod(&builtMod, ir, builder, counter, fileCode, param.Marshal())
+}
+
 // MarshalGenericsInVar marshals the generics in the given variable into the given strings.Builder
 // and returns the TypeWrapper that represents the variable's type
 func MarshalGenericsInVar(
@@ -57,36 +113,6 @@ func MarshalGenericsInVar(
 		return typeWrapper
 	}
 
-	// Iterate over the parameters
-	for _, param := range typeWrapper.GetParameters() {
-		// See if it's a mod
-		if param.GetType() != types.ModType {
-			continue
-		}
-
-		// See if it has templates
-		if len(param.GetParameters()) < 1 {
-			continue
-		}
-
-		// Get the mod
-		nestedMod, _, _ := mod.FindMod(
-			fileCode.GetModules(),
-			param.GetBaseType(),
-			firstToken.GetFile(),
-		)
-
-		// Build without generics
-		builtMod, _ := nestedMod.BuildWithoutGenerics(typeWrapper)
-
-		// Mark this mod as built
-		ir.AddGenericMod(typeWrapper.Marshal(), &builtMod)
-
-		// Recursively marshal the mod
-		MarshalSingleMod(&builtMod, ir, builder, counter, fileCode)
-	}
-
-	// Marshal the mod itself
 	module, _, _ := mod.FindMod(
 		fileCode.GetModules(),
 		typeWrapper.GetBaseType(),
@@ -94,10 +120,17 @@ func MarshalGenericsInVar(
 	)
 
 	builtMod, _ := module.BuildWithoutGenerics(typeWrapper)
-	// Mark this mod as built
-	ir.AddGenericMod(typeWrapper.Marshal(), &builtMod)
+	dummyWrapper := builtMod.BuildDummyWrapper()
 
-	MarshalSingleMod(&builtMod, ir, builder, counter, fileCode)
+	// Marshal the mod itself
+	MarshalTypeWrapperGenerics(
+		dummyWrapper,
+		firstToken,
+		builder,
+		counter,
+		fileCode,
+		ir,
+	)
 
 	return typeWrapper
 }

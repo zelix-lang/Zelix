@@ -4,9 +4,7 @@ mod Bcd<T> {
 }
 
 mod Abc {
-    let my_var : Bcd<str> = new Bcd<>();
-    let my_var2 : Bcd<str> = new Bcd<>();
-    let my_var3 : Bcd<num> = new Bcd<>();
+    let my_var : Bcd<Bcd<Bcd<num>>> = new Bcd<>();
 }
 
 fun main() {
