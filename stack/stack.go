@@ -47,7 +47,7 @@ func (s *Stack) Append(key string, value wrapper.FluentObject, constant bool) {
 }
 
 // DestroyScope destroys the current scope
-func (s *Stack) DestroyScope(trace token.Token) {
+func (s *Stack) DestroyScope(trace token.Token, inMod bool) {
 	if len(s.internal) == 0 {
 		return
 	}
@@ -62,7 +62,7 @@ func (s *Stack) DestroyScope(trace token.Token) {
 		}
 
 		_, found := s.loadedVars[key]
-		if !found {
+		if !found && !inMod && key != "this" {
 			logger.TokenWarning(
 				trace,
 				"Unused variable "+key,
@@ -70,7 +70,7 @@ func (s *Stack) DestroyScope(trace token.Token) {
 				"Remove the variable declaration",
 				"Or add an underscore to the variable name to ignore this warning",
 			)
-		} else {
+		} else if found {
 			delete(s.loadedVars, key)
 		}
 	}

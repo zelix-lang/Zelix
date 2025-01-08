@@ -474,7 +474,6 @@ func Parse(tokens []token.Token, allowMods bool, allowInlineVars bool) *FileCode
 						continue
 					}
 
-					inMod = false
 					expectingFun = true
 
 					// Create the function
@@ -486,8 +485,10 @@ func Parse(tokens []token.Token, allowMods bool, allowInlineVars bool) *FileCode
 						currentFunctionPublic,
 						strings.HasPrefix(unit.GetFile(), stdPath),
 						currentFunctionTrace,
+						!allowMods,
 					)
 
+					inMod = false
 					result.AddFunction(
 						unit,
 						unit.GetFile(),

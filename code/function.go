@@ -34,6 +34,8 @@ type Function struct {
 	std bool
 	// trace holds the token that triggered the creation of the function.
 	trace token.Token
+	// inMod holds whether the function is in a module or not.
+	inMod bool
 }
 
 // NewFunctionParam creates a new FunctionParam.
@@ -54,6 +56,7 @@ func NewFunction(
 	public bool,
 	std bool,
 	trace token.Token,
+	inMod bool,
 ) Function {
 	wrappers := make([]FunctionParam, len(parameters))
 
@@ -73,6 +76,7 @@ func NewFunction(
 		public:     public,
 		std:        std,
 		trace:      trace,
+		inMod:      inMod,
 	}
 }
 
@@ -176,4 +180,9 @@ func (p FunctionParam) GetTokens() []token.Token {
 // GetName returns the name of the function.
 func (f *Function) GetName() string {
 	return f.name
+}
+
+// IsInMod returns whether the function is in a module or not.
+func (f *Function) IsInMod() bool {
+	return f.inMod
 }

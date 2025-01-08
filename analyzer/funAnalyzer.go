@@ -211,7 +211,7 @@ func AnalyzeFun(
 			AnalyzeStatement(statement, variables, functions, mods, dummyNothingType)
 			continue
 		} else if tokenType == token.CloseCurly {
-			variables.DestroyScope(unit)
+			variables.DestroyScope(unit, function.IsInMod())
 
 			if inConditional {
 				conditionalCount--
@@ -266,7 +266,7 @@ func AnalyzeFun(
 	}
 
 	// Destroy the scope
-	variables.DestroyScope(trace)
+	variables.DestroyScope(trace, function.IsInMod())
 
 	return returnValue
 }
