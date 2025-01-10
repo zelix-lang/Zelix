@@ -169,13 +169,8 @@ func MarshalVariable(
 	// See if the type is a mod
 	isMod := typeWrapper.GetType() == types.ModType
 
-	if isMod {
-		// Write the mod_mov instruction to construct a mod inside a variable
-		builder.WriteString("mod_mov x")
-	} else {
-		// Write the mov instruction
-		builder.WriteString("mov x")
-	}
+	// Write the mov instruction
+	builder.WriteString("mov x")
 
 	builder.WriteString(strconv.Itoa(*counter))
 	builder.WriteString(" ")

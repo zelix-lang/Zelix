@@ -1,10 +1,9 @@
 import "@std/io/print";
 
-mod Bcd<T> {
-}
+mod Bcd {}
 
 mod Abc {
-    let my_var : Bcd<Bcd<Bcd<num>>> = new Bcd<>();
+    let a: Bcd = new Bcd();
 }
 
 fun main() {

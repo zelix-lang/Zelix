@@ -16,7 +16,7 @@ type IrWrapper struct {
 	// mods holds a map of FluentMod objects and their counts
 	mods map[*mod.FluentMod]int
 	// modsProps holds a map of FluentMod properties and their counts
-	modsProps map[*mod.FluentMod]map[string]int
+	modsProps map[string]map[string]int
 	// genericMods holds a map of already-built generic mods
 	genericMods map[string]*mod.FluentMod
 }
@@ -28,7 +28,7 @@ func NewIrWrapper() *IrWrapper {
 		functions:        make(map[*code.Function]string),
 		mods:             make(map[*mod.FluentMod]int),
 		runtimeFunctions: make(map[*code.Function]string),
-		modsProps:        make(map[*mod.FluentMod]map[string]int),
+		modsProps:        make(map[string]map[string]int),
 		genericMods:      make(map[string]*mod.FluentMod),
 	}
 }
@@ -92,16 +92,22 @@ func (ir *IrWrapper) GetRuntimeFunction(fun *code.Function) (string, bool) {
 
 // AddModProp adds a mod property to the IrWrapper
 func (ir *IrWrapper) AddModProp(mod *mod.FluentMod, prop string, counter int) {
-	if _, found := ir.modsProps[mod]; !found {
-		ir.modsProps[mod] = make(map[string]int)
+	dummyWrapper := mod.BuildDummyWrapper()
+	wrapperMarshal := dummyWrapper.Marshal()
+
+	if _, found := ir.modsProps[wrapperMarshal]; !found {
+		ir.modsProps[wrapperMarshal] = make(map[string]int)
 	}
 
-	ir.modsProps[mod][prop] = counter
+	ir.modsProps[wrapperMarshal][prop] = counter
 }
 
 // GetModProp gets a mod property from the IrWrapper
 func (ir *IrWrapper) GetModProp(mod *mod.FluentMod, prop string) int {
-	return ir.modsProps[mod][prop]
+	dummyWrapper := mod.BuildDummyWrapper()
+	wrapperMarshal := dummyWrapper.Marshal()
+
+	return ir.modsProps[wrapperMarshal][prop]
 }
 
 // AddGenericMod adds a generic mod to the IrWrapper
