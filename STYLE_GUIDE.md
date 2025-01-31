@@ -111,3 +111,19 @@ if err != nil {
 
 Unless there is underlying logic that requires it, do not use `panic()`.
 Instead use the `logger` package to log information, warns and errors.
+
+**6. Copyright**
+
+All files must contain the following header at the top of the file:
+
+```go
+/*
+   The Fluent Programming Language
+   -----------------------------------------------------
+   Copyright (c) 2025 (Your Name) & All Fluent Contributors
+   This program comes with ABSOLUTELY NO WARRANTY.
+   For details type `fluent -l`. This is free software,
+   and you are welcome to redistribute it under certain
+   conditions; type `fluent -l -f` for details.
+*/
+```
