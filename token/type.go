@@ -1,3 +1,13 @@
+/*
+   The Fluent Programming Language
+   -----------------------------------------------------
+   Copyright (c) 2025 Rodrigo R. & All Fluent Contributors
+   This program comes with ABSOLUTELY NO WARRANTY.
+   For details type `fluent l`. This is free software,
+   and you are welcome to redistribute it under certain
+   conditions; type `fluent l -f` for details.
+*/
+
 package token
 
 // Type represents the type of any token in the source code.
@@ -23,23 +33,11 @@ const (
 	Return
 	// Assign represents an assignment token.
 	Assign
-	// AssignAdd represents an addition assignment token.
-	AssignAdd
-	// AssignSub represents a subtraction assignment token.
-	AssignSub
-	// AssignSlash represents a division assignment token.
-	AssignSlash
-	// AssignAsterisk represents a multiplication assignment token.
-	AssignAsterisk
 
 	// Plus represents a plus token.
 	Plus
 	// Minus represents a minus token.
 	Minus
-	// Increment represents an increment token.
-	Increment
-	// Decrement represents a decrement token.
-	Decrement
 
 	// Asterisk represents an asterisk token.
 	Asterisk
@@ -127,6 +125,8 @@ const (
 
 	// In represents an in token.
 	In
+	// To represents a "to" token.
+	To
 
 	// Break represents a break token.
 	Break

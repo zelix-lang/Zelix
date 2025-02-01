@@ -1,0 +1,22 @@
+import "@std::io::print";
+import "loop.fluent";
+
+/*
+    The Fluent Programming Language
+    Test file 6
+*/
+
+mod Abc {
+    pub fun Abc() {
+
+    }
+}
+
+pub fun prop() {
+    ((println("Hello, world!")));
+    (new Asd()).asd();
+    new Asd().asd();
+
+    let my_var: Asd<bool, str, num> = new Asd();
+    my_var.asd();
+}

@@ -1,3 +1,13 @@
+/*
+   The Fluent Programming Language
+   -----------------------------------------------------
+   Copyright (c) 2025 Rodrigo R. & All Fluent Contributors
+   This program comes with ABSOLUTELY NO WARRANTY.
+   For details type `fluent l`. This is free software,
+   and you are welcome to redistribute it under certain
+   conditions; type `fluent l -f` for details.
+*/
+
 package lexer
 
 import (
@@ -20,21 +30,16 @@ var knownTokens = map[string]token.Type{
 	"mod":      token.Mod,
 	"new":      token.New,
 	"in":       token.In,
+	"to":       token.To,
 
 	// Operators and symbols
 	"=":  token.Assign,
 	"+":  token.Plus,
 	"-":  token.Minus,
-	"++": token.Increment,
-	"--": token.Decrement,
 	"*":  token.Asterisk,
 	"/":  token.Slash,
 	"<":  token.LessThan,
 	">":  token.GreaterThan,
-	"+=": token.AssignAdd,
-	"-=": token.AssignSub,
-	"/=": token.AssignSlash,
-	"*=": token.AssignAsterisk,
 	"==": token.Equal,
 	"!=": token.NotEqual,
 	">=": token.GreaterThanOrEqual,
@@ -76,8 +81,7 @@ var knownTokens = map[string]token.Type{
 	"import": token.Import,
 }
 
-// GetKnownToken attempts to find known tokens
-func GetKnownToken(entry string) (token.Type, bool) {
+func getKnownToken(entry string) (token.Type, bool) {
 	val, ok := knownTokens[entry]
 
 	if !ok {

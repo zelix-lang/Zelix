@@ -1,12 +1,11 @@
 /*
    The Fluent Programming Language
-   By Rodrigo R.
    -----------------------------------------------------
-   Copyright (c) 2025 Rodrigo R.
+   Copyright (c) 2025 Rodrigo R. & All Fluent Contributors
    This program comes with ABSOLUTELY NO WARRANTY.
-   For details type `fluent -l`. This is free software,
+   For details type `fluent l`. This is free software,
    and you are welcome to redistribute it under certain
-   conditions; type `fluent -l -f` for details.
+   conditions; type `fluent l -f` for details.
 */
 
 package main
@@ -36,7 +35,7 @@ func main() {
 					},
 				},
 				Action: func(context *cli.Context) error {
-					cli2.BenchmarkCommand(context)
+					// TODO!
 					return nil
 				},
 			},

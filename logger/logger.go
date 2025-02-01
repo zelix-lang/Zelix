@@ -1,80 +1,71 @@
+/*
+   The Fluent Programming Language
+   -----------------------------------------------------
+   Copyright (c) 2025 Rodrigo R. & All Fluent Contributors
+   This program comes with ABSOLUTELY NO WARRANTY.
+   For details type `fluent -l`. This is free software,
+   and you are welcome to redistribute it under certain
+   conditions; type `fluent -l -f` for details.
+*/
+
 package logger
 
 import (
 	"fluent/ansi"
-	"fluent/token"
-	"os"
+	"fmt"
+	"github.com/muesli/termenv"
 )
 
-var logLevel = ansi.Colorize("cyan_bright_bold", "LOG |")
-var errorLevel = ansi.Colorize("red_bright_bold", "ERROR |")
-var helpLevel = ansi.Colorize("green_bright_bold", "HELP |")
-var warningLevel = ansi.Colorize("yellow_bright_bold", "WARNING |")
-var helpPrefix = ansi.Colorize("black_bright", "  |>")
+// Prefixes for the different log levels
+var errorPrefix = ansi.Colorize(ansi.BrightRed, "[ERROR] ").Bold()
+var infoPrefix = ansi.Colorize(ansi.BrightBlue, "[INFO]  ").Bold()
+var warnPrefix = ansi.Colorize(ansi.BrightYellow, "[WARN] ").Bold()
+var helpPrefix = ansi.Colorize(ansi.BrightGreen, "[HELP]  ").Bold()
 
-// Log prints a set of messages to the console
-// in O(n) time
-func Log(message ...string) {
+// printMessageImpl prints each message with the given prefix.
+// Parameters:
+//   - prefix: the style to be applied to the prefix.
+//   - message: variadic string arguments to be printed.
+//   - color: the color to be applied to the message.
+//   - colorize: whether to colorize the message or not.
+func printMessageImpl(prefix termenv.Style, color string, colorize bool, message ...string) {
 	for _, m := range message {
-		println(logLevel, m)
+		fmt.Print(prefix)
+		if colorize {
+			fmt.Print(ansi.Colorize(color, m))
+		} else {
+			fmt.Print(m)
+		}
+
+		// Print a new line
+		fmt.Println()
 	}
 }
 
-// Error prints a set of error messages to the console
-// in O(n) time
-func Error(message ...string) {
-	for _, m := range message {
-		println(errorLevel, ansi.Colorize("red_bright", m))
-	}
+// Warn prints the provided messages with a warning prefix.
+// Parameters:
+//   - message: variadic string arguments to be logged.
+func Warn(message ...string) {
+	printMessageImpl(warnPrefix, "", false, message...)
 }
 
-// Help prints a set of help messages to the console
-// in O(n) time
+// Info prints the provided messages with an info prefix.
+// Parameters:
+//   - message: variadic string arguments to be logged.
+func Info(message ...string) {
+	printMessageImpl(infoPrefix, ansi.BrightBlack, true, message...)
+}
+
+// Help prints the provided messages with a help prefix.
+// Parameters:
+//   - message: variadic string arguments to be logged.
 func Help(message ...string) {
-	for _, m := range message {
-		println(helpPrefix, helpLevel, m)
-	}
+	printMessageImpl(helpPrefix, "", false, message...)
 }
 
-// Warning prints a set of warning messages to the console
-// in O(n) time
-func Warning(message ...string) {
-	for _, m := range message {
-		println(warningLevel, ansi.Colorize("yellow_bright", m))
-	}
-}
-
-// TokenWarning prints a warning message related to the given token
-// with its trace and help messages to the console
-// in O(n) time
-func TokenWarning(
-	token token.Token,
-	message string,
-	help ...string,
-) {
-	Warning(message)
-	Log("Full context:", token.GetTrace(), token.GetTraceContext())
-
-	for _, h := range help {
-		Help(h)
-	}
-}
-
-// TokenError prints an error message related to the given token
-// with its trace and help messages to the console
-// and then exits the program with code 1
-// in O(n) time
-func TokenError(
-	token token.Token,
-	message string,
-	help ...string,
-) {
-	Error(message)
-	Log("Full context:", token.GetTrace(), token.GetTraceContext())
-
-	for _, h := range help {
-		Help(h)
-	}
-
-	os.Exit(1)
+// Error prints the provided messages with an error prefix.
+// Parameters:
+//   - message: variadic string arguments to be logged.
+func Error(message ...string) {
+	printMessageImpl(errorPrefix, ansi.BrightRed, true, message...)
 }

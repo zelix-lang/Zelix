@@ -1,0 +1,15 @@
+import "block.fluent";
+
+/*
+    The Fluent Programming Language
+    Test file 5
+*/
+
+pub fun nested() {
+    ((println("Hello, world!")));
+    (((((((println("Hello, world!"))))))));
+
+    if true {
+        (((((((println("Hello, world!"))))))));
+    }
+}

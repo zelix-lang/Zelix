@@ -1,11 +1,11 @@
-import "@std/io/print";
-
-mod Bcd {}
+import "@std::io::print";
 
 mod Abc {
-    let a: Bcd = new Bcd();
+    pub fun Abc() {
+
+    }
 }
 
-fun main() {
-    println("Hello, world!");
+fun example(_a: str) {
+    &&"a";
 }
