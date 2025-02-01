@@ -122,8 +122,8 @@ All files must contain the following header at the top of the file:
    -----------------------------------------------------
    Copyright (c) 2025 (Your Name) & All Fluent Contributors
    This program comes with ABSOLUTELY NO WARRANTY.
-   For details type `fluent -l`. This is free software,
+   For details type `fluent l`. This is free software,
    and you are welcome to redistribute it under certain
-   conditions; type `fluent -l -f` for details.
+   conditions; type `fluent l -f` for details.
 */
 ```
