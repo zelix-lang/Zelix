@@ -32,6 +32,7 @@ func ConvertToTypeWrapper(tree ast.AST) TypeWrapper {
 			Line:   tree.Line,
 			Column: tree.Column,
 		},
+		Children: &[]*TypeWrapper{},
 	}
 
 	// Use a queue to process the AST in a breadth-first manner.
@@ -72,6 +73,7 @@ func ConvertToTypeWrapper(tree ast.AST) TypeWrapper {
 						Line:   child.Line,
 						Column: child.Column,
 					},
+					Children: &[]*TypeWrapper{},
 				}
 
 				// Add the new TypeWrapper to the parent's children
