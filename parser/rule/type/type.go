@@ -133,7 +133,7 @@ func ProcessType(input []token.Token, trace token.Token) (ast.AST, error.Error) 
 				continue
 			}
 
-			if unit.TokenType == token.Ampersand {
+			if unit.TokenType == token.Ampersand || unit.TokenType == token.And {
 				hasPointers = true
 				if hasMetIdentifier {
 					return ast.AST{}, error.Error{
@@ -152,6 +152,17 @@ func ProcessType(input []token.Token, trace token.Token) (ast.AST, error.Error) 
 					File:     &unit.File,
 					Children: &[]*ast.AST{},
 				})
+
+				if unit.TokenType == token.And {
+					// Add a pointer for the reference
+					*result.Children = append(*result.Children, &ast.AST{
+						Rule:     ast.Pointer,
+						Line:     unit.Line,
+						Column:   unit.Column,
+						File:     &unit.File,
+						Children: &[]*ast.AST{},
+					})
+				}
 
 				continue
 			}
