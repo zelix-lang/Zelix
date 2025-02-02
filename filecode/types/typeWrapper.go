@@ -37,13 +37,13 @@ type pairQueueElement struct {
 //
 // Returns:
 //   - bool: True if the TypeWrappers are equivalent, otherwise false.
-func (w *TypeWrapper) Compare(other TypeWrapper) bool {
+func (t *TypeWrapper) Compare(other TypeWrapper) bool {
 	result := true
 
 	// Use a queue to compare the children
 	queue := make([]pairQueueElement, 0)
 	queue = append(queue, pairQueueElement{
-		w:     w,
+		w:     t,
 		other: &other,
 	})
 
@@ -70,7 +70,16 @@ func (w *TypeWrapper) Compare(other TypeWrapper) bool {
 			break
 		}
 
-		// Compare the number of children
+		if element.w.Children == nil && element.other.Children != nil {
+			result = false
+			break
+		}
+
+		if element.w.Children != nil && element.other.Children == nil {
+			result = false
+			break
+		}
+
 		if len(*element.w.Children) != len(*element.other.Children) {
 			result = false
 			break
