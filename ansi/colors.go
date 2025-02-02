@@ -13,7 +13,6 @@ package ansi
 const (
 	Reset        = "\033[0m"
 	BrightBlue   = "\033[94m"
-	BrightGreen  = "\033[92m"
 	BrightRed    = "\033[91m"
 	BrightYellow = "\033[93m"
 	BrightPurple = "\033[95m"
@@ -24,5 +23,4 @@ const (
 	BoldBrightRed    = "\033[1;91m"
 	BoldBrightYellow = "\033[1;93m"
 	BoldBrightPurple = "\033[1;95m"
-	BoldBrightBlack  = "\033[1;90m"
 )
