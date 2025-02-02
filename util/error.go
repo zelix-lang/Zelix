@@ -11,6 +11,7 @@
 package util
 
 import (
+	"bufio"
 	"fluent/ansi"
 	"fluent/logger"
 	"fluent/parser/error"
@@ -24,26 +25,64 @@ import (
 //
 // Parameters:
 //   - lines: A slice of strings representing the lines of the source code.
+//   - idx: The index at which the line to be printed lives.
 //   - line: The line number to be formatted (1-based).
 //
 // Returns:
 //
 //	A formatted string with the line number and the line content, or an empty string if the line number is out of range.
-func buildLineString(lines []string, line int) string {
-	if line-1 < 0 || line-1 >= len(lines) {
-		return ""
-	}
-
-	result := ""
+func buildLineString(lines []string, idx int, line int) string {
+	// Use a builder
+	builder := strings.Builder{}
 
 	// Append the line number
-	result += strconv.Itoa(line)
-	result += " | "
+	builder.WriteString(strconv.Itoa(line))
+	builder.WriteString(" | ")
 
 	// Append the line
-	result += lines[line-1]
+	builder.WriteString(lines[idx])
 
-	return result
+	return builder.String()
+}
+
+// getLines extracts specific lines from the content based on the provided line numbers.
+// It scans the content line by line and collects the lines that match the target line numbers.
+//
+// Parameters:
+//   - content: A pointer to the string containing the full content.
+//   - minimumValue: The minimum line number to start scanning from (1-based).
+//   - targetLines: A map of line numbers to be extracted (1-based).
+//
+// Returns:
+//   - A slice of strings containing the extracted lines.
+//   - The number of lines that were successfully extracted.
+func getLines(content *string, minimumValue int, targetLines map[int]bool) ([]string, int) {
+	scanner := bufio.NewScanner(strings.NewReader(*content))
+	lineNumber := 1
+
+	elementsInserted := 0
+	result := make([]string, 3)
+
+	for scanner.Scan() {
+		if lineNumber < minimumValue {
+			lineNumber++
+			continue
+		}
+
+		if elementsInserted == 3 {
+			break
+		}
+
+		// Push the line
+		if targetLines[lineNumber] {
+			result[elementsInserted] = scanner.Text()
+			elementsInserted++
+		}
+
+		lineNumber++
+	}
+
+	return result, elementsInserted
 }
 
 // BuildAndPrintDetails prints detailed information about a specific line and column in the source code.
@@ -64,43 +103,58 @@ func BuildAndPrintDetails(contents, filepath *string, line int, column int, isEr
 	}
 
 	// Split the contents by lines
-	lines := strings.Split(*contents, "\n")
+	lines, insertedLines := getLines(contents, line-1, map[int]bool{
+		line - 1: true,
+		line:     true,
+		line + 1: true,
+	})
+
+	// Used to determine where to start
+	startAt := 0
 
 	// Print some context
-	if line > 1 {
-		print("         ")
+	if insertedLines == 3 {
+		startAt++
+		fmt.Print("         ")
 		// See if line - 1 ends in 9
 		if (line-1)%10 == 9 {
-			print(" ")
+			fmt.Print(" ")
 		}
 
 		// Build the line string
-		fmt.Print(ansi.Colorize(ansi.BrightBlack, buildLineString(lines, line-1)))
-		fmt.Println()
+		fmt.Println(
+			fmt.Sprintf(
+				"%s%s%s",
+				ansi.BrightBlack,
+				buildLineString(lines, 0, line-1),
+				ansi.Reset,
+			),
+		)
 	}
 
-	// Print the line with the error
-	print("       ")
 	// Print an arrow pointing to the column
-	fmt.Print(ansi.Colorize(highlightColor, "> ").Bold())
-	fmt.Print(ansi.Colorize(highlightColor, buildLineString(lines, line)).Bold())
-	fmt.Println()
-
-	print("       ")
-	// Print an arrow pointing to the column
-	fmt.Print(ansi.Colorize(highlightColor, "> ").Bold())
-	fmt.Print(ansi.Colorize(highlightColor, strconv.Itoa(line)).Bold())
-	fmt.Print(ansi.Colorize(highlightColor, " | ").Bold())
+	fmt.Println(
+		fmt.Sprintf(
+			"%s       > %s%s",
+			highlightColor,
+			buildLineString(lines, 1, line),
+			ansi.Reset,
+		),
+	)
 
 	// Used to know if the pinpoint has met at least one character
 	pinpointMet := false
 
 	// Print a pinpoint to the column
-	for i := 0; i < len(lines[line-1]); i++ {
-		character := lines[line-1][i]
+	targetLine := lines[startAt]
+	startAt++
+
+	pinpointStr := strings.Builder{}
+	for i := 0; i < len(targetLine); i++ {
+		character := targetLine[i]
 
 		if character == ' ' && !pinpointMet {
-			print(" ")
+			pinpointStr.WriteRune(' ')
 			continue
 		}
 
@@ -109,33 +163,48 @@ func BuildAndPrintDetails(contents, filepath *string, line int, column int, isEr
 		}
 
 		if i == column-1 {
-			fmt.Print(ansi.Colorize(highlightColor, "^").Bold())
+			pinpointStr.WriteRune('^')
 		} else {
-			fmt.Print(ansi.Colorize(ansi.BrightBlack, "-").Bold())
+			pinpointStr.WriteRune('-')
 		}
 	}
 
-	println()
+	// Print the pinpoint
+	fmt.Println(
+		fmt.Sprintf(
+			"%s       > %s | %s%s",
+			highlightColor,
+			strconv.Itoa(line),
+			pinpointStr.String(),
+			ansi.Reset,
+		),
+	)
 
 	// Print some context
-	if line < len(lines) {
+	if insertedLines == 3 {
 		// See if line ends in 9
 		if line%10 == 9 {
-			print("        ")
+			fmt.Print("        ")
 		} else {
-			print("         ")
+			fmt.Print("         ")
 		}
 
 		// Build the line string
-		fmt.Print(ansi.Colorize(ansi.BrightBlack, buildLineString(lines, line+1)))
-		println()
+		fmt.Println(
+			ansi.Colorize(ansi.BrightBlack, buildLineString(lines, 2, line+1)),
+		)
 	}
 
-	print("         ")
-	fmt.Print(ansi.Colorize(ansi.BrightPurple, "=> "))
-	fmt.Print(ansi.Colorize(ansi.BrightBlue, DiscardCwd(*filepath)))
-	fmt.Print(ansi.Colorize(ansi.BrightPurple, ":"+strconv.Itoa(line)+":"+strconv.Itoa(column)))
-	println()
+	fmt.Println(
+		fmt.Sprintf(
+			"%s         => %s:%s:%s%s",
+			ansi.BrightPurple,
+			DiscardCwd(filepath),
+			strconv.Itoa(line),
+			strconv.Itoa(column),
+			ansi.Reset,
+		),
+	)
 }
 
 // PrintError prints a formatted error message with context from the source code.
@@ -171,7 +240,7 @@ func BuildMessageFromParsingError(parsingError error.Error) string {
 
 	expectedLen := len(parsingError.Expected)
 	for i, expected := range parsingError.Expected {
-		message.WriteString(ansi.Colorize(ansi.BrightRed, expected.String()).Bold().String())
+		message.WriteString(ansi.Colorize(ansi.BrightRed, expected.String()))
 
 		if i < expectedLen-1 {
 			message.WriteString(" or ")

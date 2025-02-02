@@ -51,7 +51,7 @@ func pushToken(
 	file string,
 	decimalLiteral bool,
 ) {
-	value := strings.TrimSpace(currentToken.String())
+	value := currentToken.String()
 	// Ignore empty tokens
 	if len(value) == 0 {
 		return
@@ -120,6 +120,7 @@ func Lex(input string, file string) ([]token.Token, Error) {
 	// Iterate over each character
 	for i, char := range input {
 		if i < countToIndex {
+			column++
 			continue
 		}
 
@@ -232,27 +233,26 @@ func Lex(input string, file string) ([]token.Token, Error) {
 		}
 
 		// Handle arrows (->)
-		if char == '>' && i-1 >= 0 && input[i-1] == '-' {
-			// Remove the last token
-			result = result[:len(result)-1]
-
-			arrow := "->"
+		if char == '-' && i+1 < inputLength && input[i+1] == '>' {
+			// Skip the next token
+			countToIndex = i + 2
 
 			// Create a new strings.Builder because pushToken takes a pointer
 			var arrowBuilder strings.Builder
+			arrowBuilder.WriteString("->")
 
-			arrowBuilder.WriteString(arrow)
 			pushToken(&arrowBuilder, &result, line, column, file, decimalLiteral)
 			decimalLiteral = false
 			continue
 		}
 
 		// Handle increments, decrements, and logical operators
-		if (char == '|' || char == '&') && (i+1 < inputLength && rune(input[i-1]) == char) {
-			// Remove the last token
-			result = result[:len(result)-1]
-
+		if (char == '|' || char == '&') && (i+1 < inputLength && rune(input[i+1]) == char) {
 			incDec := string(char) + string(char)
+
+			// Skip the next token
+			countToIndex = i + 2
+
 			// Create a new strings.Builder because pushToken takes a pointer
 			var incDecBuilder strings.Builder
 
@@ -273,15 +273,15 @@ func Lex(input string, file string) ([]token.Token, Error) {
 		}
 
 		// Handle "==", "!=", ">=", "<=", "->"
-		if char == '=' && i-1 >= 0 && chainableTokens[rune(input[i-1])] == 1 {
-			// Remove the last token
-			result = result[:len(result)-1]
+		if i+1 < inputLength && chainableTokens[char] == 1 && input[i+1] == '=' {
+			// Skip the tokens
+			countToIndex = i + 2
 
 			// Create a new strings.Builder because pushToken takes a pointer
 			var eqBuilder strings.Builder
 
-			eqBuilder.WriteByte(input[i-1])
 			eqBuilder.WriteRune(char)
+			eqBuilder.WriteByte(input[i+1])
 			pushToken(&eqBuilder, &result, line, column, file, decimalLiteral)
 			decimalLiteral = false
 			continue

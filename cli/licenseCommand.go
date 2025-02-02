@@ -11,7 +11,6 @@
 package cli
 
 import (
-	"fluent/ansi"
 	"fmt"
 	"github.com/urfave/cli/v2"
 )
@@ -20,7 +19,7 @@ import (
 func printFullLicense() {
 	fmt.Println(
 		"You may check the full license at:",
-		ansi.Underline("https://www.gnu.org/licenses/gpl-3.0.en.html"),
+		"https://www.gnu.org/licenses/gpl-3.0.en.html",
 	)
 }
 

@@ -1,11 +1,5 @@
 import "@std::io::print";
 
-mod Abc {
-    pub fun Abc() {
-
-    }
-}
-
 fun example(_a: str) {
-    &&"a";
+    println("Hello, world!");
 }

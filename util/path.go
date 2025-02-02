@@ -15,37 +15,31 @@ import (
 	"strings"
 )
 
+var cwd, _ = os.Getwd()
+
 // DiscardCwd removes the current working directory (cwd) prefix from the given path.
 // If the cwd is not a prefix of the path, the original path is returned.
 // If the path starts with a slash after removing the cwd, the slash is also removed.
 // Parameters:
 // - path: The file path from which to discard the cwd.
 // Returns: The modified path with the cwd and leading slash removed, if applicable.
-func DiscardCwd(path string) string {
-	// Get the cwd
-	cwd, err := os.Getwd()
-
-	// Check if there was an error
-	if err != nil {
-		return path
-	}
-
+func DiscardCwd(path *string) string {
 	// Check if the cwd is a prefix of the path
-	if strings.HasPrefix(path, cwd) {
+	if strings.HasPrefix(*path, cwd) {
 		// Remove the cwd from the path
-		path = path[len(cwd):]
+		*path = (*path)[len(cwd):]
 	} else {
 		// Return the path as is
-		return path
+		return *path
 	}
 
 	// Check if the path starts with a slash
-	if strings.HasPrefix(path, "/") {
+	if strings.HasPrefix(*path, "/") {
 		// Remove the slash
-		path = path[1:]
+		*path = (*path)[1:]
 	}
 
-	return path
+	return *path
 }
 
 // DirExists checks if a directory exists at the given path.
@@ -76,4 +70,20 @@ func GetDir(path string) string {
 	}
 
 	return path[:lastIndex]
+}
+
+// FileName returns the file name from the given file path.
+// Parameters:
+// - path: The file path from which to extract the file name.
+// Returns: The file name part of the path, or the entire path if no separator is found.
+func FileName(path *string) string {
+	// Get the last index of the separator
+	lastIndex := strings.LastIndex(*path, string(os.PathSeparator))
+
+	// Check if the separator was found
+	if lastIndex == -1 {
+		return *path
+	}
+
+	return (*path)[lastIndex+1:]
 }

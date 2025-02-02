@@ -22,6 +22,7 @@ import (
 	"fluent/lexer"
 	"fluent/logger"
 	"fluent/parser"
+	"fluent/state"
 	"fluent/util"
 	"os"
 	"strings"
@@ -34,9 +35,9 @@ var stdPath = os.Getenv("FLUENT_STD_PATH")
 const pathSeparator = string(os.PathSeparator)
 
 type queueElement struct {
-	path     string
+	path     *string
 	trace    *ast2.AST
-	contents string
+	contents *string
 }
 
 // ConvertToFileCode converts the given entry file and all its imports to a map of FileCode.
@@ -59,7 +60,7 @@ func ConvertToFileCode(entry string) map[string]filecode.FileCode {
 	// Use a queue to convert the file and all of its imports
 	queue := []queueElement{
 		{
-			path: entry,
+			path: &entry,
 		},
 	}
 
@@ -79,24 +80,24 @@ func ConvertToFileCode(entry string) map[string]filecode.FileCode {
 		trace := element.trace
 		elContents := element.contents
 
-		isStd := strings.HasPrefix(path, stdPath)
+		isStd := strings.HasPrefix(*path, stdPath)
 
 		// Detect circular imports
-		if seenImports[path] {
+		if seenImports[*path] {
 			logger.Error("Circular import detected")
 			logger.Info("Full import chain:")
 
 			spaces := 0
 			for importPath := range seenImports {
-				if path == importPath {
+				if *path == importPath {
 					logger.Info(
 						ansi.Colorize(
-							ansi.BrightRed,
-							strings.Repeat("  ", spaces)+"-> "+util.DiscardCwd(importPath)+" (Circular)",
-						).Bold().String(),
+							ansi.BoldBrightRed,
+							strings.Repeat("  ", spaces)+"-> "+util.DiscardCwd(&importPath)+" (Circular)",
+						),
 					)
 				} else {
-					logger.Info(strings.Repeat("  ", spaces) + "-> " + util.DiscardCwd(importPath))
+					logger.Info(strings.Repeat("  ", spaces) + "-> " + util.DiscardCwd(&importPath))
 				}
 
 				spaces++
@@ -105,46 +106,49 @@ func ConvertToFileCode(entry string) map[string]filecode.FileCode {
 			// Also print the current circular import's details
 			logger.Info(
 				ansi.Colorize(
-					ansi.BrightRed,
+					ansi.BoldBrightRed,
 					strings.Repeat("  ", spaces)+"-> "+util.DiscardCwd(path)+" (Circular)",
-				).Bold().String(),
+				),
 			)
 
 			logger.Info("Full details:")
-			util.BuildAndPrintDetails(&elContents, &path, trace.Line, trace.Column, true)
+			util.BuildAndPrintDetails(elContents, path, trace.Line, trace.Column, true)
 
 			os.Exit(1)
 		}
 
 		if !isStd {
-			seenImports[path] = true
+			seenImports[*path] = true
 		}
 
 		// Read the file
-		contents := util.ReadFile(path)
+		contents := util.ReadFile(*path)
 
 		// Lex the file
-		tokens, lexerError := lexer.Lex(contents, path)
+		tokens, lexerError := lexer.Lex(contents, *path)
 
 		if lexerError.Message != "" {
 			// Build and print the error
-			util.PrintError(&contents, &path, &lexerError.Message, lexerError.Line, lexerError.Column)
+			util.PrintError(&contents, path, &lexerError.Message, lexerError.Line, lexerError.Column)
 			os.Exit(1)
 		}
 
+		state.Emit(state.Lexing, util.FileName(path))
 		// Parse the tokens to an AST
-		ast, parsingError := parser.Parse(tokens, path)
+		ast, parsingError := parser.Parse(tokens, *path)
+		state.PassAllSpinners()
 
 		if parsingError.IsError() {
 			errorMessage := util.BuildMessageFromParsingError(parsingError)
 
 			// Build and print the error
-			util.PrintError(&contents, &path, &errorMessage, parsingError.Line, parsingError.Column)
+			util.PrintError(&contents, path, &errorMessage, parsingError.Line, parsingError.Column)
 			os.Exit(1)
 		}
 
+		state.Emit(state.Parsing, util.FileName(path))
 		code := filecode.FileCode{
-			Path:      path,
+			Path:      *path,
 			Functions: make(map[string]function2.Function),
 			Modules:   make(map[string]module.Module),
 			Imports:   make([]string, 0),
@@ -172,7 +176,7 @@ func ConvertToFileCode(entry string) map[string]filecode.FileCode {
 					importPath = strings.ReplaceAll(importPath, "::", pathSeparator)
 				} else {
 					// Get the file's directory
-					dir := util.GetDir(path)
+					dir := util.GetDir(*path)
 
 					// Join the directory with the path
 					importPath = dir + pathSeparator + importPath
@@ -187,8 +191,8 @@ func ConvertToFileCode(entry string) map[string]filecode.FileCode {
 
 				// Queue the path
 				queue = append(queue, queueElement{
-					path:     importPath,
-					contents: contents,
+					path:     &importPath,
+					contents: &contents,
 					trace:    child,
 				})
 			case ast2.Function:
@@ -196,7 +200,7 @@ func ConvertToFileCode(entry string) map[string]filecode.FileCode {
 				fn := function.ConvertFunction(child)
 
 				// Check for redefinitions
-				redefinition.CheckRedefinition(code.Functions, fn.Name, fn, contents, path)
+				redefinition.CheckRedefinition(code.Functions, fn.Name, fn, contents, *path)
 
 				code.Functions[fn.Name] = fn
 			case ast2.Module:
@@ -204,14 +208,15 @@ func ConvertToFileCode(entry string) map[string]filecode.FileCode {
 				mod := module2.ConvertModule(child, contents)
 
 				// Check for redefinitions
-				redefinition.CheckRedefinition(code.Modules, mod.Name, mod, contents, path)
+				redefinition.CheckRedefinition(code.Modules, mod.Name, mod, contents, *path)
 
 				code.Modules[mod.Name] = mod
 			default:
 			}
 		}
 
-		result[path] = code
+		state.PassAllSpinners()
+		result[*path] = code
 	}
 
 	return result

@@ -10,35 +10,16 @@
 
 package ansi
 
-import (
-	"github.com/muesli/termenv"
-	"os"
-)
-
-// Create a new output for colorizing the terminal
-var output = termenv.NewOutput(os.Stdout)
+import "fmt"
 
 // Colorize applies a foreground color to the given message.
 // Parameters:
-//   - hex: A string representing the color in hexadecimal format.
+//   - ansi: A string representing the color in ANSI format.
 //   - message: The message to be colorized.
 //
 // Returns:
 //
-//	A Style object with the applied color.
-func Colorize(hex, message string) termenv.Style {
-	coloredMessage := output.String(message)
-	coloredMessage = coloredMessage.Foreground(output.Color(hex))
-	return coloredMessage
-}
-
-// Underline applies an underline style to the given message.
-// Parameters:
-//   - message: The message to be underlined.
-//
-// Returns:
-//
-//	A Style object with the applied underline.
-func Underline(message string) termenv.Style {
-	return output.String(message).Underline()
+//	A string with the applied color.
+func Colorize(ansi, message string) string {
+	return fmt.Sprintf("%s%s%s", ansi, message, Reset)
 }

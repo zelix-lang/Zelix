@@ -10,11 +10,19 @@
 
 package ansi
 
-// == Bright colors ==
+const (
+	Reset        = "\033[0m"
+	BrightBlue   = "\033[94m"
+	BrightGreen  = "\033[92m"
+	BrightRed    = "\033[91m"
+	BrightYellow = "\033[93m"
+	BrightPurple = "\033[95m"
+	BrightBlack  = "\033[90m"
 
-const BrightBlue = "#6ea6ff"
-const BrightGreen = "#2eff5f"
-const BrightRed = "#ff3333"
-const BrightYellow = "#fffb7a"
-const BrightPurple = "#bf94ff"
-const BrightBlack = "#8a8a8a"
+	BoldBrightBlue   = "\033[1;94m"
+	BoldBrightGreen  = "\033[1;92m"
+	BoldBrightRed    = "\033[1;91m"
+	BoldBrightYellow = "\033[1;93m"
+	BoldBrightPurple = "\033[1;95m"
+	BoldBrightBlack  = "\033[1;90m"
+)
