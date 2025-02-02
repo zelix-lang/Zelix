@@ -22,20 +22,24 @@ import (
 )
 
 func AnalyzeExpression(tree *ast.AST, trace *filecode.FileCode, variables stack.ScopedStack) (object.Object, error3.Error) {
-	result := object.Object{}
-
 	// Use a queue to analyze the expression
-	queue := []queue2.ExpectedPair{
-		{
-			Expected: &types.TypeWrapper{},
-			Got:      &object.Object{},
-			Tree:     tree,
+	firstEl := queue2.ExpectedPair{
+		Expected: &types.TypeWrapper{
+			Children: &[]*types.TypeWrapper{},
 		},
+		Got:  &object.Object{},
+		Tree: tree,
 	}
+
+	queue := []queue2.ExpectedPair{firstEl}
 
 	// Use the queue
 	for len(queue) > 0 {
-		result := object.Object{}
+		result := object.Object{
+			Type: types.TypeWrapper{
+				Children: &[]*types.TypeWrapper{},
+			},
+		}
 
 		// Pop the first element
 		element := queue[0]
@@ -78,6 +82,22 @@ func AnalyzeExpression(tree *ast.AST, trace *filecode.FileCode, variables stack.
 		child := (*element.Tree.Children)[startAt]
 
 		switch child.Rule {
+		case ast.StringLiteral:
+			result.Type.BaseType = "str"
+			result.Type.IsPrimitive = true
+			result.Value = child.Value
+		case ast.NumberLiteral:
+			result.Type.BaseType = "num"
+			result.Type.IsPrimitive = true
+			result.Value = child.Value
+		case ast.BooleanLiteral:
+			result.Type.BaseType = "bool"
+			result.Type.IsPrimitive = true
+			result.Value = child.Value
+		case ast.DecimalLiteral:
+			result.Type.BaseType = "dec"
+			result.Type.IsPrimitive = true
+			result.Value = child.Value
 		case ast.Identifier:
 			// Check if the variable exists
 			value := variables.Load(child.Value)
@@ -90,9 +110,12 @@ func AnalyzeExpression(tree *ast.AST, trace *filecode.FileCode, variables stack.
 					Column:     element.Tree.Column,
 				}
 			}
+
+			result.Value = value.Value.Value
+			result.IsHeap = value.Value.IsHeap
 		case ast.FunctionCall:
 			// Pass the input to the function call analyzer
-			err := call.AnalyzeFunctionCall(child, trace, variables, &result, &queue)
+			err := call.AnalyzeFunctionCall(child, trace, &result, &queue)
 
 			// Return the error if it is not nothing
 			if err.Code != error3.Nothing {
@@ -129,5 +152,5 @@ func AnalyzeExpression(tree *ast.AST, trace *filecode.FileCode, variables stack.
 		element.Got = &result
 	}
 
-	return result, error3.Error{}
+	return *firstEl.Got, error3.Error{}
 }
