@@ -11,13 +11,15 @@
 package main
 
 import (
+	"context"
 	cli2 "fluent/cli"
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
+	"log"
 	"os"
 )
 
 func main() {
-	app := &cli.App{
+	app := &cli.Command{
 		Name:  "fluent",
 		Usage: "A blazingly fast programming language",
 		Commands: []*cli.Command{
@@ -34,8 +36,8 @@ func main() {
 						Required: false,
 					},
 				},
-				Action: func(context *cli.Context) error {
-					// TODO!
+				Action: func(_ context.Context, cmd *cli.Command) error {
+					cli2.BenchmarkCommand(cmd)
 					return nil
 				},
 			},
@@ -44,8 +46,8 @@ func main() {
 				Usage:   "Compiles your project into an executable",
 				Aliases: []string{"b"},
 				Flags:   []cli.Flag{},
-				Action: func(context *cli.Context) error {
-					cli2.BuildCommand(context)
+				Action: func(_ context.Context, cmd *cli.Command) error {
+					cli2.BuildCommand(cmd)
 					return nil
 				},
 			},
@@ -61,8 +63,8 @@ func main() {
 						Aliases: []string{"t"},
 					},
 				},
-				Action: func(context *cli.Context) error {
-					cli2.RunCommand(context)
+				Action: func(_ context.Context, cmd *cli.Command) error {
+					cli2.RunCommand(cmd)
 					return nil
 				},
 			},
@@ -70,8 +72,8 @@ func main() {
 				Name:    "check",
 				Usage:   "Checks a fluent file",
 				Aliases: []string{"c"},
-				Action: func(context *cli.Context) error {
-					cli2.CheckCommand(context)
+				Action: func(_ context.Context, cmd *cli.Command) error {
+					cli2.CheckCommand(cmd)
 					return nil
 				},
 			},
@@ -87,16 +89,16 @@ func main() {
 						Aliases: []string{"f"},
 					},
 				},
-				Action: func(context *cli.Context) error {
-					cli2.LicenseCommand(context)
+				Action: func(_ context.Context, cmd *cli.Command) error {
+					cli2.LicenseCommand(cmd)
 					return nil
 				},
 			},
 		},
 	}
 
-	if err := app.Run(os.Args); err != nil {
-		panic(err)
+	if err := app.Run(context.Background(), os.Args); err != nil {
+		log.Fatal(err)
 	}
 
 }

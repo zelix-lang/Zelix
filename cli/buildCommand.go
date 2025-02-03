@@ -11,10 +11,10 @@
 package cli
 
 import (
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 )
 
 // BuildCommand compiles the given Fluent project into an executable
-func BuildCommand(context *cli.Context) {
+func BuildCommand(context *cli.Command) {
 	// TODO!
 }

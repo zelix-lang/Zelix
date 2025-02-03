@@ -11,12 +11,12 @@
 package cli
 
 import (
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 )
 
 // RunCommand represents the run command of the Fluent CLI
 // it runs a fluent file
-func RunCommand(context *cli.Context) {
+func RunCommand(context *cli.Command) {
 	CheckCommand(context)
 
 	// TODO!

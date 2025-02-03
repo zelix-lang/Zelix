@@ -12,7 +12,7 @@ package cli
 
 import (
 	"fmt"
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 )
 
 // printFullLicense prints the full license of the Fluent CLI
@@ -25,7 +25,7 @@ func printFullLicense() {
 
 // LicenseCommand represents the license command of the Fluent CLI
 // it prints the license
-func LicenseCommand(context *cli.Context) {
+func LicenseCommand(context *cli.Command) {
 	ShowHeaderMessage()
 
 	if context.Bool("full") {
