@@ -17,7 +17,7 @@ import (
 
 // ShowHeaderMessage shows the header message of the Fluent CLI
 func ShowHeaderMessage() {
-	fmt.Println(ansi.Colorize(ansi.BrightBlue, "Fluent"))
+	fmt.Println(ansi.Colorize(ansi.BoldBrightBlue, "The Fluent Programming Language"))
 	fmt.Println(ansi.Colorize(ansi.BrightBlack, "A blazingly fast programming language"))
 	fmt.Println()
 }
