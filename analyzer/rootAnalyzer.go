@@ -187,6 +187,8 @@ func AnalyzeCode(entry map[string]filecode.FileCode, mainPath string, silent boo
 				error2.DataOutlivesStack()
 			case error3.ParameterCountMismatch:
 				error2.ParamCountMismatch(err.Additional)
+			case error3.CannotInferType:
+				error2.CannotInferType()
 			default:
 			}
 
