@@ -18,6 +18,16 @@ import (
 	"fluent/filecode/types"
 )
 
+// AnalyzeArray analyzes an array node in the AST and schedules its elements for further analysis.
+// It returns an error if the array type cannot be inferred.
+//
+// Parameters:
+// - tree: The AST node representing the array.
+// - expected: The expected type of the array.
+// - exprQueue: The queue to which the expected type and the actual type of each element will be added.
+//
+// Returns:
+// - An error if the array type cannot be inferred, otherwise an empty error.
 func AnalyzeArray(
 	tree *ast.AST,
 	expected *types.TypeWrapper,
