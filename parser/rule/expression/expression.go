@@ -134,33 +134,11 @@ func ProcessExpression(input []token.Token) (ast.AST, error.Error) {
 			}
 		}
 
-		// Check for arrays
-		if input[0].TokenType == token.OpenBracket {
-			// Pass the tokens to the array parser
-			arr, parsingError := array.ProcessArray(input, &processQueue)
-
-			if parsingError.IsError() {
-				return ast.AST{}, parsingError
-			}
-
-			// Add the array to the parent
-			*parent.Children = append(*parent.Children, &ast.AST{
-				Rule:     ast.Expression,
-				Children: &[]*ast.AST{&arr},
-				Line:     arr.Line,
-				Column:   arr.Column,
-				File:     arr.File,
-				Value:    arr.Value,
-			})
-
-			// Avoid further processing
-			continue
-		}
-
 		startAt := 0
 
 		// Parse pointers and dereferences
 		for i, unit := range input {
+			hasToBreak := false
 			tokenType := unit.TokenType
 
 			switch tokenType {
@@ -197,6 +175,10 @@ func ProcessExpression(input []token.Token) (ast.AST, error.Error) {
 
 				startAt = i + 1
 			default:
+				hasToBreak = true
+			}
+
+			if hasToBreak {
 				break
 			}
 		}
@@ -206,6 +188,29 @@ func ProcessExpression(input []token.Token) (ast.AST, error.Error) {
 			input = input[startAt:]
 			inputLen = len(input)
 			startAt = 0
+		}
+
+		// Check for arrays
+		if input[0].TokenType == token.OpenBracket {
+			// Pass the tokens to the array parser
+			arr, parsingError := array.ProcessArray(input, &processQueue)
+
+			if parsingError.IsError() {
+				return ast.AST{}, parsingError
+			}
+
+			// Add the array to the parent
+			*parent.Children = append(*parent.Children, &ast.AST{
+				Rule:     ast.Expression,
+				Children: &[]*ast.AST{&arr},
+				Line:     arr.Line,
+				Column:   arr.Column,
+				File:     arr.File,
+				Value:    arr.Value,
+			})
+
+			// Avoid further processing
+			continue
 		}
 
 		// Check for single tokens
