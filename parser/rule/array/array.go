@@ -57,6 +57,11 @@ func ProcessArray(input []token.Token, exprQueue *[]queue.Element) (ast.AST, err
 		Children: &[]*ast.AST{},
 	}
 
+	// Check for empty arrays
+	if len(input) == 2 {
+		return result, error.Error{}
+	}
+
 	// Split the elements by commas
 	elements := util.SplitTokens(
 		input[1:len(input)-1],
