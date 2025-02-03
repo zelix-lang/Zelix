@@ -14,6 +14,7 @@ import (
 	error3 "fluent/analyzer/error"
 	"fluent/analyzer/object"
 	queue2 "fluent/analyzer/queue"
+	"fluent/analyzer/rule/array"
 	"fluent/analyzer/rule/call"
 	"fluent/analyzer/stack"
 	"fluent/ast"
@@ -24,7 +25,7 @@ import (
 func AnalyzeExpression(
 	tree *ast.AST,
 	trace *filecode.FileCode,
-	variables stack.ScopedStack,
+	variables *stack.ScopedStack,
 ) (object.Object, error3.Error) {
 	result := object.Object{
 		Type: types.TypeWrapper{
@@ -124,6 +125,15 @@ func AnalyzeExpression(
 			element.ActualPointers += value.Value.Type.PointerCount
 			element.Got.Value = value.Value.Value
 			element.Got.IsHeap = value.Value.IsHeap
+		case ast.Array:
+			err := array.AnalyzeArray(child, element.Expected, &queue)
+
+			// Return the error if it is not nothing
+			if err.Code != error3.Nothing {
+				return object.Object{}, err
+			}
+
+			element.Got.Type = *element.Expected
 		case ast.FunctionCall:
 			// Pass the input to the function call analyzer
 			err := call.AnalyzeFunctionCall(child, trace, element.Got, &queue)
