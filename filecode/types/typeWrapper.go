@@ -12,6 +12,7 @@ package types
 
 import (
 	"fluent/filecode/trace"
+	"strings"
 )
 
 // TypeWrapper represents a type with additional metadata.
@@ -95,4 +96,63 @@ func (t *TypeWrapper) Compare(other TypeWrapper) bool {
 	}
 
 	return result
+}
+
+// Marshal serializes the TypeWrapper into a string representation.
+// It constructs the result using a string builder and processes nodes iteratively.
+//
+// Returns:
+//   - string: The serialized string representation of the TypeWrapper.
+func (t *TypeWrapper) Marshal() string {
+	// Use a string builder to construct the result
+	var builder strings.Builder
+
+	// Define a queue to process nodes iteratively
+	type queueItem struct {
+		node  *TypeWrapper
+		depth int
+	}
+
+	queue := []queueItem{{node: t, depth: 0}}
+
+	// Stack to store output fragments
+	var outputStack []string
+
+	for len(queue) > 0 {
+		// Dequeue
+		item := queue[0]
+		queue = queue[1:]
+
+		node := item.node
+
+		// Process pointer symbols
+		prefix := strings.Repeat("&", node.PointerCount)
+
+		// Process base type
+		content := prefix + node.BaseType
+
+		// Handle children
+		if node.Children != nil && len(*node.Children) > 0 {
+			childStrings := make([]string, len(*node.Children))
+			for i, child := range *node.Children {
+				queue = append(queue, queueItem{node: child, depth: item.depth + 1})
+				childStrings[i] = child.BaseType
+			}
+
+			content += "<" + strings.Join(childStrings, ", ") + ">"
+		}
+
+		// Process array count
+		content += strings.Repeat("[]", node.ArrayCount)
+
+		// Store the processed part
+		outputStack = append(outputStack, content)
+	}
+
+	// Construct the final result
+	for _, part := range outputStack {
+		builder.WriteString(part)
+	}
+
+	return builder.String()
 }
