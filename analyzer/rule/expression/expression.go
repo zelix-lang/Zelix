@@ -152,6 +152,8 @@ func AnalyzeExpression(
 				HasMetDereference: element.HasMetDereference,
 				ActualPointers:    element.ActualPointers,
 			})
+
+			element.Got.Type = *element.Expected
 		default:
 		}
 
