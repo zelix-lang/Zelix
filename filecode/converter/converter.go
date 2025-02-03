@@ -125,20 +125,22 @@ func ConvertToFileCode(entry string) map[string]filecode.FileCode {
 		contents := util.ReadFile(*path)
 
 		// Lex the file
+		state.Emit(state.Lexing, util.FileName(path))
 		tokens, lexerError := lexer.Lex(contents, *path)
 
 		if lexerError.Message != "" {
+			state.FailAllSpinners()
 			// Build and print the error
 			util.PrintError(&contents, path, &lexerError.Message, lexerError.Line, lexerError.Column)
 			os.Exit(1)
 		}
 
-		state.Emit(state.Lexing, util.FileName(path))
+		state.PassAllSpinners()
 		// Parse the tokens to an AST
 		ast, parsingError := parser.Parse(tokens, *path)
-		state.PassAllSpinners()
 
 		if parsingError.IsError() {
+			state.FailAllSpinners()
 			errorMessage := util.BuildMessageFromParsingError(parsingError)
 
 			// Build and print the error
@@ -146,6 +148,7 @@ func ConvertToFileCode(entry string) map[string]filecode.FileCode {
 			os.Exit(1)
 		}
 
+		state.PassAllSpinners()
 		state.Emit(state.Parsing, util.FileName(path))
 		code := filecode.FileCode{
 			Path:      *path,
