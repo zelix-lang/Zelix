@@ -20,7 +20,7 @@ func DataOutlivesStack() {
 		"A pointer is used to pass references to values between functions",
 		"When it goes out of scope, it gets deleted; hence, the value becomes invalid",
 		"When you later try to use a reference that no longer exists, you will most likely",
-		"cause a SIGSEGV.",
+		"cause a SIGSEGV or produce unpredictable results in the worst case scenario.",
 	)
 	logger.Info(
 		"For more information, refer to:",
