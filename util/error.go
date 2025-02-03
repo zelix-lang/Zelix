@@ -218,7 +218,7 @@ func BuildAndPrintDetails(contents, filepath *string, line int, column int, isEr
 //   - column: The column number where the error occurred (1-based).
 func PrintError(contents, filepath, message *string, line int, column int) {
 	logger.Error(*message)
-	logger.Info("Full details")
+	logger.Info("Full details:")
 
 	BuildAndPrintDetails(contents, filepath, line, column, true)
 }
