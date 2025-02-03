@@ -79,17 +79,26 @@ func ProcessCallArguments(
 
 	// Iterate over all parameters to parse them
 	for _, parameter := range parameters {
-		// Create a new parameter node
-		parameterNode := ast.AST{
-			Rule:     ast.Parameter,
+		// Create a new expression node for the parameter
+		expressionNode := ast.AST{
+			Rule:     ast.Expression,
 			Line:     parameter[0].Line,
 			Column:   parameter[0].Column,
 			File:     &parameter[0].File,
 			Children: &[]*ast.AST{},
 		}
 
+		// Create a new parameter node
+		parameterNode := ast.AST{
+			Rule:     ast.Parameter,
+			Line:     parameter[0].Line,
+			Column:   parameter[0].Column,
+			File:     &parameter[0].File,
+			Children: &[]*ast.AST{&expressionNode},
+		}
+
 		// Add the parameter to the expression queue
-		*expressionQueue = append(*expressionQueue, queue.Element{Tokens: parameter, Parent: &parameterNode})
+		*expressionQueue = append(*expressionQueue, queue.Element{Tokens: parameter, Parent: &expressionNode})
 
 		// Append the parameter to the parameters node
 		*parametersNode.Children = append(*parametersNode.Children, &parameterNode)
