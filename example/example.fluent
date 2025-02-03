@@ -1,5 +1,5 @@
-import "@std::io::print";
+//import "@std::io::print";
 
-fun example(_a: str) {
-    println("Hello, world!");
+fun example() -> nothing {
+    return;
 }

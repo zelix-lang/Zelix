@@ -1,4 +1,4 @@
-import "block.fluent";
+import "@std::io::print";
 
 /*
     The Fluent Programming Language

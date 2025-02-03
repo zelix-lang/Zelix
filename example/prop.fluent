@@ -14,9 +14,4 @@ mod Abc {
 
 pub fun prop() {
     ((println("Hello, world!")));
-    (new Asd()).asd();
-    new Asd().asd();
-
-    let my_var: Asd<bool, str, num> = new Asd();
-    my_var.asd();
 }

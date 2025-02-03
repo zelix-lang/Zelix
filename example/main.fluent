@@ -6,11 +6,5 @@ import "prop.fluent";
     Test file 4
 */
 
-pub fun num_func(p: num) -> num {
-    return p;
-}
-
 pub fun main() -> nothing {
-    let my_var: num = "str";
-    num_func(num_func(num_func(4)));
 }

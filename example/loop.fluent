@@ -1,3 +1,4 @@
+import "@std::io::print";
 import "nested.fluent";
 
 /*
