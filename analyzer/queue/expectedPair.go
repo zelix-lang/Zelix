@@ -19,7 +19,9 @@ import (
 // ExpectedPair represents a pair of expected and actual values
 // along with the corresponding AST node.
 type ExpectedPair struct {
-	Expected *types.TypeWrapper // The expected type
-	Got      *object.Object     // The actual object
-	Tree     *ast.AST           // The AST node
+	Expected          *types.TypeWrapper // The expected type
+	Got               *object.Object     // The actual object
+	Tree              *ast.AST           // The AST node
+	HasMetDereference bool               // Whether a dereference token has been met
+	ActualPointers    int                // The number of pointers in the actual object
 }
