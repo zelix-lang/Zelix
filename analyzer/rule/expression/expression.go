@@ -113,7 +113,7 @@ func AnalyzeExpression(
 			if value == nil {
 				return object.Object{}, error3.Error{
 					Code:       error3.UndefinedReference,
-					Additional: *child.Value,
+					Additional: []string{*child.Value},
 					Line:       element.Tree.Line,
 					Column:     element.Tree.Column,
 				}
@@ -169,9 +169,10 @@ func AnalyzeExpression(
 		// Check for type mismatch
 		if element.Expected.BaseType != "" && !element.Expected.Compare(element.Got.Type) {
 			return object.Object{}, error3.Error{
-				Code:   error3.TypeMismatch,
-				Line:   element.Tree.Line,
-				Column: element.Tree.Column,
+				Code:       error3.TypeMismatch,
+				Line:       element.Tree.Line,
+				Column:     element.Tree.Column,
+				Additional: []string{element.Expected.Marshal(), element.Got.Type.Marshal()},
 			}
 		}
 	}

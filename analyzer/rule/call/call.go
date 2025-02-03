@@ -48,7 +48,7 @@ func AnalyzeFunctionCall(
 			Line:       tree.Line,
 			Column:     tree.Column,
 			Code:       error3.UndefinedReference,
-			Additional: *functionName,
+			Additional: []string{*functionName},
 		}
 	}
 
@@ -63,7 +63,7 @@ func AnalyzeFunctionCall(
 			Line:       tree.Line,
 			Column:     tree.Column,
 			Code:       error3.ParameterCountMismatch,
-			Additional: strconv.Itoa(len(function.Params)),
+			Additional: []string{strconv.Itoa(len(function.Params))},
 		}
 	}
 
@@ -83,7 +83,7 @@ func AnalyzeFunctionCall(
 				Line:       tree.Line,
 				Column:     tree.Column,
 				Code:       error3.UndefinedReference,
-				Additional: returnType.BaseType,
+				Additional: []string{returnType.BaseType},
 			}
 		}
 
