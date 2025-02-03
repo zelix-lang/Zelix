@@ -30,7 +30,7 @@ import (
 //   - error.Error: An error object if the parsing fails.
 func ProcessPub(input []token.Token) (ast.AST, error.Error) {
 	// Check the input
-	if len(input) < 7 {
+	if len(input) < 6 {
 		return ast.AST{}, error.Error{
 			Line:     input[0].Line,
 			Column:   input[0].Column,
