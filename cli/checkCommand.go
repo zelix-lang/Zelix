@@ -14,12 +14,14 @@ import (
 	"fluent/analyzer"
 	"fluent/filecode/converter"
 	"fluent/logger"
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 	"os"
 	"path/filepath"
 )
 
-func CheckCommand(context *cli.Context) {
+func CheckCommand(context *cli.Command) {
+	ShowHeaderMessage()
+
 	// Retrieve the path from the context
 	path := context.Args().First()
 
@@ -40,8 +42,8 @@ func CheckCommand(context *cli.Context) {
 	}
 
 	// Convert the code to file codes
-	fileCodes := converter.ConvertToFileCode(path)
+	fileCodes := converter.ConvertToFileCode(path, false)
 
 	// Analyze the project's codebase
-	analyzer.AnalyzeCode(fileCodes, path)
+	analyzer.AnalyzeCode(fileCodes, path, false)
 }
