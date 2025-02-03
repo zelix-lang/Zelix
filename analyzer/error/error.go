@@ -22,6 +22,7 @@ const (
 	InvalidDereference          // E0008
 	TypeMismatch                // E0009
 	ParameterCountMismatch      // E0010
+	CannotInferType             // E0011
 )
 
 // Error represents an error with details about its location and additional information.
