@@ -42,7 +42,7 @@ func AnalyzeReturn(
 		// Check if the function expects a return value
 		if expected.BaseType != "nothing" {
 			return error3.Error{
-				Code:   error3.TypeMismatch,
+				Code:   error3.MustReturnAValue,
 				Line:   tree.Line,
 				Column: tree.Column,
 			}
@@ -55,7 +55,7 @@ func AnalyzeReturn(
 	exprNode := (*tree.Children)[0]
 	if expected.BaseType == "nothing" {
 		return error3.Error{
-			Code:   error3.TypeMismatch,
+			Code:   error3.ShouldNotReturn,
 			Line:   exprNode.Line,
 			Column: exprNode.Column,
 		}
@@ -81,9 +81,10 @@ func AnalyzeReturn(
 	// Check for type mismatch
 	if !expr.Type.Compare(*expected) {
 		return error3.Error{
-			Code:   error3.TypeMismatch,
-			Line:   exprNode.Line,
-			Column: exprNode.Column,
+			Code:       error3.TypeMismatch,
+			Line:       exprNode.Line,
+			Column:     exprNode.Column,
+			Additional: []string{expected.Marshal(), expr.Type.Marshal()},
 		}
 	}
 

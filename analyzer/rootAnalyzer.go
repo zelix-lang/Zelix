@@ -173,12 +173,14 @@ func AnalyzeCode(entry map[string]filecode.FileCode, mainPath string, silent boo
 		// Print the errors
 		for _, err := range errors.Errors {
 			switch err.Code {
+			case error3.ParamTypeNothing:
+				error2.NothingParam()
 			case error3.Redefinition:
-				error2.Redefinition(err.Additional)
+				error2.Redefinition(err.Additional[0])
 			case error3.TypeMismatch:
-				error2.TypeMismatch()
+				error2.TypeMismatch(err.Additional[0], err.Additional[1])
 			case error3.UndefinedReference:
-				error2.UndefinedReference(err.Additional)
+				error2.UndefinedReference(err.Additional[0])
 			case error3.InvalidDereference:
 				error2.InvalidDereference()
 			case error3.MustReturnAValue:
@@ -186,9 +188,11 @@ func AnalyzeCode(entry map[string]filecode.FileCode, mainPath string, silent boo
 			case error3.DataOutlivesStack:
 				error2.DataOutlivesStack()
 			case error3.ParameterCountMismatch:
-				error2.ParamCountMismatch(err.Additional)
+				error2.ParamCountMismatch(err.Additional[0])
 			case error3.CannotInferType:
 				error2.CannotInferType()
+			case error3.ShouldNotReturn:
+				error2.ShouldNotReturn()
 			default:
 			}
 
