@@ -82,6 +82,9 @@ func ProcessType(input []token.Token, trace token.Token) (ast.AST, error.Error) 
 		// Used to know if the current type has pointers
 		hasPointers := false
 
+		// Used to check for invalid types
+		baseTypeIsNothing := false
+
 		// Used to skip indexes
 		skip := 0
 
@@ -92,6 +95,15 @@ func ProcessType(input []token.Token, trace token.Token) (ast.AST, error.Error) 
 
 			// Parse array types
 			if expectingOpenBracket || unit.TokenType == token.OpenBracket {
+				if baseTypeIsNothing {
+					return ast.AST{}, error.Error{
+						Line:     unit.Line,
+						Column:   unit.Column,
+						File:     &unit.File,
+						Expected: []ast.Rule{ast.Type},
+					}
+				}
+
 				if !hasMetIdentifier || unit.TokenType != token.OpenBracket {
 					return ast.AST{}, error.Error{
 						Line:     unit.Line,
@@ -270,7 +282,8 @@ func ProcessType(input []token.Token, trace token.Token) (ast.AST, error.Error) 
 					*result.Children = append(*result.Children, &child)
 				} else {
 					// Check for pointers to "nothing"
-					if unit.TokenType == token.Nothing && hasPointers {
+					baseTypeIsNothing = unit.TokenType == token.Nothing
+					if baseTypeIsNothing && hasPointers {
 						return ast.AST{}, error.Error{
 							Line:     unit.Line,
 							Column:   unit.Column,
