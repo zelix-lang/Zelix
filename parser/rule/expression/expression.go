@@ -18,7 +18,6 @@ import (
 	"fluent/parser/rule/call"
 	"fluent/parser/rule/identifier"
 	"fluent/parser/rule/object"
-	"fluent/parser/rule/reassignment"
 	"fluent/parser/rule/signed"
 	"fluent/parser/shared/arithmetic"
 	"fluent/parser/shared/boolean"
@@ -133,21 +132,6 @@ func ProcessExpression(input []token.Token) (ast.AST, error.Error) {
 				Column:   0,
 				Expected: []ast.Rule{ast.Expression},
 			}
-		}
-
-		// Check for reassignments
-		assignment, parsingError, isReassignment := reassignment.FindAndProcessReassignment(input, &processQueue)
-
-		if isReassignment {
-			if parsingError.IsError() {
-				return ast.AST{}, parsingError
-			}
-
-			// Add the reassignment to the result
-			*result.Children = append(*result.Children, &assignment)
-
-			// Avoid further processing
-			continue
 		}
 
 		// Check for arrays

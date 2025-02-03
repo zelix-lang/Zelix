@@ -18,6 +18,7 @@ import (
 	declaration2 "fluent/parser/rule/declaration"
 	"fluent/parser/rule/expression"
 	"fluent/parser/rule/loop"
+	"fluent/parser/rule/reassignment"
 	"fluent/parser/rule/ret"
 	"fluent/parser/util"
 	"fluent/token"
@@ -203,6 +204,14 @@ func ProcessBlock(input []token.Token) (ast.AST, error.Error) {
 				} else if tokenType == token.Return {
 					// Process the return statement
 					specialCaseNode, specialCaseError = ret.ProcessReturn(statement)
+				} else {
+					// Check for reassignments
+					assignment, parsingError, isReassignment := reassignment.FindAndProcessReassignment(statement)
+
+					if isReassignment {
+						specialCaseError = parsingError
+						specialCaseNode = assignment
+					}
 				}
 
 				// Check for special cases
