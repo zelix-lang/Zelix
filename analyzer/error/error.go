@@ -23,12 +23,13 @@ const (
 	TypeMismatch                // E0009
 	ParameterCountMismatch      // E0010
 	CannotInferType             // E0011
+	ShouldNotReturn             // E0012
 )
 
 // Error represents an error with details about its location and additional information.
 type Error struct {
-	Line       int    // Line number where the error occurred.
-	Column     int    // Column number where the error occurred.
-	Code       Code   // The error code.
-	Additional string // Additional information about the error.
+	Line       int      // Line number where the error occurred.
+	Column     int      // Column number where the error occurred.
+	Code       Code     // The error code.
+	Additional []string // Additional information about the error.
 }
