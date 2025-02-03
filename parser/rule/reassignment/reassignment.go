@@ -16,7 +16,6 @@ import (
 	"fluent/parser/rule/expression"
 	"fluent/parser/util"
 	"fluent/token"
-	"fmt"
 )
 
 // FindAndProcessReassignment identifies and processes reassignment operations in the input tokens.
@@ -68,7 +67,6 @@ func FindAndProcessReassignment(input []token.Token) (ast.AST, error.Error, bool
 	expressionLeft, err := expression.ProcessExpression(split[0])
 
 	if err.IsError() {
-		fmt.Println("left")
 		return ast.AST{}, err, false
 	}
 
