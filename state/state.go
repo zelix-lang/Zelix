@@ -26,14 +26,22 @@ const (
 	Compiling
 )
 
+// SpinnerWrapper is a struct that holds information about a spinner,
+// including its start time, the spinner instance, and a message.
 type SpinnerWrapper struct {
-	start   time.Time
-	spinner *yacspin.Spinner
-	message *string
+	start   time.Time        // The time when the spinner was started
+	spinner *yacspin.Spinner // The spinner instance
+	message *string          // The message associated with the spinner
 }
 
+// A map of spinners, where the key is the spinner ID and the value is the SpinnerWrapper.
 var spinners = map[int]SpinnerWrapper{}
 
+// terminateSpinner stops the spinner, updates its message with the elapsed time,
+// and removes it from the spinners map.
+// Parameters:
+// - spinner: A pointer to the SpinnerWrapper to be terminated.
+// - character: A string character to prepend to the stop message.
 func terminateSpinner(spinner *SpinnerWrapper, character string) {
 	// Calculate the time taken
 	elapsed := time.Since(spinner.start)
@@ -55,24 +63,36 @@ func terminateSpinner(spinner *SpinnerWrapper, character string) {
 	delete(spinners, 0)
 }
 
+// WarnAllSpinners terminates all spinners with a warning message.
 func WarnAllSpinners() {
 	for _, spinner := range spinners {
 		terminateSpinner(&spinner, ansi.Colorize(ansi.BoldBrightYellow, "⚠"))
 	}
 }
 
+// PassAllSpinners terminates all spinners with a success message.
 func PassAllSpinners() {
 	for _, spinner := range spinners {
 		terminateSpinner(&spinner, ansi.Colorize(ansi.BoldBrightGreen, "✔"))
 	}
 }
 
+// FailAllSpinners terminates all spinners with a failure message.
 func FailAllSpinners() {
 	for _, spinner := range spinners {
 		terminateSpinner(&spinner, ansi.Colorize(ansi.BoldBrightRed, "✖"))
 	}
 }
 
+// Emit creates and starts a new spinner based on the given state and text.
+// It returns the ID of the created spinner or -1 if an error occurs.
+//
+// Parameters:
+// - state: The current state of the process (e.g., Lexing, Parsing).
+// - text: The text message to be displayed with the spinner.
+//
+// Returns:
+// - int: The ID of the created spinner or -1 if an error occurs.
 func Emit(state State, text string) int {
 	// Add the message together accordingly
 	spinnerText := " "
