@@ -13,9 +13,10 @@ package reassignment
 import (
 	"fluent/ast"
 	"fluent/parser/error"
-	"fluent/parser/queue"
+	"fluent/parser/rule/expression"
 	"fluent/parser/util"
 	"fluent/token"
+	"fmt"
 )
 
 // FindAndProcessReassignment identifies and processes reassignment operations in the input tokens.
@@ -23,18 +24,16 @@ import (
 //
 // Parameters:
 // - input: A slice of tokens to be processed.
-// - exprQueue: A pointer to a queue of elements for further processing.
 //
 // Returns:
 // - ast.AST: The resulting AST node for the assignment.
 // - error.Error: An error object if any error occurs.
 // - bool: A boolean indicating whether the reassignment was successfully processed.
-func FindAndProcessReassignment(input []token.Token, exprQueue *[]queue.Element) (ast.AST, error.Error, bool) {
+func FindAndProcessReassignment(input []token.Token) (ast.AST, error.Error, bool) {
 	firstToken := input[0]
-	firstTokenType := firstToken.TokenType
 
 	// Check if the input has reassignment tokens
-	if firstTokenType != token.Let && firstTokenType != token.Const && !util.TokenSliceContains(input, map[token.Type]struct{}{token.Assign: {}}) {
+	if !util.TokenSliceContains(input, map[token.Type]struct{}{token.Assign: {}}) {
 		return ast.AST{}, error.Error{}, false
 	}
 
@@ -65,33 +64,19 @@ func FindAndProcessReassignment(input []token.Token, exprQueue *[]queue.Element)
 		Children: &[]*ast.AST{},
 	}
 
-	// Create an expression node for both sides of the assigment
-	expressionLeft := ast.AST{
-		Rule:     ast.Expression,
-		Line:     firstToken.Line,
-		Column:   firstToken.Column,
-		File:     &firstToken.File,
-		Children: &[]*ast.AST{},
+	// Process an expression node for both sides of the assigment
+	expressionLeft, err := expression.ProcessExpression(split[0])
+
+	if err.IsError() {
+		fmt.Println("left")
+		return ast.AST{}, err, false
 	}
 
-	expressionRight := ast.AST{
-		Rule:     ast.Expression,
-		Line:     firstToken.Line,
-		Column:   firstToken.Column,
-		File:     &firstToken.File,
-		Children: &[]*ast.AST{},
+	expressionRight, err := expression.ProcessExpression(split[1])
+
+	if err.IsError() {
+		return ast.AST{}, err, false
 	}
-
-	// Queue both sides
-	*exprQueue = append(*exprQueue, queue.Element{
-		Parent: &expressionLeft,
-		Tokens: split[0],
-	})
-
-	*exprQueue = append(*exprQueue, queue.Element{
-		Parent: &expressionRight,
-		Tokens: split[1],
-	})
 
 	// Push both sides to the assignment node
 	*assignmentNode.Children = append(*assignmentNode.Children, &expressionLeft)
