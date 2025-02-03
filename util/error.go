@@ -199,7 +199,7 @@ func BuildAndPrintDetails(contents, filepath *string, line int, column int, isEr
 		fmt.Sprintf(
 			"%s         => %s:%s:%s%s",
 			ansi.BrightPurple,
-			DiscardCwd(filepath),
+			DiscardCwd(*filepath),
 			strconv.Itoa(line),
 			strconv.Itoa(column),
 			ansi.Reset,

@@ -112,6 +112,8 @@ func AnalyzeFunction(fun function.Function, trace *filecode.FileCode) *pool.Erro
 				scope.NewScope()
 				// Add the block to the queue
 				blockQueue = append(blockQueue, *statement)
+			case ast.Assignment:
+
 			default:
 				_, err := expression.AnalyzeExpression(statement, trace, &scope)
 

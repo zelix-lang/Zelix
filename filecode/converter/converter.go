@@ -94,11 +94,11 @@ func ConvertToFileCode(entry string, silent bool) map[string]filecode.FileCode {
 					logger.Info(
 						ansi.Colorize(
 							ansi.BoldBrightRed,
-							strings.Repeat("  ", spaces)+"-> "+util.DiscardCwd(&importPath)+" (Circular)",
+							strings.Repeat("  ", spaces)+"-> "+util.DiscardCwd(importPath)+" (Circular)",
 						),
 					)
 				} else {
-					logger.Info(strings.Repeat("  ", spaces) + "-> " + util.DiscardCwd(&importPath))
+					logger.Info(strings.Repeat("  ", spaces) + "-> " + util.DiscardCwd(importPath))
 				}
 
 				spaces++
@@ -108,7 +108,7 @@ func ConvertToFileCode(entry string, silent bool) map[string]filecode.FileCode {
 			logger.Info(
 				ansi.Colorize(
 					ansi.BoldBrightRed,
-					strings.Repeat("  ", spaces)+"-> "+util.DiscardCwd(path)+" (Circular)",
+					strings.Repeat("  ", spaces)+"-> "+util.DiscardCwd(*path)+" (Circular)",
 				),
 			)
 

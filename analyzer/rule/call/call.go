@@ -99,7 +99,6 @@ func AnalyzeFunctionCall(
 		// Get the parameter's value
 		value := (*paramsNode.Children)[i]
 
-		// Add the parameter to the queue
 		*exprQueue = append(*exprQueue, queue2.ExpectedPair{
 			Tree: (*value.Children)[0],
 			Got: &object.Object{

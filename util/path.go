@@ -23,23 +23,23 @@ var cwd, _ = os.Getwd()
 // Parameters:
 // - path: The file path from which to discard the cwd.
 // Returns: The modified path with the cwd and leading slash removed, if applicable.
-func DiscardCwd(path *string) string {
+func DiscardCwd(path string) string {
 	// Check if the cwd is a prefix of the path
-	if strings.HasPrefix(*path, cwd) {
+	if strings.HasPrefix(path, cwd) {
 		// Remove the cwd from the path
-		*path = (*path)[len(cwd):]
+		path = (path)[len(cwd):]
 	} else {
 		// Return the path as is
-		return *path
+		return path
 	}
 
 	// Check if the path starts with a slash
-	if strings.HasPrefix(*path, "/") {
+	if strings.HasPrefix(path, "/") {
 		// Remove the slash
-		*path = (*path)[1:]
+		path = (path)[1:]
 	}
 
-	return *path
+	return path
 }
 
 // DirExists checks if a directory exists at the given path.
