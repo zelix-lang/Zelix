@@ -109,8 +109,8 @@ func Emit(state State, text string) int {
 	}
 
 	spinner, err := yacspin.New(cfg)
-	// handle the error
 
+	// Handle the error
 	if err != nil {
 		return -1
 	}
