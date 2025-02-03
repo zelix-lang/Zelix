@@ -553,5 +553,9 @@ func ProcessExpression(input []token.Token) (ast.AST, error.Error) {
 		*parent.Children = append(*parent.Children, &propertyAccess)
 	}
 
+	if len(*result.Children) == 1 && (*result.Children)[0].Rule == ast.Expression {
+		return *((*result.Children)[0]), error.Error{}
+	}
+
 	return result, error.Error{}
 }
