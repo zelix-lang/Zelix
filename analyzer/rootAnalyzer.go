@@ -76,15 +76,9 @@ func AnalyzeCode(entry map[string]filecode.FileCode, mainPath string, silent boo
 			// Push the file to the push queue
 			pushQueue = append(pushQueue, file)
 		} else {
-			if !silent {
-				state.Emit(state.Processing, util.FileName(&file.Path))
-			}
-
 			// Push the file to the end of the queue
 			queue = append(queue, file)
 			seen[file.Path] = true
-
-			state.PassAllSpinners()
 		}
 	}
 
