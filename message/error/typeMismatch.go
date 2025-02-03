@@ -11,14 +11,21 @@
 package error
 
 import (
+	"fluent/ansi"
 	"fluent/logger"
+	"fmt"
 )
 
-func TypeMismatch() {
+func TypeMismatch(expected string, got string) {
 	logger.Error("Type mismatch")
 	logger.Help(
 		"The expected type does not match the gotten type.",
 		"Modify the type to match the expected one, for example \"2\" instead of 2",
+		fmt.Sprintf(
+			"Expected %s%s%s, but got %s%s%s",
+			ansi.BoldBrightGreen, expected, ansi.Reset,
+			ansi.BoldBrightRed, got, ansi.Reset,
+		),
 	)
 	logger.Info(
 		"For more information, refer to:",
