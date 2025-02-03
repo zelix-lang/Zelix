@@ -70,7 +70,13 @@ func ProcessSignedOp(
 	}
 
 	if candidate != nil && candidate.Rule != ast.Program {
-		*result.Children = append(*result.Children, candidate)
+		*result.Children = append(*result.Children, &ast.AST{
+			Rule:   ast.Expression,
+			Line:   candidate.Line,
+			Column: candidate.Column,
+			Value:  candidate.Value,
+			File:   candidate.File,
+		})
 	}
 
 	// The expression parser has processed a part of the expression
