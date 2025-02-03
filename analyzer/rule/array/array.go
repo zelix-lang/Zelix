@@ -35,11 +35,21 @@ func AnalyzeArray(
 ) error3.Error {
 	// Arrays that appear directly as expressions cannot
 	// have their type inferred
-	if expected.ArrayCount < 1 {
+	if expected.ArrayCount < 1 && expected.BaseType == "" {
 		return error3.Error{
 			Code:   error3.CannotInferType,
 			Line:   tree.Line,
 			Column: tree.Column,
+		}
+	}
+
+	// Check for invalid nested arrays
+	if expected.ArrayCount < 1 {
+		return error3.Error{
+			Code:       error3.TypeMismatch,
+			Line:       tree.Line,
+			Column:     tree.Column,
+			Additional: []string{expected.Marshal(), "unknown[]"},
 		}
 	}
 
