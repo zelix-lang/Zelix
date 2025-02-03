@@ -144,7 +144,14 @@ func ProcessExpression(input []token.Token) (ast.AST, error.Error) {
 			}
 
 			// Add the array to the parent
-			*parent.Children = append(*parent.Children, &arr)
+			*parent.Children = append(*parent.Children, &ast.AST{
+				Rule:     ast.Expression,
+				Children: &[]*ast.AST{&arr},
+				Line:     arr.Line,
+				Column:   arr.Column,
+				File:     arr.File,
+				Value:    arr.Value,
+			})
 
 			// Avoid further processing
 			continue
@@ -208,14 +215,7 @@ func ProcessExpression(input []token.Token) (ast.AST, error.Error) {
 			if parsingError.IsError() {
 				return ast.AST{}, parsingError
 			}
-
-			*parent.Children = append(*parent.Children, &ast.AST{
-				Rule:     ast.Expression,
-				Line:     input[0].Line,
-				Column:   input[0].Column,
-				File:     &input[0].File,
-				Children: &[]*ast.AST{&child},
-			})
+			*parent.Children = append(*parent.Children, &child)
 			continue
 		}
 
@@ -365,13 +365,7 @@ func ProcessExpression(input []token.Token) (ast.AST, error.Error) {
 					return ast.AST{}, parsingError
 				}
 
-				candidate = &ast.AST{
-					Rule:     ast.Expression,
-					Line:     input[0].Line,
-					Column:   input[0].Column,
-					File:     &input[0].File,
-					Children: &[]*ast.AST{&child},
-				}
+				candidate = &child
 			}
 		}
 
