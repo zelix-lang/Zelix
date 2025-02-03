@@ -90,7 +90,7 @@ func Emit(state State, text string) int {
 		spinnerText += "Processing"
 	case Analyzing:
 		color = ansi.BoldBrightGreen
-		spinnerText += "Processing"
+		spinnerText += "Analyzing"
 	case Compiling:
 		color = ansi.BoldBrightGreen
 		spinnerText += "Compiling"
