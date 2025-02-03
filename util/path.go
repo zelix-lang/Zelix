@@ -87,3 +87,36 @@ func FileName(path *string) string {
 
 	return (*path)[lastIndex+1:]
 }
+
+// ReadDir reads the contents of the directory specified by the given path.
+// Parameters:
+// - path: The file path of the directory to read.
+// Returns: A slice of os.FileInfo containing the directory's contents, or an empty slice if the directory does not exist or an error occurs.
+func ReadDir(path string) []os.FileInfo {
+	if !DirExists(path) {
+		return make([]os.FileInfo, 0)
+	}
+
+	// Read the directory
+	dir, err := os.Open(path)
+	if err != nil {
+		return make([]os.FileInfo, 0)
+	}
+
+	// Close the directory
+	defer func(dir *os.File) {
+		err := dir.Close()
+		if err != nil {
+			panic(err)
+		}
+	}(dir)
+
+	// Read the directory
+	files, err := dir.Readdir(0)
+
+	if err != nil {
+		return make([]os.FileInfo, 0)
+	}
+
+	return files
+}
