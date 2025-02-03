@@ -46,10 +46,11 @@ type queueElement struct {
 //
 // Parameters:
 // - entry: The entry file path to start the conversion.
+// - silent: Whether to suppress the output.
 //
 // Returns:
 // - A map where the keys are file paths and the values are FileCode structures.
-func ConvertToFileCode(entry string) map[string]filecode.FileCode {
+func ConvertToFileCode(entry string, silent bool) map[string]filecode.FileCode {
 	// Check that the stdlib path exists
 	if stdPath == "" || !util.DirExists(stdPath) {
 		logger.Error("The FLUENT_STD_PATH environment variable is not set")
@@ -126,7 +127,10 @@ func ConvertToFileCode(entry string) map[string]filecode.FileCode {
 		fileName := util.FileName(path)
 
 		// Lex the file
-		state.Emit(state.Lexing, fileName)
+		if !silent {
+			state.Emit(state.Lexing, fileName)
+		}
+
 		tokens, lexerError := lexer.Lex(contents, *path)
 
 		if lexerError.Message != "" {
@@ -137,7 +141,10 @@ func ConvertToFileCode(entry string) map[string]filecode.FileCode {
 		}
 
 		state.PassAllSpinners()
-		state.Emit(state.Parsing, fileName)
+		if !silent {
+			state.Emit(state.Parsing, fileName)
+		}
+
 		// Parse the tokens to an AST
 		ast, parsingError := parser.Parse(tokens, *path)
 
@@ -151,6 +158,11 @@ func ConvertToFileCode(entry string) map[string]filecode.FileCode {
 		}
 
 		state.PassAllSpinners()
+
+		if !silent {
+			state.Emit(state.Processing, fileName)
+		}
+
 		code := filecode.FileCode{
 			Path:      *path,
 			Functions: make(map[string]function2.Function),
@@ -168,26 +180,29 @@ func ConvertToFileCode(entry string) map[string]filecode.FileCode {
 				// Get the path
 				importPath := *(*child.Children)[0].Value
 
+				if !strings.HasSuffix(importPath, ".fluent") {
+					importPath += ".fluent"
+				}
+
 				isStd := strings.HasPrefix(importPath, "@std")
 
 				if isStd {
+					importPath = strings.Replace(importPath, "@std", stdPath, 1)
+					importPath = strings.ReplaceAll(importPath, "::", pathSeparator)
+
 					if processedStdImports[importPath] {
+						// Append the path to the code's imports
+						code.Imports = append(code.Imports, importPath)
 						continue
 					}
 
 					processedStdImports[importPath] = true
-					importPath = strings.Replace(importPath, "@std", stdPath, 1)
-					importPath = strings.ReplaceAll(importPath, "::", pathSeparator)
 				} else {
 					// Get the file's directory
 					dir := util.GetDir(*path)
 
 					// Join the directory with the path
 					importPath = dir + pathSeparator + importPath
-				}
-
-				if !strings.HasSuffix(importPath, ".fluent") {
-					importPath += ".fluent"
 				}
 
 				// Append the path to the code's imports
