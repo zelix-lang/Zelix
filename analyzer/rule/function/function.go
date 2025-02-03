@@ -15,6 +15,7 @@ import (
 	"fluent/analyzer/object"
 	"fluent/analyzer/pool"
 	"fluent/analyzer/rule/expression"
+	"fluent/analyzer/rule/ret"
 	"fluent/analyzer/rule/value"
 	"fluent/analyzer/stack"
 	"fluent/analyzer/variable"
@@ -42,14 +43,6 @@ func AnalyzeFunction(fun function.Function, trace *filecode.FileCode) *pool.Erro
 		)
 	}
 
-	// Analyze all parameters
-	for name, param := range fun.Params {
-		err := AnalyzeParameter(&name, &param, trace)
-
-		// Push the error to the list if necessary
-		errors.AddError(err)
-	}
-
 	// Check for undefined references in the return type
 	err := value.AnalyzeUndefinedReference(trace, fun.ReturnType)
 
@@ -63,13 +56,20 @@ func AnalyzeFunction(fun function.Function, trace *filecode.FileCode) *pool.Erro
 	scope := stack.ScopedStack{}
 	scope.NewScope()
 
-	// Add all parameters to the scope
+	returnType := fun.ReturnType
+
+	// Analyze and add all parameters to the scope
 	for name, param := range fun.Params {
+		err := AnalyzeParameter(&name, &param, trace)
+
+		// Push the error to the list if necessary
+		errors.AddError(err)
+
 		// Create the value
 		val := object.Object{
 			Type:   param.Type,
 			Value:  nil,
-			IsHeap: param.Type.PointerCount > 1,
+			IsHeap: param.Type.PointerCount > 0,
 		}
 
 		// See if the parameter's type is a module
@@ -88,18 +88,36 @@ func AnalyzeFunction(fun function.Function, trace *filecode.FileCode) *pool.Erro
 		})
 	}
 
-	// Iterate over the body's statements
-	for _, statement := range *fun.Body.Children {
-		rule := statement.Rule
+	// Use a queue to analyze the function's block and nested blocks within it
+	blockQueue := make([]ast.AST, 0)
+	blockQueue = append(blockQueue, fun.Body)
 
-		switch rule {
-		case ast.Return:
-			hasReturned = true
-		default:
-			_, err := expression.AnalyzeExpression(statement, trace, scope)
+	for len(blockQueue) > 0 {
+		// Get the first element in the queue
+		block := blockQueue[0]
+		blockQueue = blockQueue[1:]
 
-			// Push the error to the list if necessary
-			errors.AddError(err)
+		for _, statement := range *block.Children {
+			rule := statement.Rule
+
+			switch rule {
+			case ast.Return:
+				hasReturned = true
+				err := ret.AnalyzeReturn(statement, trace, &scope, &returnType)
+
+				// Push the error to the list if necessary
+				errors.AddError(err)
+			case ast.Block:
+				// Create a new scope
+				scope.NewScope()
+				// Add the block to the queue
+				blockQueue = append(blockQueue, *statement)
+			default:
+				_, err := expression.AnalyzeExpression(statement, trace, &scope)
+
+				// Push the error to the list if necessary
+				errors.AddError(err)
+			}
 		}
 	}
 
@@ -109,6 +127,11 @@ func AnalyzeFunction(fun function.Function, trace *filecode.FileCode) *pool.Erro
 	}
 
 	unusedVariables := scope.DestroyScope()
+
+	// Return the errors if there are any, after destroying the scope
+	if errors.Count > 0 {
+		return errors
+	}
 
 	if len(unusedVariables) > 0 {
 		state.WarnAllSpinners()
