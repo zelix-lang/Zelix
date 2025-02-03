@@ -227,7 +227,7 @@ func Lex(input string, file string) ([]token.Token, Error) {
 		}
 
 		if char == ' ' {
-			pushToken(&currentToken, &result, line, column, file, decimalLiteral)
+			pushToken(&currentToken, &result, line, column-1, file, decimalLiteral)
 			decimalLiteral = false
 			continue
 		}
