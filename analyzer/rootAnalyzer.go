@@ -27,10 +27,8 @@ import (
 // Parameters:
 // - entry: A map where the key is the file path and the value is the FileCode object.
 // - mainPath: The path to the main file that should be analyzed last.
-//
-// Returns:
-// - An error.Error object if any issues are found during the analysis, otherwise an empty error.Error object.
-func AnalyzeCode(entry map[string]filecode.FileCode, mainPath string) {
+// - silent: A boolean that indicates if the analysis should be silent.
+func AnalyzeCode(entry map[string]filecode.FileCode, mainPath string, silent bool) {
 	// Use a priority-based queue to analyze the files that do not have
 	// dependencies first
 	var queue []filecode.FileCode
@@ -75,12 +73,18 @@ func AnalyzeCode(entry map[string]filecode.FileCode, mainPath string) {
 		}
 
 		if hasDependencies {
-			// Push the file to the end of the queue
+			// Push the file to the push queue
 			pushQueue = append(pushQueue, file)
 		} else {
+			if !silent {
+				state.Emit(state.Processing, util.FileName(&file.Path))
+			}
+
 			// Push the file to the end of the queue
 			queue = append(queue, file)
 			seen[file.Path] = true
+
+			state.PassAllSpinners()
 		}
 	}
 
@@ -89,7 +93,9 @@ func AnalyzeCode(entry map[string]filecode.FileCode, mainPath string) {
 
 	// Analyze the files
 	for _, file := range queue {
-		state.Emit(state.Processing, util.FileName(&file.Path))
+		if !silent {
+			state.Emit(state.Analyzing, util.FileName(&file.Path))
+		}
 
 		// Append all the imported modules and functions to the file
 		for _, importPath := range file.Imports {
