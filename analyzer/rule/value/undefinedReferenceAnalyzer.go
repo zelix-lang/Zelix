@@ -31,7 +31,7 @@ func AnalyzeUndefinedReference(trace *filecode.FileCode, wrapper types.TypeWrapp
 				Line:       wrapper.Trace.Line,
 				Column:     wrapper.Trace.Column,
 				Code:       error3.UndefinedReference,
-				Additional: wrapper.BaseType,
+				Additional: []string{wrapper.BaseType},
 			}
 		}
 	}
