@@ -10,21 +10,36 @@
 
 package error
 
-import "fluent/logger"
+import (
+	"fluent/logger"
+	"strings"
+)
 
-// ParamCountMismatch logs an error message indicating a mismatch in the count of parameters.
-// It provides a help message with the expected count and a link to more information.
+// ParamCountMismatch generates an error message for a mismatched count of parameters.
+//
 // Parameters:
-//   - count: A string representing the expected number of parameters.
-func ParamCountMismatch(count string) {
-	logger.Error("Mismatched count of parameters")
-	logger.Help(
-		"This function expected "+count+" parameters.",
-		"Make sure you have passed the correct number of parameters.",
+//   - count: The expected number of parameters as a string.
+//
+// Returns:
+//
+//	A formatted error message string.
+func ParamCountMismatch(count string) string {
+	builder := strings.Builder{}
+
+	builder.WriteString(logger.BuildError("Mismatched count of parameters"))
+	builder.WriteString(
+		logger.BuildHelp(
+			"This function expected "+count+" parameters.",
+			"Make sure you have passed the correct number of parameters.",
+		),
 	)
-	logger.Info(
-		"For more information, refer to:",
-		"https://fluent-lang.github.io/book/codes/E0010",
-		"Full details:",
+	builder.WriteString(
+		logger.BuildInfo(
+			"For more information, refer to:",
+			"https://fluent-lang.github.io/book/codes/E0010",
+			"Full details:",
+		),
 	)
+
+	return builder.String()
 }

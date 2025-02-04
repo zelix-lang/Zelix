@@ -10,17 +10,31 @@
 
 package error
 
-import "fluent/logger"
+import (
+	"fluent/logger"
+	"strings"
+)
 
-func ShouldNotReturn() {
-	logger.Error("This function should not return a value")
-	logger.Help(
-		"Functions with the 'nothing' return type should not return a value.",
-		"Remove the return statement from the function or modify the return type.",
+// ShouldNotReturn generates an error message indicating that a function should not return a value.
+// It provides detailed information and guidance on how to resolve the issue.
+// Returns a string containing the error message.
+func ShouldNotReturn() string {
+	builder := strings.Builder{}
+
+	builder.WriteString(logger.BuildError("This function should not return a value"))
+	builder.WriteString(
+		logger.BuildHelp(
+			"Functions with the 'nothing' return type should not return a value.",
+			"Remove the return statement from the function or modify the return type.",
+		),
 	)
-	logger.Info(
-		"For more information, refer to:",
-		"https://fluent-lang.github.io/book/codes/E0012",
-		"Full details:",
+	builder.WriteString(
+		logger.BuildInfo(
+			"For more information, refer to:",
+			"https://fluent-lang.github.io/book/codes/E0012",
+			"Full details:",
+		),
 	)
+
+	return builder.String()
 }

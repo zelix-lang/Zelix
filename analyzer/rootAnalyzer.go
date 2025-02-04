@@ -14,12 +14,82 @@ import (
 	error3 "fluent/analyzer/error"
 	"fluent/analyzer/rule"
 	"fluent/filecode"
+	"fluent/filecode/function"
+	"fluent/filecode/module"
+	trace2 "fluent/filecode/trace"
 	"fluent/logger"
 	error2 "fluent/message/error"
+	"fluent/message/warn"
 	"fluent/state"
 	"fluent/util"
+	"fmt"
 	"os"
+	"strings"
 )
+
+func checkImportRedefinition(
+	collection interface{},
+	name string,
+	value interface{},
+	file *filecode.FileCode,
+	entry *map[string]filecode.FileCode,
+) {
+	public := false
+	isModule := false
+	var valueTrace trace2.Trace
+	entryDeref := *entry
+
+	switch value.(type) {
+	case function.Function:
+		public = value.(function.Function).Public
+		valueTrace = value.(function.Function).Trace
+	case module.Module:
+		public = value.(module.Module).Public
+		valueTrace = value.(module.Module).Trace
+		isModule = true
+	}
+
+	collectionMap := collection.(map[string]interface{})
+	if definedVal, ok := collectionMap[name]; ok && public {
+		var trace trace2.Trace
+		var path string
+
+		if isModule {
+			trace = definedVal.(module.Module).Trace
+			path = definedVal.(module.Module).Path
+		} else {
+			trace = definedVal.(function.Function).Trace
+			path = definedVal.(function.Function).Path
+		}
+
+		error2.Redefinition(name)
+		fmt.Println(
+			util.BuildDetails(
+				&file.Contents,
+				&file.Path,
+				valueTrace.Line,
+				valueTrace.Column,
+				true,
+			),
+		)
+
+		logger.Info("'" + name + "' was previously defined here:")
+
+		originalContents := entryDeref[path].Contents
+		originalPath := entryDeref[path].Path
+		fmt.Println(
+			util.BuildDetails(
+				&originalContents,
+				&originalPath,
+				trace.Line,
+				trace.Column,
+				true,
+			),
+		)
+
+		os.Exit(1)
+	}
+}
 
 // AnalyzeCode analyzes the provided code files based on their dependencies.
 // It uses a priority-based queue to analyze files without dependencies first.
@@ -96,118 +166,108 @@ func AnalyzeCode(entry map[string]filecode.FileCode, mainPath string, silent boo
 			importedFile := entry[importPath]
 
 			// Append the imported functions
-			for _, function := range importedFile.Functions {
+			for _, fun := range importedFile.Functions {
 				// Check for redefinitions
-				if definedFun, ok := file.Functions[function.Name]; ok && function.Public {
-					error2.Redefinition(definedFun.Name)
-					util.BuildAndPrintDetails(
-						&file.Contents,
-						&file.Path,
-						definedFun.Trace.Line,
-						definedFun.Trace.Column,
-						true,
-					)
+				checkImportRedefinition(
+					file.Functions,
+					fun.Name,
+					fun,
+					&file,
+					&entry,
+				)
 
-					logger.Info("'" + function.Name + "' was previously defined here:")
-
-					originalContents := entry[function.Path].Contents
-					originalPath := entry[function.Path].Path
-					util.BuildAndPrintDetails(
-						&originalContents,
-						&originalPath,
-						function.Trace.Line,
-						function.Trace.Column,
-						true,
-					)
-
-					os.Exit(1)
-				}
-
-				file.Functions[function.Name] = function
+				file.Functions[fun.Name] = fun
 			}
 
 			// Append the imported modules
-			for _, module := range importedFile.Modules {
+			for _, mod := range importedFile.Modules {
 				// Check for redefinitions
-				if definedMod, ok := file.Modules[module.Name]; ok && module.Public {
-					error2.Redefinition(definedMod.Name)
-					util.BuildAndPrintDetails(
-						&file.Contents,
-						&file.Path,
-						definedMod.Trace.Line,
-						definedMod.Trace.Column,
-						true,
-					)
+				checkImportRedefinition(
+					file.Modules,
+					mod.Name,
+					mod,
+					&file,
+					&entry,
+				)
 
-					logger.Info("'" + module.Name + "' was previously defined here:")
-
-					originalContents := entry[module.Path].Contents
-					originalPath := entry[module.Path].Path
-
-					util.BuildAndPrintDetails(
-						&originalContents,
-						&originalPath,
-						module.Trace.Line,
-						module.Trace.Column,
-						true,
-					)
-
-					os.Exit(1)
-				}
-
-				file.Modules[module.Name] = module
+				file.Modules[mod.Name] = mod
 			}
 		}
 
-		errors := rule.AnalyzeFileCode(file)
+		errors, warnings := rule.AnalyzeFileCode(file)
+
 		if errors.Count > 0 {
 			state.FailAllSpinners()
+		} else if warnings.Count > 0 {
+			state.WarnAllSpinners()
 		}
+
+		// Use a strings.Builder to build the error and warning messages
+		var errorMessage strings.Builder
+		var warningMessage strings.Builder
 
 		// Print the errors
 		for _, err := range errors.Errors {
 			switch err.Code {
 			case error3.ParamTypeNothing:
-				error2.NothingParam()
+				errorMessage.WriteString(error2.NothingParam())
 			case error3.Redefinition:
-				error2.Redefinition(err.Additional[0])
+				errorMessage.WriteString(error2.Redefinition(err.Additional[0]))
 			case error3.TypeMismatch:
-				error2.TypeMismatch(err.Additional[0], err.Additional[1])
+				errorMessage.WriteString(error2.TypeMismatch(err.Additional[0], err.Additional[1]))
 			case error3.UndefinedReference:
-				error2.UndefinedReference(err.Additional[0])
+				errorMessage.WriteString(error2.UndefinedReference(err.Additional[0]))
 			case error3.InvalidDereference:
-				error2.InvalidDereference()
+				errorMessage.WriteString(error2.InvalidDereference())
 			case error3.MustReturnAValue:
-				error2.MustReturnValue()
+				errorMessage.WriteString(error2.MustReturnValue())
 			case error3.DataOutlivesStack:
-				error2.DataOutlivesStack()
+				errorMessage.WriteString(error2.DataOutlivesStack())
 			case error3.ParameterCountMismatch:
-				error2.ParamCountMismatch(err.Additional[0])
+				errorMessage.WriteString(error2.ParamCountMismatch(err.Additional[0]))
 			case error3.CannotInferType:
-				error2.CannotInferType()
+				errorMessage.WriteString(error2.CannotInferType())
 			case error3.ShouldNotReturn:
-				error2.ShouldNotReturn()
+				errorMessage.WriteString(error2.ShouldNotReturn())
+			default:
+			}
+
+			// Write the details
+			errorMessage.WriteString(util.BuildDetails(&file.Contents, &file.Path, err.Line, err.Column, true))
+		}
+
+		for _, warning := range warnings.Errors {
+			switch warning.Code {
+			case error3.NameShouldBeSnakeCase:
+				warningMessage.WriteString(warn.SnakeCase(warning.Additional[0]))
+			case error3.UnusedVariable:
+				warningMessage.WriteString(warn.UnusedVariable(warning.Additional[0]))
 			default:
 			}
 
 			// Print the details
-			util.BuildAndPrintDetails(&file.Contents, &file.Path, err.Line, err.Column, true)
+			warningMessage.WriteString(util.BuildDetails(&file.Contents, &file.Path, warning.Line, warning.Column, true))
 		}
 
 		if errors.Count > 0 {
+			fmt.Println(errorMessage.String())
 			os.Exit(1)
 		}
 
+		if warnings.Count > 0 {
+			fmt.Println(warningMessage.String())
+		}
+
 		// Remove foreign functions
-		for i, function := range file.Functions {
-			if function.Path != file.Path {
+		for i, fun := range file.Functions {
+			if fun.Path != file.Path {
 				delete(file.Functions, i)
 			}
 		}
 
 		// Remove foreign modules
-		for i, module := range file.Modules {
-			if module.Path != file.Path {
+		for i, mod := range file.Modules {
+			if mod.Path != file.Path {
 				delete(file.Modules, i)
 			}
 		}

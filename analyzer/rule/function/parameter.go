@@ -16,28 +16,35 @@ import (
 	"fluent/analyzer/rule/value"
 	"fluent/filecode"
 	"fluent/filecode/function"
-	"fluent/message/warn"
-	"fluent/state"
-	"fluent/util"
 )
 
+// AnalyzeParameter analyzes a function parameter for various conditions.
+// It checks if the parameter name is in snake_case, if the parameter type is "nothing",
+// and if there are any undefined references.
+//
+// Parameters:
+// - name: A pointer to the parameter name string.
+// - param: A pointer to the function parameter structure.
+// - trace: A pointer to the file code trace structure.
+// - generics: A pointer to a map of generics.
+//
+// Returns:
+// - An error if the parameter type is "nothing".
+// - A warning if the parameter name is not in snake_case.
 func AnalyzeParameter(
 	name *string,
 	param *function.Param,
 	trace *filecode.FileCode,
 	generics *map[string]bool,
-) error3.Error {
+) (error3.Error, error3.Error) {
+	warning := error3.Error{}
+
 	// Check that the case matches snake_case
 	if !format.CheckCase(name, format.SnakeCase) {
-		state.WarnAllSpinners()
-		warn.SnakeCase(*name)
-		util.BuildAndPrintDetails(
-			&trace.Contents,
-			&trace.Path,
-			param.Trace.Line,
-			param.Trace.Column,
-			false,
-		)
+		warning.Code = error3.NameShouldBeSnakeCase
+		warning.Line = param.Trace.Line
+		warning.Column = param.Trace.Column
+		warning.Additional = []string{*name}
 	}
 
 	// Check that the type is not "nothing"
@@ -46,9 +53,9 @@ func AnalyzeParameter(
 			Code:   error3.ParamTypeNothing,
 			Line:   param.Trace.Line,
 			Column: param.Trace.Column,
-		}
+		}, warning
 	}
 
 	// Check for undefined references
-	return value.AnalyzeUndefinedReference(trace, param.Type, generics)
+	return value.AnalyzeUndefinedReference(trace, param.Type, generics), warning
 }

@@ -85,15 +85,8 @@ func getLines(content *string, minimumValue int, targetLines map[int]bool) ([]st
 	return result, elementsInserted
 }
 
-// BuildAndPrintDetails prints detailed information about a specific line and column in the source code.
-// It provides context around the error location and highlights the exact position.
-//
-// Parameters:
-//   - contents: The full contents of the source code as a string.
-//   - filepath: The path to the file where the error occurred.
-//   - line: The line number where the error occurred (1-based).
-//   - column: The column number where the error occurred (1-based).
-func BuildAndPrintDetails(contents, filepath *string, line int, column int, isError bool) {
+func BuildDetails(contents, filepath *string, line int, column int, isError bool) string {
+	builder := strings.Builder{}
 	var highlightColor string
 
 	if isError {
@@ -115,16 +108,16 @@ func BuildAndPrintDetails(contents, filepath *string, line int, column int, isEr
 	// Print some context
 	if insertedLines == 3 {
 		startAt++
-		fmt.Print("         ")
+		builder.WriteString("         ")
 		// See if line - 1 ends in 9
 		if (line-1)%10 == 9 {
-			fmt.Print(" ")
+			builder.WriteString(" ")
 		}
 
 		// Build the line string
-		fmt.Println(
+		builder.WriteString(
 			fmt.Sprintf(
-				"%s%s%s",
+				"%s%s%s\n",
 				ansi.BrightBlack,
 				buildLineString(lines, 0, line-1),
 				ansi.Reset,
@@ -133,9 +126,9 @@ func BuildAndPrintDetails(contents, filepath *string, line int, column int, isEr
 	}
 
 	// Print an arrow pointing to the column
-	fmt.Println(
+	builder.WriteString(
 		fmt.Sprintf(
-			"%s       > %s%s",
+			"%s       > %s%s\n",
 			highlightColor,
 			buildLineString(lines, 1, line),
 			ansi.Reset,
@@ -170,9 +163,9 @@ func BuildAndPrintDetails(contents, filepath *string, line int, column int, isEr
 	}
 
 	// Print the pinpoint
-	fmt.Println(
+	builder.WriteString(
 		fmt.Sprintf(
-			"%s       > %s | %s%s",
+			"%s       > %s | %s%s\n",
 			highlightColor,
 			strconv.Itoa(line),
 			pinpointStr.String(),
@@ -184,20 +177,21 @@ func BuildAndPrintDetails(contents, filepath *string, line int, column int, isEr
 	if insertedLines == 3 {
 		// See if line ends in 9
 		if line%10 == 9 {
-			fmt.Print("        ")
+			builder.WriteString("        ")
 		} else {
-			fmt.Print("         ")
+			builder.WriteString("         ")
 		}
 
 		// Build the line string
-		fmt.Println(
+		builder.WriteString(
 			ansi.Colorize(ansi.BrightBlack, buildLineString(lines, 2, line+1)),
 		)
+		builder.WriteString("\n")
 	}
 
-	fmt.Println(
+	builder.WriteString(
 		fmt.Sprintf(
-			"%s         => %s:%s:%s%s",
+			"%s         => %s:%s:%s%s\n",
 			ansi.BrightPurple,
 			DiscardCwd(*filepath),
 			strconv.Itoa(line),
@@ -205,6 +199,8 @@ func BuildAndPrintDetails(contents, filepath *string, line int, column int, isEr
 			ansi.Reset,
 		),
 	)
+
+	return builder.String()
 }
 
 // PrintError prints a formatted error message with context from the source code.
@@ -220,7 +216,7 @@ func PrintError(contents, filepath, message *string, line int, column int) {
 	logger.Error(*message)
 	logger.Info("Full details:")
 
-	BuildAndPrintDetails(contents, filepath, line, column, true)
+	fmt.Print(BuildDetails(contents, filepath, line, column, true))
 }
 
 // BuildMessageFromParsingError constructs a detailed error message from a parsing error.

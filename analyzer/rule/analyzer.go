@@ -16,8 +16,9 @@ import (
 	"fluent/filecode"
 )
 
-func AnalyzeFileCode(code filecode.FileCode) *pool.ErrorPool {
+func AnalyzeFileCode(code filecode.FileCode) (*pool.ErrorPool, *pool.ErrorPool) {
 	globalErrors := pool.NewErrorPool()
+	globalWarnings := pool.NewErrorPool()
 
 	// Iterate over all the functions
 	for _, function := range code.Functions {
@@ -27,9 +28,10 @@ func AnalyzeFileCode(code filecode.FileCode) *pool.ErrorPool {
 		}
 
 		// Analyze the function
-		errors := function2.AnalyzeFunction(function, &code)
+		errors, warnings := function2.AnalyzeFunction(function, &code)
 		globalErrors.Extend(errors.Errors)
+		globalWarnings.Extend(warnings.Errors)
 	}
 
-	return globalErrors
+	return globalErrors, globalWarnings
 }

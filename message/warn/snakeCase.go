@@ -10,18 +10,31 @@
 
 package warn
 
-import "fluent/logger"
+import (
+	"fluent/logger"
+	"strings"
+)
 
-// SnakeCase logs a warning saying that the provided name is not in snake_case format.
+// SnakeCase generates a warning message indicating that the provided name should be in snake_case format.
 // It also provides a link to more information about the warning.
 //
 // Parameters:
-//   - name: The name to be logged.
-func SnakeCase(name string) {
-	logger.Warn("The value name '" + name + "' should be in snake_case.")
-	logger.Info(
-		"For more information, refer to:",
-		"https://fluent-lang.github.io/book/codes/E0001",
-		"Full details:",
+//   - name: The name that should be in snake_case format.
+//
+// Returns:
+//
+//	A string containing the warning message and additional information.
+func SnakeCase(name string) string {
+	builder := strings.Builder{}
+
+	builder.WriteString(logger.BuildWarn("The value name '" + name + "' should be in snake_case."))
+	builder.WriteString(
+		logger.BuildInfo(
+			"For more information, refer to:",
+			"https://fluent-lang.github.io/book/codes/E0001",
+			"Full details:",
+		),
 	)
+
+	return builder.String()
 }

@@ -10,22 +10,37 @@
 
 package error
 
-import "fluent/logger"
+import (
+	"fluent/logger"
+	"strings"
+)
 
-// Redefinition prints the error message for redefining a value.
+// Redefinition generates an error message for redefined values.
 //
 // Parameters:
+//   - name: The name of the value that is being redefined.
 //
-//	name - The name of the value that is being redefined.
-func Redefinition(name string) {
-	logger.Error("Redefinition of value '" + name + "'")
-	logger.Help(
-		"This value is already defined in the current scope.",
-		"Please, change the name of the value or remove the redefinition.",
+// Returns:
+//
+//	A string containing the error message.
+func Redefinition(name string) string {
+	builder := strings.Builder{}
+
+	builder.WriteString(logger.BuildError("Redefinition of value '" + name + "'"))
+	builder.WriteString(
+		logger.BuildHelp(
+			"This value is already defined in the current scope.",
+			"Please, change the name of the value or remove the redefinition.",
+		),
 	)
-	logger.Info(
-		"For more information, refer to:",
-		"https://fluent-lang.github.io/book/codes/E0007",
-		"Full details:",
+
+	builder.WriteString(
+		logger.BuildInfo(
+			"For more information, refer to:",
+			"https://fluent-lang.github.io/book/codes/E0007",
+			"Full details:",
+		),
 	)
+
+	return builder.String()
 }

@@ -17,9 +17,24 @@ import (
 	"fluent/logger"
 	error2 "fluent/message/error"
 	"fluent/util"
+	"fmt"
 	"os"
 )
 
+// CheckRedefinition checks if a given name is already defined in the provided map of defined values.
+// If the name is already defined, it logs an error message and exits the program.
+//
+// Type Parameters:
+//
+//	T: A type that implements either the function.Function or module.Module interface.
+//
+// Parameters:
+//
+//	definedValues: A map of already defined values.
+//	name: The name to check for redefinition.
+//	entity: The entity being checked, which can be either a function or a module.
+//	contents: The contents of the file where the entity is defined.
+//	path: The path to the file where the entity is defined.
 func CheckRedefinition[T function.Function | module.Module](
 	definedValues map[string]T,
 	name string,
@@ -40,21 +55,25 @@ func CheckRedefinition[T function.Function | module.Module](
 
 	if _, ok := definedValues[name]; ok {
 		error2.Redefinition(name)
-		util.BuildAndPrintDetails(
-			&contents,
-			&path,
-			trace.Line,
-			trace.Column,
-			true,
+		fmt.Println(
+			util.BuildDetails(
+				&contents,
+				&path,
+				trace.Line,
+				trace.Column,
+				true,
+			),
 		)
 
 		logger.Info("'" + name + "' was previously defined here:")
-		util.BuildAndPrintDetails(
-			&contents,
-			&path,
-			trace.Line,
-			trace.Column,
-			true,
+		fmt.Println(
+			util.BuildDetails(
+				&contents,
+				&path,
+				trace.Line,
+				trace.Column,
+				true,
+			),
 		)
 
 		os.Exit(1)

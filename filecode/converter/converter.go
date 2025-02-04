@@ -24,6 +24,7 @@ import (
 	"fluent/parser"
 	"fluent/state"
 	"fluent/util"
+	"fmt"
 	"os"
 	"strings"
 )
@@ -67,6 +68,8 @@ func ConvertToFileCode(entry string, silent bool) map[string]filecode.FileCode {
 
 	// Save the seen imports in a map (for O(1) lookup) to detect circular imports
 	seenImports := map[string]bool{}
+	// Save a slice of the seen imports to print the full import chain in a sorted manner
+	var seenImportsSlice []string
 	result := make(map[string]filecode.FileCode)
 
 	// Save the already-processed std imports
@@ -89,7 +92,7 @@ func ConvertToFileCode(entry string, silent bool) map[string]filecode.FileCode {
 			logger.Info("Full import chain:")
 
 			spaces := 0
-			for importPath := range seenImports {
+			for _, importPath := range seenImportsSlice {
 				if *path == importPath {
 					logger.Info(
 						ansi.Colorize(
@@ -113,13 +116,14 @@ func ConvertToFileCode(entry string, silent bool) map[string]filecode.FileCode {
 			)
 
 			logger.Info("Full details:")
-			util.BuildAndPrintDetails(elContents, path, trace.Line, trace.Column, true)
+			fmt.Println(util.BuildDetails(elContents, path, trace.Line, trace.Column, true))
 
 			os.Exit(1)
 		}
 
 		if !isStd {
 			seenImports[*path] = true
+			seenImportsSlice = append(seenImportsSlice, *path)
 		}
 
 		// Read the file

@@ -1,4 +1,4 @@
-import "@std::io::print";
+//import "@std::io::print";
 //import "loop.fluent";
 
 /*
@@ -6,10 +6,10 @@ import "@std::io::print";
     Test file 6
 */
 
-pub fun wrap2<T>(x: T) -> T {
-    return x;
+pub fun wrap2<E>(b: &E) -> &E {
+    return b;
 }
 
-pub fun wrap<T>(x: T) -> T {
+pub fun wrap<T, E>(x: &T) -> &E {
     return wrap2(x);
 }

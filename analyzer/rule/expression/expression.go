@@ -161,6 +161,7 @@ func AnalyzeExpression(
 
 			element.Got.Type = *element.Expected
 		default:
+
 		}
 
 		// isInferred does not work here because it was defined

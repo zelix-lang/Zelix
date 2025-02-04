@@ -1,4 +1,5 @@
 import "@std::io::print";
+import "main.fluent";
 
 /*
     The Fluent Programming Language

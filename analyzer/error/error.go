@@ -14,10 +14,12 @@ type Code int
 
 const (
 	Nothing                Code = iota
+	NameShouldBeSnakeCase       // E0001
 	ParamTypeNothing            // E0002
 	DataOutlivesStack           // E0003
 	MustReturnAValue            // E0004
-	UndefinedReference          // E0006
+	UndefinedReference          // E0005
+	UnusedVariable              // E0006
 	Redefinition                // E0007
 	InvalidDereference          // E0008
 	TypeMismatch                // E0009

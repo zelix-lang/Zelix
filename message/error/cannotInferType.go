@@ -10,21 +10,30 @@
 
 package error
 
-import "fluent/logger"
+import (
+	"fluent/logger"
+	"strings"
+)
 
-// CannotInferType logs an error message indicating that the type of one object cannot be inferred.
-// It provides help and additional information for the user to understand the issue.
-func CannotInferType() {
-	logger.Error("Cannot infer this object's type")
-	logger.Help(
-		"Fluent cannot infer the type of this object.",
-		"Type inferring works for assignments, parameters and declarations",
-		"Statements like [1, 2, 3] cannot have their type inferred because",
-		"at such point, the Fluent compiler does not expect a type to infer or match",
+func CannotInferType() string {
+	builder := strings.Builder{}
+
+	builder.WriteString(logger.BuildError("Cannot infer this object's type"))
+	builder.WriteString(
+		logger.BuildHelp(
+			"Fluent cannot infer the type of this object.",
+			"Type inferring works for assignments, parameters and declarations",
+			"Statements like [1, 2, 3] cannot have their type inferred because",
+			"at such point, the Fluent compiler does not expect a type to infer or match",
+		),
 	)
-	logger.Info(
-		"For more information, refer to:",
-		"https://fluent-lang.github.io/book/codes/E0011",
-		"Full details:",
+	builder.WriteString(
+		logger.BuildInfo(
+			"For more information, refer to:",
+			"https://fluent-lang.github.io/book/codes/E0011",
+			"Full details:",
+		),
 	)
+
+	return builder.String()
 }

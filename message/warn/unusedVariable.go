@@ -10,19 +10,35 @@
 
 package warn
 
-import "fluent/logger"
+import (
+	"fluent/logger"
+	"strings"
+)
 
-// UnusedVariable logs a warning about an unused variable and provides help and information links.
+// UnusedVariable generates a warning message for an unused variable.
+// It provides suggestions and additional information for the user.
+//
 // Parameters:
 // - name: The name of the unused variable.
-func UnusedVariable(name *string) {
-	logger.Warn("Unused value: '" + *name + "'.")
-	logger.Help(
-		"If this is intentional, add an underscore before the variable name.",
+//
+// Returns:
+// - A formatted warning message as a string.
+func UnusedVariable(name string) string {
+	builder := strings.Builder{}
+
+	builder.WriteString(logger.BuildWarn("Unused value: '" + name + "'."))
+	builder.WriteString(
+		logger.BuildHelp(
+			"If this is intentional, add an underscore before the variable name.",
+		),
 	)
-	logger.Info(
-		"For more information, refer to:",
-		"https://fluent-lang.github.io/book/codes/E0006",
-		"Inside of this function:",
+	builder.WriteString(
+		logger.BuildInfo(
+			"For more information, refer to:",
+			"https://fluent-lang.github.io/book/codes/E0006",
+			"Inside of this function:",
+		),
 	)
+
+	return builder.String()
 }

@@ -10,19 +10,36 @@
 
 package error
 
-import "fluent/logger"
+import (
+	"fluent/logger"
+	"strings"
+)
 
-// NothingParam prints error and help messages related to the misuse of the 'nothing' type as a parameter.
-func NothingParam() {
-	logger.Error("Parameters cannot have type 'nothing'")
-	logger.Help(
-		"'nothing' is used for return types",
-		"A parameter that holds 'nothing' is not useful in a function",
-		"Change the type of the parameter to a valid type",
+// NothingParam generates an error message indicating that parameters cannot have type 'nothing'.
+//
+// Returns:
+//
+//	string: The constructed error message.
+func NothingParam() string {
+	builder := strings.Builder{}
+
+	builder.WriteString(logger.BuildError("Parameters cannot have type 'nothing'"))
+	builder.WriteString(
+		logger.BuildHelp(
+			"'nothing' is used for return types",
+			"A parameter that holds 'nothing' is not useful in a function",
+			"Change the type of the parameter to a valid type",
+		),
 	)
-	logger.Info(
-		"For more information, refer to:",
-		"https://fluent-lang.github.io/book/codes/E0002",
-		"Full details:",
+
+	builder.WriteString(
+		logger.BuildInfo(
+			"For more information, refer to:",
+			"https://fluent-lang.github.io/book/codes/E0002",
+			"Full details:",
+		),
 	)
+
+	// Return the error message
+	return builder.String()
 }

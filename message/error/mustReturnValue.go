@@ -10,18 +10,30 @@
 
 package error
 
-import "fluent/logger"
+import (
+	"fluent/logger"
+	"strings"
+)
 
-// MustReturnValue prints an error message when a function must return a value.
-func MustReturnValue() {
-	logger.Error("This function must return a value")
-	logger.Help(
-		"This function has not returned any value, but it must.",
-		"If you don't want to return a value, use the 'nothing' type.",
+// MustReturnValue constructs an error message indicating that a function must return a value.
+// It uses the logger package to build the error, help, and info messages, and concatenates them into a single string.
+func MustReturnValue() string {
+	builder := strings.Builder{}
+
+	builder.WriteString(logger.BuildError("This function must return a value"))
+	builder.WriteString(
+		logger.BuildHelp(
+			"This function has not returned any value, but it must.",
+			"If you don't want to return a value, use the 'nothing' type.",
+		),
 	)
-	logger.Info(
-		"For more information, refer to:",
-		"https://fluent-lang.github.io/book/codes/E0004",
-		"Full details:",
+	builder.WriteString(
+		logger.BuildInfo(
+			"For more information, refer to:",
+			"https://fluent-lang.github.io/book/codes/E0004",
+			"Full details:",
+		),
 	)
+
+	return builder.String()
 }

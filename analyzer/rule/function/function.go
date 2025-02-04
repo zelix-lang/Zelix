@@ -11,6 +11,7 @@
 package function
 
 import (
+	error3 "fluent/analyzer/error"
 	"fluent/analyzer/format"
 	"fluent/analyzer/object"
 	"fluent/analyzer/pool"
@@ -22,25 +23,20 @@ import (
 	"fluent/ast"
 	"fluent/filecode"
 	"fluent/filecode/function"
-	"fluent/message/warn"
-	"fluent/state"
-	"fluent/util"
 )
 
-func AnalyzeFunction(fun function.Function, trace *filecode.FileCode) *pool.ErrorPool {
+func AnalyzeFunction(fun function.Function, trace *filecode.FileCode) (*pool.ErrorPool, *pool.ErrorPool) {
 	errors := pool.NewErrorPool()
+	warnings := pool.NewErrorPool()
 
 	// Check that the case matches snake_case
 	if !format.CheckCase(&fun.Name, format.SnakeCase) {
-		state.WarnAllSpinners()
-		warn.SnakeCase(fun.Name)
-		util.BuildAndPrintDetails(
-			&trace.Contents,
-			&trace.Path,
-			fun.Trace.Line,
-			fun.Trace.Column,
-			false,
-		)
+		warnings.AddError(error3.Error{
+			Code:       error3.NameShouldBeSnakeCase,
+			Line:       fun.Trace.Line,
+			Column:     fun.Trace.Column,
+			Additional: []string{fun.Name},
+		})
 	}
 
 	// Check for undefined references in the return type
@@ -60,10 +56,11 @@ func AnalyzeFunction(fun function.Function, trace *filecode.FileCode) *pool.Erro
 
 	// Analyze and add all parameters to the scope
 	for name, param := range fun.Params {
-		err := AnalyzeParameter(&name, &param, trace, &fun.Templates)
+		err, warn := AnalyzeParameter(&name, &param, trace, &fun.Templates)
 
 		// Push the error to the list if necessary
 		errors.AddError(err)
+		warnings.AddError(warn)
 
 		// Create the value
 		val := object.Object{
@@ -125,31 +122,20 @@ func AnalyzeFunction(fun function.Function, trace *filecode.FileCode) *pool.Erro
 
 	// Make sure that the function has returned a value
 	if fun.ReturnType.BaseType != "nothing" && !hasReturned {
-		return errors
+		return errors, warnings
 	}
 
 	unusedVariables := scope.DestroyScope()
 
-	// Return the errors if there are any, after destroying the scope
-	if errors.Count > 0 {
-		return errors
-	}
-
-	if len(unusedVariables) > 0 {
-		state.WarnAllSpinners()
-	}
-
-	// Warn about unused variables
+	// Add unused variable warnings
 	for _, variable2 := range unusedVariables {
-		warn.UnusedVariable(variable2)
-		util.BuildAndPrintDetails(
-			&trace.Contents,
-			&trace.Path,
-			fun.Trace.Line,
-			fun.Trace.Column,
-			false,
-		)
+		warnings.AddError(error3.Error{
+			Code:       error3.UnusedVariable,
+			Line:       fun.Trace.Line,
+			Column:     fun.Trace.Column,
+			Additional: []string{*variable2},
+		})
 	}
 
-	return errors
+	return errors, warnings
 }

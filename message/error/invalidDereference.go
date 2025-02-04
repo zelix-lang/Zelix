@@ -10,20 +10,30 @@
 
 package error
 
-import "fluent/logger"
+import (
+	"fluent/logger"
+	"strings"
+)
 
-// InvalidDereference prints an error message indicating that a non-pointer value
-// was dereferenced. It provides help and additional information on the correct
-// usage of dereferencing in the Fluent programming language.
-func InvalidDereference() {
-	logger.Error("Dereference of a non-pointer value")
-	logger.Help(
-		"Dereferencing works for converting pointers to values.",
-		"A value that is not a pointer cannot be dereferenced.",
+// InvalidDereference constructs an error message for invalid dereference attempts.
+// It returns a string containing the error message, help information, and a reference link.
+func InvalidDereference() string {
+	builder := strings.Builder{}
+
+	builder.WriteString(logger.BuildError("Dereference of a non-pointer value"))
+	builder.WriteString(
+		logger.BuildHelp(
+			"Dereferencing works for converting pointers to values.",
+			"A value that is not a pointer cannot be dereferenced.",
+		),
 	)
-	logger.Info(
-		"For more information, refer to:",
-		"https://fluent-lang.github.io/book/codes/E0008",
-		"Full details:",
+	builder.WriteString(
+		logger.BuildInfo(
+			"For more information, refer to:",
+			"https://fluent-lang.github.io/book/codes/E0008",
+			"Full details:",
+		),
 	)
+
+	return builder.String()
 }
