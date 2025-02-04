@@ -135,6 +135,9 @@ func AnalyzeExpression(
 
 			element.Got.Type = *element.Expected
 		case ast.FunctionCall:
+			// This will later be fully determined by the call analyzer
+			element.Got.IsHeap = false
+
 			// Pass the input to the function call analyzer
 			err := call.AnalyzeFunctionCall(
 				child,
