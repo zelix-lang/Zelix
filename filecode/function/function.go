@@ -32,4 +32,6 @@ type Function struct {
 	Trace trace.Trace
 	// Path contains the path of the file where the function is defined.
 	Path string
+	// Templates is a map of template names (generics).
+	Templates map[string]bool
 }

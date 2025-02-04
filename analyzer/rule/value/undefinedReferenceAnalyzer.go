@@ -23,8 +23,17 @@ import (
 // Parameters:
 //   - trace: A pointer to the FileCode structure containing the code trace information.
 //   - wrapper: A TypeWrapper structure that holds information about the type being analyzed.
-func AnalyzeUndefinedReference(trace *filecode.FileCode, wrapper types.TypeWrapper) error3.Error {
+func AnalyzeUndefinedReference(
+	trace *filecode.FileCode,
+	wrapper types.TypeWrapper,
+	generics *map[string]bool,
+) error3.Error {
 	if !wrapper.IsPrimitive {
+		// Check for generics
+		if _, ok := (*generics)[wrapper.BaseType]; ok {
+			return error3.Error{}
+		}
+
 		// See if the mod exists in the trace
 		if _, ok := trace.Modules[wrapper.BaseType]; !ok {
 			return error3.Error{

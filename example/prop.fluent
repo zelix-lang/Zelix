@@ -1,17 +1,15 @@
 import "@std::io::print";
-import "loop.fluent";
+//import "loop.fluent";
 
 /*
     The Fluent Programming Language
     Test file 6
 */
 
-mod Abc {
-    pub fun Abc() {
-
-    }
+pub fun wrap2<T>(x: T) -> T {
+    return x;
 }
 
-pub fun prop() {
-    ((println("Hello, world!")));
+pub fun wrap<T>(x: T) -> T {
+    return wrap2(x);
 }

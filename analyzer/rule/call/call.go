@@ -27,6 +27,7 @@ import (
 // Parameters:
 // - tree: The AST of the function call.
 // - trace: The file code trace containing function and module definitions.
+// - expected: The expected return type of the function.
 // - result: The object to store the result of the analysis.
 // - exprQueue: The queue to schedule parameter analysis.
 //
@@ -35,6 +36,7 @@ import (
 func AnalyzeFunctionCall(
 	tree *ast.AST,
 	trace *filecode.FileCode,
+	expected *types.TypeWrapper,
 	result *object.Object,
 	exprQueue *[]queue2.ExpectedPair,
 ) error3.Error {
@@ -57,8 +59,47 @@ func AnalyzeFunctionCall(
 		return error3.Error{}
 	}
 
+	// Update the result accordingly
+	returnType := function.ReturnType
+	result.IsHeap = returnType.PointerCount > 1
+	result.Type = returnType
+
+	if !returnType.IsPrimitive {
+		// Check for generics
+		if _, found := function.Templates[returnType.BaseType]; found {
+			// Make the expression analyzer infer the type
+			result.Type = *expected
+
+			// Make sure there is an expected type
+			if expected.BaseType == "" {
+				result.Type = types.TypeWrapper{
+					BaseType: returnType.BaseType,
+					Children: &[]*types.TypeWrapper{},
+				}
+			}
+		} else {
+			// Get the module
+			module, found := trace.Modules[returnType.BaseType]
+
+			// Check if the module was found
+			if !found {
+				return error3.Error{
+					Line:       tree.Line,
+					Column:     tree.Column,
+					Code:       error3.UndefinedReference,
+					Additional: []string{returnType.BaseType},
+				}
+			}
+
+			// Update the result
+			result.Value = module
+		}
+	}
+
+	paramsNode := (*tree.Children)[1]
+
 	// Check that the function call has the correct number of parameters
-	if len(*tree.Children) != len(function.Params)+1 {
+	if len(*paramsNode.Children) != len(function.Params) {
 		return error3.Error{
 			Line:       tree.Line,
 			Column:     tree.Column,
@@ -67,37 +108,24 @@ func AnalyzeFunctionCall(
 		}
 	}
 
-	// Update the result accordingly
-	returnType := function.ReturnType
-	result.IsHeap = returnType.PointerCount > 1
-	result.Type = returnType
-
-	// Check for modules
-	if !returnType.IsPrimitive {
-		// Get the module
-		module, found := trace.Modules[returnType.BaseType]
-
-		// Check if the module was found
-		if !found {
-			return error3.Error{
-				Line:       tree.Line,
-				Column:     tree.Column,
-				Code:       error3.UndefinedReference,
-				Additional: []string{returnType.BaseType},
-			}
-		}
-
-		// Update the result
-		result.Value = module
-	}
-
-	paramsNode := (*tree.Children)[1]
-
 	// Schedule all the parameters for analysis
 	i := 0
 	for _, param := range function.Params {
 		// Get the parameter's value
 		value := (*paramsNode.Children)[i]
+		paramType := param.Type
+
+		if !param.Type.IsPrimitive {
+			// Check for generics
+			if _, found := function.Templates[param.Type.BaseType]; found {
+				// Check if this param has the return type's generic
+				if param.Type.BaseType == returnType.BaseType {
+					paramType = *expected
+				} else {
+					paramType.BaseType = "(Infer)"
+				}
+			}
+		}
 
 		*exprQueue = append(*exprQueue, queue2.ExpectedPair{
 			Tree: (*value.Children)[0],
@@ -106,7 +134,7 @@ func AnalyzeFunctionCall(
 					Children: &[]*types.TypeWrapper{},
 				},
 			},
-			Expected: &param.Type,
+			Expected: &paramType,
 		})
 
 		i++

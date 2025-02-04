@@ -44,7 +44,7 @@ func AnalyzeFunction(fun function.Function, trace *filecode.FileCode) *pool.Erro
 	}
 
 	// Check for undefined references in the return type
-	err := value.AnalyzeUndefinedReference(trace, fun.ReturnType)
+	err := value.AnalyzeUndefinedReference(trace, fun.ReturnType, &fun.Templates)
 
 	// Push the error to the list if necessary
 	errors.AddError(err)
@@ -60,7 +60,7 @@ func AnalyzeFunction(fun function.Function, trace *filecode.FileCode) *pool.Erro
 
 	// Analyze and add all parameters to the scope
 	for name, param := range fun.Params {
-		err := AnalyzeParameter(&name, &param, trace)
+		err := AnalyzeParameter(&name, &param, trace, &fun.Templates)
 
 		// Push the error to the list if necessary
 		errors.AddError(err)

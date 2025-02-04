@@ -52,7 +52,7 @@ func AnalyzeExpression(
 		element := queue[0]
 		queue = queue[1:]
 
-		// Used to skip tokens
+		// Used to skip nodes
 		startAt := 0
 
 		// Used to keep track of whether the current value
@@ -136,7 +136,13 @@ func AnalyzeExpression(
 			element.Got.Type = *element.Expected
 		case ast.FunctionCall:
 			// Pass the input to the function call analyzer
-			err := call.AnalyzeFunctionCall(child, trace, element.Got, &queue)
+			err := call.AnalyzeFunctionCall(
+				child,
+				trace,
+				element.Expected,
+				element.Got,
+				&queue,
+			)
 
 			// Return the error if it is not nothing
 			if err.Code != error3.Nothing {
@@ -155,6 +161,17 @@ func AnalyzeExpression(
 
 			element.Got.Type = *element.Expected
 		default:
+		}
+
+		// isInferred does not work here because it was defined
+		// before the switch statement
+		if element.Expected.BaseType == "(Infer)" {
+			oldPointerCount := element.Got.Type.PointerCount
+			oldArrayCount := element.Got.Type.ArrayCount
+
+			element.Got.Type = *element.Expected
+			element.Got.Type.PointerCount += oldPointerCount
+			element.Got.Type.ArrayCount += oldArrayCount
 		}
 
 		// Check if the pointer count is negative

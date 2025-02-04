@@ -25,6 +25,7 @@ func AnalyzeParameter(
 	name *string,
 	param *function.Param,
 	trace *filecode.FileCode,
+	generics *map[string]bool,
 ) error3.Error {
 	// Check that the case matches snake_case
 	if !format.CheckCase(name, format.SnakeCase) {
@@ -49,5 +50,5 @@ func AnalyzeParameter(
 	}
 
 	// Check for undefined references
-	return value.AnalyzeUndefinedReference(trace, param.Type)
+	return value.AnalyzeUndefinedReference(trace, param.Type, generics)
 }

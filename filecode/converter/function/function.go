@@ -40,6 +40,7 @@ func ConvertFunction(ast *ast2.AST) function.Function {
 	var block *ast2.AST
 	var public bool
 	var returnType *ast2.AST
+	var templates *ast2.AST
 	var params *ast2.AST
 	var name string
 
@@ -56,6 +57,8 @@ func ConvertFunction(ast *ast2.AST) function.Function {
 			returnType = child
 		case ast2.Block:
 			block = child
+		case ast2.Templates:
+			templates = child
 		default:
 		}
 	}
@@ -86,6 +89,14 @@ func ConvertFunction(ast *ast2.AST) function.Function {
 	result.Name = name
 	result.Body = *block
 	result.ReturnType = types.ConvertToTypeWrapper(*returnType)
+	result.Templates = make(map[string]bool)
+
+	// Handle templates
+	if templates != nil {
+		for _, template := range *templates.Children {
+			result.Templates[*template.Value] = true
+		}
+	}
 
 	// Parse the parameters
 	funParams := make(map[string]function.Param)
