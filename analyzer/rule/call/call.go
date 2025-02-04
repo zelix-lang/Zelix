@@ -61,7 +61,7 @@ func AnalyzeFunctionCall(
 
 	// Update the result accordingly
 	returnType := function.ReturnType
-	result.IsHeap = returnType.PointerCount > 1
+	result.IsHeap = returnType.PointerCount > 0
 	result.Type = returnType
 
 	if !returnType.IsPrimitive {
@@ -135,6 +135,7 @@ func AnalyzeFunctionCall(
 				Type: types.TypeWrapper{
 					Children: &[]*types.TypeWrapper{},
 				},
+				IsHeap: paramType.PointerCount > 0,
 			},
 			Expected: &paramType,
 		})
