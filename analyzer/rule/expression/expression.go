@@ -166,12 +166,12 @@ func AnalyzeExpression(
 		// isInferred does not work here because it was defined
 		// before the switch statement
 		if element.Expected.BaseType == "(Infer)" {
-			oldPointerCount := element.Got.Type.PointerCount
-			oldArrayCount := element.Got.Type.ArrayCount
+			oldPointerCount := element.Expected.PointerCount
+			oldArrayCount := element.Expected.ArrayCount
 
-			element.Got.Type = *element.Expected
-			element.Got.Type.PointerCount += oldPointerCount
-			element.Got.Type.ArrayCount += oldArrayCount
+			*element.Expected = element.Got.Type
+			element.Expected.PointerCount += oldPointerCount
+			element.Expected.ArrayCount += oldArrayCount
 		}
 
 		// Check if the pointer count is negative

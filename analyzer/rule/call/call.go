@@ -67,15 +67,17 @@ func AnalyzeFunctionCall(
 	if !returnType.IsPrimitive {
 		// Check for generics
 		if _, found := function.Templates[returnType.BaseType]; found {
+			oldPointerCount := result.Type.PointerCount
+			oldArrayCount := result.Type.ArrayCount
+
 			// Make the expression analyzer infer the type
 			result.Type = *expected
+			result.Type.PointerCount += oldPointerCount
+			result.Type.ArrayCount += oldArrayCount
 
 			// Make sure there is an expected type
 			if expected.BaseType == "" {
-				result.Type = types.TypeWrapper{
-					BaseType: returnType.BaseType,
-					Children: &[]*types.TypeWrapper{},
-				}
+				result.Type = returnType
 			}
 		} else {
 			// Get the module
@@ -119,7 +121,7 @@ func AnalyzeFunctionCall(
 			// Check for generics
 			if _, found := function.Templates[param.Type.BaseType]; found {
 				// Check if this param has the return type's generic
-				if param.Type.BaseType == returnType.BaseType {
+				if param.Type.Compare(returnType) {
 					paramType = *expected
 				} else {
 					paramType.BaseType = "(Infer)"
