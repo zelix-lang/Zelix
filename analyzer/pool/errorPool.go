@@ -45,6 +45,9 @@ func (e *ErrorPool) AddError(err error3.Error) {
 	e.Count++
 }
 
+// Extend adds multiple errors to the ErrorPool.
+// Parameters:
+//   - errs: []error3.Error - a slice of errors to be added.
 func (e *ErrorPool) Extend(errs []error3.Error) {
 	for _, err := range errs {
 		e.AddError(err)
