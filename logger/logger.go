@@ -55,26 +55,70 @@ func buildMessageImpl(prefix string, color string, colorize bool, message ...str
 // Parameters:
 //   - message: variadic string arguments to be logged.
 func Warn(message ...string) {
-	fmt.Print(buildMessageImpl(warnPrefix, ansi.BrightYellow, true, message...))
+	fmt.Print(BuildWarn(message...))
 }
 
 // Info prints the provided messages with an info prefix.
 // Parameters:
 //   - message: variadic string arguments to be logged.
 func Info(message ...string) {
-	fmt.Print(buildMessageImpl(infoPrefix, "", false, message...))
+	fmt.Print(BuildInfo(message...))
 }
 
 // Help prints the provided messages with a help prefix.
 // Parameters:
 //   - message: variadic string arguments to be logged.
 func Help(message ...string) {
-	fmt.Print(buildMessageImpl(helpPrefix, "", false, message...))
+	fmt.Print(BuildHelp(message...))
 }
 
 // Error prints the provided messages with an error prefix.
 // Parameters:
 //   - message: variadic string arguments to be logged.
 func Error(message ...string) {
-	fmt.Print(buildMessageImpl(errorPrefix, ansi.BrightRed, true, message...))
+	fmt.Print(BuildError(message...))
+}
+
+// BuildInfo constructs an info log message.
+// Parameters:
+//   - message: variadic string arguments representing the log messages.
+//
+// Returns:
+//
+//	A single string containing the formatted log messages.
+func BuildInfo(message ...string) string {
+	return buildMessageImpl(infoPrefix, "", false, message...)
+}
+
+// BuildWarn constructs a warning log message.
+// Parameters:
+//   - message: variadic string arguments representing the log messages.
+//
+// Returns:
+//
+//	A single string containing the formatted log messages.
+func BuildWarn(message ...string) string {
+	return buildMessageImpl(warnPrefix, ansi.BrightYellow, true, message...)
+}
+
+// BuildHelp constructs a help log message.
+// Parameters:
+//   - message: variadic string arguments representing the log messages.
+//
+// Returns:
+//
+//	A single string containing the formatted log messages.
+func BuildHelp(message ...string) string {
+	return buildMessageImpl(helpPrefix, "", false, message...)
+}
+
+// BuildError constructs an error log message.
+// Parameters:
+//   - message: variadic string arguments representing the log messages.
+//
+// Returns:
+//
+//	A single string containing the formatted log messages.
+func BuildError(message ...string) string {
+	return buildMessageImpl(errorPrefix, ansi.BrightRed, true, message...)
 }
