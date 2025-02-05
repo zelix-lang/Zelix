@@ -240,6 +240,10 @@ func AnalyzeCode(entry map[string]filecode.FileCode, mainPath string, silent boo
 				errorMessage.WriteString(error2.ShouldNotReturn())
 			case error3.CannotTakeAddress:
 				errorMessage.WriteString(error2.CannotTakeAddress())
+			case error3.InvalidPropAccess:
+				errorMessage.WriteString(error2.InvalidPropAccess())
+			case error3.IllegalPropAccess:
+				errorMessage.WriteString(error2.IllegalPropAccess())
 			default:
 			}
 
