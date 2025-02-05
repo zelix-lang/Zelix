@@ -63,11 +63,6 @@ func AnalyzeFunctionCall(
 		}
 	}
 
-	// See if the function call has any parameters
-	if len(*tree.Children) < 2 {
-		return error3.Error{}
-	}
-
 	result := queueElement.Got
 	expected := queueElement.Expected
 
@@ -121,60 +116,73 @@ func AnalyzeFunctionCall(
 		}
 	}
 
-	paramsNode := (*tree.Children)[1]
+	// See if the function call has any parameters
+	if len(*tree.Children) > 1 {
+		paramsNode := (*tree.Children)[1]
 
-	// Check that the function call has the correct number of parameters
-	if len(*paramsNode.Children) != len(function.Params) {
-		return error3.Error{
-			Line:       tree.Line,
-			Column:     tree.Column,
-			Code:       error3.ParameterCountMismatch,
-			Additional: []string{strconv.Itoa(len(function.Params))},
-		}
-	}
-
-	// Schedule all the parameters for analysis
-	i := 0
-	for _, param := range function.Params {
-		// Get the parameter's value
-		value := (*paramsNode.Children)[i]
-		paramType := param.Type
-		paramNodes := (*value.Children)[0]
-		isParamHeap := paramType.PointerCount > 0
-
-		if !param.Type.IsPrimitive {
-			// Check for generics
-			if _, found := function.Templates[param.Type.BaseType]; found {
-				// Check if this param has the return type's generic
-				if param.Type.Compare(returnType) {
-					if expected.BaseType == "" {
-						paramType = types.TypeWrapper{
-							BaseType:     "(Infer)",
-							PointerCount: param.Type.PointerCount,
-							ArrayCount:   param.Type.ArrayCount,
-						}
-					} else {
-						paramType = *expected
-					}
-				} else {
-					paramType.BaseType = "(Infer)"
-				}
+		// Check that the function call has the correct number of parameters
+		if len(*paramsNode.Children) != len(function.Params) {
+			return error3.Error{
+				Line:       tree.Line,
+				Column:     tree.Column,
+				Code:       error3.ParameterCountMismatch,
+				Additional: []string{strconv.Itoa(len(function.Params))},
 			}
 		}
 
-		*exprQueue = append(*exprQueue, queue2.ExpectedPair{
-			Tree: paramNodes,
-			Got: &object.Object{
-				Type: types.TypeWrapper{
-					Children: &[]*types.TypeWrapper{},
-				},
-				IsHeap: isParamHeap,
-			},
-			Expected:     &paramType,
-			HeapRequired: result.IsHeap,
-		})
+		// Schedule all the parameters for analysis
+		i := 0
+		for _, param := range function.Params {
+			// Get the parameter's value
+			value := (*paramsNode.Children)[i]
+			paramType := param.Type
+			paramNodes := (*value.Children)[0]
+			isParamHeap := paramType.PointerCount > 0
 
-		i++
+			if !param.Type.IsPrimitive {
+				// Check for generics
+				if _, found := function.Templates[param.Type.BaseType]; found {
+					// Check if this param has the return type's generic
+					if param.Type.Compare(returnType) {
+						if expected.BaseType == "" {
+							paramType = types.TypeWrapper{
+								BaseType:     "(Infer)",
+								PointerCount: param.Type.PointerCount,
+								ArrayCount:   param.Type.ArrayCount,
+							}
+						} else {
+							paramType = *expected
+						}
+					} else {
+						paramType.BaseType = "(Infer)"
+					}
+				}
+			}
+
+			*exprQueue = append(*exprQueue, queue2.ExpectedPair{
+				Tree: paramNodes,
+				Got: &object.Object{
+					Type: types.TypeWrapper{
+						Children: &[]*types.TypeWrapper{},
+					},
+					IsHeap: isParamHeap,
+				},
+				Expected:     &paramType,
+				HeapRequired: result.IsHeap,
+			})
+
+			i++
+		}
+	} else {
+		// Check for parameter count mismatch
+		if len(function.Params) > 0 {
+			return error3.Error{
+				Line:       tree.Line,
+				Column:     tree.Column,
+				Code:       error3.ParameterCountMismatch,
+				Additional: []string{strconv.Itoa(len(function.Params))},
+			}
+		}
 	}
 
 	return error3.Error{}
