@@ -220,7 +220,7 @@ func ConvertToFileCode(entry string, silent bool) map[string]filecode.FileCode {
 				})
 			case ast2.Function:
 				// Convert to a Function wrapper
-				fn := function.ConvertFunction(child)
+				fn := function.ConvertFunction(child, isStd)
 
 				// Check for redefinitions
 				redefinition.CheckRedefinition(code.Functions, fn.Name, fn, contents, *path)

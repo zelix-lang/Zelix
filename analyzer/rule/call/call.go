@@ -75,6 +75,9 @@ func AnalyzeFunctionCall(
 	result.IsHeap = returnType.PointerCount > 0
 	result.Type = returnType
 
+	// Do not enforce heap tracing if the current function is heap_alloc
+	enforceHeap := function.Name != "heap_alloc" && !function.IsStd
+
 	// Honor pointers and arrays
 	result.Type.PointerCount += oldPointerCount
 	result.Type.ArrayCount += oldArrayCount
@@ -94,8 +97,10 @@ func AnalyzeFunctionCall(
 				// Make the expression analyzer infer the type
 				result.Type = *expected
 
-				result.Type.PointerCount += oldPointerCount
-				result.Type.ArrayCount += oldArrayCount
+				if result.Type.BaseType != "(Infer)" {
+					result.Type.PointerCount = oldPointerCount
+					result.Type.ArrayCount = oldArrayCount
+				}
 			}
 		} else {
 			// Get the module
@@ -143,7 +148,7 @@ func AnalyzeFunctionCall(
 				// Check for generics
 				if _, found := function.Templates[param.Type.BaseType]; found {
 					// Check if this param has the return type's generic
-					if param.Type.Compare(returnType) {
+					if returnType.Compare(paramType) {
 						if expected.BaseType == "" {
 							paramType = types.TypeWrapper{
 								BaseType:     "(Infer)",
@@ -168,7 +173,7 @@ func AnalyzeFunctionCall(
 					IsHeap: isParamHeap,
 				},
 				Expected:     &paramType,
-				HeapRequired: result.IsHeap,
+				HeapRequired: enforceHeap && result.IsHeap,
 			})
 
 			i++

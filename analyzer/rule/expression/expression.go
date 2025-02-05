@@ -38,6 +38,7 @@ func AnalyzeExpression(
 	trace *filecode.FileCode,
 	variables *stack.ScopedStack,
 	enforceHeapRequirement bool,
+	firstExpected *types.TypeWrapper,
 ) (object.Object, error3.Error) {
 	result := object.Object{
 		Type: types.TypeWrapper{
@@ -48,9 +49,7 @@ func AnalyzeExpression(
 	// Use a queue to analyze the expression
 	queue := []queue2.ExpectedPair{
 		{
-			Expected: &types.TypeWrapper{
-				Children: &[]*types.TypeWrapper{},
-			},
+			Expected:          firstExpected,
 			Got:               &result,
 			Tree:              tree,
 			HasMetDereference: false,
@@ -228,6 +227,8 @@ func AnalyzeExpression(
 			if err.Code != error3.Nothing {
 				return object.Object{}, err
 			}
+		case ast.ArithmeticExpression:
+
 		default:
 		}
 

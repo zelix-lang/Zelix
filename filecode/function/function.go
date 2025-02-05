@@ -34,4 +34,6 @@ type Function struct {
 	Path string
 	// Templates is a map of template names (generics).
 	Templates map[string]bool
+	// IsStd indicates whether the function is a standard library function.
+	IsStd bool
 }

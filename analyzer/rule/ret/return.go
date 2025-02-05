@@ -39,15 +39,6 @@ func AnalyzeReturn(
 ) error3.Error {
 	// Check if the tree has children
 	if len(*tree.Children) == 0 {
-		// Check if the function expects a return value
-		if expected.BaseType != "nothing" {
-			return error3.Error{
-				Code:   error3.MustReturnAValue,
-				Line:   tree.Line,
-				Column: tree.Column,
-			}
-		}
-
 		return error3.Error{}
 	}
 
@@ -62,7 +53,13 @@ func AnalyzeReturn(
 	}
 
 	// Analyze the expression
-	expr, err := expression.AnalyzeExpression(exprNode, trace, variables, true)
+	expr, err := expression.AnalyzeExpression(
+		exprNode,
+		trace,
+		variables,
+		true,
+		expected,
+	)
 
 	// Return the error if there is one
 	if err.Code != error3.Nothing {
@@ -75,16 +72,6 @@ func AnalyzeReturn(
 			Code:   error3.DataOutlivesStack,
 			Line:   exprNode.Line,
 			Column: exprNode.Column,
-		}
-	}
-
-	// Check for type mismatch
-	if !expr.Type.Compare(*expected) {
-		return error3.Error{
-			Code:       error3.TypeMismatch,
-			Line:       exprNode.Line,
-			Column:     exprNode.Column,
-			Additional: []string{expected.Marshal(), expr.Type.Marshal()},
 		}
 	}
 

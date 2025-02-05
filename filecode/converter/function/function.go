@@ -23,10 +23,11 @@ var nothing = "nothing"
 // ConvertFunction converts an AST node to a function representation.
 // Parameters:
 //   - ast: A pointer to the AST node to be converted.
+//   - isStd: A boolean indicating whether the function is a standard library function.
 //
 // Returns:
 //   - A function.Function representing the converted AST node.
-func ConvertFunction(ast *ast2.AST) function.Function {
+func ConvertFunction(ast *ast2.AST, isStd bool) function.Function {
 	result := function.Function{
 		Params: make(map[string]function.Param),
 		Path:   *ast.File,
@@ -90,6 +91,7 @@ func ConvertFunction(ast *ast2.AST) function.Function {
 	result.Body = *block
 	result.ReturnType = types.ConvertToTypeWrapper(*returnType)
 	result.Templates = make(map[string]bool)
+	result.IsStd = isStd
 
 	// Handle templates
 	if templates != nil {

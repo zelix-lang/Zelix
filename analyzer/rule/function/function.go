@@ -23,6 +23,7 @@ import (
 	"fluent/ast"
 	"fluent/filecode"
 	"fluent/filecode/function"
+	"fluent/filecode/types"
 )
 
 func AnalyzeFunction(fun function.Function, trace *filecode.FileCode) (*pool.ErrorPool, *pool.ErrorPool) {
@@ -112,7 +113,15 @@ func AnalyzeFunction(fun function.Function, trace *filecode.FileCode) (*pool.Err
 			case ast.Assignment:
 
 			default:
-				_, err := expression.AnalyzeExpression(statement, trace, &scope, false)
+				_, err := expression.AnalyzeExpression(
+					statement,
+					trace,
+					&scope,
+					false,
+					&types.TypeWrapper{
+						Children: &[]*types.TypeWrapper{},
+					},
+				)
 
 				// Push the error to the list if necessary
 				errors.AddError(err)
@@ -121,7 +130,12 @@ func AnalyzeFunction(fun function.Function, trace *filecode.FileCode) (*pool.Err
 	}
 
 	// Make sure that the function has returned a value
-	if fun.ReturnType.BaseType != "nothing" && !hasReturned {
+	if !fun.IsStd && fun.Name != "heap_alloc" && fun.ReturnType.BaseType != "nothing" && !hasReturned {
+		errors.AddError(error3.Error{
+			Code:   error3.MustReturnAValue,
+			Line:   fun.Trace.Line,
+			Column: fun.Trace.Column,
+		})
 		return errors, warnings
 	}
 

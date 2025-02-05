@@ -72,7 +72,7 @@ func ConvertModule(ast *ast2.AST, contents string) module.Module {
 		switch rule {
 		case ast2.Function:
 			// Convert the function to a module.Function
-			fn := function.ConvertFunction(node)
+			fn := function.ConvertFunction(node, false)
 
 			// Check for redefinitions
 			redefinition.CheckRedefinition(result.Functions, fn.Name, fn, contents, result.Path)
