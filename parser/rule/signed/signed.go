@@ -71,11 +71,12 @@ func ProcessSignedOp(
 
 	if candidate != nil && candidate.Rule != ast.Program {
 		*result.Children = append(*result.Children, &ast.AST{
-			Rule:   ast.Expression,
-			Line:   candidate.Line,
-			Column: candidate.Column,
-			Value:  candidate.Value,
-			File:   candidate.File,
+			Rule:     ast.Expression,
+			Line:     candidate.Line,
+			Column:   candidate.Column,
+			Value:    candidate.Value,
+			File:     candidate.File,
+			Children: &[]*ast.AST{candidate},
 		})
 	}
 
