@@ -22,6 +22,15 @@ import (
 	"fluent/filecode/types"
 )
 
+// literalRules is a map of rules that represent literals
+var literalRules = map[ast.Rule]bool{
+	ast.StringLiteral:  true,
+	ast.NumberLiteral:  true,
+	ast.BooleanLiteral: true,
+	ast.DecimalLiteral: true,
+	ast.Array:          true,
+}
+
 func AnalyzeExpression(
 	tree *ast.AST,
 	trace *filecode.FileCode,
@@ -88,57 +97,35 @@ func AnalyzeExpression(
 			}
 		}
 
+		// Get the child
 		child := (*element.Tree.Children)[startAt]
+
+		// See if the address of this value can be taken
+		if literalRules[child.Rule] && element.Got.Type.PointerCount > 0 {
+			return object.Object{}, error3.Error{
+				Code:   error3.CannotTakeAddress,
+				Line:   child.Line,
+				Column: child.Column,
+			}
+		}
 
 		switch child.Rule {
 		case ast.StringLiteral:
 			element.Got.Type.BaseType = "str"
 			element.Got.Type.IsPrimitive = true
 			element.Got.Value = child.Value
-
-			if element.Got.Type.PointerCount > 0 {
-				return object.Object{}, error3.Error{
-					Code:   error3.CannotTakeAddress,
-					Line:   element.Tree.Line,
-					Column: element.Tree.Column,
-				}
-			}
 		case ast.NumberLiteral:
 			element.Got.Type.BaseType = "num"
 			element.Got.Type.IsPrimitive = true
 			element.Got.Value = child.Value
-
-			if element.Got.Type.PointerCount > 0 {
-				return object.Object{}, error3.Error{
-					Code:   error3.CannotTakeAddress,
-					Line:   element.Tree.Line,
-					Column: element.Tree.Column,
-				}
-			}
 		case ast.BooleanLiteral:
 			element.Got.Type.BaseType = "bool"
 			element.Got.Type.IsPrimitive = true
 			element.Got.Value = child.Value
-
-			if element.Got.Type.PointerCount > 0 {
-				return object.Object{}, error3.Error{
-					Code:   error3.CannotTakeAddress,
-					Line:   element.Tree.Line,
-					Column: element.Tree.Column,
-				}
-			}
 		case ast.DecimalLiteral:
 			element.Got.Type.BaseType = "dec"
 			element.Got.Type.IsPrimitive = true
 			element.Got.Value = child.Value
-
-			if element.Got.Type.PointerCount > 0 {
-				return object.Object{}, error3.Error{
-					Code:   error3.CannotTakeAddress,
-					Line:   element.Tree.Line,
-					Column: element.Tree.Column,
-				}
-			}
 		case ast.Identifier:
 			// Check if the variable exists
 			value := variables.Load(child.Value)
