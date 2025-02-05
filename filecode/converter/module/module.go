@@ -78,12 +78,12 @@ func ConvertModule(ast *ast2.AST, contents string) module.Module {
 
 			// Append the function to the module
 			result.Functions[fn.Name] = fn
-		case ast2.Declaration:
-			// Append the declaration to the module
-			result.Declarations = append(result.Declarations, *node)
-		case ast2.IncompleteDeclaration:
-			// Append the declaration to the module
-			result.IncompleteDeclarations = append(result.IncompleteDeclarations, *node)
+		case ast2.Declaration, ast2.IncompleteDeclaration:
+			// Convert the declaration
+			name, dec := ConvertDeclaration(node)
+
+			// Store the declaration
+			result.Declarations[name] = dec
 		default:
 		}
 	}
