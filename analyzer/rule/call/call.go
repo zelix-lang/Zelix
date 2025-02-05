@@ -77,17 +77,19 @@ func AnalyzeFunctionCall(
 	if !returnType.IsPrimitive {
 		// Check for generics
 		if _, found := function.Templates[returnType.BaseType]; found {
-			oldPointerCount := result.Type.PointerCount
-			oldArrayCount := result.Type.ArrayCount
-
-			// Make the expression analyzer infer the type
-			result.Type = *expected
-			result.Type.PointerCount += oldPointerCount
-			result.Type.ArrayCount += oldArrayCount
-
 			// Make sure there is an expected type
 			if expected.BaseType == "" {
-				result.Type = returnType
+				result.Type.BaseType = returnType.BaseType
+				result.Type.Children = returnType.Children
+			} else {
+				oldPointerCount := result.Type.PointerCount
+				oldArrayCount := result.Type.ArrayCount
+
+				// Make the expression analyzer infer the type
+				result.Type = *expected
+
+				result.Type.PointerCount += oldPointerCount
+				result.Type.ArrayCount += oldArrayCount
 			}
 		} else {
 			// Get the module
