@@ -122,7 +122,15 @@ func AnalyzeFunctionCall(
 			if _, found := function.Templates[param.Type.BaseType]; found {
 				// Check if this param has the return type's generic
 				if param.Type.Compare(returnType) {
-					paramType = *expected
+					if expected.BaseType == "" {
+						paramType = types.TypeWrapper{
+							BaseType:     "(Infer)",
+							PointerCount: param.Type.PointerCount,
+							ArrayCount:   param.Type.ArrayCount,
+						}
+					} else {
+						paramType = *expected
+					}
 				} else {
 					paramType.BaseType = "(Infer)"
 				}

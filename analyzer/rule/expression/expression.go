@@ -163,8 +163,9 @@ func AnalyzeExpression(
 			})
 
 			element.Got.Type = *element.Expected
-		default:
+		case ast.PropertyAccess:
 
+		default:
 		}
 
 		// isInferred does not work here because it was defined
@@ -174,8 +175,8 @@ func AnalyzeExpression(
 			oldArrayCount := element.Expected.ArrayCount
 
 			*element.Expected = element.Got.Type
-			element.Expected.PointerCount += oldPointerCount
-			element.Expected.ArrayCount += oldArrayCount
+			element.Expected.PointerCount = oldPointerCount
+			element.Expected.ArrayCount = oldArrayCount
 		}
 
 		// Check if the pointer count is negative
