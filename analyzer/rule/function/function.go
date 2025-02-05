@@ -112,7 +112,7 @@ func AnalyzeFunction(fun function.Function, trace *filecode.FileCode) (*pool.Err
 			case ast.Assignment:
 
 			default:
-				_, err := expression.AnalyzeExpression(statement, trace, &scope)
+				_, err := expression.AnalyzeExpression(statement, trace, &scope, false)
 
 				// Push the error to the list if necessary
 				errors.AddError(err)

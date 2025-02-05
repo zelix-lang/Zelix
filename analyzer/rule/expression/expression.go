@@ -26,6 +26,7 @@ func AnalyzeExpression(
 	tree *ast.AST,
 	trace *filecode.FileCode,
 	variables *stack.ScopedStack,
+	enforceHeapRequirement bool,
 ) (object.Object, error3.Error) {
 	result := object.Object{
 		Type: types.TypeWrapper{
@@ -230,7 +231,7 @@ func AnalyzeExpression(
 		}
 
 		// Check if the data escapes the function
-		if element.HeapRequired && !element.Got.IsHeap {
+		if enforceHeapRequirement && element.HeapRequired && !element.Got.IsHeap {
 			return object.Object{}, error3.Error{
 				Code:   error3.DataOutlivesStack,
 				Line:   element.Tree.Line,

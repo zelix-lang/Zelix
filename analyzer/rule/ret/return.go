@@ -62,7 +62,7 @@ func AnalyzeReturn(
 	}
 
 	// Analyze the expression
-	expr, err := expression.AnalyzeExpression(exprNode, trace, variables)
+	expr, err := expression.AnalyzeExpression(exprNode, trace, variables, true)
 
 	// Return the error if there is one
 	if err.Code != error3.Nothing {
