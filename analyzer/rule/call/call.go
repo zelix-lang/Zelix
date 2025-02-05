@@ -27,8 +27,7 @@ import (
 // Parameters:
 // - tree: The AST of the function call.
 // - trace: The file code trace containing function and module definitions.
-// - expected: The expected return type of the function.
-// - result: The object to store the result of the analysis.
+// - queueElement: The current element in the queue.
 // - exprQueue: The queue to schedule parameter analysis.
 //
 // Returns:
@@ -36,8 +35,7 @@ import (
 func AnalyzeFunctionCall(
 	tree *ast.AST,
 	trace *filecode.FileCode,
-	expected *types.TypeWrapper,
-	result *object.Object,
+	queueElement *queue2.ExpectedPair,
 	exprQueue *[]queue2.ExpectedPair,
 ) error3.Error {
 	// Get the function's name
@@ -59,10 +57,22 @@ func AnalyzeFunctionCall(
 		return error3.Error{}
 	}
 
+	result := queueElement.Got
+	expected := queueElement.Expected
+
 	// Update the result accordingly
+	oldPointerCount := result.Type.PointerCount
+	oldArrayCount := result.Type.ArrayCount
 	returnType := function.ReturnType
+
+	// Heap and return type
 	result.IsHeap = returnType.PointerCount > 0
 	result.Type = returnType
+
+	// Honor pointers and arrays
+	result.Type.PointerCount += oldPointerCount
+	result.Type.ArrayCount += oldArrayCount
+	queueElement.ActualPointers += returnType.PointerCount
 
 	if !returnType.IsPrimitive {
 		// Check for generics

@@ -142,8 +142,7 @@ func AnalyzeExpression(
 			err := call.AnalyzeFunctionCall(
 				child,
 				trace,
-				element.Expected,
-				element.Got,
+				&element,
 				&queue,
 			)
 
