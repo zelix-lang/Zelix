@@ -94,18 +94,50 @@ func AnalyzeExpression(
 			element.Got.Type.BaseType = "str"
 			element.Got.Type.IsPrimitive = true
 			element.Got.Value = child.Value
+
+			if element.Got.Type.PointerCount > 0 {
+				return object.Object{}, error3.Error{
+					Code:   error3.CannotTakeAddress,
+					Line:   element.Tree.Line,
+					Column: element.Tree.Column,
+				}
+			}
 		case ast.NumberLiteral:
 			element.Got.Type.BaseType = "num"
 			element.Got.Type.IsPrimitive = true
 			element.Got.Value = child.Value
+
+			if element.Got.Type.PointerCount > 0 {
+				return object.Object{}, error3.Error{
+					Code:   error3.CannotTakeAddress,
+					Line:   element.Tree.Line,
+					Column: element.Tree.Column,
+				}
+			}
 		case ast.BooleanLiteral:
 			element.Got.Type.BaseType = "bool"
 			element.Got.Type.IsPrimitive = true
 			element.Got.Value = child.Value
+
+			if element.Got.Type.PointerCount > 0 {
+				return object.Object{}, error3.Error{
+					Code:   error3.CannotTakeAddress,
+					Line:   element.Tree.Line,
+					Column: element.Tree.Column,
+				}
+			}
 		case ast.DecimalLiteral:
 			element.Got.Type.BaseType = "dec"
 			element.Got.Type.IsPrimitive = true
 			element.Got.Value = child.Value
+
+			if element.Got.Type.PointerCount > 0 {
+				return object.Object{}, error3.Error{
+					Code:   error3.CannotTakeAddress,
+					Line:   element.Tree.Line,
+					Column: element.Tree.Column,
+				}
+			}
 		case ast.Identifier:
 			// Check if the variable exists
 			value := variables.Load(child.Value)

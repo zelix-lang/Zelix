@@ -238,6 +238,8 @@ func AnalyzeCode(entry map[string]filecode.FileCode, mainPath string, silent boo
 				errorMessage.WriteString(error2.CannotInferType())
 			case error3.ShouldNotReturn:
 				errorMessage.WriteString(error2.ShouldNotReturn())
+			case error3.CannotTakeAddress:
+				errorMessage.WriteString(error2.CannotTakeAddress())
 			default:
 			}
 

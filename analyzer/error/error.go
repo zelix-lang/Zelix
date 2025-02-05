@@ -26,6 +26,7 @@ const (
 	ParameterCountMismatch      // E0010
 	CannotInferType             // E0011
 	ShouldNotReturn             // E0012
+	CannotTakeAddress           // E0013
 )
 
 // Error represents an error with details about its location and additional information.
