@@ -27,6 +27,8 @@ const (
 	CannotInferType             // E0011
 	ShouldNotReturn             // E0012
 	CannotTakeAddress           // E0013
+	InvalidPropAccess           // E0014
+	IllegalPropAccess           // E0015
 )
 
 // Error represents an error with details about its location and additional information.

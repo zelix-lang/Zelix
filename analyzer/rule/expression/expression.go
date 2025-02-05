@@ -16,9 +16,11 @@ import (
 	queue2 "fluent/analyzer/queue"
 	"fluent/analyzer/rule/array"
 	"fluent/analyzer/rule/call"
+	"fluent/analyzer/rule/property"
 	"fluent/analyzer/stack"
 	"fluent/ast"
 	"fluent/filecode"
+	"fluent/filecode/module"
 	"fluent/filecode/types"
 )
 
@@ -97,6 +99,23 @@ func AnalyzeExpression(
 			}
 		}
 
+		// Check for property access
+		var lastPropValue module.Module
+		if element.IsPropAccess {
+			// Check if the lastPropValue is nil
+			mod, castOk := element.Got.Value.(module.Module)
+			if !castOk {
+				return object.Object{}, error3.Error{
+					Code:   error3.InvalidPropAccess,
+					Line:   element.Tree.Line,
+					Column: element.Tree.Column,
+				}
+			}
+
+			// Clone the got object to keep track of the last property value
+			lastPropValue = mod
+		}
+
 		// Get the child
 		child := (*element.Tree.Children)[startAt]
 
@@ -113,20 +132,32 @@ func AnalyzeExpression(
 		case ast.StringLiteral:
 			element.Got.Type.BaseType = "str"
 			element.Got.Type.IsPrimitive = true
-			element.Got.Value = child.Value
 		case ast.NumberLiteral:
 			element.Got.Type.BaseType = "num"
 			element.Got.Type.IsPrimitive = true
-			element.Got.Value = child.Value
 		case ast.BooleanLiteral:
 			element.Got.Type.BaseType = "bool"
 			element.Got.Type.IsPrimitive = true
-			element.Got.Value = child.Value
 		case ast.DecimalLiteral:
 			element.Got.Type.BaseType = "dec"
 			element.Got.Type.IsPrimitive = true
-			element.Got.Value = child.Value
 		case ast.Identifier:
+			// Check for property access
+			if element.IsPropAccess {
+				err := property.ProcessPropIdentifier(
+					lastPropValue,
+					&element,
+					trace,
+					child,
+				)
+
+				// Return the error if it is not nothing
+				if err.Code != error3.Nothing {
+					return object.Object{}, err
+				}
+				continue
+			}
+
 			// Check if the variable exists
 			value := variables.Load(child.Value)
 
@@ -164,6 +195,7 @@ func AnalyzeExpression(
 				trace,
 				&element,
 				&queue,
+				lastPropValue,
 			)
 
 			// Return the error if it is not nothing
@@ -183,7 +215,19 @@ func AnalyzeExpression(
 
 			element.Got.Type = *element.Expected
 		case ast.PropertyAccess:
+			// This will later be fully determined by the property access analyzer
+			element.Got.IsHeap = false
 
+			// Pass the input to the property access analyzer
+			err := property.AnalyzePropertyAccess(
+				child,
+				&queue,
+			)
+
+			// Return the error if it is not nothing
+			if err.Code != error3.Nothing {
+				return object.Object{}, err
+			}
 		default:
 		}
 
@@ -223,6 +267,15 @@ func AnalyzeExpression(
 				Code:   error3.DataOutlivesStack,
 				Line:   element.Tree.Line,
 				Column: element.Tree.Column,
+			}
+		}
+
+		if element.ModRequired && element.Got.Value == nil {
+			return object.Object{}, error3.Error{
+				Code:       error3.TypeMismatch,
+				Line:       element.Tree.Line,
+				Column:     element.Tree.Column,
+				Additional: []string{"Module", element.Got.Type.Marshal()},
 			}
 		}
 	}

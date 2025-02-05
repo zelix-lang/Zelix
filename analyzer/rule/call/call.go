@@ -16,6 +16,8 @@ import (
 	queue2 "fluent/analyzer/queue"
 	"fluent/ast"
 	"fluent/filecode"
+	function2 "fluent/filecode/function"
+	"fluent/filecode/module"
 	"fluent/filecode/types"
 	"strconv"
 )
@@ -37,10 +39,19 @@ func AnalyzeFunctionCall(
 	trace *filecode.FileCode,
 	queueElement *queue2.ExpectedPair,
 	exprQueue *[]queue2.ExpectedPair,
+	lastPropValue module.Module,
 ) error3.Error {
 	// Get the function's name
 	functionName := (*tree.Children)[0].Value
-	function, found := trace.Functions[*functionName]
+
+	var function function2.Function
+	var found bool
+
+	if !queueElement.IsPropAccess {
+		function, found = trace.Functions[*functionName]
+	} else {
+		function, found = lastPropValue.Functions[*functionName]
+	}
 
 	// Check if the function was found (and whether the current function has permission to call it)
 	if !found || (!function.Public && trace.Path != function.Path) {
@@ -93,7 +104,7 @@ func AnalyzeFunctionCall(
 			}
 		} else {
 			// Get the module
-			module, found := trace.Modules[returnType.BaseType]
+			mod, found := trace.Modules[returnType.BaseType]
 
 			// Check if the module was found
 			if !found {
@@ -106,7 +117,7 @@ func AnalyzeFunctionCall(
 			}
 
 			// Update the result
-			result.Value = module
+			result.Value = mod
 		}
 	}
 

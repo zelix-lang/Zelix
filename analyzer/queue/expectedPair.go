@@ -25,4 +25,6 @@ type ExpectedPair struct {
 	HasMetDereference bool               // Whether a dereference token has been met
 	ActualPointers    int                // The number of pointers in the actual object
 	HeapRequired      bool               // Whether this value must be heap-allocated
+	ModRequired       bool               // Whether this value must evaluate to a module
+	IsPropAccess      bool               // Whether this value is a property access
 }
