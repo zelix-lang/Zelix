@@ -34,7 +34,8 @@ func ConvertModule(ast *ast2.AST, contents string) module.Module {
 	startAt := 0
 
 	result := module.Module{
-		Functions: make(map[string]function2.Function),
+		Functions:    make(map[string]function2.Function),
+		Declarations: make(map[string]module.Declaration),
 		Trace: trace.Trace{
 			Line:   ast.Line,
 			Column: ast.Column,
