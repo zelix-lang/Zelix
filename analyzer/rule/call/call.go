@@ -116,6 +116,8 @@ func AnalyzeFunctionCall(
 		// Get the parameter's value
 		value := (*paramsNode.Children)[i]
 		paramType := param.Type
+		paramNodes := (*value.Children)[0]
+		isParamHeap := paramType.PointerCount > 0
 
 		if !param.Type.IsPrimitive {
 			// Check for generics
@@ -138,14 +140,15 @@ func AnalyzeFunctionCall(
 		}
 
 		*exprQueue = append(*exprQueue, queue2.ExpectedPair{
-			Tree: (*value.Children)[0],
+			Tree: paramNodes,
 			Got: &object.Object{
 				Type: types.TypeWrapper{
 					Children: &[]*types.TypeWrapper{},
 				},
-				IsHeap: paramType.PointerCount > 0,
+				IsHeap: isParamHeap,
 			},
-			Expected: &paramType,
+			Expected:     &paramType,
+			HeapRequired: result.IsHeap,
 		})
 
 		i++

@@ -24,4 +24,5 @@ type ExpectedPair struct {
 	Tree              *ast.AST           // The AST node
 	HasMetDereference bool               // Whether a dereference token has been met
 	ActualPointers    int                // The number of pointers in the actual object
+	HeapRequired      bool               // Whether this value must be heap-allocated
 }

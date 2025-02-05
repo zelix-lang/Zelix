@@ -197,6 +197,15 @@ func AnalyzeExpression(
 				Additional: []string{element.Expected.Marshal(), element.Got.Type.Marshal()},
 			}
 		}
+
+		// Check if the data escapes the function
+		if element.HeapRequired && !element.Got.IsHeap {
+			return object.Object{}, error3.Error{
+				Code:   error3.DataOutlivesStack,
+				Line:   element.Tree.Line,
+				Column: element.Tree.Column,
+			}
+		}
 	}
 
 	return result, error3.Error{}
