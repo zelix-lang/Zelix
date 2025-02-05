@@ -27,39 +27,48 @@ import (
 	"strings"
 )
 
-func checkImportRedefinition(
-	collection interface{},
+// checkImportRedefinition checks for redefinition of imported functions or modules.
+// If a redefinition is found, it logs the details and exits the program.
+//
+// Parameters:
+// - collection: A map of existing functions or modules.
+// - name: The name of the function or module being checked.
+// - value: The function or module being checked.
+// - file: The file where the function or module is defined.
+// - entry: A map where the key is the file path and the value is the FileCode object.
+func checkImportRedefinition[T function.Function | module.Module](
+	collection map[string]T,
 	name string,
-	value interface{},
+	value T,
 	file *filecode.FileCode,
 	entry *map[string]filecode.FileCode,
 ) {
 	public := false
-	isModule := false
 	var valueTrace trace2.Trace
 	entryDeref := *entry
 
-	switch value.(type) {
+	// Extract fields from value using type switch
+	switch v := any(value).(type) {
 	case function.Function:
-		public = value.(function.Function).Public
-		valueTrace = value.(function.Function).Trace
+		public = v.Public
+		valueTrace = v.Trace
 	case module.Module:
-		public = value.(module.Module).Public
-		valueTrace = value.(module.Module).Trace
-		isModule = true
+		public = v.Public
+		valueTrace = v.Trace
 	}
 
-	collectionMap := collection.(map[string]interface{})
-	if definedVal, ok := collectionMap[name]; ok && public {
+	if definedVal, ok := collection[name]; ok && public {
 		var trace trace2.Trace
 		var path string
 
-		if isModule {
-			trace = definedVal.(module.Module).Trace
-			path = definedVal.(module.Module).Path
-		} else {
-			trace = definedVal.(function.Function).Trace
-			path = definedVal.(function.Function).Path
+		// Extract fields from definedVal using a type switch
+		switch v := any(definedVal).(type) {
+		case function.Function:
+			trace = v.Trace
+			path = v.Path
+		case module.Module:
+			trace = v.Trace
+			path = v.Path
 		}
 
 		error2.Redefinition(name)
@@ -250,12 +259,12 @@ func AnalyzeCode(entry map[string]filecode.FileCode, mainPath string, silent boo
 		}
 
 		if errors.Count > 0 {
-			fmt.Println(errorMessage.String())
+			fmt.Print(errorMessage.String())
 			os.Exit(1)
 		}
 
 		if warnings.Count > 0 {
-			fmt.Println(warningMessage.String())
+			fmt.Print(warningMessage.String())
 		}
 
 		// Remove foreign functions
