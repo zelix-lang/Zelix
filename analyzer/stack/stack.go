@@ -23,38 +23,56 @@ type Stack struct {
 // ScopedStack represents a stack with multiple scopes.
 type ScopedStack struct {
 	// Scopes is a slice of Stack, each representing a different scope.
-	Scopes []Stack
+	Scopes map[int]Stack
+	// Count is the count of stacks in the ScopedStack.
+	Count int
 }
 
-// NewScope adds a new scope to the ScopedStack.
-func (s *ScopedStack) NewScope() {
-	s.Scopes = append(s.Scopes, Stack{
-		Variables:     make(map[string]variable.Variable),
-		UsedVariables: make(map[string]struct{}),
-	})
-}
-
-// DestroyScope removes the last scope from the ScopedStack and returns a slice of unused variable names.
+// NewScope creates a new scope in the ScopedStack and returns its id.
 //
 // Returns:
 //
-//	[]string: A slice of strings representing the names of unused variables in the last scope.
-func (s *ScopedStack) DestroyScope() []*string {
-	// Get the last scope
-	lastScope := s.Scopes[len(s.Scopes)-1]
+//	int: The id of the newly created scope.
+func (s *ScopedStack) NewScope() int {
+	// Get a new id
+	lastId := s.Count
 
-	s.Scopes = s.Scopes[:len(s.Scopes)-1]
+	s.Scopes[lastId] = Stack{
+		Variables:     make(map[string]variable.Variable),
+		UsedVariables: make(map[string]struct{}),
+	}
+	s.Count++
+
+	return lastId
+}
+
+// DestroyScope removes a scope from the ScopedStack by its id and returns a slice of pointers to the names of unused variables.
+//
+// Parameters:
+//
+//	id (int): The id of the scope to be destroyed.
+//
+// Returns:
+//
+//	[]*string: A slice of pointers to the names of variables that were not used in the destroyed scope.
+func (s *ScopedStack) DestroyScope(id int) []*string {
+	// Get the scope that holds the given id
+	scope := s.Scopes[id]
+
+	delete(s.Scopes, id)
+	s.Count--
+
 	unusedVars := make([]*string, 0)
 
 	// Iterate over the variables in the last scope
-	for key := range lastScope.Variables {
+	for key := range scope.Variables {
 		// Skip variables that are intended to be unused
 		if key[0] == '_' {
 			continue
 		}
 
 		// See if the variable was used
-		if _, ok := lastScope.UsedVariables[key]; !ok {
+		if _, ok := scope.UsedVariables[key]; !ok {
 			unusedVars = append(unusedVars, &key)
 		}
 	}
@@ -95,6 +113,6 @@ func (s *ScopedStack) Load(name *string) *variable.Variable {
 //	variable2 (variable.Variable): The variable to add.
 func (s *ScopedStack) Append(name string, variable2 variable.Variable) {
 	// Get the last scope
-	lastScope := &s.Scopes[len(s.Scopes)-1]
+	lastScope := s.Scopes[s.Count-1]
 	lastScope.Variables[name] = variable2
 }
