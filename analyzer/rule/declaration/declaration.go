@@ -48,6 +48,16 @@ func AnalyzeDeclaration(
 	typeNode := *children[2]
 	expr := *children[3]
 
+	// Check if the var name is already defined
+	if scope.Load(nameNode.Value) != nil {
+		return error3.Error{
+			Code:       error3.Redefinition,
+			Line:       nameNode.Line,
+			Column:     nameNode.Column,
+			Additional: []string{*nameNode.Value},
+		}, error3.Error{}
+	}
+
 	// Convert the type node to a TypeWrapper
 	typeWrapper := types.ConvertToTypeWrapper(typeNode)
 
