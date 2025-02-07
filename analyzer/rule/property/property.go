@@ -11,7 +11,6 @@
 package property
 
 import (
-	error3 "fluent/analyzer/error"
 	"fluent/analyzer/object"
 	"fluent/analyzer/queue"
 	"fluent/ast"
@@ -24,13 +23,10 @@ import (
 // Parameters:
 // - input: A pointer to the AST to be analyzed.
 // - exprQueue: A pointer to a slice of ExpectedPair to which the analysis results will be appended.
-//
-// Returns:
-// - An error3.Error indicating the result of the analysis.
 func AnalyzePropertyAccess(
 	input *ast.AST,
 	exprQueue *[]queue.ExpectedPair,
-) error3.Error {
+) {
 	children := *input.Children
 
 	// Scheduling the candidate for evaluation
@@ -60,6 +56,4 @@ func AnalyzePropertyAccess(
 			IsPropAccess: true,
 		})
 	}
-
-	return error3.Error{}
 }

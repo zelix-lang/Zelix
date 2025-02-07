@@ -233,15 +233,10 @@ func AnalyzeExpression(
 			element.Got.IsHeap = false
 
 			// Pass the input to the property access analyzer
-			err := property.AnalyzePropertyAccess(
+			property.AnalyzePropertyAccess(
 				child,
 				&queue,
 			)
-
-			// Return the error if it is not nothing
-			if err.Code != error3.Nothing {
-				return object.Object{}, err
-			}
 		case ast.ArithmeticExpression:
 			// Pass the input to the arithmetic analyzer
 			err := arithmetic.AnalyzeArithmetic(
