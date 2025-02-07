@@ -26,7 +26,7 @@ var globalBool = types.TypeWrapper{
 	Children:    &[]*types.TypeWrapper{},
 }
 
-// processSingleConditional analyzes a single conditional expression and schedules
+// ProcessSingleConditional analyzes a single conditional expression and schedules
 // the main block for further analysis if the expression is valid.
 //
 // Parameters:
@@ -37,7 +37,7 @@ var globalBool = types.TypeWrapper{
 //
 // Returns:
 // - An error3.Error indicating the result of the analysis.
-func processSingleConditional(
+func ProcessSingleConditional(
 	children []*ast.AST,
 	trace *filecode.FileCode,
 	variables *stack.ScopedStack,
@@ -82,7 +82,7 @@ func AnalyzeIf(
 ) error3.Error {
 	// Get the expression and main block
 	children := *tree.Children
-	err := processSingleConditional(children, trace, variables, blockQueue)
+	err := ProcessSingleConditional(children, trace, variables, blockQueue)
 
 	if err.Code != error3.Nothing {
 		return err
@@ -96,7 +96,7 @@ func AnalyzeIf(
 		// Determine what to do based on the child's rule
 		switch child.Rule {
 		case ast.ElseIf:
-			err := processSingleConditional(children, trace, variables, blockQueue)
+			err := ProcessSingleConditional(children, trace, variables, blockQueue)
 
 			if err.Code != error3.Nothing {
 				return err
