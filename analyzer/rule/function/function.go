@@ -132,6 +132,15 @@ func AnalyzeFunction(fun function.Function, trace *filecode.FileCode) (*pool.Err
 				)
 				// Push the error to the list if necessary
 				errors.AddError(err)
+			case ast.While:
+				err := conditional.ProcessSingleConditional(
+					*statement.Children,
+					trace,
+					&scope,
+					&blockQueue,
+				)
+				// Push the error to the list if necessary
+				errors.AddError(err)
 			default:
 				_, err := expression.AnalyzeExpression(
 					statement,
