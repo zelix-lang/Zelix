@@ -127,6 +127,10 @@ func ProcessBlock(input []token.Token) (ast.AST, error.Error) {
 					isElse := tokenType == token.Else
 					isFor := tokenType == token.For
 
+					if !isIf && !isElseIf && !isElse {
+						lastIf = nil
+					}
+
 					if isElseIf || isElse {
 						if lastIf == nil {
 							return ast.AST{}, error.Error{
@@ -170,6 +174,7 @@ func ProcessBlock(input []token.Token) (ast.AST, error.Error) {
 					}
 				}
 			default:
+				lastIf = nil
 				// Extract a statement
 				statement := util.ExtractTokensBefore(
 					input[i:],
