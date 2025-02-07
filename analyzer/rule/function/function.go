@@ -15,6 +15,7 @@ import (
 	"fluent/analyzer/format"
 	"fluent/analyzer/object"
 	"fluent/analyzer/pool"
+	"fluent/analyzer/rule/conditional"
 	"fluent/analyzer/rule/declaration"
 	"fluent/analyzer/rule/expression"
 	"fluent/analyzer/rule/reassignment"
@@ -120,6 +121,15 @@ func AnalyzeFunction(fun function.Function, trace *filecode.FileCode) (*pool.Err
 				warnings.AddError(warning)
 			case ast.Assignment:
 				err := reassignment.AnalyzeReassignment(statement, &scope, trace)
+				// Push the error to the list if necessary
+				errors.AddError(err)
+			case ast.If:
+				err := conditional.AnalyzeIf(
+					statement,
+					trace,
+					&scope,
+					&blockQueue,
+				)
 				// Push the error to the list if necessary
 				errors.AddError(err)
 			default:
