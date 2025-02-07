@@ -59,6 +59,7 @@ func AnalyzeReturn(
 		variables,
 		true,
 		expected,
+		false,
 	)
 
 	// Return the error if there is one

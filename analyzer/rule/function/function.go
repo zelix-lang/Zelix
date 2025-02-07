@@ -17,6 +17,7 @@ import (
 	"fluent/analyzer/pool"
 	"fluent/analyzer/rule/declaration"
 	"fluent/analyzer/rule/expression"
+	"fluent/analyzer/rule/reassignment"
 	"fluent/analyzer/rule/ret"
 	"fluent/analyzer/rule/value"
 	"fluent/analyzer/stack"
@@ -117,6 +118,10 @@ func AnalyzeFunction(fun function.Function, trace *filecode.FileCode) (*pool.Err
 				// Push the error to the list if necessary
 				errors.AddError(err)
 				warnings.AddError(warning)
+			case ast.Assignment:
+				err := reassignment.AnalyzeReassignment(statement, &scope, trace)
+				// Push the error to the list if necessary
+				errors.AddError(err)
 			default:
 				_, err := expression.AnalyzeExpression(
 					statement,
@@ -126,6 +131,7 @@ func AnalyzeFunction(fun function.Function, trace *filecode.FileCode) (*pool.Err
 					&types.TypeWrapper{
 						Children: &[]*types.TypeWrapper{},
 					},
+					false,
 				)
 
 				// Push the error to the list if necessary

@@ -39,7 +39,7 @@ func AnalyzeFunctionCall(
 	trace *filecode.FileCode,
 	queueElement *queue2.ExpectedPair,
 	exprQueue *[]queue2.ExpectedPair,
-	lastPropValue module.Module,
+	lastPropValue *module.Module,
 ) error3.Error {
 	// Get the function's name
 	functionName := (*tree.Children)[0].Value

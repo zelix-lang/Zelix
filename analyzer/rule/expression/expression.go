@@ -43,6 +43,7 @@ var literalRules = map[ast.Rule]bool{
 // - variables: The stack of scoped variables available in the current context.
 // - enforceHeapRequirement: A boolean indicating whether heap allocation requirements should be enforced.
 // - firstExpected: The expected type of the expression.
+// - isPropReassignment: A boolean indicating whether the current element comes from a property reassignment.
 //
 // Returns:
 // - object.Object: The resulting object after analyzing the expression.
@@ -53,6 +54,7 @@ func AnalyzeExpression(
 	variables *stack.ScopedStack,
 	enforceHeapRequirement bool,
 	firstExpected *types.TypeWrapper,
+	isPropReassignment bool,
 ) (object.Object, error3.Error) {
 	result := object.Object{
 		Type: types.TypeWrapper{
@@ -113,7 +115,7 @@ func AnalyzeExpression(
 		}
 
 		// Check for property access
-		var lastPropValue module.Module
+		var lastPropValue *module.Module
 		if element.IsPropAccess {
 			// Check if the lastPropValue is nil
 			mod, castOk := element.Got.Value.(module.Module)
@@ -126,7 +128,7 @@ func AnalyzeExpression(
 			}
 
 			// Clone the got object to keep track of the last property value
-			lastPropValue = mod
+			lastPropValue = &mod
 		}
 
 		// Get the child
@@ -236,6 +238,7 @@ func AnalyzeExpression(
 			property.AnalyzePropertyAccess(
 				child,
 				&queue,
+				isPropReassignment,
 			)
 		case ast.ArithmeticExpression:
 			// Pass the input to the arithmetic analyzer

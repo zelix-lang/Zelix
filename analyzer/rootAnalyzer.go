@@ -244,6 +244,8 @@ func AnalyzeCode(entry map[string]filecode.FileCode, mainPath string, silent boo
 				errorMessage.WriteString(error2.InvalidPropAccess())
 			case error3.IllegalPropAccess:
 				errorMessage.WriteString(error2.IllegalPropAccess())
+			case error3.ConstantReassignment:
+				errorMessage.WriteString(error2.ConstantReassignment())
 			default:
 			}
 

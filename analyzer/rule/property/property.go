@@ -23,9 +23,11 @@ import (
 // Parameters:
 // - input: A pointer to the AST to be analyzed.
 // - exprQueue: A pointer to a slice of ExpectedPair to which the analysis results will be appended.
+// - isPropReassignment: A boolean indicating whether the current element comes from a property reassignment.
 func AnalyzePropertyAccess(
 	input *ast.AST,
 	exprQueue *[]queue.ExpectedPair,
+	isPropReassignment bool,
 ) {
 	children := *input.Children
 
@@ -46,14 +48,16 @@ func AnalyzePropertyAccess(
 	})
 
 	// Schedule the other children for evaluation
-	for i := 1; i < len(children); i++ {
+	childrenLen := len(children) - 1
+	for i := 1; i <= childrenLen; i++ {
 		*exprQueue = append(*exprQueue, queue.ExpectedPair{
 			Expected: &types.TypeWrapper{
 				Children: &[]*types.TypeWrapper{},
 			},
-			Got:          &candidateResult,
-			Tree:         children[i],
-			IsPropAccess: true,
+			Got:                &candidateResult,
+			Tree:               children[i],
+			IsPropAccess:       true,
+			IsPropReassignment: isPropReassignment && i == childrenLen,
 		})
 	}
 }

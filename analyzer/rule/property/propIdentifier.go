@@ -31,7 +31,7 @@ import (
 // Returns:
 // - An error3.Error indicating the result of the processing.
 func ProcessPropIdentifier(
-	lastPropValue module.Module,
+	lastPropValue *module.Module,
 	element *queue2.ExpectedPair,
 	trace *filecode.FileCode,
 	child *ast.AST,
@@ -55,6 +55,15 @@ func ProcessPropIdentifier(
 			Additional: []string{*child.Value},
 			Line:       element.Tree.Line,
 			Column:     element.Tree.Column,
+		}
+	}
+
+	// Check for constant reassignments
+	if element.IsPropReassignment && value.IsConstant {
+		return error3.Error{
+			Code:   error3.ConstantReassignment,
+			Line:   element.Tree.Line,
+			Column: element.Tree.Column,
 		}
 	}
 

@@ -69,7 +69,7 @@ func AnalyzeDeclaration(
 	}
 
 	// Pass the expression to the expression analyzer
-	obj, err := expression.AnalyzeExpression(&expr, trace, scope, false, &typeWrapper)
+	obj, err := expression.AnalyzeExpression(&expr, trace, scope, false, &typeWrapper, false)
 
 	if err.Code != error3.Nothing {
 		return err, error3.Error{}
