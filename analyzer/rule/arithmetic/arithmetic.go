@@ -52,7 +52,7 @@ func AnalyzeArithmetic(
 			Code:       error3.TypeMismatch,
 			Line:       input.Line,
 			Column:     input.Column,
-			Additional: []string{"num or dec", expected.BaseType},
+			Additional: []string{expected.BaseType, "arithmetic"},
 		}
 	}
 
