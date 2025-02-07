@@ -31,6 +31,14 @@ import (
 	"fluent/filecode/types"
 )
 
+// destroyScope destroys the specified scopes and adds warnings for unused variables.
+// Parameters:
+// - scope: The scoped stack containing the scopes to be destroyed.
+// - scopeIds: A slice of scope IDs to be destroyed.
+// - fun: The function being analyzed.
+// - warnings: The pool to collect warnings about unused variables.
+// - mainScopeId: The ID of the main scope.
+// - forceDeleteMainScope: A flag indicating whether to forcefully delete the main scope.
 func destroyScope(
 	scope *stack.ScopedStack,
 	scopeIds []int,
@@ -58,6 +66,13 @@ func destroyScope(
 	}
 }
 
+// AnalyzeFunction analyzes a given function and returns pools of errors and warnings.
+// Parameters:
+// - fun: The function to be analyzed.
+// - trace: The file code trace information.
+// Returns:
+// - A pool of errors found during the analysis.
+// - A pool of warnings found during the analysis.
 func AnalyzeFunction(fun function.Function, trace *filecode.FileCode) (*pool.ErrorPool, *pool.ErrorPool) {
 	errors := pool.NewErrorPool()
 	warnings := pool.NewErrorPool()
