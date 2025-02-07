@@ -260,8 +260,8 @@ func AnalyzeCode(entry map[string]filecode.FileCode, mainPath string, silent boo
 			default:
 			}
 
-			// Print the details
-			warningMessage.WriteString(util.BuildDetails(&file.Contents, &file.Path, warning.Line, warning.Column, true))
+			// Write the details
+			warningMessage.WriteString(util.BuildDetails(&file.Contents, &file.Path, warning.Line, warning.Column, false))
 		}
 
 		if errors.Count > 0 {
