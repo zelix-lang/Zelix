@@ -74,7 +74,6 @@ func ProcessSignedOp(
 			Rule:     ast.Expression,
 			Line:     candidate.Line,
 			Column:   candidate.Column,
-			Value:    candidate.Value,
 			File:     candidate.File,
 			Children: &[]*ast.AST{candidate},
 		})
@@ -175,15 +174,16 @@ func ProcessSignedOp(
 			}
 		}
 
+		firstElement := extracted[0]
 		// Increment the skip
 		skip = i + len(extracted)
 
 		// Add the tokens to the expression queue
 		expressionNode := ast.AST{
 			Rule:     ast.Expression,
-			Line:     extracted[0].Line,
-			Column:   extracted[0].Column,
-			File:     &extracted[0].File,
+			Line:     firstElement.Line,
+			Column:   firstElement.Column,
+			File:     &firstElement.File,
 			Children: &[]*ast.AST{},
 		}
 
@@ -197,41 +197,59 @@ func ProcessSignedOp(
 			)
 			splitLen := len(split)
 
+			// Used to handle nested boolean expressions
+			var pushTo *ast.AST
+
+			if splitLen > 1 {
+				pushTo = &ast.AST{
+					Rule:     ast.BooleanExpression,
+					Line:     firstElement.Line,
+					Column:   firstElement.Column,
+					File:     &firstElement.File,
+					Children: &[]*ast.AST{},
+				}
+
+				*expressionNode.Children = append(*expressionNode.Children, pushTo)
+			}
+
 			for j, tokens := range split {
 				// Create a nested expression
 				nestedExpression := ast.AST{
 					Rule:     ast.Expression,
-					Line:     extracted[0].Line,
-					Column:   extracted[0].Column,
-					File:     &extracted[0].File,
+					Line:     firstElement.Line,
+					Column:   firstElement.Column,
+					File:     &firstElement.File,
 					Children: &[]*ast.AST{},
 				}
 
-				if splitLen > 1 {
-					*exprQueue = append(*exprQueue, queue.Element{
-						Tokens: tokens,
-						Parent: &nestedExpression,
-					})
+				*exprQueue = append(*exprQueue, queue.Element{
+					Tokens: tokens,
+					Parent: &nestedExpression,
+				})
 
-					// Append the nested expression to the result
-					*expressionNode.Children = append(*expressionNode.Children, &nestedExpression)
+				// Append the nested expression to the result
+				if pushTo != nil {
+					*pushTo.Children = append(*pushTo.Children, &nestedExpression)
 				} else {
-					*exprQueue = append(*exprQueue, queue.Element{
-						Tokens: tokens,
-						Parent: &expressionNode,
-					})
+					*expressionNode.Children = append(*expressionNode.Children, &nestedExpression)
 				}
 
 				// Add the OR operator if it is not the last expression
 				if j < splitLen-1 {
-					*expressionNode.Children = append(*expressionNode.Children, &ast.AST{
+					orRule := ast.AST{
 						Rule:     operatorRule,
-						Line:     extracted[0].Line,
-						Column:   extracted[0].Column,
-						File:     &extracted[0].File,
+						Line:     firstElement.Line,
+						Column:   firstElement.Column,
+						File:     &firstElement.File,
 						Value:    &dummyOrString,
 						Children: &[]*ast.AST{},
-					})
+					}
+
+					if pushTo != nil {
+						*pushTo.Children = append(*pushTo.Children, &orRule)
+					} else {
+						*expressionNode.Children = append(*expressionNode.Children, &orRule)
+					}
 				}
 			}
 		} else {
