@@ -206,7 +206,6 @@ func ProcessExpression(input []token.Token) (ast.AST, error.Error) {
 				Line:     arr.Line,
 				Column:   arr.Column,
 				File:     arr.File,
-				Value:    arr.Value,
 			})
 
 			// Avoid further processing
