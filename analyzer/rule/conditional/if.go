@@ -12,6 +12,7 @@ package conditional
 
 import (
 	error3 "fluent/analyzer/error"
+	"fluent/analyzer/queue"
 	"fluent/analyzer/rule/expression"
 	"fluent/analyzer/stack"
 	"fluent/ast"
@@ -41,7 +42,7 @@ func ProcessSingleConditional(
 	children []*ast.AST,
 	trace *filecode.FileCode,
 	variables *stack.ScopedStack,
-	blockQueue *[]ast.AST,
+	blockQueue *[]queue.BlockQueueElement,
 ) error3.Error {
 	expr := children[0]
 	mainBlock := children[1]
@@ -60,10 +61,13 @@ func ProcessSingleConditional(
 	}
 
 	// Create a new scope for this conditional
-	variables.NewScope()
+	newScopeId := variables.NewScope()
 
 	// Schedule the block for analysis
-	*blockQueue = append(*blockQueue, *mainBlock)
+	*blockQueue = append(*blockQueue, queue.BlockQueueElement{
+		Block: mainBlock,
+		ID:    newScopeId,
+	})
 	return error3.Error{}
 }
 
@@ -81,7 +85,7 @@ func AnalyzeIf(
 	tree *ast.AST,
 	trace *filecode.FileCode,
 	variables *stack.ScopedStack,
-	blockQueue *[]ast.AST,
+	blockQueue *[]queue.BlockQueueElement,
 ) error3.Error {
 	// Get the expression and main block
 	children := *tree.Children
@@ -106,10 +110,13 @@ func AnalyzeIf(
 			}
 		case ast.Else:
 			// Create a new scope for this conditional
-			variables.NewScope()
+			newScopeId := variables.NewScope()
 
 			// Schedule the block for analysis
-			*blockQueue = append(*blockQueue, *children[0])
+			*blockQueue = append(*blockQueue, queue.BlockQueueElement{
+				Block: children[0],
+				ID:    newScopeId,
+			})
 		default:
 		}
 	}
