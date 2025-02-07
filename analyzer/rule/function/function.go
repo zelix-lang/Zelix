@@ -15,6 +15,7 @@ import (
 	"fluent/analyzer/format"
 	"fluent/analyzer/object"
 	"fluent/analyzer/pool"
+	"fluent/analyzer/queue"
 	"fluent/analyzer/rule/conditional"
 	"fluent/analyzer/rule/declaration"
 	"fluent/analyzer/rule/expression"
@@ -29,6 +30,25 @@ import (
 	"fluent/filecode/function"
 	"fluent/filecode/types"
 )
+
+func destroyScope(
+	scope *stack.ScopedStack,
+	scopeId int,
+	fun function.Function,
+	warnings *pool.ErrorPool,
+) {
+	unusedVariables := scope.DestroyScope(scopeId)
+
+	// Add unused variable warnings
+	for _, variable2 := range unusedVariables {
+		warnings.AddError(error3.Error{
+			Code:       error3.UnusedVariable,
+			Line:       fun.Trace.Line,
+			Column:     fun.Trace.Column,
+			Additional: []string{*variable2},
+		})
+	}
+}
 
 func AnalyzeFunction(fun function.Function, trace *filecode.FileCode) (*pool.ErrorPool, *pool.ErrorPool) {
 	errors := pool.NewErrorPool()
@@ -54,9 +74,10 @@ func AnalyzeFunction(fun function.Function, trace *filecode.FileCode) (*pool.Err
 	hasReturned := false
 
 	// Create a new scope for the function
-	scope := stack.ScopedStack{}
-	scope.NewScope()
-
+	scope := stack.ScopedStack{
+		Scopes: make(map[int]stack.Stack),
+	}
+	mainScopeId := scope.NewScope()
 	returnType := fun.ReturnType
 
 	// Analyze and add all parameters to the scope
@@ -91,13 +112,22 @@ func AnalyzeFunction(fun function.Function, trace *filecode.FileCode) (*pool.Err
 	}
 
 	// Use a queue to analyze the function's block and nested blocks within it
-	blockQueue := make([]ast.AST, 0)
-	blockQueue = append(blockQueue, fun.Body)
+	blockQueue := make([]queue.BlockQueueElement, 0)
+	blockQueue = append(blockQueue, queue.BlockQueueElement{
+		Block: &fun.Body,
+		ID:    mainScopeId,
+	})
 
 	for len(blockQueue) > 0 {
 		// Get the first element in the queue
-		block := blockQueue[0]
+		element := blockQueue[0]
+		block := element.Block
+		scopeId := element.ID
 		blockQueue = blockQueue[1:]
+
+		// Special case: For loops (creates the block at the end)
+		forVarNames := make(map[*string]*variable.Variable)
+		countBefore := scope.Count
 
 		for _, statement := range *block.Children {
 			rule := statement.Rule
@@ -111,9 +141,12 @@ func AnalyzeFunction(fun function.Function, trace *filecode.FileCode) (*pool.Err
 				errors.AddError(err)
 			case ast.Block:
 				// Create a new scope
-				scope.NewScope()
+				newScopeId := scope.NewScope()
 				// Add the block to the queue
-				blockQueue = append(blockQueue, *statement)
+				blockQueue = append(blockQueue, queue.BlockQueueElement{
+					Block: statement,
+					ID:    newScopeId,
+				})
 			case ast.Declaration:
 				err, warning := declaration.AnalyzeDeclaration(statement, &scope, trace, &fun.Templates)
 
@@ -143,14 +176,17 @@ func AnalyzeFunction(fun function.Function, trace *filecode.FileCode) (*pool.Err
 				// Push the error to the list if necessary
 				errors.AddError(err)
 			case ast.For:
-				err := loop.AnalyzeFor(
+				err, varName, varObj := loop.AnalyzeFor(
 					statement,
 					trace,
 					&scope,
 					&blockQueue,
 				)
+				scope.Count++
+
 				// Push the error to the list if necessary
 				errors.AddError(err)
+				forVarNames[varName] = varObj
 			default:
 				_, err := expression.AnalyzeExpression(
 					statement,
@@ -168,18 +204,24 @@ func AnalyzeFunction(fun function.Function, trace *filecode.FileCode) (*pool.Err
 			}
 		}
 
-		unusedVariables := scope.DestroyScope()
+		// Create the scope at the end in case of a for loop
+		if len(forVarNames) > 0 {
+			scope.Count = countBefore
 
-		// Add unused variable warnings
-		for _, variable2 := range unusedVariables {
-			warnings.AddError(error3.Error{
-				Code:       error3.UnusedVariable,
-				Line:       fun.Trace.Line,
-				Column:     fun.Trace.Column,
-				Additional: []string{*variable2},
-			})
+			for name, obj := range forVarNames {
+				scope.NewScope()
+				scope.Append(*name, *obj)
+			}
+		}
+
+		// Avoid destroying the main scope
+		if scopeId != mainScopeId {
+			destroyScope(&scope, scopeId, fun, warnings)
 		}
 	}
+
+	// Destroy the main scope at the end
+	destroyScope(&scope, mainScopeId, fun, warnings)
 
 	// Make sure that the function has returned a value
 	if !fun.IsStd && fun.Name != "heap_alloc" && fun.ReturnType.BaseType != "nothing" && !hasReturned {
