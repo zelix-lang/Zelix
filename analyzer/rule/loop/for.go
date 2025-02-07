@@ -21,6 +21,18 @@ import (
 	"fluent/filecode/types"
 )
 
+// AnalyzeFor analyzes a for-loop in the AST.
+// It checks the range expressions, ensures the variable name is not redefined,
+// and appends the block to the block queue.
+//
+// Parameters:
+// - tree: The AST of the for-loop.
+// - trace: The file code trace.
+// - variables: The scoped stack of variables.
+// - blockQueue: The queue of AST blocks.
+//
+// Returns:
+// - An error3.Error indicating success or failure of the analysis.
 func AnalyzeFor(
 	tree *ast.AST,
 	trace *filecode.FileCode,
