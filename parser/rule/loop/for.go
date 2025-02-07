@@ -32,7 +32,7 @@ import (
 // - An error object if the parsing fails.
 func ProcessForLoop(input []token.Token, blockQueue *[]queue.Element) (ast.AST, error.Error) {
 	// Check the input's length
-	if len(input) < 8 {
+	if len(input) < 7 {
 		return ast.AST{}, error.Error{
 			Line:     input[0].Line,
 			Column:   input[0].Column,
