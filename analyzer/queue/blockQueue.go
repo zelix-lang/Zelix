@@ -17,5 +17,5 @@ type BlockQueueElement struct {
 	// Block is the block that is being stored in the queue.
 	Block *ast.AST
 	// ID is the scope ID that the block belongs to.
-	ID int
+	ID []int
 }

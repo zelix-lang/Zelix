@@ -1,15 +1,16 @@
-//import "@std::io::print";
-//import "loop.fluent";
+import "@std::io::print";
 
-/*
-    The Fluent Programming Language
-    Test file 6
-*/
-
-pub fun wrap2<E>(b: &E) -> &E {
-    return b;
+mod Asd {
+    const a: num;
 }
 
-pub fun wrap<T, E>(x: &T) -> &E {
-    return wrap2(x);
+pub fun main() {
+    for 1 to 6 in i {
+        println(i);
+
+        for 1 to 6 in k {
+            println(i);
+            println(k);
+        }
+    }
 }

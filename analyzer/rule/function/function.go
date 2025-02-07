@@ -33,20 +33,28 @@ import (
 
 func destroyScope(
 	scope *stack.ScopedStack,
-	scopeId int,
+	scopeIds []int,
 	fun function.Function,
 	warnings *pool.ErrorPool,
+	mainScopeId int,
+	forceDeleteMainScope bool,
 ) {
-	unusedVariables := scope.DestroyScope(scopeId)
+	for _, scopeId := range scopeIds {
+		if scopeId != mainScopeId && !forceDeleteMainScope {
+			continue
+		}
 
-	// Add unused variable warnings
-	for _, variable2 := range unusedVariables {
-		warnings.AddError(error3.Error{
-			Code:       error3.UnusedVariable,
-			Line:       fun.Trace.Line,
-			Column:     fun.Trace.Column,
-			Additional: []string{*variable2},
-		})
+		unusedVariables := scope.DestroyScope(scopeId)
+
+		// Add unused variable warnings
+		for _, variable2 := range unusedVariables {
+			warnings.AddError(error3.Error{
+				Code:       error3.UnusedVariable,
+				Line:       fun.Trace.Line,
+				Column:     fun.Trace.Column,
+				Additional: []string{*variable2},
+			})
+		}
 	}
 }
 
@@ -115,19 +123,20 @@ func AnalyzeFunction(fun function.Function, trace *filecode.FileCode) (*pool.Err
 	blockQueue := make([]queue.BlockQueueElement, 0)
 	blockQueue = append(blockQueue, queue.BlockQueueElement{
 		Block: &fun.Body,
-		ID:    mainScopeId,
+		ID:    []int{mainScopeId},
 	})
 
 	for len(blockQueue) > 0 {
 		// Get the first element in the queue
 		element := blockQueue[0]
 		block := element.Block
-		scopeId := element.ID
+		scopeIds := element.ID
 		blockQueue = blockQueue[1:]
 
 		// Special case: For loops (creates the block at the end)
 		forVarNames := make(map[*string]*variable.Variable)
 		countBefore := scope.Count
+		dontDeleteStack := false
 
 		for _, statement := range *block.Children {
 			rule := statement.Rule
@@ -140,12 +149,13 @@ func AnalyzeFunction(fun function.Function, trace *filecode.FileCode) (*pool.Err
 				// Push the error to the list if necessary
 				errors.AddError(err)
 			case ast.Block:
+				dontDeleteStack = true
 				// Create a new scope
 				newScopeId := scope.NewScope()
 				// Add the block to the queue
 				blockQueue = append(blockQueue, queue.BlockQueueElement{
 					Block: statement,
-					ID:    newScopeId,
+					ID:    []int{newScopeId},
 				})
 			case ast.Declaration:
 				err, warning := declaration.AnalyzeDeclaration(statement, &scope, trace, &fun.Templates)
@@ -158,35 +168,44 @@ func AnalyzeFunction(fun function.Function, trace *filecode.FileCode) (*pool.Err
 				// Push the error to the list if necessary
 				errors.AddError(err)
 			case ast.If:
+				dontDeleteStack = true
 				err := conditional.AnalyzeIf(
 					statement,
 					trace,
 					&scope,
 					&blockQueue,
+					scopeIds,
 				)
 				// Push the error to the list if necessary
 				errors.AddError(err)
 			case ast.While:
+				dontDeleteStack = true
 				err := conditional.ProcessSingleConditional(
 					*statement.Children,
 					trace,
 					&scope,
 					&blockQueue,
+					scopeIds,
 				)
 				// Push the error to the list if necessary
 				errors.AddError(err)
 			case ast.For:
+				dontDeleteStack = true
 				err, varName, varObj := loop.AnalyzeFor(
 					statement,
 					trace,
 					&scope,
 					&blockQueue,
+					scopeIds,
 				)
 				scope.Count++
 
 				// Push the error to the list if necessary
 				errors.AddError(err)
-				forVarNames[varName] = varObj
+
+				if varName != nil {
+					forVarNames[varName] = varObj
+				}
 			default:
 				_, err := expression.AnalyzeExpression(
 					statement,
@@ -214,14 +233,14 @@ func AnalyzeFunction(fun function.Function, trace *filecode.FileCode) (*pool.Err
 			}
 		}
 
-		// Avoid destroying the main scope
-		if scopeId != mainScopeId {
-			destroyScope(&scope, scopeId, fun, warnings)
+		if !dontDeleteStack {
+			// Avoid destroying the main scope
+			destroyScope(&scope, scopeIds, fun, warnings, mainScopeId, false)
 		}
 	}
 
 	// Destroy the main scope at the end
-	destroyScope(&scope, mainScopeId, fun, warnings)
+	destroyScope(&scope, []int{mainScopeId}, fun, warnings, mainScopeId, true)
 
 	// Make sure that the function has returned a value
 	if !fun.IsStd && fun.Name != "heap_alloc" && fun.ReturnType.BaseType != "nothing" && !hasReturned {

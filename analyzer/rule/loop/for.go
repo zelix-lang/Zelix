@@ -31,6 +31,7 @@ import (
 // - trace: The file code trace.
 // - variables: The scoped stack of variables.
 // - blockQueue: The queue of AST blocks.
+// - scopeIds: The scope IDs of the parent block.
 //
 // Returns:
 // - An error3.Error indicating success or failure of the analysis.
@@ -39,6 +40,7 @@ func AnalyzeFor(
 	trace *filecode.FileCode,
 	variables *stack.ScopedStack,
 	blockQueue *[]queue.BlockQueueElement,
+	scopeIds []int,
 ) (error3.Error, *string, *variable.Variable) {
 	children := *tree.Children
 
@@ -98,10 +100,11 @@ func AnalyzeFor(
 	}
 
 	// Append the block to the block queue
+	scopeIds = append(scopeIds, variables.Count)
 	*blockQueue = append(*blockQueue, queue.BlockQueueElement{
 		Block: block,
 		// Predict the next ID
-		ID: variables.Count,
+		ID: scopeIds,
 	})
 
 	return error3.Error{}, varName.Value, &variable.Variable{
