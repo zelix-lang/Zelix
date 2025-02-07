@@ -68,7 +68,12 @@ func ProcessPropIdentifier(
 	}
 
 	// Change the got type to the type of the value
+	oldPointers := element.Got.Type.PointerCount
+	oldArrays := element.Got.Type.ArrayCount
 	element.Got.Type = value.Type
+	element.Got.Type.PointerCount += oldPointers
+	element.Got.Type.ArrayCount += oldArrays
+	element.ActualPointers += value.Type.PointerCount
 
 	// Check for modules
 	if !value.Type.IsPrimitive {
