@@ -18,6 +18,18 @@ import (
 	"fluent/filecode/types"
 )
 
+// AnalyzeArithmetic analyzes an arithmetic expression in the AST.
+// It checks if the type of the expression can be inferred and if it matches the expected type.
+// If the type cannot be inferred or does not match, it returns an error.
+// Otherwise, it processes the expression and updates the expression queue.
+//
+// Parameters:
+// - input: The AST node representing the arithmetic expression.
+// - currentElement: The current expected pair being analyzed.
+// - exprQueue: The queue of expected pairs to be processed.
+//
+// Returns:
+// - An error3.Error indicating the result of the analysis.
 func AnalyzeArithmetic(
 	input *ast.AST,
 	currentElement *queue.ExpectedPair,
@@ -74,6 +86,11 @@ func AnalyzeArithmetic(
 	}
 
 	// Prevent nesting problems
+	startAt := 0
+	if candidate.Rule != ast.Expression {
+		startAt = 1
+	}
+
 	for candidate.Rule == ast.Expression {
 		newCandidate := (*candidate.Children)[0]
 
@@ -97,7 +114,7 @@ func AnalyzeArithmetic(
 	})
 
 	// Push the rest of the expression
-	for i := 0; i < len(children); i++ {
+	for i := startAt; i < len(children); i++ {
 		element := children[i]
 
 		// Skip sings
