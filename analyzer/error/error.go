@@ -30,6 +30,7 @@ const (
 	InvalidPropAccess           // E0014
 	IllegalPropAccess           // E0015
 	ConstantReassignment        // E0016
+	DoesNotHaveConstructor      // E0017
 )
 
 // Error represents an error with details about its location and additional information.

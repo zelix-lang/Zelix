@@ -59,7 +59,7 @@ func ConvertModule(ast *ast2.AST, contents string) module.Module {
 	if children[startAt].Rule == ast2.Templates {
 		// Append the generics
 		for _, generic := range *children[startAt].Children {
-			result.Generics = append(result.Generics, *generic.Value)
+			result.Generics[*generic.Value] = true
 		}
 
 		startAt += 1

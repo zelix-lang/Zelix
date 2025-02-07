@@ -28,11 +28,13 @@ import (
 
 // literalRules is a map of rules that represent literals
 var literalRules = map[ast.Rule]bool{
-	ast.StringLiteral:  true,
-	ast.NumberLiteral:  true,
-	ast.BooleanLiteral: true,
-	ast.DecimalLiteral: true,
-	ast.Array:          true,
+	ast.StringLiteral:        true,
+	ast.NumberLiteral:        true,
+	ast.BooleanLiteral:       true,
+	ast.DecimalLiteral:       true,
+	ast.Array:                true,
+	ast.ArithmeticExpression: true,
+	ast.BooleanExpression:    true,
 }
 
 // AnalyzeExpression analyzes an AST expression and returns the resulting object and any errors encountered.
@@ -200,7 +202,7 @@ func AnalyzeExpression(
 			}
 
 			element.Got.Type = *element.Expected
-		case ast.FunctionCall:
+		case ast.FunctionCall, ast.ObjectCreation:
 			// This will later be fully determined by the call analyzer
 			element.Got.IsHeap = false
 
@@ -211,6 +213,7 @@ func AnalyzeExpression(
 				&element,
 				&queue,
 				lastPropValue,
+				child.Rule == ast.ObjectCreation,
 			)
 
 			// Return the error if it is not nothing

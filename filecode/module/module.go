@@ -40,7 +40,7 @@ type Module struct {
 	// Declarations is a list of declarations in the module.
 	Declarations map[string]Declaration
 	// Generics is a list of generic types in the module.
-	Generics []string
+	Generics map[string]bool
 	// Trace contains trace information for the module.
 	Trace trace.Trace
 	// Path is the file path of the module.

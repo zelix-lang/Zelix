@@ -22,7 +22,7 @@ import (
 	"strconv"
 )
 
-// AnalyzeFunctionCall analyzes a function call in the AST.
+// AnalyzeFunctionCall analyzes a function call or object creation in the AST.
 // It checks if the function exists, verifies the number of parameters,
 // and updates the result object with the function's return type.
 //
@@ -31,6 +31,7 @@ import (
 // - trace: The file code trace containing function and module definitions.
 // - queueElement: The current element in the queue.
 // - exprQueue: The queue to schedule parameter analysis.
+// - isObjectCreation: A boolean indicating whether the tree represents an object creation.
 //
 // Returns:
 // - An error3.Error if there is an issue with the function call, otherwise an empty error3.Error.
@@ -40,14 +41,48 @@ func AnalyzeFunctionCall(
 	queueElement *queue2.ExpectedPair,
 	exprQueue *[]queue2.ExpectedPair,
 	lastPropValue *module.Module,
+	isObjectCreation bool,
 ) error3.Error {
 	// Get the function's name
 	functionName := (*tree.Children)[0].Value
+	// Determine if the function has parameters
+	hasParams := len(*tree.Children) > 1
 
 	var function function2.Function
 	var found bool
 
-	if !queueElement.IsPropAccess {
+	if isObjectCreation {
+		// Find the module inside the trace's module
+		mod, ok := trace.Modules[*functionName]
+
+		if !ok || (!mod.Public && trace.Path != mod.Path) {
+			return error3.Error{
+				Line:       tree.Line,
+				Column:     tree.Column,
+				Code:       error3.UndefinedReference,
+				Additional: []string{*functionName},
+			}
+		}
+
+		// See if the module has a constructor
+		constructor, ok := mod.Functions[mod.Name]
+
+		if !ok {
+			if hasParams {
+				return error3.Error{
+					Line:   tree.Line,
+					Column: tree.Column,
+					Code:   error3.DoesNotHaveConstructor,
+				}
+			}
+
+			queueElement.Got.Type.BaseType = mod.Name
+			queueElement.Got.Value = mod
+			return error3.Error{}
+		}
+
+		function, found = constructor, true
+	} else if !queueElement.IsPropAccess {
 		function, found = trace.Functions[*functionName]
 	} else {
 		function, found = lastPropValue.Functions[*functionName]
@@ -122,7 +157,7 @@ func AnalyzeFunctionCall(
 	}
 
 	// See if the function call has any parameters
-	if len(*tree.Children) > 1 {
+	if hasParams {
 		paramsNode := (*tree.Children)[1]
 
 		// Check that the function call has the correct number of parameters
