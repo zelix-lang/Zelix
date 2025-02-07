@@ -143,12 +143,14 @@ func AnalyzeFunctionCall(
 			paramType := param.Type
 			paramNodes := (*value.Children)[0]
 			isParamHeap := paramType.PointerCount > 0
+			enforceHeapInParam := false
 
 			if !param.Type.IsPrimitive {
 				// Check for generics
 				if _, found := function.Templates[param.Type.BaseType]; found {
 					// Check if this param has the return type's generic
 					if returnType.Compare(paramType) {
+						enforceHeapInParam = result.IsHeap
 						if expected.BaseType == "" {
 							paramType = types.TypeWrapper{
 								BaseType:     "(Infer)",
@@ -173,7 +175,7 @@ func AnalyzeFunctionCall(
 					IsHeap: isParamHeap,
 				},
 				Expected:     &paramType,
-				HeapRequired: enforceHeap && result.IsHeap,
+				HeapRequired: enforceHeapInParam && enforceHeap,
 			})
 
 			i++
