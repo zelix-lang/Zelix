@@ -15,6 +15,7 @@ import (
 	"fluent/analyzer/format"
 	"fluent/analyzer/object"
 	"fluent/analyzer/pool"
+	"fluent/analyzer/rule/declaration"
 	"fluent/analyzer/rule/expression"
 	"fluent/analyzer/rule/ret"
 	"fluent/analyzer/rule/value"
@@ -110,8 +111,12 @@ func AnalyzeFunction(fun function.Function, trace *filecode.FileCode) (*pool.Err
 				scope.NewScope()
 				// Add the block to the queue
 				blockQueue = append(blockQueue, *statement)
-			case ast.Assignment:
+			case ast.Declaration:
+				err, warning := declaration.AnalyzeDeclaration(statement, &scope, trace, &fun.Templates)
 
+				// Push the error to the list if necessary
+				errors.AddError(err)
+				warnings.AddError(warning)
 			default:
 				_, err := expression.AnalyzeExpression(
 					statement,
