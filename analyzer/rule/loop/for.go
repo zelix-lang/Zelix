@@ -1,0 +1,107 @@
+/*
+   The Fluent Programming Language
+   -----------------------------------------------------
+   Copyright (c) 2025 Rodrigo R. & All Fluent Contributors
+   This program comes with ABSOLUTELY NO WARRANTY.
+   For details type `fluent -l`. This is free software,
+   and you are welcome to redistribute it under certain
+   conditions; type `fluent -l -f` for details.
+*/
+
+package loop
+
+import (
+	error3 "fluent/analyzer/error"
+	"fluent/analyzer/object"
+	"fluent/analyzer/rule/expression"
+	"fluent/analyzer/stack"
+	"fluent/analyzer/variable"
+	"fluent/ast"
+	"fluent/filecode"
+	"fluent/filecode/types"
+)
+
+func AnalyzeFor(
+	tree *ast.AST,
+	trace *filecode.FileCode,
+	variables *stack.ScopedStack,
+	blockQueue *[]ast.AST,
+) error3.Error {
+	children := *tree.Children
+
+	// Get the range expression
+	fromExpr := children[0]
+	toExpr := children[1]
+	varName := children[2]
+	block := children[3]
+
+	// Check if the var name is already defined
+	if variables.Load(varName.Value) != nil {
+		return error3.Error{
+			Code:       error3.Redefinition,
+			Line:       varName.Line,
+			Column:     varName.Column,
+			Additional: []string{*varName.Value},
+		}
+	}
+
+	// Analyze the left expression
+	leftObj, err := expression.AnalyzeExpression(
+		fromExpr,
+		trace,
+		variables,
+		false,
+		&types.TypeWrapper{
+			Children: &[]*types.TypeWrapper{},
+		},
+		false,
+	)
+
+	if err.Code != error3.Nothing {
+		return err
+	}
+
+	if leftObj.Type.BaseType != "num" && leftObj.Type.BaseType != "dec" {
+		return error3.Error{
+			Code:       error3.TypeMismatch,
+			Line:       varName.Line,
+			Column:     varName.Column,
+			Additional: []string{"num or dec", leftObj.Type.Marshal()},
+		}
+	}
+
+	// Also analyze the right expression
+	_, err = expression.AnalyzeExpression(
+		toExpr,
+		trace,
+		variables,
+		false,
+		&leftObj.Type,
+		false,
+	)
+
+	if err.Code != error3.Nothing {
+		return err
+	}
+
+	// Create a new scope for the block
+	variables.NewScope()
+
+	// Append the variable to the current scope
+	variables.Append(
+		*varName.Value,
+		variable.Variable{
+			Constant: true,
+			Value: object.Object{
+				Type:   leftObj.Type,
+				Value:  nil,
+				IsHeap: leftObj.IsHeap,
+			},
+		},
+	)
+
+	// Append the block to the block queue
+	*blockQueue = append(*blockQueue, *block)
+
+	return error3.Error{}
+}
