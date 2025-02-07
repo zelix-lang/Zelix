@@ -35,6 +35,18 @@ var literalRules = map[ast.Rule]bool{
 	ast.Array:          true,
 }
 
+// AnalyzeExpression analyzes an AST expression and returns the resulting object and any errors encountered.
+//
+// Parameters:
+// - tree: The AST tree representing the expression.
+// - trace: The file code trace for debugging and error reporting.
+// - variables: The stack of scoped variables available in the current context.
+// - enforceHeapRequirement: A boolean indicating whether heap allocation requirements should be enforced.
+// - firstExpected: The expected type of the expression.
+//
+// Returns:
+// - object.Object: The resulting object after analyzing the expression.
+// - error3.Error: Any error encountered during the analysis.
 func AnalyzeExpression(
 	tree *ast.AST,
 	trace *filecode.FileCode,
