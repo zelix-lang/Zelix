@@ -59,6 +59,9 @@ func ProcessSingleConditional(
 		return err
 	}
 
+	// Create a new scope for this conditional
+	variables.NewScope()
+
 	// Schedule the block for analysis
 	*blockQueue = append(*blockQueue, *mainBlock)
 	return error3.Error{}
@@ -102,6 +105,9 @@ func AnalyzeIf(
 				return err
 			}
 		case ast.Else:
+			// Create a new scope for this conditional
+			variables.NewScope()
+
 			// Schedule the block for analysis
 			*blockQueue = append(*blockQueue, *children[0])
 		default:
