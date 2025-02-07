@@ -13,6 +13,7 @@ package loop
 import (
 	error3 "fluent/analyzer/error"
 	"fluent/analyzer/object"
+	"fluent/analyzer/queue"
 	"fluent/analyzer/rule/expression"
 	"fluent/analyzer/stack"
 	"fluent/analyzer/variable"
@@ -37,8 +38,8 @@ func AnalyzeFor(
 	tree *ast.AST,
 	trace *filecode.FileCode,
 	variables *stack.ScopedStack,
-	blockQueue *[]ast.AST,
-) error3.Error {
+	blockQueue *[]queue.BlockQueueElement,
+) (error3.Error, *string, *variable.Variable) {
 	children := *tree.Children
 
 	// Get the range expression
@@ -54,7 +55,7 @@ func AnalyzeFor(
 			Line:       varName.Line,
 			Column:     varName.Column,
 			Additional: []string{*varName.Value},
-		}
+		}, nil, nil
 	}
 
 	// Analyze the left expression
@@ -70,7 +71,7 @@ func AnalyzeFor(
 	)
 
 	if err.Code != error3.Nothing {
-		return err
+		return err, nil, nil
 	}
 
 	if leftObj.Type.BaseType != "num" && leftObj.Type.BaseType != "dec" {
@@ -79,7 +80,7 @@ func AnalyzeFor(
 			Line:       varName.Line,
 			Column:     varName.Column,
 			Additional: []string{"num or dec", leftObj.Type.Marshal()},
-		}
+		}, nil, nil
 	}
 
 	// Also analyze the right expression
@@ -93,27 +94,22 @@ func AnalyzeFor(
 	)
 
 	if err.Code != error3.Nothing {
-		return err
+		return err, nil, nil
 	}
 
-	// Create a new scope for the block
-	variables.NewScope()
-
-	// Append the variable to the current scope
-	variables.Append(
-		*varName.Value,
-		variable.Variable{
-			Constant: true,
-			Value: object.Object{
-				Type:   leftObj.Type,
-				Value:  nil,
-				IsHeap: leftObj.IsHeap,
-			},
-		},
-	)
-
 	// Append the block to the block queue
-	*blockQueue = append(*blockQueue, *block)
+	*blockQueue = append(*blockQueue, queue.BlockQueueElement{
+		Block: block,
+		// Predict the next ID
+		ID: variables.Count,
+	})
 
-	return error3.Error{}
+	return error3.Error{}, varName.Value, &variable.Variable{
+		Constant: true,
+		Value: object.Object{
+			Type:   leftObj.Type,
+			Value:  nil,
+			IsHeap: leftObj.IsHeap,
+		},
+	}
 }
