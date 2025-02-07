@@ -213,11 +213,19 @@ func ProcessSignedOp(
 			}
 
 			for j, tokens := range split {
+				var trace *token.Token
+
+				if len(tokens) == 0 {
+					trace = &firstElement
+				} else {
+					trace = &tokens[0]
+				}
+
 				// Create a nested expression
 				nestedExpression := ast.AST{
 					Rule:     ast.Expression,
-					Line:     firstElement.Line,
-					Column:   firstElement.Column,
+					Line:     trace.Line,
+					Column:   trace.Column,
 					File:     &firstElement.File,
 					Children: &[]*ast.AST{},
 				}
