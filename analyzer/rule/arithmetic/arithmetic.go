@@ -57,14 +57,14 @@ func AnalyzeArithmetic(
 	}
 
 	// Handle inferred types
-	var candidateType types.TypeWrapper
-	if expected.BaseType == "(Expected)" {
-		candidateType = types.TypeWrapper{
+	var candidateType *types.TypeWrapper
+	if expected.BaseType == "(Infer)" {
+		candidateType = &types.TypeWrapper{
 			Children: &[]*types.TypeWrapper{},
 		}
 	} else {
 		// Clone the expected element to avoid memory issues
-		candidateType = types.TypeWrapper{
+		candidateType = &types.TypeWrapper{
 			PointerCount: expected.PointerCount,
 			ArrayCount:   expected.ArrayCount,
 			Children:     expected.Children,
@@ -74,44 +74,49 @@ func AnalyzeArithmetic(
 		}
 	}
 
+	startAt := 0
 	// Get the expression's children
 	children := *input.Children
 
-	// Push the candidate to determine the expression's type
-	candidate := children[0]
-	candidateElement := object.Object{
-		Type: types.TypeWrapper{
-			Children: &[]*types.TypeWrapper{},
-		},
-	}
+	// Evaluate the candidate only if the type is inferred
+	if expected.BaseType == "(Infer)" {
+		// Push the candidate to determine the expression's type
+		candidate := children[0]
+		candidateElement := object.Object{
+			Type: types.TypeWrapper{
+				Children: &[]*types.TypeWrapper{},
+			},
+		}
 
-	// Prevent nesting problems
-	startAt := 0
-	if candidate.Rule != ast.Expression {
-		startAt = 1
-	}
+		// Prevent nesting problems
+		if candidate.Rule != ast.Expression {
+			startAt = 1
+		}
 
-	for candidate.Rule == ast.Expression {
-		newCandidate := (*candidate.Children)[0]
+		for candidate.Rule == ast.Expression {
+			newCandidate := (*candidate.Children)[0]
 
-		if newCandidate.Rule == ast.Expression {
+			if newCandidate.Rule == ast.Expression {
+				candidate = newCandidate
+				continue
+			}
+
+			if newCandidate.Rule != ast.ArithmeticExpression {
+				break
+			}
+
 			candidate = newCandidate
-			continue
 		}
 
-		if newCandidate.Rule != ast.ArithmeticExpression {
-			break
-		}
+		*exprQueue = append(*exprQueue, queue.ExpectedPair{
+			Expected:     candidateType,
+			Got:          &candidateElement,
+			Tree:         candidate,
+			IsArithmetic: true,
+		})
 
-		candidate = newCandidate
+		candidateType = &candidateElement.Type
 	}
-
-	*exprQueue = append(*exprQueue, queue.ExpectedPair{
-		Expected:     &candidateType,
-		Got:          &candidateElement,
-		Tree:         candidate,
-		IsArithmetic: true,
-	})
 
 	// Push the rest of the expression
 	for i := startAt; i < len(children); i++ {
@@ -123,7 +128,7 @@ func AnalyzeArithmetic(
 		}
 
 		*exprQueue = append(*exprQueue, queue.ExpectedPair{
-			Expected: &candidateElement.Type,
+			Expected: candidateType,
 			Got: &object.Object{
 				Type: types.TypeWrapper{
 					Children: &[]*types.TypeWrapper{},
@@ -133,5 +138,6 @@ func AnalyzeArithmetic(
 		})
 	}
 
+	currentElement.Got.Type.BaseType = currentElement.Expected.BaseType
 	return error3.Error{}
 }
