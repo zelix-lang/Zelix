@@ -16,6 +16,7 @@ import (
 	queue2 "fluent/analyzer/queue"
 	"fluent/analyzer/rule/arithmetic"
 	"fluent/analyzer/rule/array"
+	"fluent/analyzer/rule/boolean"
 	"fluent/analyzer/rule/call"
 	"fluent/analyzer/rule/property"
 	"fluent/analyzer/stack"
@@ -241,6 +242,13 @@ func AnalyzeExpression(
 			if err.Code != error3.Nothing {
 				return object.Object{}, err
 			}
+		case ast.BooleanExpression:
+			// Pass the input to the boolean analyzer
+			boolean.AnalyzeBoolean(
+				child,
+				&element,
+				&queue,
+			)
 		default:
 		}
 
