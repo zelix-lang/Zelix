@@ -70,6 +70,33 @@ func FindAndProcessReassignment(input []token.Token) (ast.AST, error.Error, bool
 		return ast.AST{}, err, false
 	}
 
+	// The left expression must be either an identifier or a property access
+	exprLeftChild := (*expressionLeft.Children)[0]
+	if exprLeftChild.Rule != ast.Identifier && exprLeftChild.Rule != ast.PropertyAccess {
+		return ast.AST{}, error.Error{
+			Line:     firstToken.Line,
+			Column:   firstToken.Column,
+			File:     &firstToken.File,
+			Expected: []ast.Rule{ast.Identifier, ast.PropertyAccess},
+		}, false
+	}
+
+	// Also make sure the property access ends in an identifier
+	if exprLeftChild.Rule == ast.PropertyAccess {
+		propAccessChildren := *exprLeftChild.Children
+		lastExpr := propAccessChildren[len(propAccessChildren)-1]
+		last := (*lastExpr.Children)[0]
+
+		if last.Rule != ast.Identifier {
+			return ast.AST{}, error.Error{
+				Line:     last.Line,
+				Column:   last.Column,
+				File:     &firstToken.File,
+				Expected: []ast.Rule{ast.Identifier},
+			}, false
+		}
+	}
+
 	expressionRight, err := expression.ProcessExpression(split[1])
 
 	if err.IsError() {
