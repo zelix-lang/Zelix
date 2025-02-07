@@ -19,6 +19,16 @@ import (
 	"fluent/filecode/types"
 )
 
+// AnalyzeReassignment analyzes the reassignment of variables in the given AST.
+// It checks the left and right expressions for type compatibility and returns an error if any issues are found.
+//
+// Parameters:
+// - tree: the AST to analyze
+// - variables: the stack of scoped variables
+// - trace: the file code trace
+//
+// Returns:
+// - error3.Error: an error object indicating the result of the analysis
 func AnalyzeReassignment(
 	tree *ast.AST,
 	variables *stack.ScopedStack,
