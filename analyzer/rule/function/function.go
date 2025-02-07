@@ -18,6 +18,7 @@ import (
 	"fluent/analyzer/rule/conditional"
 	"fluent/analyzer/rule/declaration"
 	"fluent/analyzer/rule/expression"
+	"fluent/analyzer/rule/loop"
 	"fluent/analyzer/rule/reassignment"
 	"fluent/analyzer/rule/ret"
 	"fluent/analyzer/rule/value"
@@ -141,6 +142,15 @@ func AnalyzeFunction(fun function.Function, trace *filecode.FileCode) (*pool.Err
 				)
 				// Push the error to the list if necessary
 				errors.AddError(err)
+			case ast.For:
+				err := loop.AnalyzeFor(
+					statement,
+					trace,
+					&scope,
+					&blockQueue,
+				)
+				// Push the error to the list if necessary
+				errors.AddError(err)
 			default:
 				_, err := expression.AnalyzeExpression(
 					statement,
@@ -157,6 +167,18 @@ func AnalyzeFunction(fun function.Function, trace *filecode.FileCode) (*pool.Err
 				errors.AddError(err)
 			}
 		}
+
+		unusedVariables := scope.DestroyScope()
+
+		// Add unused variable warnings
+		for _, variable2 := range unusedVariables {
+			warnings.AddError(error3.Error{
+				Code:       error3.UnusedVariable,
+				Line:       fun.Trace.Line,
+				Column:     fun.Trace.Column,
+				Additional: []string{*variable2},
+			})
+		}
 	}
 
 	// Make sure that the function has returned a value
@@ -167,18 +189,6 @@ func AnalyzeFunction(fun function.Function, trace *filecode.FileCode) (*pool.Err
 			Column: fun.Trace.Column,
 		})
 		return errors, warnings
-	}
-
-	unusedVariables := scope.DestroyScope()
-
-	// Add unused variable warnings
-	for _, variable2 := range unusedVariables {
-		warnings.AddError(error3.Error{
-			Code:       error3.UnusedVariable,
-			Line:       fun.Trace.Line,
-			Column:     fun.Trace.Column,
-			Additional: []string{*variable2},
-		})
 	}
 
 	return errors, warnings
