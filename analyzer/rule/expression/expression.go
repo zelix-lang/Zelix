@@ -14,6 +14,7 @@ import (
 	error3 "fluent/analyzer/error"
 	"fluent/analyzer/object"
 	queue2 "fluent/analyzer/queue"
+	"fluent/analyzer/rule/arithmetic"
 	"fluent/analyzer/rule/array"
 	"fluent/analyzer/rule/call"
 	"fluent/analyzer/rule/property"
@@ -203,14 +204,15 @@ func AnalyzeExpression(
 			}
 		case ast.Expression:
 			hasNested = true
+
 			// Add the expression to the queue
-			queue = append(queue, queue2.ExpectedPair{
+			queue = append([]queue2.ExpectedPair{{
 				Expected:          element.Expected,
 				Got:               element.Got,
 				Tree:              child,
 				HasMetDereference: element.HasMetDereference,
 				ActualPointers:    element.ActualPointers,
-			})
+			}}, queue...)
 
 			element.Got.Type = *element.Expected
 		case ast.PropertyAccess:
@@ -228,7 +230,17 @@ func AnalyzeExpression(
 				return object.Object{}, err
 			}
 		case ast.ArithmeticExpression:
+			// Pass the input to the arithmetic analyzer
+			err := arithmetic.AnalyzeArithmetic(
+				child,
+				&element,
+				&queue,
+			)
 
+			// Return the error if it is not nothing
+			if err.Code != error3.Nothing {
+				return object.Object{}, err
+			}
 		default:
 		}
 
@@ -277,6 +289,16 @@ func AnalyzeExpression(
 				Line:       element.Tree.Line,
 				Column:     element.Tree.Column,
 				Additional: []string{"Module", element.Got.Type.Marshal()},
+			}
+		}
+
+		// Check for arithmetic operations
+		if element.IsArithmetic && element.Got.Type.BaseType != "num" && element.Got.Type.BaseType != "dec" && element.Got.Type.BaseType != "(Infer)" {
+			return object.Object{}, error3.Error{
+				Code:       error3.TypeMismatch,
+				Line:       element.Tree.Line,
+				Column:     element.Tree.Column,
+				Additional: []string{"num or dec", element.Got.Type.Marshal()},
 			}
 		}
 	}

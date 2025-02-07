@@ -27,4 +27,5 @@ type ExpectedPair struct {
 	HeapRequired      bool               // Whether this value must be heap-allocated
 	ModRequired       bool               // Whether this value must evaluate to a module
 	IsPropAccess      bool               // Whether this value is a property access
+	IsArithmetic      bool               // Whether this value must evaluate a decimal or integer
 }
