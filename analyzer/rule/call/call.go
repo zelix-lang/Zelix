@@ -48,6 +48,7 @@ func AnalyzeFunctionCall(
 	// Determine if the function has parameters
 	hasParams := len(*tree.Children) > 1
 
+	var generics map[string]bool
 	var function function2.Function
 	var found bool
 
@@ -82,10 +83,13 @@ func AnalyzeFunctionCall(
 		}
 
 		function, found = constructor, true
+		generics = mod.Generics
 	} else if !queueElement.IsPropAccess {
 		function, found = trace.Functions[*functionName]
+		generics = function.Templates
 	} else {
 		function, found = lastPropValue.Functions[*functionName]
+		generics = function.Templates
 	}
 
 	// Check if the function was found (and whether the current function has permission to call it)
@@ -120,7 +124,7 @@ func AnalyzeFunctionCall(
 
 	if !returnType.IsPrimitive {
 		// Check for generics
-		if _, found := function.Templates[returnType.BaseType]; found {
+		if _, found := generics[returnType.BaseType]; found {
 			// Make sure there is an expected type
 			if expected.BaseType == "" {
 				result.Type.BaseType = returnType.BaseType
@@ -182,7 +186,7 @@ func AnalyzeFunctionCall(
 
 			if !param.Type.IsPrimitive {
 				// Check for generics
-				if _, found := function.Templates[param.Type.BaseType]; found {
+				if _, found := generics[param.Type.BaseType]; found {
 					// Check if this param has the return type's generic
 					if returnType.Compare(paramType) {
 						enforceHeapInParam = result.IsHeap
