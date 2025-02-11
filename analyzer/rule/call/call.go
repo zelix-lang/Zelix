@@ -51,6 +51,7 @@ func AnalyzeFunctionCall(
 	var generics map[string]bool
 	var function function2.Function
 	var found bool
+	var returnType types.TypeWrapper
 
 	if isObjectCreation {
 		// Find the module inside the trace's module
@@ -83,13 +84,19 @@ func AnalyzeFunctionCall(
 		}
 
 		function, found = constructor, true
-		generics = mod.Generics
-	} else if !queueElement.IsPropAccess {
-		function, found = trace.Functions[*functionName]
-		generics = function.Templates
-	} else {
+		generics = mod.Templates
+		returnType = types.TypeWrapper{
+			BaseType: mod.Name,
+			Children: &[]*types.TypeWrapper{},
+		}
+	} else if queueElement.IsPropAccess {
 		function, found = lastPropValue.Functions[*functionName]
 		generics = function.Templates
+		returnType = function.ReturnType
+	} else {
+		function, found = trace.Functions[*functionName]
+		generics = function.Templates
+		returnType = function.ReturnType
 	}
 
 	// Check if the function was found (and whether the current function has permission to call it)
@@ -108,7 +115,6 @@ func AnalyzeFunctionCall(
 	// Update the result accordingly
 	oldPointerCount := result.Type.PointerCount
 	oldArrayCount := result.Type.ArrayCount
-	returnType := function.ReturnType
 
 	// Heap and return type
 	result.IsHeap = returnType.PointerCount > 0
