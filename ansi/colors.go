@@ -1,6 +1,10 @@
 /*
    The Fluent Programming Language
    -----------------------------------------------------
+   This code is released under the GNU GPL v3 license.
+   For more information, please visit:
+   https://www.gnu.org/licenses/gpl-3.0.html
+   -----------------------------------------------------
    Copyright (c) 2025 Rodrigo R. & All Fluent Contributors
    This program comes with ABSOLUTELY NO WARRANTY.
    For details type `fluent l`. This is free software,
@@ -12,7 +16,6 @@ package ansi
 
 const (
 	Reset        = "\033[0m"
-	BrightBlue   = "\033[94m"
 	BrightRed    = "\033[91m"
 	BrightYellow = "\033[93m"
 	BrightPurple = "\033[95m"
