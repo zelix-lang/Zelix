@@ -263,6 +263,8 @@ func AnalyzeCode(entry map[string]filecode.FileCode, mainPath string, silent boo
 				errorMessage.WriteString(error2.CircularModuleDependency(err.Additional[0]))
 			case error3.SelfReference:
 				errorMessage.WriteString(error2.SelfReference())
+			case error3.InvalidLoopInstruction:
+				errorMessage.WriteString(error2.InvalidLoopInstruction())
 			default:
 			}
 

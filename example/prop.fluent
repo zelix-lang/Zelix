@@ -10,4 +10,8 @@ mod Asd {
 pub fun main() {
     let _a: Asd = new Asd();
     panic(25);
+
+    for 1 to 5 in i {
+        // Instructions go here
+    }
 }
