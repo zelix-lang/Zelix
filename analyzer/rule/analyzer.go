@@ -13,6 +13,8 @@ package rule
 import (
 	"fluent/analyzer/pool"
 	function2 "fluent/analyzer/rule/function"
+	"fluent/analyzer/rule/module"
+	"fluent/analyzer/stack"
 	"fluent/filecode"
 )
 
@@ -28,7 +30,22 @@ func AnalyzeFileCode(code filecode.FileCode) (*pool.ErrorPool, *pool.ErrorPool) 
 		}
 
 		// Analyze the function
-		errors, warnings := function2.AnalyzeFunction(function, &code)
+		errors, warnings, _ := function2.AnalyzeFunction(function, &code, "", &function.Templates, stack.ScopedStack{
+			Scopes: make(map[int]stack.Stack),
+		}, false)
+		globalErrors.Extend(errors.Errors)
+		globalWarnings.Extend(warnings.Errors)
+	}
+
+	// Iterate over all the modules
+	for _, mod := range code.Modules {
+		// Skip functions that are not in the current file
+		if mod.Path != code.Path {
+			continue
+		}
+
+		// Analyze the function
+		errors, warnings := module.AnalyzeModule(mod, &code)
 		globalErrors.Extend(errors.Errors)
 		globalWarnings.Extend(warnings.Errors)
 	}

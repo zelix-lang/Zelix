@@ -31,6 +31,8 @@ const (
 	IllegalPropAccess           // E0015
 	ConstantReassignment        // E0016
 	DoesNotHaveConstructor      // E0017
+	ShouldNotHaveGenerics       // E0018
+	ValueNotAssigned            // E0019
 )
 
 // Error represents an error with details about its location and additional information.
