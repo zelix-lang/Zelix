@@ -70,15 +70,32 @@ func destroyScope(
 // Parameters:
 // - fun: The function to be analyzed.
 // - trace: The file code trace information.
+// - parentName: The name of the module that contains this function.
+// - generics: The list of generics that the function has.
+// - collectAssignments: Whether collect in a map all the variables reassigned throughout the function.
+//
 // Returns:
 // - A pool of errors found during the analysis.
 // - A pool of warnings found during the analysis.
-func AnalyzeFunction(fun function.Function, trace *filecode.FileCode) (*pool.ErrorPool, *pool.ErrorPool) {
+func AnalyzeFunction(
+	fun function.Function,
+	trace *filecode.FileCode,
+	parentName string,
+	generics *map[string]bool,
+	scope stack.ScopedStack,
+	collectAssignments bool,
+) (*pool.ErrorPool, *pool.ErrorPool, *[]*ast.AST) {
 	errors := pool.NewErrorPool()
 	warnings := pool.NewErrorPool()
+	var collectedAssignments *[]*ast.AST
+
+	// Only initialize if collectAssignments is true
+	if collectAssignments {
+		collectedAssignments = &[]*ast.AST{}
+	}
 
 	// Check that the case matches snake_case
-	if !format.CheckCase(&fun.Name, format.SnakeCase) {
+	if fun.Name != parentName && !format.CheckCase(&fun.Name, format.SnakeCase) {
 		warnings.AddError(error3.Error{
 			Code:       error3.NameShouldBeSnakeCase,
 			Line:       fun.Trace.Line,
@@ -88,7 +105,7 @@ func AnalyzeFunction(fun function.Function, trace *filecode.FileCode) (*pool.Err
 	}
 
 	// Check for undefined references in the return type
-	err := value.AnalyzeUndefinedReference(trace, fun.ReturnType, &fun.Templates)
+	err := value.AnalyzeUndefinedReference(trace, fun.ReturnType, generics)
 
 	// Push the error to the list if necessary
 	errors.AddError(err)
@@ -97,15 +114,12 @@ func AnalyzeFunction(fun function.Function, trace *filecode.FileCode) (*pool.Err
 	hasReturned := false
 
 	// Create a new scope for the function
-	scope := stack.ScopedStack{
-		Scopes: make(map[int]stack.Stack),
-	}
 	mainScopeId := scope.NewScope()
 	returnType := fun.ReturnType
 
 	// Analyze and add all parameters to the scope
 	for name, param := range fun.Params {
-		err, warn := AnalyzeParameter(&name, &param, trace, &fun.Templates)
+		err, warn := AnalyzeParameter(&name, &param, trace, generics)
 
 		// Push the error to the list if necessary
 		errors.AddError(err)
@@ -173,13 +187,13 @@ func AnalyzeFunction(fun function.Function, trace *filecode.FileCode) (*pool.Err
 					ID:    []int{newScopeId},
 				})
 			case ast.Declaration:
-				err, warning := declaration.AnalyzeDeclaration(statement, &scope, trace, &fun.Templates)
+				err, warning := declaration.AnalyzeDeclaration(statement, &scope, trace, generics)
 
 				// Push the error to the list if necessary
 				errors.AddError(err)
 				warnings.AddError(warning)
 			case ast.Assignment:
-				err := reassignment.AnalyzeReassignment(statement, &scope, trace)
+				err := reassignment.AnalyzeReassignment(statement, &scope, trace, collectedAssignments)
 				// Push the error to the list if necessary
 				errors.AddError(err)
 			case ast.If:
@@ -264,8 +278,8 @@ func AnalyzeFunction(fun function.Function, trace *filecode.FileCode) (*pool.Err
 			Line:   fun.Trace.Line,
 			Column: fun.Trace.Column,
 		})
-		return errors, warnings
+		return errors, warnings, collectedAssignments
 	}
 
-	return errors, warnings
+	return errors, warnings, collectedAssignments
 }

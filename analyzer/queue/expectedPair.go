@@ -29,4 +29,5 @@ type ExpectedPair struct {
 	IsPropAccess       bool               // Whether this value is a property access
 	IsArithmetic       bool               // Whether this value must evaluate a decimal or integer
 	IsPropReassignment bool               // Whether this value is a property reassignment
+	LastPropValue      *interface{}       // The last property value
 }

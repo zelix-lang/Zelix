@@ -26,6 +26,7 @@ import (
 // - tree: the AST to analyze
 // - variables: the stack of scoped variables
 // - trace: the file code trace
+// - assignments: A map of all the assignments throughout the function
 //
 // Returns:
 // - error3.Error: an error object indicating the result of the analysis
@@ -33,6 +34,7 @@ func AnalyzeReassignment(
 	tree *ast.AST,
 	variables *stack.ScopedStack,
 	trace *filecode.FileCode,
+	collectedAssignments *[]*ast.AST,
 ) error3.Error {
 	// Get the tree's children
 	children := *tree.Children
@@ -40,6 +42,25 @@ func AnalyzeReassignment(
 	// Get the left expression
 	leftExpr := children[0]
 	rightExpr := children[1]
+
+	// Check if we are supposed to collect reassignments
+	if collectedAssignments != nil {
+		leftChildren := *leftExpr.Children
+		leftNode := leftChildren[0]
+
+		// Check for property access
+		if leftNode.Rule == ast.PropertyAccess {
+			leftChildren = *leftNode.Children
+			// Get the candidate
+			candidateExpr := leftChildren[0]
+			candidateChildren := *candidateExpr.Children
+			candidate := candidateChildren[0]
+
+			if len(leftChildren) == 2 && candidate.Rule == ast.Identifier && *candidate.Value == "this" {
+				*collectedAssignments = append(*collectedAssignments, leftNode)
+			}
+		}
+	}
 
 	// Analyze the property access
 	obj, err := expression.AnalyzeExpression(

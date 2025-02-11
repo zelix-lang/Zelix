@@ -1,16 +1,13 @@
 import "@std::io::print";
 
 mod Asd {
-    const a: num;
+    let a: num;
+
+    pub fun Asd() {
+        this.a = 6;
+    }
 }
 
 pub fun main() {
-    for 1 to 6 in i {
-        println(i);
-
-        for 1 to 6 in k {
-            println(i);
-            println(k);
-        }
-    }
+    let a: Asd = new Asd();
 }

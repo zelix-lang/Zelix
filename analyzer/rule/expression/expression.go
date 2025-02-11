@@ -119,8 +119,27 @@ func AnalyzeExpression(
 		// Check for property access
 		var lastPropValue *module.Module
 		if element.IsPropAccess {
-			// Check if the lastPropValue is nil
-			mod, castOk := element.Got.Value.(module.Module)
+			if element.LastPropValue == nil {
+				return object.Object{}, error3.Error{
+					Code:   error3.InvalidPropAccess,
+					Line:   element.Tree.Line,
+					Column: element.Tree.Column,
+				}
+			}
+
+			// To save up some resources, LastPropValue is defined only in the candidate
+			// further properties have the last value in the got value
+			var convert interface{}
+
+			if element.LastPropValue != nil {
+				convert = *element.LastPropValue
+			} else {
+				convert = element.Got.Value
+			}
+
+			// Cast the last property value to a module
+			mod, castOk := convert.(module.Module)
+
 			if !castOk {
 				return object.Object{}, error3.Error{
 					Code:   error3.InvalidPropAccess,
@@ -129,7 +148,6 @@ func AnalyzeExpression(
 				}
 			}
 
-			// Clone the got object to keep track of the last property value
 			lastPropValue = &mod
 		}
 
@@ -239,6 +257,7 @@ func AnalyzeExpression(
 
 			// Pass the input to the property access analyzer
 			property.AnalyzePropertyAccess(
+				&element,
 				child,
 				&queue,
 				isPropReassignment,
