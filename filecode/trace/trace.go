@@ -10,7 +10,8 @@
 
 package trace
 
+// Trace represents a position in the source code with a line and column number.
 type Trace struct {
-	Line   int
-	Column int
+	Line   int // Line number in the source code
+	Column int // Column number in the source code
 }
