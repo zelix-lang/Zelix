@@ -187,7 +187,7 @@ func AnalyzeFunction(
 					ID:    []int{newScopeId},
 				})
 			case ast.Declaration:
-				err, warning := declaration.AnalyzeDeclaration(statement, &scope, trace, generics)
+				err, warning := declaration.AnalyzeDeclaration(statement, &scope, trace, generics, parentName)
 
 				// Push the error to the list if necessary
 				errors.AddError(err)

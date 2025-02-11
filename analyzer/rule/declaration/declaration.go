@@ -31,6 +31,7 @@ import (
 // - scope: The scoped stack for variable management.
 // - trace: The file code trace for error reporting.
 // - generics: A map of generics used in the declaration.
+// - parentName: The name of the module that holds this function, empty if none.
 //
 // Returns:
 // - An error if there is an issue with the declaration.
@@ -40,6 +41,7 @@ func AnalyzeDeclaration(
 	scope *stack.ScopedStack,
 	trace *filecode.FileCode,
 	generics *map[string]bool,
+	parentName string,
 ) (error3.Error, error3.Error) {
 	// Get the children of the statement
 	children := *statement.Children
@@ -66,6 +68,19 @@ func AnalyzeDeclaration(
 
 	if err.Code != error3.Nothing {
 		return err, error3.Error{}
+	}
+
+	// Check for illegal self-reference
+	if typeWrapper.BaseType == parentName {
+		exprChildren := *expr.Children
+		candidate := exprChildren[0]
+		if candidate.Rule != ast.Identifier || (candidate.Rule == ast.Identifier && *candidate.Value != "this") {
+			return error3.Error{
+				Code:   error3.SelfReference,
+				Line:   expr.Line,
+				Column: expr.Column,
+			}, error3.Error{}
+		}
 	}
 
 	var warning error3.Error

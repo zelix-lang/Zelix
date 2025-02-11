@@ -254,6 +254,8 @@ func AnalyzeCode(entry map[string]filecode.FileCode, mainPath string, silent boo
 				errorMessage.WriteString(error2.ValueNotAssigned())
 			case error3.CircularModuleDependency:
 				errorMessage.WriteString(error2.CircularModuleDependency(err.Additional[0]))
+			case error3.SelfReference:
+				errorMessage.WriteString(error2.SelfReference())
 			default:
 			}
 

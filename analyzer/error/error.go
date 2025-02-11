@@ -34,6 +34,7 @@ const (
 	ShouldNotHaveGenerics         // E0018
 	ValueNotAssigned              // E0019
 	CircularModuleDependency      // E0020
+	SelfReference                 // E0021
 )
 
 // Error represents an error with details about its location and additional information.
