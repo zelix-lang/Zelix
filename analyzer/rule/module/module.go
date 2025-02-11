@@ -15,14 +15,27 @@ import (
 	"fluent/analyzer/object"
 	"fluent/analyzer/pool"
 	function2 "fluent/analyzer/rule/function"
+	"fluent/analyzer/rule/value"
 	"fluent/analyzer/stack"
 	"fluent/analyzer/variable"
 	"fluent/filecode"
 	"fluent/filecode/module"
 	"fluent/filecode/types"
-	"fluent/util"
+	"fluent/logger"
+	"fmt"
+	"strings"
 )
 
+// AnalyzeModule analyzes a given module and its functions, checking for errors and warnings.
+// It returns two error pools: one for errors and one for warnings.
+//
+// Parameters:
+// - mod: The module to be analyzed.
+// - trace: The file code trace for the module.
+//
+// Returns:
+// - *pool.ErrorPool: A pool containing all the errors found during the analysis.
+// - *pool.ErrorPool: A pool containing all the warnings found during the analysis.
 func AnalyzeModule(
 	mod module.Module,
 	trace *filecode.FileCode,
@@ -108,31 +121,114 @@ func AnalyzeModule(
 		}
 	}
 
+	// Use a queue to analyze the module's declarations
+	// to find circular module dependencies
+	queue := make([]module.Declaration, 0)
+	// Save the seen modules in a slice for printing
+	seenModules := []string{mod.Name}
+	// Save the seen modules in a map for fast lookup
+	seenModulesMap := map[string]bool{
+		mod.Name: true,
+	}
+
+	// Used to determine if a value that has been not initialized has already been caught
+	initializedCaught := false
+
 	// Check if the module has incomplete declarations
 	for _, declaration := range mod.Declarations {
-		if !declaration.IsIncomplete {
+		// Check for undefined references
+		err := value.AnalyzeUndefinedReference(trace, declaration.Type, &mod.Templates)
+		queue = append(queue, declaration)
+
+		if err.Code != error3.Nothing {
+			globalErrors.AddError(err)
+		} else {
+			// Append only if the type is good to go
+		}
+
+		if !initializedCaught && declaration.IsIncomplete {
+			initializedCaught = true
+			// Check that the module has a constructor
+			if _, ok := mod.Functions[mod.Name]; !ok {
+				globalErrors.AddError(error3.Error{
+					Line:   declaration.Trace.Line,
+					Column: declaration.Trace.Column,
+					Code:   error3.ValueNotAssigned,
+				})
+			}
+		}
+	}
+
+	// Find circular dependencies
+	for len(queue) > 0 {
+		// Get the first element of the queue
+		element := queue[0]
+		queue = queue[1:]
+
+		// Check if the type is a module
+		if element.Type.IsPrimitive {
 			continue
 		}
 
-		// Check that the module has a constructor
-		if _, ok := mod.Functions[mod.Name]; !ok {
-			globalErrors.AddError(error3.Error{
-				Line:   mod.Trace.Line,
-				Column: mod.Trace.Column,
-				Code:   error3.ValueNotAssigned,
-				Additional: []string{
-					util.BuildDetails(
-						&trace.Contents,
-						&trace.Path,
-						declaration.Trace.Line,
-						declaration.Trace.Column,
-						true,
+		// Get the base type of the declaration
+		baseType := element.Type.BaseType
+
+		// Check if the module has already been seen
+		if seenModulesMap[baseType] {
+			// Use a strings.builder to build the full import chain in an efficient manner
+			builder := strings.Builder{}
+			spaces := 0
+
+			for _, modName := range seenModules {
+				builder.WriteString(
+					logger.BuildInfo(
+						fmt.Sprintf(
+							"%s-> %s",
+							strings.Repeat("  ", spaces),
+							modName,
+						),
 					),
-				},
+				)
+				spaces++
+			}
+
+			// Also write the current module
+			builder.WriteString(
+				logger.BuildInfo(
+					fmt.Sprintf(
+						"%s-> %s",
+						strings.Repeat("  ", spaces),
+						mod.Name,
+					),
+				),
+			)
+
+			globalErrors.AddError(error3.Error{
+				Line:       element.Trace.Line,
+				Column:     element.Trace.Column,
+				Code:       error3.CircularModuleDependency,
+				Additional: []string{builder.String()},
 			})
+
+			break
 		}
 
-		break
+		// Add the module to the seen modules
+		seenModules = append(seenModules, baseType)
+		seenModulesMap[baseType] = true
+
+		// Get the module
+		mod, ok := trace.Modules[baseType]
+
+		if !ok {
+			// Error is caught in further analysis for that specific module
+			continue
+		}
+
+		// Add all the declarations to the queue
+		for _, declaration := range mod.Declarations {
+			queue = append(queue, declaration)
+		}
 	}
 
 	return globalErrors, globalWarnings

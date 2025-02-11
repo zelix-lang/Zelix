@@ -1,11 +1,7 @@
 import "@std::io::print";
 
 mod Asd {
-    let a: Asd;
-
-    pub fun Asd() {
-        this.a = new Asd();
-    }
+    let a: num;
 }
 
 pub fun main() {
