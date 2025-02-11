@@ -1,4 +1,5 @@
 import "@std::io::print";
+import "@std::io::panic";
 
 mod Asd {
     pub fun Asd() {
@@ -8,4 +9,5 @@ mod Asd {
 
 pub fun main() {
     let _a: Asd = new Asd();
+    panic(25);
 }
