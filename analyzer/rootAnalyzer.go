@@ -248,6 +248,10 @@ func AnalyzeCode(entry map[string]filecode.FileCode, mainPath string, silent boo
 				errorMessage.WriteString(error2.ConstantReassignment())
 			case error3.DoesNotHaveConstructor:
 				errorMessage.WriteString(error2.DoesNotHaveConstructor())
+			case error3.ShouldNotHaveGenerics:
+				errorMessage.WriteString(error2.ShouldNotHaveGenerics())
+			case error3.ValueNotAssigned:
+				errorMessage.WriteString(error2.ValueNotAssigned())
 			default:
 			}
 

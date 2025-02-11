@@ -13,6 +13,7 @@ package module
 import (
 	"fluent/ast"
 	"fluent/filecode/module"
+	trace2 "fluent/filecode/trace"
 	"fluent/filecode/types"
 )
 
@@ -44,5 +45,9 @@ func ConvertDeclaration(node *ast.AST) (string, module.Declaration) {
 		Value:        valueNode,
 		Type:         varType,
 		IsIncomplete: valueNode == nil,
+		Trace: trace2.Trace{
+			Line:   node.Line,
+			Column: node.Column,
+		},
 	}
 }
