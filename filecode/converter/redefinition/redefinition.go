@@ -54,8 +54,8 @@ func CheckRedefinition[T function.Function | module.Module](
 	}
 
 	if _, ok := definedValues[name]; ok {
-		error2.Redefinition(name)
-		fmt.Println(
+		fmt.Print(error2.Redefinition(name))
+		fmt.Print(
 			util.BuildDetails(
 				&contents,
 				&path,
@@ -64,9 +64,8 @@ func CheckRedefinition[T function.Function | module.Module](
 				true,
 			),
 		)
-
 		logger.Info("'" + name + "' was previously defined here:")
-		fmt.Println(
+		fmt.Print(
 			util.BuildDetails(
 				&contents,
 				&path,
