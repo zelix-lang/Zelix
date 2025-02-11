@@ -27,6 +27,7 @@ const (
 	Parsing
 	Processing
 	Analyzing
+	Building
 	Compiling
 )
 
@@ -113,11 +114,14 @@ func Emit(state State, text string) int {
 		color = ansi.BoldBrightYellow
 		spinnerText += "Processing"
 	case Analyzing:
-		color = ansi.BoldBrightGreen
+		color = ansi.BoldBrightPurple
 		spinnerText += "Analyzing"
 	case Compiling:
-		color = ansi.BoldBrightGreen
+		color = ansi.BoldBrightBlue
 		spinnerText += "Compiling"
+	default:
+		color = ansi.BoldBrightGreen
+		spinnerText += "Building"
 	}
 
 	spinnerText += " " + text
