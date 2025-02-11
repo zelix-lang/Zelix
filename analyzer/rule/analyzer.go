@@ -18,6 +18,16 @@ import (
 	"fluent/filecode"
 )
 
+// AnalyzeFileCode analyzes the given FileCode and returns two ErrorPools:
+// one for errors and one for warnings. It iterates over all functions and
+// modules in the FileCode, analyzing each and collecting errors and warnings.
+//
+// Parameters:
+//   - code: The FileCode to be analyzed.
+//
+// Returns:
+//   - *pool.ErrorPool: A pool of errors found during the analysis.
+//   - *pool.ErrorPool: A pool of warnings found during the analysis.
 func AnalyzeFileCode(code filecode.FileCode) (*pool.ErrorPool, *pool.ErrorPool) {
 	globalErrors := pool.NewErrorPool()
 	globalWarnings := pool.NewErrorPool()
