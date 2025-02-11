@@ -1,72 +1,124 @@
+/*
+   The Fluent Programming Language
+   -----------------------------------------------------
+   Copyright (c) 2025 Rodrigo R. & All Fluent Contributors
+   This program comes with ABSOLUTELY NO WARRANTY.
+   For details type `fluent -l`. This is free software,
+   and you are welcome to redistribute it under certain
+   conditions; type `fluent -l -f` for details.
+*/
+
 package logger
 
 import (
 	"fluent/ansi"
-	"fluent/token"
-	"os"
+	"fmt"
+	"strings"
 )
 
-var logLevel = ansi.Colorize("cyan_bright_bold", "LOG |")
-var errorLevel = ansi.Colorize("red_bright_bold", "ERROR |")
-var helpLevel = ansi.Colorize("green_bright_bold", "HELP |")
-var warningLevel = ansi.Colorize("yellow_bright_bold", "WARNING |")
-var helpPrefix = ansi.Colorize("black_bright", "  |>")
+// Prefixes for the different log levels
+var errorPrefix = ansi.Colorize(ansi.BoldBrightRed, "[ERROR] ")
+var infoPrefix = ansi.Colorize(ansi.BoldBrightBlue, "[INFO]  ")
+var warnPrefix = ansi.Colorize(ansi.BoldBrightYellow, "[WARN]  ")
+var helpPrefix = ansi.Colorize(ansi.BoldBrightGreen, "[HELP]  ")
 
-// Log prints a set of messages to the console
-// in O(n) time
-func Log(message ...string) {
+// buildMessageImpl constructs a formatted log message.
+// Parameters:
+//   - prefix: the prefix to be added to each message.
+//   - color: the color code to be used for colorizing the message.
+//   - colorize: a boolean indicating whether to colorize the message.
+//   - message: variadic string arguments representing the log messages.
+//
+// Returns:
+//
+//	A single string containing the formatted log messages.
+func buildMessageImpl(prefix string, color string, colorize bool, message ...string) string {
+	// Use a string builder
+	builder := strings.Builder{}
+
 	for _, m := range message {
-		println(logLevel, m)
+		builder.WriteString(prefix)
+		if colorize {
+			builder.WriteString(ansi.Colorize(color, m))
+		} else {
+			builder.WriteString(m)
+		}
+
+		// Write a newline
+		builder.WriteString("\n")
 	}
+
+	return builder.String()
 }
 
-// Error prints a set of error messages to the console
-// in O(n) time
-func Error(message ...string) {
-	for _, m := range message {
-		println(errorLevel, ansi.Colorize("red_bright", m))
-	}
+// Warn prints the provided messages with a warning prefix.
+// Parameters:
+//   - message: variadic string arguments to be logged.
+func Warn(message ...string) {
+	fmt.Print(BuildWarn(message...))
 }
 
-// Help prints a set of help messages to the console
-// in O(n) time
+// Info prints the provided messages with an info prefix.
+// Parameters:
+//   - message: variadic string arguments to be logged.
+func Info(message ...string) {
+	fmt.Print(BuildInfo(message...))
+}
+
+// Help prints the provided messages with a help prefix.
+// Parameters:
+//   - message: variadic string arguments to be logged.
 func Help(message ...string) {
-	for _, m := range message {
-		println(helpPrefix, helpLevel, m)
-	}
+	fmt.Print(BuildHelp(message...))
 }
 
-// TokenWarning prints a warning message related to the given token
-// with its trace and help messages to the console
-// in O(n) time
-func TokenWarning(
-	token token.Token,
-	message string,
-	help ...string,
-) {
-	println(warningLevel, message)
-	Log("Full context:", token.GetTrace(), token.GetTraceContext())
-
-	for _, h := range help {
-		Help(h)
-	}
+// Error prints the provided messages with an error prefix.
+// Parameters:
+//   - message: variadic string arguments to be logged.
+func Error(message ...string) {
+	fmt.Print(BuildError(message...))
 }
 
-// TokenError prints an error message related to the given token
-// with its trace and help messages to the console
-// and then exits the program with code 1
-// in O(n) time
-func TokenError(
-	token token.Token,
-	message string,
-	help ...string,
-) {
-	Error(message)
-	Log("Full context:", token.GetTrace(), token.GetTraceContext())
+// BuildInfo constructs an info log message.
+// Parameters:
+//   - message: variadic string arguments representing the log messages.
+//
+// Returns:
+//
+//	A single string containing the formatted log messages.
+func BuildInfo(message ...string) string {
+	return buildMessageImpl(infoPrefix, "", false, message...)
+}
 
-	for _, h := range help {
-		Help(h)
-	}
+// BuildWarn constructs a warning log message.
+// Parameters:
+//   - message: variadic string arguments representing the log messages.
+//
+// Returns:
+//
+//	A single string containing the formatted log messages.
+func BuildWarn(message ...string) string {
+	return buildMessageImpl(warnPrefix, ansi.BrightYellow, true, message...)
+}
 
-	os.Exit(1)
+// BuildHelp constructs a help log message.
+// Parameters:
+//   - message: variadic string arguments representing the log messages.
+//
+// Returns:
+//
+//	A single string containing the formatted log messages.
+func BuildHelp(message ...string) string {
+	return buildMessageImpl(helpPrefix, "", false, message...)
+}
+
+// BuildError constructs an error log message.
+// Parameters:
+//   - message: variadic string arguments representing the log messages.
+//
+// Returns:
+//
+//	A single string containing the formatted log messages.
+func BuildError(message ...string) string {
+	return buildMessageImpl(errorPrefix, ansi.BrightRed, true, message...)
 }

@@ -1,0 +1,10 @@
+import "@std::io::print";
+import "prop.fluent";
+
+/*
+    The Fluent Programming Language
+    Test file 4
+*/
+
+pub fun main() -> nothing {
+}

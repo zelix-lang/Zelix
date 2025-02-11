@@ -1,99 +1,53 @@
+/*
+   The Fluent Programming Language
+   -----------------------------------------------------
+   This code is released under the GNU GPL v3 license.
+   For more information, please visit:
+   https://www.gnu.org/licenses/gpl-3.0.html
+   -----------------------------------------------------
+   Copyright (c) 2025 Rodrigo R. & All Fluent Contributors
+   This program comes with ABSOLUTELY NO WARRANTY.
+   For details type `fluent l`. This is free software,
+   and you are welcome to redistribute it under certain
+   conditions; type `fluent l -f` for details.
+*/
+
 package cli
 
 import (
 	"fluent/analyzer"
-	"fluent/ansi"
-	"fluent/ast"
-	"fluent/lexer"
+	"fluent/filecode/converter"
 	"fluent/logger"
-	"fluent/util"
-	"fmt"
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 	"os"
-	"time"
+	"path/filepath"
 )
 
-// CheckCommand represents the check command of the Fluent CLI
-// it checks a fluent/ file
-func CheckCommand(context *cli.Context) (*ast.FileCode, string) {
-	// Get the file path
-	filePath := context.Args().First()
+func CheckCommand(context *cli.Command) {
+	ShowHeaderMessage()
 
-	showTimer := context.Bool("timer")
+	// Retrieve the path from the context
+	path := context.Args().First()
 
-	if len(filePath) == 0 {
-		logger.Error("Empty file path")
-		logger.Help(
-			"Provide a file path after the run command",
-			"For example: "+ansi.Colorize("green_bright_bold", "fluent/ r file.fluent/"),
-		)
-
+	// Check if the path exists
+	if path == "" {
+		logger.Error("No path provided")
+		logger.Info("Usage: fluent <check|c> <path>")
 		os.Exit(1)
 	}
 
-	// Check if the file exists
-	if !util.FileExists(filePath) {
-		logger.Error("File does not exist")
-		logger.Help(
-			"Make sure the file exists",
-			"Check the file path",
-		)
+	// Convert the path to an absolute path
+	path, absError := filepath.Abs(path)
 
+	if absError != nil {
+		logger.Error("Could not convert the path to an absolute path")
+		logger.Help("Validate the path and try again")
 		os.Exit(1)
 	}
 
-	// Read the file
-	input, err := os.ReadFile(filePath)
+	// Convert the code to file codes
+	fileCodes := converter.ConvertToFileCode(path, false)
 
-	if err != nil {
-		logger.Error("Error reading file")
-		logger.Help(
-			"Make sure the file is readable",
-			"Check the file path",
-		)
-
-		os.Exit(1)
-	}
-
-	start := time.Now()
-
-	// Lex the input
-	tokens := lexer.Lex(string(input), filePath)
-
-	if showTimer {
-		fmt.Println(
-			ansi.Colorize(
-				"black_bright",
-				"~ Lexed ("+time.Since(start).String()+")",
-			),
-		)
-	}
-
-	start = time.Now()
-	// Parse the tokens into a FileCode
-	fileCode := ast.Parse(tokens, true, false)
-
-	if showTimer {
-		fmt.Println(
-			ansi.Colorize(
-				"black_bright",
-				"~ Parsed ("+time.Since(start).String()+")",
-			),
-		)
-	}
-
-	start = time.Now()
-	// Analyze the file code
-	analyzer.AnalyzeFileCode(fileCode, filePath)
-
-	if showTimer {
-		fmt.Println(
-			ansi.Colorize(
-				"black_bright",
-				"~ Checked ("+time.Since(start).String()+")",
-			),
-		)
-	}
-
-	return fileCode, filePath
+	// Analyze the project's codebase
+	analyzer.AnalyzeCode(fileCodes, path, false)
 }

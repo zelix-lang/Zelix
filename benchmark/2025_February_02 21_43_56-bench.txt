@@ -1,0 +1,146 @@
+The Fluent Programming Language Benchmark
+Time: 2025_February_02 21_43_56
+========================================
+Running on: linux amd64
+========================================
+Times: 20
+========================================
+
+== prop.fluent ==
+Time 1: 295.781µs
+Time 2: 555.943µs
+Time 3: 182.847µs
+Time 4: 166.783µs
+Time 5: 160.008µs
+Time 6: 222.797µs
+Time 7: 186.828µs
+Time 8: 176.072µs
+Time 9: 175.444µs
+Time 10: 162.313µs
+Time 11: 166.504µs
+Time 12: 561.25µs
+Time 13: 176.49µs
+Time 14: 168.389µs
+Time 15: 395.026µs
+Time 16: 1.000208ms
+Time 17: 175.025µs
+Time 18: 169.647µs
+Time 19: 180.961µs
+Time 20: 195.627µs
+== End of prop.fluent ==
+
+== main.fluent ==
+Time 1: 220.491µs
+Time 2: 192.066µs
+Time 3: 208.828µs
+Time 4: 220.491µs
+Time 5: 192.275µs
+Time 6: 196.116µs
+Time 7: 209.456µs
+Time 8: 192.484µs
+Time 9: 186.618µs
+Time 10: 187.666µs
+Time 11: 499.162µs
+Time 12: 542.952µs
+Time 13: 269.311µs
+Time 14: 274.549µs
+Time 15: 247.73µs
+Time 16: 257.578µs
+Time 17: 229.152µs
+Time 18: 200.935µs
+Time 19: 285.584µs
+Time 20: 253.806µs
+== End of main.fluent ==
+
+== nested.fluent ==
+Time 1: 136.542µs
+Time 2: 120.757µs
+Time 3: 105.461µs
+Time 4: 93.449µs
+Time 5: 88.211µs
+Time 6: 90.166µs
+Time 7: 100.084µs
+Time 8: 89.747µs
+Time 9: 88.839µs
+Time 10: 90.655µs
+Time 11: 98.966µs
+Time 12: 98.128µs
+Time 13: 88.21µs
+Time 14: 679.633µs
+Time 15: 159.24µs
+Time 16: 164.338µs
+Time 17: 152.605µs
+Time 18: 114.96µs
+Time 19: 132.001µs
+Time 20: 124.039µs
+== End of nested.fluent ==
+
+== example.fluent ==
+Time 1: 23.328µs
+Time 2: 20.115µs
+Time 3: 23.467µs
+Time 4: 19.276µs
+Time 5: 21.791µs
+Time 6: 25.283µs
+Time 7: 23.327µs
+Time 8: 31.01µs
+Time 9: 37.715µs
+Time 10: 30.032µs
+Time 11: 30.032µs
+Time 12: 32.337µs
+Time 13: 21.372µs
+Time 14: 29.613µs
+Time 15: 20.604µs
+Time 16: 17.531µs
+Time 17: 17.251µs
+Time 18: 16.622µs
+Time 19: 18.019µs
+Time 20: 18.647µs
+== End of example.fluent ==
+
+== loop.fluent ==
+Time 1: 232.294µs
+Time 2: 184.034µs
+Time 3: 194.929µs
+Time 4: 190.459µs
+Time 5: 177.538µs
+Time 6: 168.809µs
+Time 7: 166.993µs
+Time 8: 170.135µs
+Time 9: 171.462µs
+Time 10: 183.335µs
+Time 11: 201.424µs
+Time 12: 201.843µs
+Time 13: 223.355µs
+Time 14: 631.442µs
+Time 15: 707.43µs
+Time 16: 304.931µs
+Time 17: 315.337µs
+Time 18: 290.753µs
+Time 19: 161.755µs
+Time 20: 146.04µs
+== End of loop.fluent ==
+
+== block.fluent ==
+Time 1: 71.588µs
+Time 2: 69.702µs
+Time 3: 110.979µs
+Time 4: 80.877µs
+Time 5: 81.925µs
+Time 6: 88.141µs
+Time 7: 76.827µs
+Time 8: 86.674µs
+Time 9: 79.132µs
+Time 10: 80.807µs
+Time 11: 72.915µs
+Time 12: 93.448µs
+Time 13: 90.864µs
+Time 14: 88.141µs
+Time 15: 81.995µs
+Time 16: 84.089µs
+Time 17: 89.188µs
+Time 18: 78.712µs
+Time 19: 83.252µs
+Time 20: 94.427µs
+== End of block.fluent ==
+

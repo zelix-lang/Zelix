@@ -1,0 +1,12 @@
+import "@std::io::print";
+import "main.fluent";
+
+/*
+    The Fluent Programming Language
+    Test file 1
+*/
+
+pub fun block<T,E,  G>() {
+    ((println("Hello, world!")));
+    (((((((println("Hello, world!"))))))));
+}

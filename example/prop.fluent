@@ -1,0 +1,13 @@
+import "@std::io::print";
+import "@std::io::panic";
+
+mod Asd {
+    pub fun Asd() {
+        let _a: Asd = this;
+    }
+}
+
+pub fun main() {
+    let _a: Asd = new Asd();
+    panic(25);
+}

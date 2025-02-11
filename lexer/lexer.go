@@ -1,11 +1,21 @@
+/*
+   The Fluent Programming Language
+   -----------------------------------------------------
+   This code is released under the GNU GPL v3 license.
+   For more information, please visit:
+   https://www.gnu.org/licenses/gpl-3.0.html
+   -----------------------------------------------------
+   Copyright (c) 2025 Rodrigo R. & All Fluent Contributors
+   This program comes with ABSOLUTELY NO WARRANTY.
+   For details type `fluent l`. This is free software,
+   and you are welcome to redistribute it under certain
+   conditions; type `fluent l -f` for details.
+*/
+
 package lexer
 
 import (
-	"fluent/logger"
 	"fluent/token"
-	"fluent/util"
-	"os"
-	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
@@ -22,89 +32,17 @@ var punctuation = map[rune]struct{}{
 	'|': {}, '^': {}, '[': {}, ']': {},
 }
 
+// Characters that make a combined assignment (+=, -=, *=, /=)
+// Use a map for O(1) lookup
+var chainableTokens = map[rune]int{
+	'!': 1, '>': 1, '<': 1, '=': 1,
+}
+
 // Regex to match identifiers
 var identifierRegex = regexp.MustCompile(`^[a-zA-Z_][a-zA-Z0-9_]*$`)
 
 // Regex to match numbers
 var numberRegex = regexp.MustCompile(`^[0-9]+$`)
-
-// The standard library's path
-var stdPath = os.Getenv("FLUENT_STANDARD_PATH")
-
-func extractImportPath(
-	result []token.Token,
-	i int,
-) (string, bool) {
-	importPathRaw := result[i].GetValue()
-	isStd := false
-
-	if strings.HasPrefix(importPathRaw, "@std") {
-		// Replace the import path with the standard library path
-		// and add the .fluent/ extension
-		importPathRaw = strings.Replace(importPathRaw, "@std", stdPath, 1) + ".fluent"
-		isStd = true
-	}
-
-	// Get the directory of the file that the import came from
-	importDir := util.DirName(result[i-1].GetFile())
-
-	// Process the import path
-	importPath := importPathRaw
-
-	if !isStd {
-		importPath = filepath.Join(importDir, importPathRaw)
-	}
-
-	return importPath, isStd
-}
-
-// validateImport validates import statements
-func validateImport(
-	tokens []token.Token,
-	startAt int,
-) {
-	// Get the tokens to be validated
-	importPathToken := tokens[startAt]
-	semicolonToken := tokens[startAt+1]
-
-	if importPathToken.GetType() != token.StringLiteral {
-		logger.TokenError(
-			importPathToken,
-			"Expected a string literal as an import path",
-			"Imports must be string literals",
-		)
-	}
-
-	if semicolonToken.GetType() != token.Semicolon {
-		logger.TokenError(
-			semicolonToken,
-			"Expected a semicolon after the import path",
-			"Imports must end with a semicolon",
-		)
-	}
-
-	// Validate the import path
-	importPath, _ := extractImportPath(tokens, startAt)
-
-	// Check if the path exists
-	if !util.FileExists(importPath) {
-		logger.TokenError(
-			importPathToken,
-			"Import path does not exist",
-			"Make sure the file exists",
-			"Imported path: "+importPath,
-		)
-	}
-
-	// Check if the path is a directory
-	if util.IsDir(importPath) {
-		logger.TokenError(
-			importPathToken,
-			"Import path is a directory",
-			"Make sure the path is a file",
-		)
-	}
-}
 
 // pushToken pushes the current token to the tokens array
 // and clears the current token
@@ -115,43 +53,39 @@ func pushToken(
 	line int,
 	column int,
 	file string,
-	input string,
-	currentIndex int,
 	decimalLiteral bool,
 ) {
+	value := currentToken.String()
 	// Ignore empty tokens
-	if (strings.Trim(currentToken.String(), " ")) == "" {
+	if len(value) == 0 {
 		return
 	}
 
 	// See if the current token is a known token
-	knownToken, ok := GetKnownToken(currentToken.String())
+	knownToken, ok := getKnownToken(value)
 	tokenType := token.Unknown
 
 	if ok {
 		tokenType = knownToken
 	} else if decimalLiteral {
 		tokenType = token.DecimalLiteral
-	} else if numberRegex.MatchString(currentToken.String()) {
+	} else if numberRegex.MatchString(value) {
 		tokenType = token.NumLiteral
 	} else {
 		// Check if the token is an identifier
-		if identifierRegex.MatchString(currentToken.String()) {
+		if identifierRegex.MatchString(value) {
 			tokenType = token.Identifier
 		}
 	}
 
 	*tokens = append(
 		*tokens,
-		*token.NewToken(
+		token.NewToken(
 			tokenType,
-			currentToken.String(),
+			value,
 			file,
 			line,
 			column,
-			input,
-			currentIndex,
-			*currentToken,
 		),
 	)
 
@@ -159,100 +93,10 @@ func pushToken(
 	currentToken.Reset()
 }
 
-// containsImports
-// Checks if the tokens array contains any imports
-// in O(n) time
-func containsImports(unit token.Token) bool {
-	return unit.GetType() == token.Import
-}
-
 // Lex converts a string of source dode into
-// an array of tokens, processing imports
-// in O(n) time
-func Lex(input string, file string) []token.Token {
-	// Lex the input
-	result := lexSingleFile(input, file)
-
-	// Save the seen imports in a slice
-	// to detect circular imports
-	var seenImports []string
-
-	// Process imports
-	for util.AnyMatch(result, containsImports) {
-		for i, unit := range result {
-			if unit.GetType() != token.Import {
-				continue
-			}
-
-			// Validate the import
-			validateImport(result, i+1)
-
-			// Get the import path
-			importPath, isStd := extractImportPath(result, i+1)
-
-			// Remove the import statement
-			result = append(result[:i], result[i+3:]...)
-
-			// Check if we already have seen this import
-			if util.AnyMatch(seenImports, func(s string) bool {
-				return s == importPath
-			}) {
-				// Standard imports can't cause circular imports, skip
-				if isStd {
-					continue
-				}
-
-				// Build the import chain to print
-				var importChain []string
-
-				// Add the message to the chain so it also gets printed
-				importChain = append(importChain, "File "+unit.GetFile()+" depends on its own: ")
-
-				for spaces, _import := range seenImports {
-					importChain = append(
-						importChain,
-						strings.Repeat(" ", spaces)+_import,
-					)
-				}
-
-				logger.TokenError(
-					unit,
-					"Circular import detected",
-					importChain...,
-				)
-			}
-
-			// Read the file contents
-			importContents, err := os.ReadFile(importPath)
-
-			if err != nil {
-				logger.TokenError(
-					result[i],
-					"Could not read the imported file",
-					"Make sure the file exists",
-					"File imported: "+importPath,
-				)
-			}
-
-			// Lex the import contents
-			importTokens := lexSingleFile(string(importContents), importPath)
-
-			// Insert the import tokens to the end of the result
-			result = append(result, importTokens...)
-
-			if !isStd {
-				seenImports = append(seenImports, importPath)
-			}
-		}
-	}
-
-	return result
-}
-
-// lexSingleFile converts a string of source dode into
 // an array of tokens without processing imports
 // in O(n) time
-func lexSingleFile(input string, file string) []token.Token {
+func Lex(input string, file string) ([]token.Token, Error) {
 	// Used to keep track of the line and column
 	line := 1
 	column := 0
@@ -280,6 +124,7 @@ func lexSingleFile(input string, file string) []token.Token {
 	// Iterate over each character
 	for i, char := range input {
 		if i < countToIndex {
+			column++
 			continue
 		}
 
@@ -297,7 +142,7 @@ func lexSingleFile(input string, file string) []token.Token {
 		if !inString && !inComment && !inBlockComment && i+1 < inputLength {
 			if char == '/' && input[i+1] == '/' {
 				// Push any remaining token
-				pushToken(&currentToken, &result, line, column, file, input, i, decimalLiteral)
+				pushToken(&currentToken, &result, line, column, file, decimalLiteral)
 
 				decimalLiteral = false
 				inComment = true
@@ -306,7 +151,7 @@ func lexSingleFile(input string, file string) []token.Token {
 
 			if char == '/' && input[i+1] == '*' {
 				// Push any remaining token
-				pushToken(&currentToken, &result, line, column, file, input, i, decimalLiteral)
+				pushToken(&currentToken, &result, line, column, file, decimalLiteral)
 
 				decimalLiteral = false
 				inBlockComment = true
@@ -328,15 +173,12 @@ func lexSingleFile(input string, file string) []token.Token {
 			if inString {
 				result = append(
 					result,
-					*token.NewToken(
+					token.NewToken(
 						token.StringLiteral,
 						currentToken.String(),
 						file,
 						line,
 						column,
-						input,
-						i,
-						currentToken,
 					),
 				)
 
@@ -348,7 +190,7 @@ func lexSingleFile(input string, file string) []token.Token {
 			}
 
 			// Push any remaining token
-			pushToken(&currentToken, &result, line, column, file, input, i, decimalLiteral)
+			pushToken(&currentToken, &result, line, column, file, decimalLiteral)
 
 			decimalLiteral = false
 			inString = true
@@ -363,13 +205,12 @@ func lexSingleFile(input string, file string) []token.Token {
 			escaped, err := strconv.Unquote(`"` + combined + `"`)
 
 			if err != nil {
-				logger.Error("Invalid escape sequence: " + combined)
-
-				trace := util.BuildTrace(currentToken, i, input)
-				logger.Log("Full context:", trace)
-				logger.Help("Use a valid escape sequence")
-
-				os.Exit(1)
+				return make([]token.Token, 0), Error{
+					Line:    line,
+					Column:  column,
+					File:    file,
+					Message: "Invalid escape sequence",
+				}
 			}
 
 			currentToken.WriteString(escaped)
@@ -390,38 +231,37 @@ func lexSingleFile(input string, file string) []token.Token {
 		}
 
 		if char == ' ' {
-			pushToken(&currentToken, &result, line, column, file, input, i, decimalLiteral)
+			pushToken(&currentToken, &result, line, column-1, file, decimalLiteral)
 			decimalLiteral = false
 			continue
 		}
 
 		// Handle arrows (->)
-		if char == '>' && i-1 >= 0 && input[i-1] == '-' {
-			// Remove the last token
-			result = result[:len(result)-1]
-
-			arrow := "->"
+		if char == '-' && i+1 < inputLength && input[i+1] == '>' {
+			// Skip the next token
+			countToIndex = i + 2
 
 			// Create a new strings.Builder because pushToken takes a pointer
 			var arrowBuilder strings.Builder
+			arrowBuilder.WriteString("->")
 
-			arrowBuilder.WriteString(arrow)
-			pushToken(&arrowBuilder, &result, line, column, file, input, i-1, decimalLiteral)
+			pushToken(&arrowBuilder, &result, line, column, file, decimalLiteral)
 			decimalLiteral = false
 			continue
 		}
 
-		// Handle increments and decrements
-		if (char == '+' || char == '-') && (i+1 < inputLength && rune(input[i-1]) == char) {
-			// Remove the last token
-			result = result[:len(result)-1]
-
+		// Handle increments, decrements, and logical operators
+		if (char == '|' || char == '&') && (i+1 < inputLength && rune(input[i+1]) == char) {
 			incDec := string(char) + string(char)
+
+			// Skip the next token
+			countToIndex = i + 2
+
 			// Create a new strings.Builder because pushToken takes a pointer
 			var incDecBuilder strings.Builder
 
 			incDecBuilder.WriteString(incDec)
-			pushToken(&incDecBuilder, &result, line, column, file, input, i-1, decimalLiteral)
+			pushToken(&incDecBuilder, &result, line, column, file, decimalLiteral)
 			decimalLiteral = false
 
 			continue
@@ -436,16 +276,31 @@ func lexSingleFile(input string, file string) []token.Token {
 			}
 		}
 
+		// Handle "==", "!=", ">=", "<=", "->"
+		if i+1 < inputLength && chainableTokens[char] == 1 && input[i+1] == '=' {
+			// Skip the tokens
+			countToIndex = i + 2
+
+			// Create a new strings.Builder because pushToken takes a pointer
+			var eqBuilder strings.Builder
+
+			eqBuilder.WriteRune(char)
+			eqBuilder.WriteByte(input[i+1])
+			pushToken(&eqBuilder, &result, line, column, file, decimalLiteral)
+			decimalLiteral = false
+			continue
+		}
+
 		// Check for punctuation characters
 		if _, exists := punctuation[char]; exists {
 			// Push any remaining token
-			pushToken(&currentToken, &result, line, column, file, input, i-1, decimalLiteral)
+			pushToken(&currentToken, &result, line, column-1, file, decimalLiteral)
 			decimalLiteral = false
 
 			// Add the punctuation character as a token
 			// currentToken is already cleared, just add the punctuation character
 			currentToken.WriteRune(char)
-			pushToken(&currentToken, &result, line, column, file, input, i, decimalLiteral)
+			pushToken(&currentToken, &result, line, column, file, decimalLiteral)
 
 			continue
 		}
@@ -453,8 +308,17 @@ func lexSingleFile(input string, file string) []token.Token {
 		currentToken.WriteRune(char)
 	}
 
-	// Push the last token
-	pushToken(&currentToken, &result, line, column, file, input, inputLength, decimalLiteral)
+	if inBlockComment {
+		return make([]token.Token, 0), Error{
+			Line:    line,
+			Column:  column,
+			File:    file,
+			Message: "Block comment not closed",
+		}
+	}
 
-	return result
+	// Push the last token
+	pushToken(&currentToken, &result, line, column, file, decimalLiteral)
+
+	return result, Error{}
 }

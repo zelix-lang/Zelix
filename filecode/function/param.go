@@ -1,0 +1,24 @@
+/*
+   The Fluent Programming Language
+   -----------------------------------------------------
+   Copyright (c) 2025 Rodrigo R. & All Fluent Contributors
+   This program comes with ABSOLUTELY NO WARRANTY.
+   For details type `fluent -l`. This is free software,
+   and you are welcome to redistribute it under certain
+   conditions; type `fluent -l -f` for details.
+*/
+
+package function
+
+import (
+	"fluent/filecode/trace"
+	"fluent/filecode/types"
+)
+
+// Param represents a function parameter with a name, type, and trace information.
+type Param struct {
+	// Type is the type of the parameter, wrapped in a TypeWrapper.
+	Type types.TypeWrapper
+	// Trace contains trace information for the parameter.
+	Trace trace.Trace
+}
