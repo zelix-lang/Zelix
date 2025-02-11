@@ -113,7 +113,7 @@ func ConvertToFileCode(entry string, silent bool) map[string]filecode.FileCode {
 
 				spaces++
 			}
-			fmt.Println(builder.String())
+			fmt.Print(builder.String())
 
 			// Also print the current circular import's details
 			logger.Info(
@@ -124,7 +124,7 @@ func ConvertToFileCode(entry string, silent bool) map[string]filecode.FileCode {
 			)
 
 			logger.Info("Full details:")
-			fmt.Println(util.BuildDetails(elContents, path, trace.Line, trace.Column, true))
+			fmt.Print(util.BuildDetails(elContents, path, trace.Line, trace.Column, true))
 
 			os.Exit(1)
 		}
