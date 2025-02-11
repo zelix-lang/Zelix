@@ -167,20 +167,19 @@ func AnalyzeFunctionCall(
 	}
 
 	// See if the function call has any parameters
+	preventParamAnalysis := false
 	if hasParams {
 		paramsNode := (*tree.Children)[1]
 
 		// Check that the function call has the correct number of parameters
 		if len(*paramsNode.Children) != len(function.Params) {
-			prevent := false
-
 			if function.IsStd && function.Name == "panic" {
 				if len(*paramsNode.Children) == 1 {
-					prevent = true
+					preventParamAnalysis = true
 				}
 			}
 
-			if !prevent {
+			if !preventParamAnalysis {
 				return error3.Error{
 					Line:       tree.Line,
 					Column:     tree.Column,
@@ -191,49 +190,51 @@ func AnalyzeFunctionCall(
 		}
 
 		// Schedule all the parameters for analysis
-		i := 0
-		for _, param := range function.Params {
-			// Get the parameter's value
-			value := (*paramsNode.Children)[i]
-			paramType := param.Type
-			paramNodes := (*value.Children)[0]
-			isParamHeap := paramType.PointerCount > 0
-			enforceHeapInParam := false
+		if !preventParamAnalysis {
+			i := 0
+			for _, param := range function.Params {
+				// Get the parameter's value
+				value := (*paramsNode.Children)[i]
+				paramType := param.Type
+				paramNodes := (*value.Children)[0]
+				isParamHeap := paramType.PointerCount > 0
+				enforceHeapInParam := false
 
-			if !param.Type.IsPrimitive {
-				// Check for generics
-				if _, found := generics[param.Type.BaseType]; found {
-					// Check if this param has the return type's generic
-					if returnType.Compare(paramType) {
-						enforceHeapInParam = result.IsHeap
-						if expected.BaseType == "" {
-							paramType = types.TypeWrapper{
-								BaseType:     "(Infer)",
-								PointerCount: param.Type.PointerCount,
-								ArrayCount:   param.Type.ArrayCount,
+				if !param.Type.IsPrimitive {
+					// Check for generics
+					if _, found := generics[param.Type.BaseType]; found {
+						// Check if this param has the return type's generic
+						if returnType.Compare(paramType) {
+							enforceHeapInParam = result.IsHeap
+							if expected.BaseType == "" {
+								paramType = types.TypeWrapper{
+									BaseType:     "(Infer)",
+									PointerCount: param.Type.PointerCount,
+									ArrayCount:   param.Type.ArrayCount,
+								}
+							} else {
+								paramType = *expected
 							}
 						} else {
-							paramType = *expected
+							paramType.BaseType = "(Infer)"
 						}
-					} else {
-						paramType.BaseType = "(Infer)"
 					}
 				}
-			}
 
-			*exprQueue = append(*exprQueue, queue2.ExpectedPair{
-				Tree: paramNodes,
-				Got: &object.Object{
-					Type: types.TypeWrapper{
-						Children: &[]*types.TypeWrapper{},
+				*exprQueue = append(*exprQueue, queue2.ExpectedPair{
+					Tree: paramNodes,
+					Got: &object.Object{
+						Type: types.TypeWrapper{
+							Children: &[]*types.TypeWrapper{},
+						},
+						IsHeap: isParamHeap,
 					},
-					IsHeap: isParamHeap,
-				},
-				Expected:     &paramType,
-				HeapRequired: enforceHeapInParam && enforceHeap,
-			})
+					Expected:     &paramType,
+					HeapRequired: enforceHeapInParam && enforceHeap,
+				})
 
-			i++
+				i++
+			}
 		}
 	} else {
 		// Check for parameter count mismatch
