@@ -92,20 +92,28 @@ func ConvertToFileCode(entry string, silent bool) map[string]filecode.FileCode {
 			logger.Info("Full import chain:")
 
 			spaces := 0
+			// Use a builder to print the full import chain in an efficient manner
+			builder := strings.Builder{}
+
 			for _, importPath := range seenImportsSlice {
 				if *path == importPath {
-					logger.Info(
-						ansi.Colorize(
-							ansi.BoldBrightRed,
-							strings.Repeat("  ", spaces)+"-> "+util.DiscardCwd(importPath)+" (Circular)",
+					builder.WriteString(
+						logger.BuildInfo(
+							ansi.Colorize(
+								ansi.BoldBrightRed,
+								strings.Repeat("  ", spaces)+"-> "+util.DiscardCwd(importPath)+" (Circular)",
+							),
 						),
 					)
 				} else {
-					logger.Info(strings.Repeat("  ", spaces) + "-> " + util.DiscardCwd(importPath))
+					builder.WriteString(
+						logger.BuildInfo(strings.Repeat("  ", spaces) + "-> " + util.DiscardCwd(importPath)),
+					)
 				}
 
 				spaces++
 			}
+			fmt.Println(builder.String())
 
 			// Also print the current circular import's details
 			logger.Info(
