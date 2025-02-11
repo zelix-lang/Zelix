@@ -25,7 +25,7 @@ import (
 func ValueNotAssigned() string {
 	builder := strings.Builder{}
 
-	builder.WriteString(logger.BuildError("This value is unitialized"))
+	builder.WriteString(logger.BuildError("This value is uninitialized"))
 	builder.WriteString(
 		logger.BuildHelp(
 			"Define a constructor and use 'this.variable = value'",
