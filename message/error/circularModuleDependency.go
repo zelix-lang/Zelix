@@ -15,6 +15,14 @@ import (
 	"strings"
 )
 
+// CircularModuleDependency generates an error message for a circular module dependency.
+// It takes a string representing the dependency chain and returns a formatted error message.
+//
+// Parameters:
+//   - chain: A string representing the full dependency chain.
+//
+// Returns:
+//   - A formatted error message string indicating the circular dependency.
 func CircularModuleDependency(chain string) string {
 	builder := strings.Builder{}
 
