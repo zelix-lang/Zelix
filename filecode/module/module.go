@@ -27,6 +27,8 @@ type Declaration struct {
 	Type types.TypeWrapper
 	// IsIncomplete indicates whether the declaration is incomplete.
 	IsIncomplete bool
+	// Trace contains trace information for the declaration.
+	Trace trace.Trace
 }
 
 // Module represents a module in the Fluent programming language.
@@ -39,8 +41,8 @@ type Module struct {
 	Functions map[string]function.Function
 	// Declarations is a list of declarations in the module.
 	Declarations map[string]Declaration
-	// Generics is a list of generic types in the module.
-	Generics map[string]bool
+	// Templates is a list of generic types in the module.
+	Templates map[string]bool
 	// Trace contains trace information for the module.
 	Trace trace.Trace
 	// Path is the file path of the module.
