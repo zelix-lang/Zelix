@@ -172,11 +172,21 @@ func AnalyzeFunctionCall(
 
 		// Check that the function call has the correct number of parameters
 		if len(*paramsNode.Children) != len(function.Params) {
-			return error3.Error{
-				Line:       tree.Line,
-				Column:     tree.Column,
-				Code:       error3.ParameterCountMismatch,
-				Additional: []string{strconv.Itoa(len(function.Params))},
+			prevent := false
+
+			if function.IsStd && function.Name == "panic" {
+				if len(*paramsNode.Children) == 1 {
+					prevent = true
+				}
+			}
+
+			if !prevent {
+				return error3.Error{
+					Line:       tree.Line,
+					Column:     tree.Column,
+					Code:       error3.ParameterCountMismatch,
+					Additional: []string{strconv.Itoa(len(function.Params))},
+				}
 			}
 		}
 
