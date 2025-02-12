@@ -16,6 +16,7 @@ package cli
 
 import (
 	"fluent/analyzer"
+	"fluent/filecode"
 	"fluent/filecode/converter"
 	"fluent/logger"
 	"github.com/urfave/cli/v3"
@@ -23,7 +24,12 @@ import (
 	"path/filepath"
 )
 
-func CheckCommand(context *cli.Command) {
+// CheckCommand is a CLI command that checks the provided path for code files,
+// converts them to file codes, and analyzes the project's codebase.
+// It returns a map of file codes.
+// Parameters:
+// - context: the CLI context containing the command arguments.
+func CheckCommand(context *cli.Command) []filecode.FileCode {
 	ShowHeaderMessage()
 
 	// Retrieve the path from the context
@@ -49,5 +55,9 @@ func CheckCommand(context *cli.Command) {
 	fileCodes := converter.ConvertToFileCode(path, false)
 
 	// Analyze the project's codebase
-	analyzer.AnalyzeCode(fileCodes, path, false)
+	sortedFileCodes := analyzer.AnalyzeCode(fileCodes, path, false)
+
+	// The build command depends on the check command
+	// hence, it also needs the file codes
+	return sortedFileCodes
 }

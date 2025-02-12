@@ -164,6 +164,7 @@ func AnalyzeFunction(
 		element := blockQueue[0]
 		block := element.Block
 		scopeIds := element.ID
+		inLoop := element.InLoop
 		blockQueue = blockQueue[1:]
 
 		// Special case: For loops (creates the block at the end)
@@ -185,10 +186,13 @@ func AnalyzeFunction(
 				dontDeleteStack = true
 				// Create a new scope
 				newScopeId := scope.NewScope()
+
+				scopeIds = append(scopeIds, newScopeId)
 				// Add the block to the queue
 				blockQueue = append(blockQueue, queue.BlockQueueElement{
-					Block: statement,
-					ID:    []int{newScopeId},
+					Block:  statement,
+					ID:     scopeIds,
+					InLoop: inLoop,
 				})
 			case ast.Declaration:
 				err, warning := declaration.AnalyzeDeclaration(statement, &scope, trace, generics, parentName)
@@ -208,6 +212,7 @@ func AnalyzeFunction(
 					&scope,
 					&blockQueue,
 					scopeIds,
+					inLoop,
 				)
 				// Push the error to the list if necessary
 				errors.AddError(err)
@@ -219,6 +224,7 @@ func AnalyzeFunction(
 					&scope,
 					&blockQueue,
 					scopeIds,
+					inLoop,
 				)
 				// Push the error to the list if necessary
 				errors.AddError(err)
@@ -238,6 +244,14 @@ func AnalyzeFunction(
 
 				if varName != nil {
 					forVarNames[varName] = varObj
+				}
+			case ast.Break, ast.Continue:
+				if !inLoop {
+					errors.AddError(error3.Error{
+						Code:   error3.InvalidLoopInstruction,
+						Line:   statement.Line,
+						Column: statement.Column,
+					})
 				}
 			default:
 				_, err := expression.AnalyzeExpression(

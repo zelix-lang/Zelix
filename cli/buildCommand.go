@@ -15,10 +15,18 @@
 package cli
 
 import (
+	"fluent/state"
+	"fluent/util"
 	"github.com/urfave/cli/v3"
 )
 
 // BuildCommand compiles the given Fluent project into an executable
 func BuildCommand(context *cli.Command) {
-	// TODO!
+	fileCodes := CheckCommand(context)
+
+	for _, fileCode := range fileCodes {
+		// Emit a building state
+		state.Emit(state.Building, util.FileName(&fileCode.Path))
+		state.PassAllSpinners()
+	}
 }

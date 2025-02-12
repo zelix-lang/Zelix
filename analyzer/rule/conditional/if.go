@@ -40,6 +40,7 @@ var globalBool = types.TypeWrapper{
 // - variables: The scoped stack of variables.
 // - blockQueue: A queue to schedule blocks for further analysis.
 // - scopeIds: The scope IDs of the parent block.
+// - inLoop: A flag indicating whether the conditional is inside a loop.
 //
 // Returns:
 // - An error3.Error indicating the result of the analysis.
@@ -49,6 +50,7 @@ func ProcessSingleConditional(
 	variables *stack.ScopedStack,
 	blockQueue *[]queue.BlockQueueElement,
 	scopeIds []int,
+	inLoop bool,
 ) error3.Error {
 	expr := children[0]
 	mainBlock := children[1]
@@ -72,8 +74,9 @@ func ProcessSingleConditional(
 	scopeIds = append(scopeIds, newScopeId)
 	// Schedule the block for analysis
 	*blockQueue = append(*blockQueue, queue.BlockQueueElement{
-		Block: mainBlock,
-		ID:    scopeIds,
+		Block:  mainBlock,
+		ID:     scopeIds,
+		InLoop: inLoop,
 	})
 	return error3.Error{}
 }
@@ -86,6 +89,7 @@ func ProcessSingleConditional(
 // - variables: The scoped stack of variables.
 // - blockQueue: A queue to schedule blocks for further analysis.
 // - scopeIds: The scope IDs of the parent block.
+// - inLoop: A flag indicating whether the if-else structure is inside a loop.
 //
 // Returns:
 // - An error3.Error indicating the result of the analysis.
@@ -95,10 +99,11 @@ func AnalyzeIf(
 	variables *stack.ScopedStack,
 	blockQueue *[]queue.BlockQueueElement,
 	scopeIds []int,
+	inLoop bool,
 ) error3.Error {
 	// Get the expression and main block
 	children := *tree.Children
-	err := ProcessSingleConditional(children, trace, variables, blockQueue, scopeIds)
+	err := ProcessSingleConditional(children, trace, variables, blockQueue, scopeIds, inLoop)
 
 	if err.Code != error3.Nothing {
 		return err
@@ -112,7 +117,7 @@ func AnalyzeIf(
 		// Determine what to do based on the child's rule
 		switch child.Rule {
 		case ast.ElseIf:
-			err := ProcessSingleConditional(children, trace, variables, blockQueue, scopeIds)
+			err := ProcessSingleConditional(children, trace, variables, blockQueue, scopeIds, inLoop)
 
 			if err.Code != error3.Nothing {
 				return err
@@ -124,8 +129,9 @@ func AnalyzeIf(
 			// Schedule the block for analysis
 			scopeIds = append(scopeIds, newScopeId)
 			*blockQueue = append(*blockQueue, queue.BlockQueueElement{
-				Block: children[0],
-				ID:    scopeIds,
+				Block:  children[0],
+				ID:     scopeIds,
+				InLoop: inLoop,
 			})
 		default:
 		}

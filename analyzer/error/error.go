@@ -39,6 +39,7 @@ const (
 	ValueNotAssigned              // E0019
 	CircularModuleDependency      // E0020
 	SelfReference                 // E0021
+	InvalidLoopInstruction        // E0022
 )
 
 // Error represents an error with details about its location and additional information.

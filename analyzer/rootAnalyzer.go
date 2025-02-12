@@ -111,7 +111,10 @@ func checkImportRedefinition[T function.Function | module.Module](
 // - entry: A map where the key is the file path and the value is the FileCode object.
 // - mainPath: The path to the main file that should be analyzed last.
 // - silent: A boolean that indicates if the analysis should be silent.
-func AnalyzeCode(entry map[string]filecode.FileCode, mainPath string, silent bool) {
+//
+// Returns:
+// - A list of FileCode objects sorted in a dependency-free manner.
+func AnalyzeCode(entry map[string]filecode.FileCode, mainPath string, silent bool) []filecode.FileCode {
 	// Use a priority-based queue to analyze the files that do not have
 	// dependencies first
 	var queue []filecode.FileCode
@@ -260,6 +263,8 @@ func AnalyzeCode(entry map[string]filecode.FileCode, mainPath string, silent boo
 				errorMessage.WriteString(error2.CircularModuleDependency(err.Additional[0]))
 			case error3.SelfReference:
 				errorMessage.WriteString(error2.SelfReference())
+			case error3.InvalidLoopInstruction:
+				errorMessage.WriteString(error2.InvalidLoopInstruction())
 			default:
 			}
 
@@ -305,4 +310,6 @@ func AnalyzeCode(entry map[string]filecode.FileCode, mainPath string, silent boo
 
 		state.PassAllSpinners()
 	}
+
+	return queue
 }

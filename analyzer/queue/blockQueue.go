@@ -22,4 +22,6 @@ type BlockQueueElement struct {
 	Block *ast.AST
 	// ID is the scope ID that the block belongs to.
 	ID []int
+	// InLoop is whether the block comes from a loop block.
+	InLoop bool
 }

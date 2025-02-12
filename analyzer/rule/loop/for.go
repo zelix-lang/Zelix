@@ -108,7 +108,8 @@ func AnalyzeFor(
 	*blockQueue = append(*blockQueue, queue.BlockQueueElement{
 		Block: block,
 		// Predict the next ID
-		ID: scopeIds,
+		ID:     scopeIds,
+		InLoop: true,
 	})
 
 	return error3.Error{}, varName.Value, &variable.Variable{
