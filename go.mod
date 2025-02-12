@@ -1,6 +1,6 @@
 module fluent
 
-go 1.23
+go 1.23.6
 
 require (
 	github.com/theckman/yacspin v0.13.12

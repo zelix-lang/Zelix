@@ -63,7 +63,7 @@ my_project/
 
 ## 📚 Documentation
 
-The official Fluent documentation can be found on the [official website](https://rodri-r-z.github.io/Fluent/docs).
+The official Fluent documentation can be found on the [official website](https://fluent-lang.github.io/docs).
 
 ---
 
