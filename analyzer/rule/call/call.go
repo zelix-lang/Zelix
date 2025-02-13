@@ -176,13 +176,20 @@ func AnalyzeFunctionCall(
 		paramsNode := (*tree.Children)[1]
 
 		// Check that the function call has the correct number of parameters
-		if len(*paramsNode.Children) != len(function.Params) {
-			if function.IsStd && function.Name == "panic" {
-				if len(*paramsNode.Children) == 1 {
-					preventParamAnalysis = true
+		if function.IsStd && function.Name == "panic" {
+			if len(*paramsNode.Children) == 1 {
+				preventParamAnalysis = true
+			} else {
+				return error3.Error{
+					Line:       tree.Line,
+					Column:     tree.Column,
+					Code:       error3.ParameterCountMismatch,
+					Additional: []string{"1"},
 				}
 			}
+		}
 
+		if len(*paramsNode.Children) != len(function.Params) {
 			if !preventParamAnalysis {
 				return error3.Error{
 					Line:       tree.Line,
