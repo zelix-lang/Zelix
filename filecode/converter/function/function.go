@@ -33,7 +33,7 @@ var nothing = "nothing"
 //   - A function.Function representing the converted AST node.
 func ConvertFunction(ast *ast2.AST, isStd bool) function.Function {
 	result := function.Function{
-		Params: make(map[string]function.Param),
+		Params: make([]function.Param, 0),
 		Path:   *ast.File,
 		Trace: trace.Trace{
 			Line:   ast.Line,
@@ -105,7 +105,7 @@ func ConvertFunction(ast *ast2.AST, isStd bool) function.Function {
 	}
 
 	// Parse the parameters
-	funParams := make(map[string]function.Param)
+	funParams := make([]function.Param, 0)
 
 	if params != nil {
 		for _, param := range *params.Children {
@@ -113,13 +113,14 @@ func ConvertFunction(ast *ast2.AST, isStd bool) function.Function {
 			paramType := types.ConvertToTypeWrapper(*(*param.Children)[1])
 
 			// Add the parameter to the function's parameters
-			funParams[*paramName] = function.Param{
+			funParams = append(funParams, function.Param{
 				Type: paramType,
 				Trace: trace.Trace{
 					Line:   param.Line,
 					Column: param.Column,
 				},
-			}
+				Name: *paramName,
+			})
 		}
 	}
 

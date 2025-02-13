@@ -27,7 +27,7 @@ type Function struct {
 	// Public indicates whether the function is public.
 	Public bool
 	// Params is a map of parameter names to their types.
-	Params map[string]Param
+	Params []Param
 	// ReturnType is the type of the function's return value.
 	ReturnType types.TypeWrapper
 	// Body is the abstract syntax tree (AST) of the function's body.

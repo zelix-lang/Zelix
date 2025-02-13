@@ -25,4 +25,6 @@ type Param struct {
 	Type types.TypeWrapper
 	// Trace contains trace information for the parameter.
 	Trace trace.Trace
+	// Name is the name of the parameter.
+	Name string
 }
