@@ -81,6 +81,7 @@ func destroyScope(
 // Returns:
 // - A pool of errors found during the analysis.
 // - A pool of warnings found during the analysis.
+// - A slice of AST nodes representing the assignments found in the function.
 func AnalyzeFunction(
 	fun function.Function,
 	trace *filecode.FileCode,
