@@ -264,6 +264,7 @@ func AnalyzeFunction(
 						Children: &[]*types.TypeWrapper{},
 					},
 					false,
+					false,
 				)
 
 				// Push the error to the list if necessary

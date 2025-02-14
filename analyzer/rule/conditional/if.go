@@ -62,6 +62,7 @@ func ProcessSingleConditional(
 		false,
 		&globalBool,
 		false,
+		false,
 	)
 
 	if err.Code != error3.Nothing {

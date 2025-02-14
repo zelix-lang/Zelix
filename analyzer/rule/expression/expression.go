@@ -50,6 +50,7 @@ var literalRules = map[ast.Rule]bool{
 // - enforceHeapRequirement: A boolean indicating whether heap allocation requirements should be enforced.
 // - firstExpected: The expected type of the expression.
 // - isPropReassignment: A boolean indicating whether the current element comes from a property reassignment.
+// - allowPointers: A boolean indicating whether pointers are allowed.
 //
 // Returns:
 // - object.Object: The resulting object after analyzing the expression.
@@ -61,6 +62,7 @@ func AnalyzeExpression(
 	enforceHeapRequirement bool,
 	firstExpected *types.TypeWrapper,
 	isPropReassignment bool,
+	allowPointers bool,
 ) (object.Object, error3.Error) {
 	result := object.Object{
 		Type: types.TypeWrapper{
@@ -76,6 +78,7 @@ func AnalyzeExpression(
 			Tree:              tree,
 			HasMetDereference: false,
 			ActualPointers:    0,
+			IsParam:           allowPointers,
 		},
 	}
 
@@ -117,6 +120,15 @@ func AnalyzeExpression(
 
 			if hasToBreak {
 				break
+			}
+		}
+
+		// Check for illegal pointers
+		if element.Got.Type.PointerCount < 0 && !element.IsParam {
+			return object.Object{}, error3.Error{
+				Code:   error3.InvalidPointer,
+				Line:   element.Tree.Line,
+				Column: element.Tree.Column,
 			}
 		}
 
@@ -252,6 +264,8 @@ func AnalyzeExpression(
 				Tree:              child,
 				HasMetDereference: element.HasMetDereference,
 				ActualPointers:    element.ActualPointers,
+				IsArithmetic:      element.IsArithmetic,
+				IsParam:           element.IsParam,
 			}}, queue...)
 
 			element.Got.Type = *element.Expected

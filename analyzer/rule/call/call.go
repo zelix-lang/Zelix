@@ -242,6 +242,7 @@ func AnalyzeFunctionCall(
 					},
 					Expected:     &paramType,
 					HeapRequired: enforceHeapInParam && enforceHeap,
+					IsParam:      true,
 				})
 
 				i++

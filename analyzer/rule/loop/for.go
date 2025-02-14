@@ -74,6 +74,7 @@ func AnalyzeFor(
 			Children: &[]*types.TypeWrapper{},
 		},
 		false,
+		false,
 	)
 
 	if err.Code != error3.Nothing {
@@ -96,6 +97,7 @@ func AnalyzeFor(
 		variables,
 		false,
 		&leftObj.Type,
+		false,
 		false,
 	)
 

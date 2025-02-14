@@ -34,4 +34,5 @@ type ExpectedPair struct {
 	IsArithmetic       bool               // Whether this value must evaluate a decimal or integer
 	IsPropReassignment bool               // Whether this value is a property reassignment
 	LastPropValue      *interface{}       // The last property value
+	IsParam            bool               // Whether this value is a parameter
 }

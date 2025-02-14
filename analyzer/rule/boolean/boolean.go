@@ -58,7 +58,8 @@ func AnalyzeBoolean(
 				Children: &[]*types.TypeWrapper{},
 			},
 		},
-		Tree: children[0],
+		Tree:    children[0],
+		IsParam: true,
 	}
 
 	*exprQueue = append(*exprQueue, candidateElement)
@@ -90,7 +91,8 @@ func AnalyzeBoolean(
 					Children: &[]*types.TypeWrapper{},
 				},
 			},
-			Tree: el,
+			Tree:    el,
+			IsParam: true,
 		})
 	}
 }

@@ -76,6 +76,7 @@ func AnalyzeReassignment(
 			Children: &[]*types.TypeWrapper{},
 		},
 		true,
+		false,
 	)
 
 	// Return the err if needed
@@ -94,6 +95,7 @@ func AnalyzeReassignment(
 		false,
 		&expected,
 		false,
+		true,
 	)
 
 	// Return the err if needed
