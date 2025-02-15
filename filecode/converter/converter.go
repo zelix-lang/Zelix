@@ -75,9 +75,6 @@ func ConvertToFileCode(entry string, silent bool) map[string]filecode.FileCode {
 	var seenImportsSlice []string
 	result := make(map[string]filecode.FileCode)
 
-	// Save the already-processed std imports
-	processedStdImports := map[string]bool{}
-
 	for len(queue) > 0 {
 		// Get the first element of the queue
 		element := queue[0]
@@ -88,6 +85,9 @@ func ConvertToFileCode(entry string, silent bool) map[string]filecode.FileCode {
 		elContents := element.contents
 
 		isStd := strings.HasPrefix(*path, StdPath)
+
+		// Save the already-processed std imports
+		processedStdImports := map[string]bool{}
 
 		// Detect circular imports
 		if seenImports[*path] {
@@ -206,8 +206,6 @@ func ConvertToFileCode(entry string, silent bool) map[string]filecode.FileCode {
 					importPath = strings.ReplaceAll(importPath, "::", pathSeparator)
 
 					if processedStdImports[importPath] {
-						// Append the path to the code's imports
-						code.Imports = append(code.Imports, importPath)
 						continue
 					}
 
