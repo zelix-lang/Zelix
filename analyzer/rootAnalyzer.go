@@ -192,6 +192,10 @@ func AnalyzeCode(entry map[string]filecode.FileCode, mainPath string, silent boo
 					&entry,
 				)
 
+				if !fun.Public {
+					continue
+				}
+
 				file.Functions[fun.Name] = fun
 			}
 
@@ -205,6 +209,10 @@ func AnalyzeCode(entry map[string]filecode.FileCode, mainPath string, silent boo
 					&file,
 					&entry,
 				)
+
+				if !mod.Public {
+					continue
+				}
 
 				file.Modules[mod.Name] = mod
 			}
@@ -298,14 +306,14 @@ func AnalyzeCode(entry map[string]filecode.FileCode, mainPath string, silent boo
 
 		// Remove foreign functions
 		for i, fun := range file.Functions {
-			if fun.Path != file.Path {
+			if fun.Public && fun.Path != file.Path {
 				delete(file.Functions, i)
 			}
 		}
 
 		// Remove foreign modules
 		for i, mod := range file.Modules {
-			if mod.Path != file.Path {
+			if mod.Public && mod.Path != file.Path {
 				delete(file.Modules, i)
 			}
 		}
