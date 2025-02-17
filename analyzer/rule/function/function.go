@@ -81,6 +81,7 @@ func destroyScope(
 // Returns:
 // - A pool of errors found during the analysis.
 // - A pool of warnings found during the analysis.
+// - A slice of AST nodes representing the assignments found in the function.
 func AnalyzeFunction(
 	fun function.Function,
 	trace *filecode.FileCode,
@@ -122,8 +123,8 @@ func AnalyzeFunction(
 	returnType := fun.ReturnType
 
 	// Analyze and add all parameters to the scope
-	for name, param := range fun.Params {
-		err, warn := AnalyzeParameter(&name, &param, trace, generics)
+	for _, param := range fun.Params {
+		err, warn := AnalyzeParameter(&param.Name, &param, trace, generics)
 
 		// Push the error to the list if necessary
 		errors.AddError(err)
@@ -146,7 +147,7 @@ func AnalyzeFunction(
 		}
 
 		// Add the parameter to the scope
-		scope.Append(name, variable.Variable{
+		scope.Append(param.Name, variable.Variable{
 			Constant: true,
 			Value:    val,
 		})
@@ -262,6 +263,7 @@ func AnalyzeFunction(
 					&types.TypeWrapper{
 						Children: &[]*types.TypeWrapper{},
 					},
+					false,
 					false,
 				)
 

@@ -88,6 +88,7 @@ func AnalyzeArray(
 			Tree:              child,
 			HasMetDereference: false,
 			ActualPointers:    0,
+			IsParam:           true,
 		})
 	}
 

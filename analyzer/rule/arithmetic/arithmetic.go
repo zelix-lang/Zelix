@@ -117,6 +117,7 @@ func AnalyzeArithmetic(
 			Got:          &candidateElement,
 			Tree:         candidate,
 			IsArithmetic: true,
+			IsParam:      true,
 		})
 
 		candidateType = &candidateElement.Type
@@ -138,7 +139,8 @@ func AnalyzeArithmetic(
 					Children: &[]*types.TypeWrapper{},
 				},
 			},
-			Tree: element,
+			Tree:    element,
+			IsParam: true,
 		})
 	}
 

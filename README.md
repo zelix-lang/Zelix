@@ -20,8 +20,9 @@ Welcome to the official Fluent repository! Here, you will find the source code o
 
 - Blazing-fast execution times
 - Simple syntax
-- Flexible standard libraries
+- Flexible standard library
 - Easily package your app into an executable
+- **[Free - as in Freedom.](LICENSE)**
 - And more!
 
 ---
@@ -59,6 +60,12 @@ my_project/
     .gitignore
 ```
 
+To run your code use:
+
+```
+fluent run
+```
+
 ---
 
 ## 📚 Documentation
@@ -81,6 +88,12 @@ To build Fluent from source into an executable, you need to execute either one o
 - **On Linux/macOS**: `build.sh`
 
 After the build process is complete, you will find the executable in the `bin/` directory.
+
+---
+
+## 🔒 Security
+
+Please refer to [SECURITY.md](SECURITY.md) for more information on how to report security vulnerabilities.
 
 ---
 

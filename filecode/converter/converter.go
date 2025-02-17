@@ -33,8 +33,7 @@ import (
 	"strings"
 )
 
-// The standard library path
-var stdPath = os.Getenv("FLUENT_STD_PATH")
+var StdPath = os.Getenv("FLUENT_STD_PATH")
 
 // The system's path separator
 const pathSeparator = string(os.PathSeparator)
@@ -57,7 +56,7 @@ type queueElement struct {
 // - A map where the keys are file paths and the values are FileCode structures.
 func ConvertToFileCode(entry string, silent bool) map[string]filecode.FileCode {
 	// Check that the stdlib path exists
-	if stdPath == "" || !util.DirExists(stdPath) {
+	if StdPath == "" || !util.DirExists(StdPath) {
 		logger.Error("The FLUENT_STD_PATH environment variable is not set")
 		logger.Help("Try reinstalling the CLI")
 		os.Exit(1)
@@ -76,9 +75,6 @@ func ConvertToFileCode(entry string, silent bool) map[string]filecode.FileCode {
 	var seenImportsSlice []string
 	result := make(map[string]filecode.FileCode)
 
-	// Save the already-processed std imports
-	processedStdImports := map[string]bool{}
-
 	for len(queue) > 0 {
 		// Get the first element of the queue
 		element := queue[0]
@@ -88,7 +84,10 @@ func ConvertToFileCode(entry string, silent bool) map[string]filecode.FileCode {
 		trace := element.trace
 		elContents := element.contents
 
-		isStd := strings.HasPrefix(*path, stdPath)
+		isStd := strings.HasPrefix(*path, StdPath)
+
+		// Save the already-processed std imports
+		processedStdImports := map[string]bool{}
 
 		// Detect circular imports
 		if seenImports[*path] {
@@ -203,12 +202,10 @@ func ConvertToFileCode(entry string, silent bool) map[string]filecode.FileCode {
 				isStd := strings.HasPrefix(importPath, "@std")
 
 				if isStd {
-					importPath = strings.Replace(importPath, "@std", stdPath, 1)
+					importPath = strings.Replace(importPath, "@std", StdPath, 1)
 					importPath = strings.ReplaceAll(importPath, "::", pathSeparator)
 
 					if processedStdImports[importPath] {
-						// Append the path to the code's imports
-						code.Imports = append(code.Imports, importPath)
 						continue
 					}
 

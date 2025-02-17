@@ -40,6 +40,7 @@ const (
 	CircularModuleDependency      // E0020
 	SelfReference                 // E0021
 	InvalidLoopInstruction        // E0022
+	InvalidPointer                // E0023
 )
 
 // Error represents an error with details about its location and additional information.
