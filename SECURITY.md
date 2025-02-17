@@ -96,7 +96,7 @@ Doing so will result in your email being blocked.
    - A vulnerability that allows information disclosure in a negligent manner is considered a **1**. (E.g. Compiler versions in an error message).
    - A vulnerability that is caused by a third-party library is **initially** considered a **4**, if the vulnerability is severe, we might develop a custom solution or switch to another library.
 
-    > In the case of **[3]**: This kind of vulnerability will only be considered if they can be triggered remotely, otherwise, open a public issue instead.
+    > In the case of **[3]**: This kind of vulnerability will only be considered if it can be triggered remotely, open a public issue otherwise.
 
 6. **What kind of vulnerabilities are non-exploitable?**
    - A vulnerability that requires the attacker to have physical access to the machine.
