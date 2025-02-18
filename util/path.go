@@ -60,6 +60,20 @@ func DirExists(path string) bool {
 	return info.IsDir()
 }
 
+// FileExists checks if a file exists at the given path.
+// Parameters:
+// - path: The file path to check.
+// Returns: True if the file exists and is not a directory, false otherwise.
+func FileExists(path string) bool {
+	info, err := os.Stat(path)
+
+	if os.IsNotExist(err) {
+		return false
+	}
+
+	return !info.IsDir()
+}
+
 // GetDir returns the directory part of the given file path.
 // Parameters:
 // - path: The file path from which to extract the directory.
