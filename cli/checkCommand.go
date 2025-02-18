@@ -24,12 +24,18 @@ import (
 	"path/filepath"
 )
 
-// CheckCommand is a CLI command that checks the provided path for code files,
-// converts them to file codes, and analyzes the project's codebase.
-// It returns a map of file codes.
+// CheckCommand performs a series of checks on the provided path.
+// It retrieves the path from the context, validates it, converts it to file codes,
+// and analyzes the project's codebase. It returns the sorted file codes and the original file codes.
+//
 // Parameters:
-// - context: the CLI context containing the command arguments.
-func CheckCommand(context *cli.Command) []filecode.FileCode {
+//
+//	context (*cli.Command): The CLI command context containing the arguments.
+//
+// Returns:
+//   - A slice of sorted file codes
+//   - A map of original file codes.
+func CheckCommand(context *cli.Command) ([]filecode.FileCode, map[string]filecode.FileCode) {
 	ShowHeaderMessage()
 
 	// Retrieve the path from the context
@@ -59,5 +65,5 @@ func CheckCommand(context *cli.Command) []filecode.FileCode {
 
 	// The build command depends on the check command
 	// hence, it also needs the file codes
-	return sortedFileCodes
+	return sortedFileCodes, fileCodes
 }
