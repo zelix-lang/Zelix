@@ -49,8 +49,9 @@ func MarshalFunctionCall(
 			for _, param := range *paramsNode.Children {
 				*counter++
 
+				children := *param.Children
 				*exprQueue = append(*exprQueue, queue.PendingIRMarshal{
-					Input:   param,
+					Input:   children[0],
 					IsParam: true,
 					Counter: *counter,
 				})
@@ -80,7 +81,7 @@ func MarshalFunctionCall(
 	// Add the counter of the parameters
 	for i := 0; i < len(fun.Params); i++ {
 		builder.WriteString("x")
-		builder.WriteString(strconv.Itoa(i + element.Counter))
+		builder.WriteString(strconv.Itoa(i + element.Counter + 1))
 		builder.WriteString(" ")
 	}
 
