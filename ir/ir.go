@@ -47,7 +47,7 @@ func BuildIr(
 	traceFileVarName := fmt.Sprintf("__fc_%d_trace_line", fileId)
 
 	// Move the stack a string for the trace of this file
-	builder.WriteString("mov ")
+	builder.WriteString("ref ")
 	builder.WriteString(traceFileVarName)
 	builder.WriteString(" str ")
 	builder.WriteString(fileCode.Path)
