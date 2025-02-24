@@ -12,18 +12,18 @@
    conditions; type `fluent l -f` for details.
 */
 
-package queue
+package tree
 
 import "fluent/ast"
 
-// PendingIRMarshal represents a structure for pending IR marshaling.
-type PendingIRMarshal struct {
-	// Input is the AST input for the pending IR marshal.
-	Input *ast.AST
-	// IsParam indicates if the input is a parameter.
-	IsParam bool
-	// HasProcessedParams indicates if the parameters have been processed.
-	HasProcessedParams bool
-	// Counter is used to count the number of operations.
-	Counter int
+// InstructionTree represents a tree structure of instructions.
+type InstructionTree struct {
+	// Children holds the child nodes of the current instruction tree.
+	Children *[]*InstructionTree
+	// Representation is a string representation of the instruction.
+	Representation string
+	// OriginalTree points to the original AST node.
+	OriginalTree *ast.AST
+	// IsSignature indicates whether the instruction is a signature.
+	IsSignature bool
 }

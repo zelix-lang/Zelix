@@ -17,6 +17,7 @@ package ir
 import (
 	"fluent/filecode"
 	"fluent/ir/rule/function"
+	"fluent/ir/tree"
 	"fmt"
 	"strings"
 )
@@ -30,7 +31,7 @@ import (
 // - entry: A map of file codes representing the imported files.
 // - fileId: The ID of the file being processed.
 // - traceCounters: A pointer to a map of trace counters.
-// - traceCounter: A pointer to the current trace counter.
+// - usedStrings: A pointer to a map of used strings.
 //
 // Returns:
 // - A string representing the constructed IR.
@@ -39,64 +40,68 @@ func BuildIr(
 	entry map[string]filecode.FileCode,
 	fileId int,
 	traceCounters *map[int]int,
-	traceCounter *int,
+	usedStrings *map[string]string,
+	nameCounters *map[string]map[string]string,
+	localCounters map[string]string,
 ) string {
 	// Use a strings.Builder to properly handle the IR building
 	builder := strings.Builder{}
 
-	traceFileVarName := fmt.Sprintf("__fc_%d_trace_line", fileId)
-
-	// Move the stack a string for the trace of this file
+	// Add trace instructions
+	traceFileName := fmt.Sprintf("__trace_f%d__", fileId)
 	builder.WriteString("ref ")
-	builder.WriteString(traceFileVarName)
-	builder.WriteString(" str ")
+	builder.WriteString(traceFileName)
+	builder.WriteString(" ")
 	builder.WriteString(fileCode.Path)
 	builder.WriteString("\n")
 
-	// Append all the imported modules and functions to the file
-	for _, importPath := range fileCode.Imports {
-		importedFile := entry[importPath]
+	// Create a global InstructionTree for the file
+	fileTree := tree.InstructionTree{
+		Children: &[]*tree.InstructionTree{},
+	}
 
-		// Append the imported functions
-		for _, fun := range importedFile.Functions {
+	// Add all imported functions and modules
+	for _, imp := range fileCode.Imports {
+		impFile := entry[imp]
 
-			if !fun.Public {
-				continue
+		for _, fun := range impFile.Functions {
+			if fun.Public {
+				fileCode.Functions[fun.Name] = fun
 			}
-
-			fileCode.Functions[fun.Name] = fun
 		}
 
-		// Append the imported modules
-		for _, mod := range importedFile.Modules {
-			if !mod.Public {
-				continue
+		for _, mod := range impFile.Modules {
+			if mod.Public {
+				fileCode.Modules[mod.Name] = mod
 			}
-
-			fileCode.Modules[mod.Name] = mod
 		}
 	}
 
-	// Write the functions
-	for name, fun := range fileCode.Functions {
+	// Marshal all functions
+	for _, fun := range fileCode.Functions {
+		// Skip imported functions
 		if fun.Path != fileCode.Path {
 			continue
 		}
 
-		// Functions with generics are not built right now
+		// Skip functions with generics
 		if len(fun.Templates) > 0 {
 			continue
 		}
 
 		function.MarshalFunction(
-			&builder,
-			name,
 			fun,
-			&fileCode,
-			traceFileVarName,
 			traceCounters,
-			traceCounter,
+			usedStrings,
+			&fileTree,
+			localCounters,
 		)
+	}
+
+	// Write the instructions to the builder
+	for _, child := range *fileTree.Children {
+		builder.WriteString(child.Representation)
+		builder.WriteString("\n")
 	}
 
 	return builder.String()

@@ -1,11 +1,5 @@
 import "@std::io::print";
 
 pub fun main() {
-    let a: str = "hello";
-
-    {
-        println(a);
-        println(a);
-    }
+    println(println("Hello, world!"));
 }
-

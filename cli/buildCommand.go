@@ -122,14 +122,20 @@ func BuildCommand(context *cli.Command) {
 	// Keep a counter of all the file codes that have been processed
 	fileCodeCount := 0
 
-	// A track of already-defined values used for tracing lines and columns
+	// A map of already-defined values used for tracing lines and columns
 	traceCounters := make(map[int]int)
-	traceCounter := 0
+	// Keep track of used strings (Saved in reserved spaces of memory)
+	usedStrings := make(map[string]string)
+	// Used to store precomputed counters for functions' and
+	// modules' names
+	nameCounters := make(map[string]map[string]string)
+	globalCounter := 0
+	// Save in a map the files that have an external
+	// implementation to avoid recompiling them
+	externalImpl := make(map[string]bool)
 
+	// Precompute the counters for the names
 	for _, fileCode := range fileCodes {
-		fileCodeCount++
-		fileName := util.FileName(&fileCode.Path)
-
 		// Check if this file has an external implementation
 		if strings.HasPrefix(fileCode.Path, converter.StdPath) {
 			var relativePath string
@@ -153,11 +159,14 @@ func BuildCommand(context *cli.Command) {
 
 			relativePath = fluentExtensionRegex.ReplaceAllString(relativePath, ".ll")
 			if util.FileExists(relativePath) {
+				fileName := util.FileName(&fileCode.Path)
+				externalImpl[fileCode.Path] = true
+
 				fmt.Println(
 					ansi.Colorize(
 						ansi.BoldBrightYellow,
 						fmt.Sprintf(
-							"🔂 Skipped %s (System-wide impl available)",
+							"🔂 Skipped %s (External impl available)",
 							fileName,
 						),
 					),
@@ -171,10 +180,45 @@ func BuildCommand(context *cli.Command) {
 			}
 		}
 
+		// Make sure the map is initialized
+		nameCounters[fileCode.Path] = make(map[string]string)
+		// Get the stored map
+		nameCounter := nameCounters[fileCode.Path]
+
+		for _, fun := range fileCode.Functions {
+			nameCounter[fun.Name] = fmt.Sprintf("x%d", globalCounter)
+			globalCounter++
+		}
+
+		for _, mod := range fileCode.Modules {
+			nameCounter[mod.Name] = fmt.Sprintf("x%d", globalCounter)
+			globalCounter++
+		}
+	}
+
+	for _, fileCode := range fileCodes {
+		// Skip the file if it has an external implementation
+		if externalImpl[fileCode.Path] {
+			continue
+		}
+
+		fileCodeCount++
+		fileName := util.FileName(&fileCode.Path)
+
 		// Emit a building state
 		state.Emit(state.Building, fileName)
 
-		fileIr := ir.BuildIr(fileCode, fileCodesMap, fileCodeCount, &traceCounters, &traceCounter)
+		fileIr := ir.BuildIr(
+			fileCode,
+			fileCodesMap,
+			fileCodeCount,
+			&traceCounters,
+			&usedStrings,
+			// Prevent copying the map every time
+			// by passing a reference to the map
+			&nameCounters,
+			nameCounters[fileCode.Path],
+		)
 		// Write the IR to the global builder
 		globalBuilder.WriteString(fileIr)
 		globalBuilder.WriteString("\n")
