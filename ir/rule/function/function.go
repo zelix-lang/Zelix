@@ -113,6 +113,10 @@ func MarshalFunction(
 		case ast.Block:
 			// Add the block's children to the queue
 			blockQueue = append(blockQueue, *element.Children...)
+		case ast.Continue, ast.Break:
+			// Directly write the tree's value
+			funTree.Representation.WriteString(*element.Value)
+			funTree.Representation.WriteString("\n")
 		case ast.Expression:
 			expression.MarshalExpression(
 				&funTree,
