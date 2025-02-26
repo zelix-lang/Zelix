@@ -97,6 +97,7 @@ func BuildIr(
 			fun,
 			&fileCode,
 			traceFileName,
+			fileId,
 			isMain,
 			traceMagicCounter,
 			traceCounters,

@@ -28,6 +28,7 @@ func MarshalFunctionCall(
 	global *tree.InstructionTree,
 	child *ast.AST,
 	traceFileName string,
+	fileCodeId int,
 	trace *filecode.FileCode,
 	traceMagicCounter *int,
 	counter *pool.CounterPool,
@@ -97,7 +98,12 @@ func MarshalFunctionCall(
 			// Check if we can reuse a string
 			if len(exprChildren) == 1 && exprChildren[0].Rule == ast.StringLiteral {
 				strLiteral := exprChildren[0]
-				parent.Representation.WriteString(usedStrings.RequestAddress(*strLiteral.Value))
+				parent.Representation.WriteString(
+					usedStrings.RequestAddress(
+						fileCodeId,
+						*strLiteral.Value,
+					),
+				)
 
 				parent.Representation.WriteString(" ")
 				continue

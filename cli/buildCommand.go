@@ -78,6 +78,7 @@ func BuildCommand(context *cli.Command) {
 	// Keep track of used strings (Saved in reserved spaces of memory)
 	usedStrings := pool.StringPool{
 		Storage: make(map[string]string),
+		Counter: make(map[int]int),
 	}
 	// Used to store precomputed counters for functions' and
 	// modules' names

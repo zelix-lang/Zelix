@@ -18,10 +18,28 @@ import "fmt"
 
 type StringPool struct {
 	Storage map[string]string
-	Counter int
+	Counter map[int]int
 }
 
-func (pool *StringPool) RequestAddress(str string) string {
+func (pool *StringPool) AddNewId(id int) {
+	// Check if the id has been added previously
+	_, ok := pool.Counter[id]
+
+	if !ok {
+		pool.Counter[id] = 0
+	}
+}
+
+func (pool *StringPool) RemoveId(id int) {
+	// Check if the id has been added previously
+	_, ok := pool.Counter[id]
+
+	if ok {
+		delete(pool.Counter, id)
+	}
+}
+
+func (pool *StringPool) RequestAddress(id int, str string) string {
 	// Check if the string has been saved previously
 	address, ok := pool.Storage[str]
 
@@ -29,10 +47,13 @@ func (pool *StringPool) RequestAddress(str string) string {
 		return address
 	}
 
+	// Get the counter for the specified id
+	counter := pool.Counter[id]
+
 	// Create a new address for this string
-	address = fmt.Sprintf("__str_x%d", pool.Counter)
+	address = fmt.Sprintf("__str__f%d_x%d", id, counter)
 	pool.Storage[str] = address
-	pool.Counter++
+	pool.Counter[id]++
 
 	return address
 }

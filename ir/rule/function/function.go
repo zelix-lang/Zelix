@@ -29,6 +29,7 @@ func MarshalFunction(
 	fun function.Function,
 	trace *filecode.FileCode,
 	traceFileName string,
+	fileCodeId int,
 	isMain bool,
 	traceMagicCounter *int,
 	traceCounters *map[int]string,
@@ -116,6 +117,7 @@ func MarshalFunction(
 			expression.MarshalExpression(
 				&funTree,
 				trace,
+				fileCodeId,
 				traceFileName,
 				&counter,
 				element,

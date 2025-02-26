@@ -27,6 +27,7 @@ import (
 func MarshalExpression(
 	funTree *tree.InstructionTree,
 	trace *filecode.FileCode,
+	fileCodeId int,
 	traceFileName string,
 	counter *pool.CounterPool,
 	element *ast.AST,
@@ -91,6 +92,7 @@ func MarshalExpression(
 				&result,
 				child,
 				traceFileName,
+				fileCodeId,
 				trace,
 				traceMagicCounter,
 				counter,
@@ -106,7 +108,12 @@ func MarshalExpression(
 			pair.Parent.Representation.WriteString(variable)
 		case ast.StringLiteral:
 			// Request an address space for the string literal
-			pair.Parent.Representation.WriteString(usedStrings.RequestAddress(*child.Value))
+			pair.Parent.Representation.WriteString(
+				usedStrings.RequestAddress(
+					fileCodeId,
+					*child.Value,
+				),
+			)
 		case ast.NumberLiteral, ast.DecimalLiteral:
 			// Directly write the tree's value
 			pair.Parent.Representation.WriteString(*child.Value)
