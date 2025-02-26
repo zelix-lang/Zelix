@@ -119,6 +119,16 @@ func MarshalExpression(
 				val = "0"
 			}
 			pair.Parent.Representation.WriteString(val)
+		case ast.Expression:
+			// Add the expression to the queue
+			queue = append(queue, tree.MarshalPair{
+				Child:    child,
+				Parent:   pair.Parent,
+				Counter:  pair.Counter,
+				Expected: pair.Expected,
+				IsParam:  pair.IsParam,
+				IsInline: true,
+			})
 		default:
 		}
 	}
