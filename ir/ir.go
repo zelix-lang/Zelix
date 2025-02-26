@@ -115,5 +115,7 @@ func BuildIr(
 		builder.WriteString("\n")
 	}
 
+	// Remove this FileCode's ID from the string pool
+	usedStrings.RemoveId(fileId)
 	return builder.String()
 }
