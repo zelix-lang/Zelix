@@ -16,11 +16,13 @@ package pool
 
 import "fmt"
 
+// StringPool is a structure that holds a pool of strings and their associated counters.
 type StringPool struct {
-	Storage map[string]string
-	Counter map[int]int
+	Storage map[string]string // Storage maps strings to their addresses.
+	Counter map[int]int       // Counter keeps track of the number of strings associated with each id.
 }
 
+// AddNewId adds a new id to the pool if it does not already exist.
 func (pool *StringPool) AddNewId(id int) {
 	// Check if the id has been added previously
 	_, ok := pool.Counter[id]
@@ -30,6 +32,7 @@ func (pool *StringPool) AddNewId(id int) {
 	}
 }
 
+// RemoveId removes an id from the pool if it exists.
 func (pool *StringPool) RemoveId(id int) {
 	// Check if the id has been added previously
 	_, ok := pool.Counter[id]
@@ -39,6 +42,8 @@ func (pool *StringPool) RemoveId(id int) {
 	}
 }
 
+// RequestAddress returns the address of a string associated with a given id.
+// If the string is not already in the pool, it creates a new address for it.
 func (pool *StringPool) RequestAddress(id int, str string) string {
 	// Check if the string has been saved previously
 	address, ok := pool.Storage[str]
