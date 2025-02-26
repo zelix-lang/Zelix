@@ -264,7 +264,7 @@ func BuildCommand(context *cli.Command) {
 		os.Exit(1)
 	}
 
-	fmt.Println(ansi.Colorize(ansi.BoldBrightYellow, "⚠️ Invoking fluent backend...."))
+	fmt.Println(ansi.Colorize(ansi.BoldBrightYellow, "⚠️ Invoking fluentc backend...."))
 	fmt.Println(ansi.Colorize(ansi.BrightBlack, "⚠️ The output you will see from now on is coming from the fluentc command."))
 
 	// Invoke the fluentc backend
