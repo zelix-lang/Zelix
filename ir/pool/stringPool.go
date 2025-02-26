@@ -12,16 +12,27 @@
    conditions; type `fluent l -f` for details.
 */
 
-package tree
+package pool
 
-import (
-	"strings"
-)
+import "fmt"
 
-// InstructionTree represents a tree structure of instructions.
-type InstructionTree struct {
-	// Children holds the child nodes of the current instruction tree.
-	Children *[]*InstructionTree
-	// Representation is a string representation of the instruction.
-	Representation *strings.Builder
+type StringPool struct {
+	Storage map[string]string
+	Counter int
+}
+
+func (pool *StringPool) RequestAddress(str string) string {
+	// Check if the string has been saved previously
+	address, ok := pool.Storage[str]
+
+	if ok {
+		return address
+	}
+
+	// Create a new address for this string
+	address = fmt.Sprintf("__str_x%d", pool.Counter)
+	pool.Storage[str] = address
+	pool.Counter++
+
+	return address
 }

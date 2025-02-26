@@ -18,6 +18,7 @@ import (
 	"fluent/ansi"
 	"fluent/filecode/converter"
 	"fluent/ir"
+	"fluent/ir/pool"
 	"fluent/logger"
 	"fluent/state"
 	"fluent/util"
@@ -28,6 +29,7 @@ import (
 	"path"
 	"regexp"
 	"runtime"
+	"strconv"
 	"strings"
 )
 
@@ -40,22 +42,27 @@ var isPOSIX = !isWindows
 
 // BuildCommand compiles the given Fluent project into an executable
 func BuildCommand(context *cli.Command) {
-	fmt.Println(ansi.Colorize(ansi.BoldBrightYellow, "⚠️ Checking if fluentc is installed...."))
+	fmt.Print(ansi.Colorize(ansi.BoldBrightYellow, "⚠️ Checking if fluentc is installed....\r"))
 
 	// Invoke a system command to check if fluentc is installed
 	cmd := exec.Command("fluentc", "--help")
 	err := cmd.Run()
-
 	if err != nil {
+		// Print the whole message
+		fmt.Print(ansi.Colorize(ansi.BoldBrightYellow, "⚠️ Checking if fluentc is installed....\n"))
+
 		logger.Error("The Fluent Compiler is not installed.")
 		logger.Info(
 			"Please install it by downloading the necessary",
 			"binaries from the official repository.",
 		)
 		os.Exit(1)
+	} else {
+		// Remove the message
+		fmt.Print("                                        \r")
 	}
 
-	fileCodes, fileCodesMap := CheckCommand(context)
+	fileCodes, fileCodesMap, originalPath := CheckCommand(context)
 	// Retrieve the path from the context
 	userPath := util.GetDir(context.Args().First())
 
@@ -66,12 +73,16 @@ func BuildCommand(context *cli.Command) {
 	fileCodeCount := 0
 
 	// A map of already-defined values used for tracing lines and columns
-	traceCounters := make(map[int]int)
+	traceCounters := make(map[int]string)
+	traceMagicCounter := 0
 	// Keep track of used strings (Saved in reserved spaces of memory)
-	usedStrings := make(map[string]string)
+	usedStrings := pool.StringPool{
+		Storage: make(map[string]string),
+	}
 	// Used to store precomputed counters for functions' and
 	// modules' names
 	nameCounters := make(map[string]map[string]string)
+	poolExclusions := make(map[int]bool)
 	globalCounter := 0
 	// Save in a map the files that have an external
 	// implementation to avoid recompiling them
@@ -124,17 +135,36 @@ func BuildCommand(context *cli.Command) {
 		}
 
 		// Make sure the map is initialized
-		nameCounters[fileCode.Path] = make(map[string]string)
-		// Get the stored map
-		nameCounter := nameCounters[fileCode.Path]
+		nameCounter, ok := nameCounters[fileCode.Path]
+
+		if !ok {
+			nameCounters[fileCode.Path] = make(map[string]string)
+			nameCounter = nameCounters[fileCode.Path]
+		}
+
+		// Determine if this FileCode is the main one
+		isMain := fileCode.Path == originalPath
 
 		for _, fun := range fileCode.Functions {
+			// Skip the main function
+			if isMain && fun.Name == "main" {
+				continue
+			}
+
 			nameCounter[fun.Name] = fmt.Sprintf("x%d", globalCounter)
+			if isMain {
+				poolExclusions[globalCounter] = true
+			}
+
 			globalCounter++
 		}
 
 		for _, mod := range fileCode.Modules {
 			nameCounter[mod.Name] = fmt.Sprintf("x%d", globalCounter)
+			if isMain {
+				poolExclusions[globalCounter] = true
+			}
+
 			globalCounter++
 		}
 	}
@@ -151,12 +181,18 @@ func BuildCommand(context *cli.Command) {
 		// Emit a building state
 		state.Emit(state.Building, fileName)
 
+		// Determine if this FileCode is the main one
+		isMain := fileCode.Path == originalPath
+
 		fileIr := ir.BuildIr(
 			fileCode,
 			fileCodesMap,
 			fileCodeCount,
+			isMain,
+			&traceMagicCounter,
 			&traceCounters,
 			&usedStrings,
+			&poolExclusions,
 			// Prevent copying the map every time
 			// by passing a reference to the map
 			&nameCounters,
@@ -198,7 +234,29 @@ func BuildCommand(context *cli.Command) {
 		outPath += ".exe"
 	}
 
-	err = os.WriteFile(globalIrPath, []byte(globalBuilder.String()), os.ModePerm)
+	// Use a final builder to write the string references first
+	finalBuilder := strings.Builder{}
+
+	for str, address := range usedStrings.Storage {
+		finalBuilder.WriteString("ref ")
+		finalBuilder.WriteString(address)
+		finalBuilder.WriteString(" str \"")
+		finalBuilder.WriteString(str)
+		finalBuilder.WriteString("\"\n")
+	}
+
+	for num, address := range traceCounters {
+		finalBuilder.WriteString("ref ")
+		finalBuilder.WriteString(address)
+		finalBuilder.WriteString(" num ")
+		finalBuilder.WriteString(strconv.Itoa(num))
+		finalBuilder.WriteString("\n")
+	}
+
+	// Write the global builder
+	finalBuilder.WriteString(globalBuilder.String())
+
+	err = os.WriteFile(globalIrPath, []byte(finalBuilder.String()), os.ModePerm)
 
 	if err != nil {
 		logger.Error("Could not write the Fluent IR to a file.")

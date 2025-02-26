@@ -15,13 +15,15 @@
 package tree
 
 import (
-	"strings"
+	"fluent/ast"
+	"fluent/filecode/types"
 )
 
-// InstructionTree represents a tree structure of instructions.
-type InstructionTree struct {
-	// Children holds the child nodes of the current instruction tree.
-	Children *[]*InstructionTree
-	// Representation is a string representation of the instruction.
-	Representation *strings.Builder
+type MarshalPair struct {
+	Child    *ast.AST
+	Parent   *InstructionTree
+	IsInline bool
+	Counter  int
+	IsParam  bool
+	Expected types.TypeWrapper
 }

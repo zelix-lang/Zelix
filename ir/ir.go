@@ -16,6 +16,7 @@ package ir
 
 import (
 	"fluent/filecode"
+	"fluent/ir/pool"
 	"fluent/ir/rule/function"
 	"fluent/ir/tree"
 	"fmt"
@@ -39,8 +40,11 @@ func BuildIr(
 	fileCode filecode.FileCode,
 	entry map[string]filecode.FileCode,
 	fileId int,
-	traceCounters *map[int]int,
-	usedStrings *map[string]string,
+	isMain bool,
+	traceMagicCounter *int,
+	traceCounters *map[int]string,
+	usedStrings *pool.StringPool,
+	poolExclusions *map[int]bool,
 	nameCounters *map[string]map[string]string,
 	localCounters map[string]string,
 ) string {
@@ -51,7 +55,7 @@ func BuildIr(
 	traceFileName := fmt.Sprintf("__trace_f%d__", fileId)
 	builder.WriteString("ref ")
 	builder.WriteString(traceFileName)
-	builder.WriteString(" ")
+	builder.WriteString(" str ")
 	builder.WriteString(fileCode.Path)
 	builder.WriteString("\n")
 
@@ -91,16 +95,22 @@ func BuildIr(
 
 		function.MarshalFunction(
 			fun,
+			&fileCode,
+			traceFileName,
+			isMain,
+			traceMagicCounter,
 			traceCounters,
 			usedStrings,
+			poolExclusions,
 			&fileTree,
+			nameCounters,
 			localCounters,
 		)
 	}
 
 	// Write the instructions to the builder
 	for _, child := range *fileTree.Children {
-		builder.WriteString(child.Representation)
+		builder.WriteString(child.Representation.String())
 		builder.WriteString("\n")
 	}
 

@@ -1,5 +1,9 @@
 import "@std::io::print";
 
+fun wrap(a: str) -> str {
+    return a;
+}
+
 pub fun main() {
-    println(println("Hello, world!"));
+    println(wrap("Hello, world!"));
 }

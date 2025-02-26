@@ -35,7 +35,8 @@ import (
 // Returns:
 //   - A slice of sorted file codes
 //   - A map of original file codes.
-func CheckCommand(context *cli.Command) ([]filecode.FileCode, map[string]filecode.FileCode) {
+//   - The original path where the project is located.
+func CheckCommand(context *cli.Command) ([]filecode.FileCode, map[string]filecode.FileCode, string) {
 	ShowHeaderMessage()
 
 	// Retrieve the path from the context
@@ -65,5 +66,5 @@ func CheckCommand(context *cli.Command) ([]filecode.FileCode, map[string]filecod
 
 	// The build command depends on the check command
 	// hence, it also needs the file codes
-	return sortedFileCodes, fileCodes
+	return sortedFileCodes, fileCodes, path
 }
