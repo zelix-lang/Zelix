@@ -124,7 +124,7 @@ func AnalyzeExpression(
 		}
 
 		// Check for illegal pointers
-		if element.Got.Type.PointerCount < 0 && !element.IsParam {
+		if element.Got.Type.PointerCount > 0 && !element.IsParam {
 			return object.Object{}, error3.Error{
 				Code:   error3.InvalidPointer,
 				Line:   element.Tree.Line,
