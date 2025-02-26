@@ -124,7 +124,6 @@ func MarshalFunction(
 				traceCounters,
 				usedStrings,
 				nameCounters,
-				localCounters,
 			)
 		default:
 		}

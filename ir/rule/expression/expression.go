@@ -35,7 +35,6 @@ func MarshalExpression(
 	traceCounters *map[int]string,
 	usedStrings *pool.StringPool,
 	nameCounters *map[string]map[string]string,
-	localCounters map[string]string,
 ) {
 	result := tree.InstructionTree{
 		Children:       &[]*tree.InstructionTree{},
