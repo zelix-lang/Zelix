@@ -19,11 +19,13 @@ import (
 	"fluent/filecode/types"
 )
 
+// MarshalPair represents a pair of a child AST node and its parent instruction tree.
+// It also includes metadata about the relationship.
 type MarshalPair struct {
-	Child    *ast.AST
-	Parent   *InstructionTree
-	IsInline bool
-	Counter  int
-	IsParam  bool
-	Expected types.TypeWrapper
+	Child    *ast.AST          // Child is the AST node.
+	Parent   *InstructionTree  // Parent is the instruction tree containing the child.
+	IsInline bool              // IsInline indicates if the pair is inline.
+	Counter  int               // Counter is used for tracking purposes.
+	IsParam  bool              // IsParam indicates if the pair is a parameter.
+	Expected types.TypeWrapper // Expected is the expected type of the child node.
 }
