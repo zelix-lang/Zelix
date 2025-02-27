@@ -18,6 +18,7 @@ import (
 	"fluent/ast"
 	"fluent/filecode"
 	"fluent/ir/pool"
+	"fluent/ir/rule/array"
 	"fluent/ir/rule/call"
 	"fluent/ir/tree"
 	"strconv"
@@ -62,7 +63,7 @@ func MarshalExpression(
 		startAt := 0
 
 		// Move values to the stack for parameters
-		if pair.IsParam {
+		if pair.IsParam && !pair.IsInline {
 			pair.Parent.Representation.WriteString("mov x")
 			pair.Parent.Representation.WriteString(strconv.Itoa(pair.Counter))
 			pair.Parent.Representation.WriteString(" ")
@@ -99,6 +100,7 @@ func MarshalExpression(
 				pair.Parent,
 				traceCounters,
 				nameCounters,
+				variables,
 				usedStrings,
 				&queue,
 			)
@@ -113,6 +115,18 @@ func MarshalExpression(
 					fileCodeId,
 					*child.Value,
 				),
+			)
+		case ast.Array:
+			array.MarshalArray(
+				&result,
+				child,
+				fileCodeId,
+				counter,
+				pair.Parent,
+				usedStrings,
+				&queue,
+				variables,
+				pair.Expected,
 			)
 		case ast.NumberLiteral, ast.DecimalLiteral:
 			// Directly write the tree's value

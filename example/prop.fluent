@@ -1,9 +1,9 @@
 import "@std::io::print";
 
-fun wrap(a: str) -> str {
+fun wrap(a: num[]) -> num[] {
     return a;
 }
 
 pub fun main() {
-    println(wrap("Hello, world!"));
+    wrap([1, 2, 3]);
 }

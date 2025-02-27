@@ -18,6 +18,7 @@ import (
 	"fluent/ast"
 	"fluent/filecode"
 	"fluent/ir/pool"
+	"fluent/ir/rule/value"
 	"fluent/ir/tree"
 	"fmt"
 	"strconv"
@@ -35,6 +36,7 @@ func MarshalFunctionCall(
 	parent *tree.InstructionTree,
 	traceCounters *map[int]string,
 	nameCounters *map[string]map[string]string,
+	variables map[string]string,
 	usedStrings *pool.StringPool,
 	exprQueue *[]tree.MarshalPair,
 ) {
@@ -92,20 +94,8 @@ func MarshalFunctionCall(
 			// Get the expression inside the param node
 			expr := (*paramNode.Children)[0]
 
-			// Get the expression's children
-			exprChildren := *expr.Children
-
-			// Check if we can reuse a string
-			if len(exprChildren) == 1 && exprChildren[0].Rule == ast.StringLiteral {
-				strLiteral := exprChildren[0]
-				parent.Representation.WriteString(
-					usedStrings.RequestAddress(
-						fileCodeId,
-						*strLiteral.Value,
-					),
-				)
-
-				parent.Representation.WriteString(" ")
+			// Retrieve the string literal if needed
+			if value.RetrieveVarOrStr(fileCodeId, expr, parent, usedStrings, variables) {
 				continue
 			}
 
