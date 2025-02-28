@@ -20,6 +20,7 @@ import (
 	"fluent/ir/pool"
 	"fluent/ir/rule/function"
 	"fluent/ir/tree"
+	"fluent/util"
 	"fmt"
 	"strings"
 )
@@ -27,7 +28,7 @@ import (
 func MarshalModule(
 	mod *module.Module,
 	trace *filecode.FileCode,
-	modulePropCounters *map[string]map[string]int,
+	modulePropCounters *map[string]*util.OrderedMap[*string, int],
 	localCounters map[string]string,
 	fileTree *tree.InstructionTree,
 	traceFileName string,
@@ -54,17 +55,18 @@ func MarshalModule(
 	propCounters := (*modulePropCounters)[mod.Name]
 
 	// Iterate over all the module's properties
-	for name, counter := range propCounters {
-		// Get the property by name
-		prop, ok := mod.Declarations[name]
+	propCounters.Iterate(func(name *string, counter int) {
+		// Get the property
+		prop, ok := mod.Declarations[*name]
+
 		if ok {
 			modTree.Representation.WriteString(prop.Type.Marshal())
 			modTree.Representation.WriteString(" ")
-			continue
+			return
 		}
 
 		// Otherwise, marshal the method as a function
-		fun := mod.Functions[name]
+		fun := mod.Functions[*name]
 		function.MarshalFunction(
 			fun,
 			trace,
@@ -80,5 +82,5 @@ func MarshalModule(
 			nameCounters,
 			fmt.Sprintf("%s__m_%d", localCounters[mod.Name], counter),
 		)
-	}
+	})
 }

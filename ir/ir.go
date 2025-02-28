@@ -20,6 +20,7 @@ import (
 	"fluent/ir/rule/function"
 	"fluent/ir/rule/module"
 	"fluent/ir/tree"
+	"fluent/util"
 	"fmt"
 	"strings"
 )
@@ -45,7 +46,7 @@ func BuildIr(
 	traceCounters *pool.NumPool,
 	usedStrings *pool.StringPool,
 	usedNumbers *pool.StringPool,
-	modulePropCounters *map[string]map[string]int,
+	modulePropCounters *map[string]*util.OrderedMap[*string, int],
 	nameCounters *map[string]map[string]string,
 	localCounters map[string]string,
 ) string {
