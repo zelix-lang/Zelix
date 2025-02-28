@@ -84,7 +84,7 @@ func AnalyzeModule(
 
 		// Analyze the function
 		errors, warnings, reassignments := function2.AnalyzeFunction(
-			fun,
+			*fun,
 			trace,
 			mod.Name,
 			&mod.Templates,

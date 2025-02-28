@@ -53,7 +53,7 @@ func AnalyzeFunctionCall(
 	hasParams := len(*tree.Children) > 1
 
 	var generics map[string]bool
-	var function function2.Function
+	var function *function2.Function
 	var found bool
 	var returnType types.TypeWrapper
 

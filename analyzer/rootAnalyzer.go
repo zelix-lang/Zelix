@@ -40,7 +40,7 @@ import (
 // - value: The function or module being checked.
 // - file: The file where the function or module is defined.
 // - entry: A map where the key is the file path and the value is the FileCode object.
-func checkImportRedefinition[T function.Function | module.Module](
+func checkImportRedefinition[T *function.Function | *module.Module](
 	collection map[string]T,
 	name string,
 	value T,

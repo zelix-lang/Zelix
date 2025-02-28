@@ -44,7 +44,7 @@ func AnalyzeFileCode(code filecode.FileCode) (*pool.ErrorPool, *pool.ErrorPool) 
 		}
 
 		// Analyze the function
-		errors, warnings, _ := function2.AnalyzeFunction(function, &code, "", &function.Templates, stack.ScopedStack{
+		errors, warnings, _ := function2.AnalyzeFunction(*function, &code, "", &function.Templates, stack.ScopedStack{
 			Scopes: make(map[int]stack.Stack),
 		}, false)
 		globalErrors.Extend(errors.Errors)
@@ -59,7 +59,7 @@ func AnalyzeFileCode(code filecode.FileCode) (*pool.ErrorPool, *pool.ErrorPool) 
 		}
 
 		// Analyze the function
-		errors, warnings := module.AnalyzeModule(mod, &code)
+		errors, warnings := module.AnalyzeModule(*mod, &code)
 		globalErrors.Extend(errors.Errors)
 		globalWarnings.Extend(warnings.Errors)
 	}

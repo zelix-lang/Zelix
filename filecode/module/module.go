@@ -42,7 +42,7 @@ type Module struct {
 	// Public indicates whether the module is public.
 	Public bool
 	// Functions is a map of function names to their definitions.
-	Functions map[string]function.Function
+	Functions map[string]*function.Function
 	// Declarations is a list of declarations in the module.
 	Declarations map[string]Declaration
 	// Templates is a list of generic types in the module.

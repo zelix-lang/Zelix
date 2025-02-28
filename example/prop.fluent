@@ -1,5 +1,4 @@
 import "@std::io::print";
-import "nested.fluent";
 
 fun wrap(a: num[]) -> num[] {
     return a;

@@ -107,6 +107,19 @@ func BuildIr(
 		)
 	}
 
+	// Marshal all modules
+	for _, mod := range fileCode.Modules {
+		// Skip imported modules
+		if mod.Path != fileCode.Path {
+			continue
+		}
+
+		// Skip functions with generics
+		if len(mod.Templates) > 0 {
+			continue
+		}
+	}
+
 	// Write the instructions to the builder
 	for _, child := range *fileTree.Children {
 		builder.WriteString(child.Representation.String())

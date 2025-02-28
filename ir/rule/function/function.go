@@ -26,7 +26,7 @@ import (
 )
 
 func MarshalFunction(
-	fun function.Function,
+	fun *function.Function,
 	trace *filecode.FileCode,
 	traceFileName string,
 	fileCodeId int,

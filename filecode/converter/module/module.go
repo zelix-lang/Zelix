@@ -38,7 +38,7 @@ func ConvertModule(ast *ast2.AST, contents string) module.Module {
 	startAt := 0
 
 	result := module.Module{
-		Functions:    make(map[string]function2.Function),
+		Functions:    make(map[string]*function2.Function),
 		Declarations: make(map[string]module.Declaration),
 		Trace: trace.Trace{
 			Line:   ast.Line,
@@ -82,7 +82,7 @@ func ConvertModule(ast *ast2.AST, contents string) module.Module {
 			redefinition.CheckRedefinition(result.Functions, fn.Name, fn, contents, result.Path)
 
 			// Append the function to the module
-			result.Functions[fn.Name] = fn
+			result.Functions[fn.Name] = &fn
 		case ast2.Declaration, ast2.IncompleteDeclaration:
 			// Convert the declaration
 			name, dec := ConvertDeclaration(node)

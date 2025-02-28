@@ -180,8 +180,8 @@ func ConvertToFileCode(entry string, silent bool) map[string]filecode.FileCode {
 
 		code := filecode.FileCode{
 			Path:      *path,
-			Functions: make(map[string]function2.Function),
-			Modules:   make(map[string]module.Module),
+			Functions: make(map[string]*function2.Function),
+			Modules:   make(map[string]*module.Module),
 			Imports:   make([]string, 0),
 			Contents:  contents,
 		}
@@ -234,7 +234,7 @@ func ConvertToFileCode(entry string, silent bool) map[string]filecode.FileCode {
 				// Check for redefinitions
 				redefinition.CheckRedefinition(code.Functions, fn.Name, fn, contents, *path)
 
-				code.Functions[fn.Name] = fn
+				code.Functions[fn.Name] = &fn
 			case ast2.Module:
 				// Convert to a Function wrapper
 				mod := module2.ConvertModule(child, contents)
@@ -242,7 +242,7 @@ func ConvertToFileCode(entry string, silent bool) map[string]filecode.FileCode {
 				// Check for redefinitions
 				redefinition.CheckRedefinition(code.Modules, mod.Name, mod, contents, *path)
 
-				code.Modules[mod.Name] = mod
+				code.Modules[mod.Name] = &mod
 			default:
 			}
 		}
