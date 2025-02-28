@@ -25,6 +25,7 @@ func RetrieveVarOrStr(
 	expr *ast.AST,
 	parent *tree.InstructionTree,
 	usedStrings *pool.StringPool,
+	usedNumbers *pool.StringPool,
 	variables map[string]string,
 ) bool {
 	// Get the expression's children
@@ -32,7 +33,8 @@ func RetrieveVarOrStr(
 
 	// Check if we can reuse a string
 	if len(exprChildren) == 1 {
-		if exprChildren[0].Rule == ast.StringLiteral {
+		switch exprChildren[0].Rule {
+		case ast.StringLiteral:
 			strLiteral := exprChildren[0]
 			parent.Representation.WriteString(
 				usedStrings.RequestAddress(
@@ -43,15 +45,38 @@ func RetrieveVarOrStr(
 
 			parent.Representation.WriteString(" ")
 			return true
-		} else if exprChildren[0].Rule == ast.Identifier {
+		case ast.Identifier:
 			// Write the variable's address
 			parent.Representation.WriteString(variables[*expr.Value])
 			parent.Representation.WriteString(" ")
 			return true
-		} else if exprChildren[0].Rule == ast.BooleanLiteral {
+		case ast.BooleanLiteral:
 			// Write the boolean's value
 			WriteBoolLiteral(exprChildren[0], parent)
+		case ast.NumberLiteral, ast.DecimalLiteral:
+			// Get the number's value
+			num := *exprChildren[0].Value
+
+			// See if the number's value is either 0 or 1
+			if num == "0" {
+				// Write the __FALSE constant
+				parent.Representation.WriteString("__FALSE")
+				parent.Representation.WriteString(" ")
+				return true
+			} else if num == "1" {
+				// Write the __TRUE constant
+				parent.Representation.WriteString("__TRUE")
+				parent.Representation.WriteString(" ")
+				return true
+			}
+
+			// Request an address for this number
+			address := usedNumbers.RequestAddress(fileCodeId, num)
+			parent.Representation.WriteString(address)
+			parent.Representation.WriteString(" ")
+
 			return true
+		default:
 		}
 	}
 

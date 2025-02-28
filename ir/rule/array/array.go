@@ -18,8 +18,8 @@ import (
 	"fluent/ast"
 	"fluent/filecode/types"
 	"fluent/ir/pool"
-	"fluent/ir/rule/value"
 	"fluent/ir/tree"
+	"fluent/ir/value"
 	"strconv"
 	"strings"
 )
@@ -31,6 +31,7 @@ func MarshalArray(
 	counter *int,
 	parent *tree.InstructionTree,
 	usedStrings *pool.StringPool,
+	usedNumbers *pool.StringPool,
 	exprQueue *[]tree.MarshalPair,
 	variables map[string]string,
 	expected types.TypeWrapper,
@@ -40,7 +41,7 @@ func MarshalArray(
 
 	for _, expr := range children {
 		// Check for string literals
-		if value.RetrieveVarOrStr(fileCodeId, expr, parent, usedStrings, variables) {
+		if value.RetrieveVarOrStr(fileCodeId, expr, parent, usedStrings, usedNumbers, variables) {
 			continue
 		}
 

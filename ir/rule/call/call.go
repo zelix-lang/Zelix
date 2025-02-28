@@ -18,8 +18,8 @@ import (
 	"fluent/ast"
 	"fluent/filecode"
 	"fluent/ir/pool"
-	"fluent/ir/rule/value"
 	"fluent/ir/tree"
+	"fluent/ir/value"
 	"fmt"
 	"strconv"
 	"strings"
@@ -38,6 +38,7 @@ func MarshalFunctionCall(
 	nameCounters *map[string]map[string]string,
 	variables map[string]string,
 	usedStrings *pool.StringPool,
+	usedNumbers *pool.StringPool,
 	exprQueue *[]tree.MarshalPair,
 ) {
 	lineCounter, ok := (*traceCounters)[child.Line]
@@ -95,7 +96,7 @@ func MarshalFunctionCall(
 			expr := (*paramNode.Children)[0]
 
 			// Retrieve the string literal if needed
-			if value.RetrieveVarOrStr(fileCodeId, expr, parent, usedStrings, variables) {
+			if value.RetrieveVarOrStr(fileCodeId, expr, parent, usedStrings, usedNumbers, variables) {
 				continue
 			}
 

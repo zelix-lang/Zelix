@@ -44,7 +44,7 @@ func BuildIr(
 	traceMagicCounter *int,
 	traceCounters *map[int]string,
 	usedStrings *pool.StringPool,
-	poolExclusions *map[int]bool,
+	usedNumbers *pool.StringPool,
 	nameCounters *map[string]map[string]string,
 	localCounters map[string]string,
 ) string {
@@ -102,7 +102,7 @@ func BuildIr(
 			traceMagicCounter,
 			traceCounters,
 			usedStrings,
-			poolExclusions,
+			usedNumbers,
 			&fileTree,
 			nameCounters,
 			localCounters,

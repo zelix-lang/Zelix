@@ -34,6 +34,7 @@ func MarshalFunction(
 	traceMagicCounter *int,
 	traceCounters *map[int]string,
 	usedStrings *pool.StringPool,
+	usedNumbers *pool.StringPool,
 	fileTree *tree.InstructionTree,
 	nameCounters *map[string]map[string]string,
 	localCounters map[string]string,
@@ -126,6 +127,7 @@ func MarshalFunction(
 				variables,
 				traceCounters,
 				usedStrings,
+				usedNumbers,
 				nameCounters,
 			)
 		default:

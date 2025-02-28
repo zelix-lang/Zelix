@@ -20,7 +20,7 @@ import (
 )
 
 // WriteBoolLiteral writes a boolean literal to the parent InstructionTree.
-// It writes "1" if the value is true, "0" otherwise.
+// It writes "__TRUE" if the value is true, "__FALSE" otherwise.
 //
 // Parameters:
 //   - child: a pointer to the AST node containing the boolean value.
@@ -29,9 +29,9 @@ func WriteBoolLiteral(child *ast.AST, parent *tree.InstructionTree) {
 	// Write 1 if the value is true, 0 otherwise
 	var val string
 	if *child.Value == "true" {
-		val = "1"
+		val = "__TRUE"
 	} else {
-		val = "0"
+		val = "__FALSE"
 	}
 	parent.Representation.WriteString(val)
 }

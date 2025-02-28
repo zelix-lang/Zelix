@@ -17,8 +17,8 @@ package signed
 import (
 	"fluent/ast"
 	"fluent/ir/pool"
-	"fluent/ir/rule/value"
 	"fluent/ir/tree"
+	"fluent/ir/value"
 	"strconv"
 	"strings"
 )
@@ -57,11 +57,12 @@ func processCandidate(
 	pair *tree.MarshalPair,
 	preferredParent *tree.InstructionTree,
 	usedStrings *pool.StringPool,
+	usedNumbers *pool.StringPool,
 	exprQueue *[]tree.MarshalPair,
 	variables map[string]string,
 ) {
 	// See if we can save memory
-	if value.RetrieveVarOrStr(fileCodeId, candidate, preferredParent, usedStrings, variables) {
+	if value.RetrieveVarOrStr(fileCodeId, candidate, preferredParent, usedStrings, usedNumbers, variables) {
 		return
 	}
 
@@ -99,6 +100,7 @@ func MarshalSignedExpression(
 	counter *int,
 	pair *tree.MarshalPair,
 	usedStrings *pool.StringPool,
+	usedNumbers *pool.StringPool,
 	exprQueue *[]tree.MarshalPair,
 	variables map[string]string,
 ) {
@@ -111,11 +113,13 @@ func MarshalSignedExpression(
 	writeSignOpcode(generalSign, pair.Parent)
 
 	// Process the first pair outside the queue
-	processCandidate(global, child, fileCodeId, counter, pair, pair.Parent, usedStrings, exprQueue, variables)
+	processCandidate(global, children[0], fileCodeId, counter, pair, pair.Parent, usedStrings, usedNumbers, exprQueue, variables)
 
 	// See if we can save memory in the 2nd operand
-	if value.RetrieveVarOrStr(fileCodeId, children[2], pair.Parent, usedStrings, variables) {
-		return
+	if len(children) == 3 {
+		if value.RetrieveVarOrStr(fileCodeId, children[2], pair.Parent, usedStrings, usedNumbers, variables) {
+			return
+		}
 	}
 
 	// Process the expression in a breadth-first manner
@@ -133,10 +137,9 @@ func MarshalSignedExpression(
 			Representation: &strings.Builder{},
 		}
 
-		*global.Children = append([]*tree.InstructionTree{&exprTree}, *global.Children...)
 		if len(queue) == 1 {
 			// See if we can save memory in the operand
-			if value.RetrieveVarOrStr(fileCodeId, queue[0], pair.Parent, usedStrings, variables) {
+			if value.RetrieveVarOrStr(fileCodeId, queue[0], lastParent, usedStrings, usedNumbers, variables) {
 				break
 			}
 
@@ -154,9 +157,12 @@ func MarshalSignedExpression(
 				IsParam:  true,
 				Expected: pair.Expected,
 			})
+
+			*global.Children = append([]*tree.InstructionTree{&exprTree}, *global.Children...)
 			break
 		}
 
+		*global.Children = append([]*tree.InstructionTree{&exprTree}, *global.Children...)
 		// Write the new address to the last parent
 		lastParent.Representation.WriteString("x")
 		lastParent.Representation.WriteString(strconv.Itoa(suitable))
@@ -180,7 +186,7 @@ func MarshalSignedExpression(
 		writeSignOpcode(sign, &exprTree)
 
 		// Process the first pair outside the queue
-		processCandidate(global, candidate, fileCodeId, counter, pair, &exprTree, usedStrings, exprQueue, variables)
+		processCandidate(global, candidate, fileCodeId, counter, pair, &exprTree, usedStrings, usedNumbers, exprQueue, variables)
 
 		// Update the last parent
 		lastParent = &exprTree

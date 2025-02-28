@@ -20,6 +20,7 @@ import "fmt"
 type StringPool struct {
 	Storage map[string]string // Storage maps strings to their addresses.
 	Counter map[int]int       // Counter keeps track of the number of strings associated with each id.
+	Prefix  string            // Prefix is a prefix that is appended to all memory spaces.
 }
 
 // AddNewId adds a new id to the pool if it does not already exist.
@@ -56,7 +57,7 @@ func (pool *StringPool) RequestAddress(id int, str string) string {
 	counter := pool.Counter[id]
 
 	// Create a new address for this string
-	address = fmt.Sprintf("__str__f%d_x%d", id, counter)
+	address = fmt.Sprintf("%sf%d_x%d", pool.Prefix, id, counter)
 	pool.Storage[str] = address
 	pool.Counter[id]++
 

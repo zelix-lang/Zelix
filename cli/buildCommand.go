@@ -79,6 +79,12 @@ func BuildCommand(context *cli.Command) {
 	usedStrings := pool.StringPool{
 		Storage: make(map[string]string),
 		Counter: make(map[int]int),
+		Prefix:  "__str__",
+	}
+	usedNumbers := pool.StringPool{
+		Storage: make(map[string]string),
+		Counter: make(map[int]int),
+		Prefix:  "__num__",
 	}
 	// Used to store precomputed counters for functions' and
 	// modules' names
@@ -86,6 +92,10 @@ func BuildCommand(context *cli.Command) {
 	// Save in a map the files that have an external
 	// implementation to avoid recompiling them
 	externalImpl := make(map[string]bool)
+
+	// Write __TRUE, __FALSE constants
+	globalBuilder.WriteString("ref __TRUE num 1\n")
+	globalBuilder.WriteString("ref __FALSE num 0\n")
 
 	// Precompute the counters for the names
 	for _, fileCode := range fileCodes {
@@ -188,6 +198,7 @@ func BuildCommand(context *cli.Command) {
 			&traceMagicCounter,
 			&traceCounters,
 			&usedStrings,
+			&usedNumbers,
 			// Prevent copying the map every time
 			// by passing a reference to the map
 			&nameCounters,
@@ -238,6 +249,21 @@ func BuildCommand(context *cli.Command) {
 		finalBuilder.WriteString(" str \"")
 		finalBuilder.WriteString(str)
 		finalBuilder.WriteString("\"\n")
+	}
+
+	for num, address := range usedNumbers.Storage {
+		finalBuilder.WriteString("ref ")
+		finalBuilder.WriteString(address)
+
+		// Check if the number is a decimal
+		if strings.Contains(num, ".") {
+			finalBuilder.WriteString(" dec ")
+		} else {
+			finalBuilder.WriteString(" num ")
+		}
+
+		finalBuilder.WriteString(num)
+		finalBuilder.WriteString("\n")
 	}
 
 	for num, address := range traceCounters {

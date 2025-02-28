@@ -21,8 +21,8 @@ import (
 	"fluent/ir/rule/array"
 	"fluent/ir/rule/call"
 	"fluent/ir/rule/signed"
-	"fluent/ir/rule/value"
 	"fluent/ir/tree"
+	"fluent/ir/value"
 	"strconv"
 	"strings"
 )
@@ -38,6 +38,7 @@ func MarshalExpression(
 	variables map[string]string,
 	traceCounters *map[int]string,
 	usedStrings *pool.StringPool,
+	usedNumbers *pool.StringPool,
 	nameCounters *map[string]map[string]string,
 ) {
 	result := tree.InstructionTree{
@@ -104,6 +105,7 @@ func MarshalExpression(
 				nameCounters,
 				variables,
 				usedStrings,
+				usedNumbers,
 				&queue,
 			)
 		case ast.Identifier:
@@ -125,6 +127,7 @@ func MarshalExpression(
 				counter,
 				pair.Parent,
 				usedStrings,
+				usedNumbers,
 				&queue,
 				variables,
 				pair.Expected,
@@ -152,6 +155,7 @@ func MarshalExpression(
 				counter,
 				&pair,
 				usedStrings,
+				usedNumbers,
 				&queue,
 				variables,
 			)
