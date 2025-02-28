@@ -27,12 +27,10 @@ import (
 //   - parent: a pointer to the InstructionTree where the value will be written.
 func WriteBoolLiteral(child *ast.AST, parent *tree.InstructionTree) {
 	// Write 1 if the value is true, 0 otherwise
-	var val string
 	if *child.Value == "true" {
-		val = "__TRUE"
+		parent.Representation.WriteString("__TRUE")
 	} else {
-		val = "__FALSE"
+		parent.Representation.WriteString("__FALSE")
 	}
-	parent.Representation.WriteString(val)
 	parent.Representation.WriteString(" ")
 }
