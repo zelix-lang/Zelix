@@ -181,7 +181,6 @@ func BuildCommand(context *cli.Command) {
 			continue
 		}
 
-		fileCodeCount++
 		fileName := util.FileName(&fileCode.Path)
 
 		// Emit a building state
@@ -208,6 +207,7 @@ func BuildCommand(context *cli.Command) {
 		globalBuilder.WriteString(fileIr)
 		globalBuilder.WriteString("\n")
 		state.PassAllSpinners()
+		fileCodeCount++
 	}
 
 	// Get the pwd
