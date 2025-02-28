@@ -225,25 +225,28 @@ func ProcessSignedOp(
 					trace = &tokens[0]
 				}
 
-				// Create a nested expression
-				nestedExpression := ast.AST{
-					Rule:     ast.Expression,
-					Line:     trace.Line,
-					Column:   trace.Column,
-					File:     &firstElement.File,
-					Children: &[]*ast.AST{},
-				}
-
-				*exprQueue = append(*exprQueue, queue.Element{
-					Tokens: tokens,
-					Parent: &nestedExpression,
-				})
-
 				// Append the nested expression to the result
 				if pushTo != nil {
+					// Create a nested expression
+					nestedExpression := ast.AST{
+						Rule:     ast.Expression,
+						Line:     trace.Line,
+						Column:   trace.Column,
+						File:     &firstElement.File,
+						Children: &[]*ast.AST{},
+					}
+
 					*pushTo.Children = append(*pushTo.Children, &nestedExpression)
+
+					*exprQueue = append(*exprQueue, queue.Element{
+						Tokens: tokens,
+						Parent: &nestedExpression,
+					})
 				} else {
-					*expressionNode.Children = append(*expressionNode.Children, &nestedExpression)
+					*exprQueue = append(*exprQueue, queue.Element{
+						Tokens: tokens,
+						Parent: &expressionNode,
+					})
 				}
 
 				// Add the OR operator if it is not the last expression
