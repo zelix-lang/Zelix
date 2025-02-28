@@ -20,7 +20,6 @@ import (
 	"fluent/ir/pool"
 	"fluent/ir/tree"
 	"fluent/ir/value"
-	"fmt"
 	"strconv"
 	"strings"
 )
@@ -31,33 +30,17 @@ func MarshalFunctionCall(
 	traceFileName string,
 	fileCodeId int,
 	trace *filecode.FileCode,
-	traceMagicCounter *int,
 	counter *int,
 	parent *tree.InstructionTree,
-	traceCounters *map[int]string,
+	traceCounters *pool.NumPool,
 	nameCounters *map[string]map[string]string,
 	variables map[string]string,
 	usedStrings *pool.StringPool,
 	usedNumbers *pool.StringPool,
 	exprQueue *[]tree.MarshalPair,
 ) {
-	lineCounter, ok := (*traceCounters)[child.Line]
-
-	if !ok {
-		formattedCounter := fmt.Sprintf("__trace_magic_%d", *traceMagicCounter)
-		(*traceCounters)[child.Line] = formattedCounter
-		lineCounter = formattedCounter
-		*traceMagicCounter++
-	}
-
-	colCounter, ok := (*traceCounters)[child.Column]
-
-	if !ok {
-		formattedCounter := fmt.Sprintf("__trace_magic_%d", *traceMagicCounter)
-		(*traceCounters)[child.Column] = formattedCounter
-		colCounter = formattedCounter
-		*traceMagicCounter++
-	}
+	lineCounter := traceCounters.RequestAddress(fileCodeId, child.Line)
+	colCounter := traceCounters.RequestAddress(fileCodeId, child.Column)
 
 	// Write the call instruction to the parent
 	parent.Representation.WriteString("c ")

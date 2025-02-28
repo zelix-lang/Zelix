@@ -73,8 +73,10 @@ func BuildCommand(context *cli.Command) {
 	fileCodeCount := 0
 
 	// A map of already-defined values used for tracing lines and columns
-	traceCounters := make(map[int]string)
-	traceMagicCounter := 0
+	traceCounters := pool.NumPool{
+		Storage: make(map[int]string),
+		Counter: make(map[int]int),
+	}
 	// Keep track of used strings (Saved in reserved spaces of memory)
 	usedStrings := pool.StringPool{
 		Storage: make(map[string]string),
@@ -194,7 +196,6 @@ func BuildCommand(context *cli.Command) {
 			fileCodesMap,
 			fileCodeCount,
 			isMain,
-			&traceMagicCounter,
 			&traceCounters,
 			&usedStrings,
 			&usedNumbers,
@@ -266,7 +267,7 @@ func BuildCommand(context *cli.Command) {
 		finalBuilder.WriteString("\n")
 	}
 
-	for num, address := range traceCounters {
+	for num, address := range traceCounters.Storage {
 		finalBuilder.WriteString("ref ")
 		finalBuilder.WriteString(address)
 		finalBuilder.WriteString(" num ")
