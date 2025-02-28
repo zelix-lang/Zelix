@@ -54,14 +54,14 @@ func MarshalModule(
 	propCounters := (*modulePropCounters)[mod.Name]
 
 	// Iterate over all the module's properties
-	propCounters.Iterate(func(name *string, computedName *string) {
+	propCounters.Iterate(func(name *string, computedName *string) bool {
 		// Get the property
 		prop, ok := mod.Declarations[*name]
 
 		if ok {
 			modTree.Representation.WriteString(prop.Type.Marshal())
 			modTree.Representation.WriteString(" ")
-			return
+			return false
 		}
 
 		// Otherwise, marshal the method as a function
@@ -82,5 +82,7 @@ func MarshalModule(
 			nameCounters,
 			*computedName,
 		)
+
+		return false
 	})
 }

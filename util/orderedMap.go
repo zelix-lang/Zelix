@@ -18,7 +18,7 @@ import (
 	"container/list"
 )
 
-// OrderedMap is a map that maintains the insertion order of keys.
+// OrderedMap is a map that maintains the order of insertion.
 type OrderedMap[K comparable, V any] struct {
 	data map[K]*list.Element
 	list *list.List
@@ -38,7 +38,7 @@ func NewOrderedMap[K comparable, V any]() *OrderedMap[K, V] {
 	}
 }
 
-// Set inserts or updates the value associated with the key.
+// Set inserts or updates a key-value pair in the OrderedMap.
 func (om *OrderedMap[K, V]) Set(key K, value V) {
 	if elem, exists := om.data[key]; exists {
 		// Update existing value
@@ -50,7 +50,8 @@ func (om *OrderedMap[K, V]) Set(key K, value V) {
 	}
 }
 
-// Get retrieves the value associated with the key.
+// Get retrieves the value associated with the given key.
+// Returns the value and a boolean indicating if the key was found.
 func (om *OrderedMap[K, V]) Get(key K) (V, bool) {
 	if elem, exists := om.data[key]; exists {
 		return elem.Value.(*KeyValue[K, V]).value, true
@@ -59,7 +60,7 @@ func (om *OrderedMap[K, V]) Get(key K) (V, bool) {
 	return zero, false
 }
 
-// Delete removes the key-value pair associated with the key.
+// Delete removes the key-value pair associated with the given key.
 func (om *OrderedMap[K, V]) Delete(key K) {
 	if elem, exists := om.data[key]; exists {
 		om.list.Remove(elem)
@@ -67,10 +68,13 @@ func (om *OrderedMap[K, V]) Delete(key K) {
 	}
 }
 
-// Iterate iterates over all key-value pairs in insertion order.
-func (om *OrderedMap[K, V]) Iterate(predicate func(K, V)) {
+// Iterate iterates over the OrderedMap and applies the given predicate function to each key-value pair.
+// Iteration stops if the predicate function returns true.
+func (om *OrderedMap[K, V]) Iterate(predicate func(K, V) bool) {
 	for elem := om.list.Front(); elem != nil; elem = elem.Next() {
 		kv := elem.Value.(*KeyValue[K, V])
-		predicate(kv.key, kv.value)
+		if predicate(kv.key, kv.value) {
+			break
+		}
 	}
 }
