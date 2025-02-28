@@ -21,14 +21,13 @@ import (
 	"fluent/ir/rule/function"
 	"fluent/ir/tree"
 	"fluent/util"
-	"fmt"
 	"strings"
 )
 
 func MarshalModule(
 	mod *module.Module,
 	trace *filecode.FileCode,
-	modulePropCounters *map[string]*util.OrderedMap[*string, int],
+	modulePropCounters *map[string]*util.OrderedMap[*string, *string],
 	localCounters map[string]string,
 	fileTree *tree.InstructionTree,
 	traceFileName string,
@@ -55,7 +54,7 @@ func MarshalModule(
 	propCounters := (*modulePropCounters)[mod.Name]
 
 	// Iterate over all the module's properties
-	propCounters.Iterate(func(name *string, counter int) {
+	propCounters.Iterate(func(name *string, computedName *string) {
 		// Get the property
 		prop, ok := mod.Declarations[*name]
 
@@ -80,7 +79,7 @@ func MarshalModule(
 			usedNumbers,
 			fileTree,
 			nameCounters,
-			fmt.Sprintf("%s__m_%d", localCounters[mod.Name], counter),
+			*computedName,
 		)
 	})
 }
