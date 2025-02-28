@@ -16,6 +16,7 @@ package signed
 
 import (
 	"fluent/ast"
+	"fluent/filecode/types"
 	"fluent/ir/pool"
 	"fluent/ir/tree"
 	"fluent/ir/value"
@@ -23,36 +24,60 @@ import (
 	"strings"
 )
 
-func writeSignOpcode(sign string, parent *tree.InstructionTree) {
+// Create global TypeWrappers for the signed expressions
+var booleanWrapper = types.TypeWrapper{
+	BaseType:    "bool",
+	IsPrimitive: true,
+	Children:    &[]*types.TypeWrapper{},
+}
+
+func writeSignOpcode(sign string, parent *tree.InstructionTree) bool {
 	switch sign {
 	case "+":
-		parent.Representation.WriteString("add")
+		parent.Representation.WriteString("add ")
+		return false
 	case "-":
-		parent.Representation.WriteString("sub")
+		parent.Representation.WriteString("sub ")
+		return false
 	case "*":
-		parent.Representation.WriteString("mul")
+		parent.Representation.WriteString("mul ")
+		return false
 	case "/":
-		parent.Representation.WriteString("div")
+		parent.Representation.WriteString("div ")
+		return false
 	case "==":
-		parent.Representation.WriteString("eq")
+		parent.Representation.WriteString("eq ")
+		return true
 	case ">":
-		parent.Representation.WriteString("gt")
+		parent.Representation.WriteString("gt ")
+		return true
 	case "<":
-		parent.Representation.WriteString("lt")
+		parent.Representation.WriteString("lt ")
+		return true
 	case "<=":
-		parent.Representation.WriteString("le")
+		parent.Representation.WriteString("le ")
+		return true
 	case ">=":
-		parent.Representation.WriteString("ge")
+		parent.Representation.WriteString("ge ")
+		return true
 	case "!=":
-		parent.Representation.WriteString("ne")
+		parent.Representation.WriteString("ne ")
+		return true
+	case "||":
+		parent.Representation.WriteString("or ")
+		return true
+	case "&&":
+		parent.Representation.WriteString("and ")
+		return true
 	}
-	parent.Representation.WriteString(" ")
+	return false
 }
 
 func processCandidate(
 	global *tree.InstructionTree,
 	candidate *ast.AST,
 	fileCodeId int,
+	isBool bool,
 	counter *int,
 	pair *tree.MarshalPair,
 	preferredParent *tree.InstructionTree,
@@ -83,13 +108,20 @@ func processCandidate(
 	*global.Children = append([]*tree.InstructionTree{&candidateTree}, *global.Children...)
 
 	// Schedule the candidate
+	var expected types.TypeWrapper
+	if isBool {
+		expected = booleanWrapper
+	} else {
+		expected = pair.Expected
+	}
+
 	*exprQueue = append(*exprQueue, tree.MarshalPair{
 		Child:    candidate,
 		Parent:   &candidateTree,
 		IsInline: pair.IsInline,
 		Counter:  suitable,
 		IsParam:  true,
-		Expected: pair.Expected,
+		Expected: expected,
 	})
 }
 
@@ -105,15 +137,28 @@ func MarshalSignedExpression(
 	variables map[string]string,
 ) {
 	children := *child.Children
+	var expr *ast.AST
+
+	if len(children) == 1 {
+		expr = children[0]
+
+		if expr.Rule == ast.Expression {
+			children = *expr.Children
+			expr = children[0]
+			children = *expr.Children
+		}
+	} else {
+		expr = child
+	}
 
 	// Determine the expression's sign
 	generalSign := *children[1].Value
 
 	// Write the appropriate opcode depending on the sign
-	writeSignOpcode(generalSign, pair.Parent)
+	isBoolean := writeSignOpcode(generalSign, pair.Parent)
 
 	// Process the first pair outside the queue
-	processCandidate(global, children[0], fileCodeId, counter, pair, pair.Parent, usedStrings, usedNumbers, exprQueue, variables)
+	processCandidate(global, children[0], fileCodeId, isBoolean, counter, pair, pair.Parent, usedStrings, usedNumbers, exprQueue, variables)
 
 	// See if we can save memory in the 2nd operand
 	if len(children) == 3 {
@@ -149,13 +194,21 @@ func MarshalSignedExpression(
 			lastParent.Representation.WriteString(" ")
 
 			// Schedule the expression
+			expr := queue[0]
+			var expected types.TypeWrapper
+			if expr.Rule == ast.Expression && (*expr.Children)[0].Rule == ast.BooleanExpression {
+				expected = booleanWrapper
+			} else {
+				expected = pair.Expected
+			}
+
 			*exprQueue = append(*exprQueue, tree.MarshalPair{
-				Child:    queue[0],
+				Child:    expr,
 				Parent:   &exprTree,
 				IsInline: pair.IsInline,
 				Counter:  suitable,
 				IsParam:  true,
-				Expected: pair.Expected,
+				Expected: expected,
 			})
 
 			*global.Children = append([]*tree.InstructionTree{&exprTree}, *global.Children...)
@@ -183,10 +236,10 @@ func MarshalSignedExpression(
 		queue = queue[2:]
 
 		// Write the appropriate opcode depending on the sign
-		writeSignOpcode(sign, &exprTree)
+		isBoolean := writeSignOpcode(sign, &exprTree)
 
 		// Process the first pair outside the queue
-		processCandidate(global, candidate, fileCodeId, counter, pair, &exprTree, usedStrings, usedNumbers, exprQueue, variables)
+		processCandidate(global, candidate, fileCodeId, isBoolean, counter, pair, &exprTree, usedStrings, usedNumbers, exprQueue, variables)
 
 		// Update the last parent
 		lastParent = &exprTree
