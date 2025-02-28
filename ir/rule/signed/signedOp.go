@@ -1,0 +1,190 @@
+/*
+   The Fluent Programming Language
+   -----------------------------------------------------
+   This code is released under the GNU GPL v3 license.
+   For more information, please visit:
+   https://www.gnu.org/licenses/gpl-3.0.html
+   -----------------------------------------------------
+   Copyright (c) 2025 Rodrigo R. & All Fluent Contributors
+   This program comes with ABSOLUTELY NO WARRANTY.
+   For details type `fluent l`. This is free software,
+   and you are welcome to redistribute it under certain
+   conditions; type `fluent l -f` for details.
+*/
+
+package signed
+
+import (
+	"fluent/ast"
+	"fluent/ir/pool"
+	"fluent/ir/rule/value"
+	"fluent/ir/tree"
+	"strconv"
+	"strings"
+)
+
+func writeSignOpcode(sign string, parent *tree.InstructionTree) {
+	switch sign {
+	case "+":
+		parent.Representation.WriteString("add")
+	case "-":
+		parent.Representation.WriteString("sub")
+	case "*":
+		parent.Representation.WriteString("mul")
+	case "/":
+		parent.Representation.WriteString("div")
+	case "==":
+		parent.Representation.WriteString("eq")
+	case ">":
+		parent.Representation.WriteString("gt")
+	case "<":
+		parent.Representation.WriteString("lt")
+	case "<=":
+		parent.Representation.WriteString("le")
+	case ">=":
+		parent.Representation.WriteString("ge")
+	case "!=":
+		parent.Representation.WriteString("ne")
+	}
+	parent.Representation.WriteString(" ")
+}
+
+func processCandidate(
+	global *tree.InstructionTree,
+	candidate *ast.AST,
+	fileCodeId int,
+	counter *int,
+	pair *tree.MarshalPair,
+	preferredParent *tree.InstructionTree,
+	usedStrings *pool.StringPool,
+	exprQueue *[]tree.MarshalPair,
+	variables map[string]string,
+) {
+	// See if we can save memory
+	if value.RetrieveVarOrStr(fileCodeId, candidate, preferredParent, usedStrings, variables) {
+		return
+	}
+
+	// Get a suitable counter
+	suitable := *counter
+	*counter++
+
+	preferredParent.Representation.WriteString("x")
+	preferredParent.Representation.WriteString(strconv.Itoa(suitable))
+	preferredParent.Representation.WriteString(" ")
+
+	// Create a new InstructionTree for the candidate
+	candidateTree := tree.InstructionTree{
+		Children:       &[]*tree.InstructionTree{},
+		Representation: &strings.Builder{},
+	}
+
+	*global.Children = append([]*tree.InstructionTree{&candidateTree}, *global.Children...)
+
+	// Schedule the candidate
+	*exprQueue = append(*exprQueue, tree.MarshalPair{
+		Child:    candidate,
+		Parent:   &candidateTree,
+		IsInline: pair.IsInline,
+		Counter:  suitable,
+		IsParam:  true,
+		Expected: pair.Expected,
+	})
+}
+
+func MarshalSignedExpression(
+	global *tree.InstructionTree,
+	child *ast.AST,
+	fileCodeId int,
+	counter *int,
+	pair *tree.MarshalPair,
+	usedStrings *pool.StringPool,
+	exprQueue *[]tree.MarshalPair,
+	variables map[string]string,
+) {
+	children := *child.Children
+
+	// Determine the expression's sign
+	generalSign := *children[1].Value
+
+	// Write the appropriate opcode depending on the sign
+	writeSignOpcode(generalSign, pair.Parent)
+
+	// Process the first pair outside the queue
+	processCandidate(global, child, fileCodeId, counter, pair, pair.Parent, usedStrings, exprQueue, variables)
+
+	// See if we can save memory in the 2nd operand
+	if value.RetrieveVarOrStr(fileCodeId, children[2], pair.Parent, usedStrings, variables) {
+		return
+	}
+
+	// Process the expression in a breadth-first manner
+	queue := children[2:]
+
+	// Get a suitable pointer for the expression
+	suitable := *counter
+	*counter++
+	lastParent := pair.Parent
+
+	for len(queue) > 0 {
+		// Create a new InstructionTree for this expression
+		exprTree := tree.InstructionTree{
+			Children:       &[]*tree.InstructionTree{},
+			Representation: &strings.Builder{},
+		}
+
+		*global.Children = append([]*tree.InstructionTree{&exprTree}, *global.Children...)
+		if len(queue) == 1 {
+			// See if we can save memory in the operand
+			if value.RetrieveVarOrStr(fileCodeId, queue[0], pair.Parent, usedStrings, variables) {
+				break
+			}
+
+			// Write the new address to the last parent
+			lastParent.Representation.WriteString("x")
+			lastParent.Representation.WriteString(strconv.Itoa(suitable))
+			lastParent.Representation.WriteString(" ")
+
+			// Schedule the expression
+			*exprQueue = append(*exprQueue, tree.MarshalPair{
+				Child:    queue[0],
+				Parent:   &exprTree,
+				IsInline: pair.IsInline,
+				Counter:  suitable,
+				IsParam:  true,
+				Expected: pair.Expected,
+			})
+			break
+		}
+
+		// Write the new address to the last parent
+		lastParent.Representation.WriteString("x")
+		lastParent.Representation.WriteString(strconv.Itoa(suitable))
+		lastParent.Representation.WriteString(" ")
+
+		// Write mov instructions to the tree
+		exprTree.Representation.WriteString("mov x")
+		exprTree.Representation.WriteString(strconv.Itoa(suitable))
+		exprTree.Representation.WriteString(" ")
+
+		// Get the candidate
+		candidate := queue[0]
+
+		// Determine the expression's sign
+		sign := *queue[1].Value
+
+		// Remove the 1st operand and the sign from the queue
+		queue = queue[2:]
+
+		// Write the appropriate opcode depending on the sign
+		writeSignOpcode(sign, &exprTree)
+
+		// Process the first pair outside the queue
+		processCandidate(global, candidate, fileCodeId, counter, pair, &exprTree, usedStrings, exprQueue, variables)
+
+		// Update the last parent
+		lastParent = &exprTree
+		suitable = *counter
+		*counter++
+	}
+}

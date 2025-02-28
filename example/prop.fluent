@@ -5,5 +5,5 @@ fun wrap(a: num[]) -> num[] {
 }
 
 pub fun main() {
-    wrap([1, 2, 3]);
+    wrap([1, 2, 3, 1 + 2 - 56 * 60]);
 }

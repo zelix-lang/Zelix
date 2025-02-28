@@ -32,7 +32,7 @@ func MarshalFunctionCall(
 	fileCodeId int,
 	trace *filecode.FileCode,
 	traceMagicCounter *int,
-	counter *pool.CounterPool,
+	counter *int,
 	parent *tree.InstructionTree,
 	traceCounters *map[int]string,
 	nameCounters *map[string]map[string]string,
@@ -100,7 +100,8 @@ func MarshalFunctionCall(
 			}
 
 			// Generate a suitable counter
-			suitable := counter.RequestSuitable()
+			*counter++
+			suitable := *counter
 
 			parent.Representation.WriteString("x")
 			parent.Representation.WriteString(strconv.Itoa(suitable))

@@ -34,7 +34,6 @@ func MarshalFunction(
 	traceMagicCounter *int,
 	traceCounters *map[int]string,
 	usedStrings *pool.StringPool,
-	poolExclusions *map[int]bool,
 	fileTree *tree.InstructionTree,
 	nameCounters *map[string]map[string]string,
 	localCounters map[string]string,
@@ -46,9 +45,7 @@ func MarshalFunction(
 	// let a: str = "Hello, World!"
 	// Converted to:
 	// let x0: str = "Hello, World!"
-	counter := pool.CounterPool{
-		Exclusions: *poolExclusions,
-	}
+	counter := 0
 
 	// Keep in a map the variables used in the function
 	// to retrieve their counter

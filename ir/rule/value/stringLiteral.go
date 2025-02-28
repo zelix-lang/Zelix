@@ -48,6 +48,10 @@ func RetrieveVarOrStr(
 			parent.Representation.WriteString(variables[*expr.Value])
 			parent.Representation.WriteString(" ")
 			return true
+		} else if exprChildren[0].Rule == ast.BooleanLiteral {
+			// Write the boolean's value
+			WriteBoolLiteral(exprChildren[0], parent)
+			return true
 		}
 	}
 

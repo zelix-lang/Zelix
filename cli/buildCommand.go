@@ -83,8 +83,6 @@ func BuildCommand(context *cli.Command) {
 	// Used to store precomputed counters for functions' and
 	// modules' names
 	nameCounters := make(map[string]map[string]string)
-	poolExclusions := make(map[int]bool)
-	globalCounter := 0
 	// Save in a map the files that have an external
 	// implementation to avoid recompiling them
 	externalImpl := make(map[string]bool)
@@ -146,30 +144,27 @@ func BuildCommand(context *cli.Command) {
 		// Determine if this FileCode is the main one
 		isMain := fileCode.Path == originalPath
 
+		functionCounter := 0
 		for _, fun := range fileCode.Functions {
 			// Skip the main function
 			if isMain && fun.Name == "main" {
 				continue
 			}
 
-			nameCounter[fun.Name] = fmt.Sprintf("x%d", globalCounter)
-			if isMain {
-				poolExclusions[globalCounter] = true
-			}
-
-			globalCounter++
+			nameCounter[fun.Name] = fmt.Sprintf("f__%d_%d", fileCodeCount, functionCounter)
+			functionCounter++
 		}
 
+		modCounter := 0
 		for _, mod := range fileCode.Modules {
-			nameCounter[mod.Name] = fmt.Sprintf("x%d", globalCounter)
-			if isMain {
-				poolExclusions[globalCounter] = true
-			}
-
-			globalCounter++
+			nameCounter[mod.Name] = fmt.Sprintf("m__%d_%d", fileCodeCount, modCounter)
+			modCounter++
 		}
+
+		fileCodeCount++
 	}
 
+	fileCodeCount = 0
 	for _, fileCode := range fileCodes {
 		// Skip the file if it has an external implementation
 		if externalImpl[fileCode.Path] {
@@ -193,7 +188,6 @@ func BuildCommand(context *cli.Command) {
 			&traceMagicCounter,
 			&traceCounters,
 			&usedStrings,
-			&poolExclusions,
 			// Prevent copying the map every time
 			// by passing a reference to the map
 			&nameCounters,

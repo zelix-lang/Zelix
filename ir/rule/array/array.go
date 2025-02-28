@@ -28,7 +28,7 @@ func MarshalArray(
 	global *tree.InstructionTree,
 	child *ast.AST,
 	fileCodeId int,
-	counter *pool.CounterPool,
+	counter *int,
 	parent *tree.InstructionTree,
 	usedStrings *pool.StringPool,
 	exprQueue *[]tree.MarshalPair,
@@ -45,7 +45,8 @@ func MarshalArray(
 		}
 
 		// Get a suitable counter
-		suitable := counter.RequestSuitable()
+		suitable := *counter
+		*counter++
 		parent.Representation.WriteString("x")
 		parent.Representation.WriteString(strconv.Itoa(suitable))
 		parent.Representation.WriteString(" ")

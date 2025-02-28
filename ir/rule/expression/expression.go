@@ -20,6 +20,8 @@ import (
 	"fluent/ir/pool"
 	"fluent/ir/rule/array"
 	"fluent/ir/rule/call"
+	"fluent/ir/rule/signed"
+	"fluent/ir/rule/value"
 	"fluent/ir/tree"
 	"strconv"
 	"strings"
@@ -30,7 +32,7 @@ func MarshalExpression(
 	trace *filecode.FileCode,
 	fileCodeId int,
 	traceFileName string,
-	counter *pool.CounterPool,
+	counter *int,
 	element *ast.AST,
 	traceMagicCounter *int,
 	variables map[string]string,
@@ -105,9 +107,8 @@ func MarshalExpression(
 				&queue,
 			)
 		case ast.Identifier:
-			// Retrieve the variable
-			variable := variables[*child.Value]
-			pair.Parent.Representation.WriteString(variable)
+			// Write the variable's name
+			pair.Parent.Representation.WriteString(*child.Value)
 		case ast.StringLiteral:
 			// Request an address space for the string literal
 			pair.Parent.Representation.WriteString(
@@ -132,14 +133,7 @@ func MarshalExpression(
 			// Directly write the tree's value
 			pair.Parent.Representation.WriteString(*child.Value)
 		case ast.BooleanLiteral:
-			// Write 1 if the value is true, 0 otherwise
-			var val string
-			if *child.Value == "true" {
-				val = "1"
-			} else {
-				val = "0"
-			}
-			pair.Parent.Representation.WriteString(val)
+			value.WriteBoolLiteral(child, pair.Parent)
 		case ast.Expression:
 			// Add the expression to the queue
 			queue = append(queue, tree.MarshalPair{
@@ -150,6 +144,17 @@ func MarshalExpression(
 				IsParam:  pair.IsParam,
 				IsInline: true,
 			})
+		case ast.ArithmeticExpression, ast.BooleanExpression:
+			signed.MarshalSignedExpression(
+				&result,
+				child,
+				fileCodeId,
+				counter,
+				&pair,
+				usedStrings,
+				&queue,
+				variables,
+			)
 		default:
 		}
 	}
