@@ -13,3 +13,72 @@
 */
 
 package module
+
+import (
+	"fluent/filecode"
+	"fluent/filecode/module"
+	"fluent/ir/pool"
+	"fluent/ir/rule/function"
+	"fluent/ir/tree"
+	"fmt"
+	"strings"
+)
+
+func MarshalModule(
+	mod *module.Module,
+	trace *filecode.FileCode,
+	modulePropCounters *map[string]map[string]int,
+	localCounters map[string]string,
+	fileTree *tree.InstructionTree,
+	traceFileName string,
+	fileCodeId int,
+	traceCounters *pool.NumPool,
+	usedStrings *pool.StringPool,
+	usedNumbers *pool.StringPool,
+	nameCounters *map[string]map[string]string,
+) {
+	// Create a new InstructionTree for the module
+	modTree := tree.InstructionTree{
+		Children:       &[]*tree.InstructionTree{},
+		Representation: &strings.Builder{},
+	}
+
+	// Add the mod tree to the file tree
+	*fileTree.Children = append(*fileTree.Children, &modTree)
+
+	modTree.Representation.WriteString("mod ")
+	modTree.Representation.WriteString(localCounters[mod.Name])
+	modTree.Representation.WriteString(" ")
+
+	// Get the prop counters
+	propCounters := (*modulePropCounters)[mod.Name]
+
+	// Iterate over all the module's properties
+	for name, counter := range propCounters {
+		// Get the property by name
+		prop, ok := mod.Declarations[name]
+		if ok {
+			modTree.Representation.WriteString(prop.Type.Marshal())
+			modTree.Representation.WriteString(" ")
+			continue
+		}
+
+		// Otherwise, marshal the method as a function
+		fun := mod.Functions[name]
+		function.MarshalFunction(
+			fun,
+			trace,
+			localCounters[mod.Name],
+			true,
+			traceFileName,
+			fileCodeId,
+			false,
+			traceCounters,
+			usedStrings,
+			usedNumbers,
+			fileTree,
+			nameCounters,
+			fmt.Sprintf("%s__m_%d", localCounters[mod.Name], counter),
+		)
+	}
+}

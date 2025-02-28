@@ -91,6 +91,7 @@ func BuildCommand(context *cli.Command) {
 	// Used to store precomputed counters for functions' and
 	// modules' names
 	nameCounters := make(map[string]map[string]string)
+	modulePropCounters := make(map[string]map[string]int)
 	// Save in a map the files that have an external
 	// implementation to avoid recompiling them
 	externalImpl := make(map[string]bool)
@@ -169,8 +170,25 @@ func BuildCommand(context *cli.Command) {
 
 		modCounter := 0
 		for _, mod := range fileCode.Modules {
+			modulePropCounters[mod.Name] = make(map[string]int)
 			nameCounter[mod.Name] = fmt.Sprintf("m__%d_%d", fileCodeCount, modCounter)
 			modCounter++
+
+			// Also precompute all properties and methods
+			propCounter := 0
+			propCounters := modulePropCounters[mod.Name]
+
+			for name := range mod.Declarations {
+				propCounters[name] = propCounter
+				propCounter++
+			}
+
+			// Reset the prop counter
+			propCounter = 0
+			for name := range mod.Functions {
+				propCounters[name] = propCounter
+				propCounter++
+			}
 		}
 
 		fileCodeCount++
@@ -199,6 +217,7 @@ func BuildCommand(context *cli.Command) {
 			&traceCounters,
 			&usedStrings,
 			&usedNumbers,
+			&modulePropCounters,
 			// Prevent copying the map every time
 			// by passing a reference to the map
 			&nameCounters,

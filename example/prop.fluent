@@ -1,9 +1,13 @@
 import "@std::io::print";
 
-fun wrap(a: num[]) -> num[] {
-    return a;
+mod Abc {
+    let _a: str = "hello world";
+    let _b: num = 25;
+
+    fun Abc() {
+    }
 }
 
 pub fun main() {
-    wrap([1, 2, 3, 1 + 2 - 56 * 25]);
+    true == false || true;
 }

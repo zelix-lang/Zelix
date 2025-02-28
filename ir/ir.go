@@ -18,6 +18,7 @@ import (
 	"fluent/filecode"
 	"fluent/ir/pool"
 	"fluent/ir/rule/function"
+	"fluent/ir/rule/module"
 	"fluent/ir/tree"
 	"fmt"
 	"strings"
@@ -44,6 +45,7 @@ func BuildIr(
 	traceCounters *pool.NumPool,
 	usedStrings *pool.StringPool,
 	usedNumbers *pool.StringPool,
+	modulePropCounters *map[string]map[string]int,
 	nameCounters *map[string]map[string]string,
 	localCounters map[string]string,
 ) string {
@@ -80,6 +82,33 @@ func BuildIr(
 		}
 	}
 
+	// Marshal all modules
+	for _, mod := range fileCode.Modules {
+		// Skip imported modules
+		if mod.Path != fileCode.Path {
+			continue
+		}
+
+		// Skip functions with generics
+		if len(mod.Templates) > 0 {
+			continue
+		}
+
+		module.MarshalModule(
+			mod,
+			&fileCode,
+			modulePropCounters,
+			localCounters,
+			&fileTree,
+			traceFileName,
+			fileId,
+			traceCounters,
+			usedStrings,
+			usedNumbers,
+			nameCounters,
+		)
+	}
+
 	// Marshal all functions
 	for _, fun := range fileCode.Functions {
 		// Skip imported functions
@@ -95,6 +124,8 @@ func BuildIr(
 		function.MarshalFunction(
 			fun,
 			&fileCode,
+			"",
+			false,
 			traceFileName,
 			fileId,
 			isMain,
@@ -103,21 +134,8 @@ func BuildIr(
 			usedNumbers,
 			&fileTree,
 			nameCounters,
-			localCounters,
+			localCounters[fun.Name],
 		)
-	}
-
-	// Marshal all modules
-	for _, mod := range fileCode.Modules {
-		// Skip imported modules
-		if mod.Path != fileCode.Path {
-			continue
-		}
-
-		// Skip functions with generics
-		if len(mod.Templates) > 0 {
-			continue
-		}
 	}
 
 	// Write the instructions to the builder

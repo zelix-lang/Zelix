@@ -28,6 +28,8 @@ import (
 func MarshalFunction(
 	fun *function.Function,
 	trace *filecode.FileCode,
+	modType string,
+	injectThis bool,
 	traceFileName string,
 	fileCodeId int,
 	isMain bool,
@@ -36,7 +38,7 @@ func MarshalFunction(
 	usedNumbers *pool.StringPool,
 	fileTree *tree.InstructionTree,
 	nameCounters *map[string]map[string]string,
-	localCounters map[string]string,
+	name string,
 ) {
 	// Keep a counter for all variables in the function
 	// this is done to prevent name collisions with
@@ -51,6 +53,11 @@ func MarshalFunction(
 	// to retrieve their counter
 	variables := make(map[string]string)
 
+	// Inject the "this" variable if this function belongs to a module
+	if injectThis {
+		variables["this"] = "p0"
+	}
+
 	// Construct the signature of the function
 	signature := strings.Builder{}
 	signature.WriteString("f ")
@@ -59,11 +66,20 @@ func MarshalFunction(
 	if isMain && fun.Name == "main" {
 		signature.WriteString("main")
 	} else {
-		signature.WriteString(localCounters[fun.Name])
+		signature.WriteString(name)
 	}
 	signature.WriteString(" ")
 
 	paramCounter := 0
+
+	// Inject the "this" parameter if needed
+	if injectThis {
+		signature.WriteString("p0 ")
+		signature.WriteString(modType)
+		signature.WriteString(" ")
+		paramCounter++
+	}
+
 	// Write the parameters
 	for _, param := range fun.Params {
 		// Calculate the parameter's name
