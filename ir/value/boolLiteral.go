@@ -34,4 +34,5 @@ func WriteBoolLiteral(child *ast.AST, parent *tree.InstructionTree) {
 		val = "__FALSE"
 	}
 	parent.Representation.WriteString(val)
+	parent.Representation.WriteString(" ")
 }
