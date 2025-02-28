@@ -28,7 +28,7 @@ func MarshalModule(
 	mod *module.Module,
 	trace *filecode.FileCode,
 	modulePropCounters *map[string]*util.OrderedMap[*string, *string],
-	localCounters map[string]string,
+	localCounters *map[string]string,
 	fileTree *tree.InstructionTree,
 	traceFileName string,
 	fileCodeId int,
@@ -47,7 +47,7 @@ func MarshalModule(
 	*fileTree.Children = append(*fileTree.Children, &modTree)
 
 	modTree.Representation.WriteString("mod ")
-	modTree.Representation.WriteString(localCounters[mod.Name])
+	modTree.Representation.WriteString((*localCounters)[mod.Name])
 	modTree.Representation.WriteString(" ")
 
 	// Get the prop counters
@@ -69,7 +69,7 @@ func MarshalModule(
 		function.MarshalFunction(
 			fun,
 			trace,
-			localCounters[mod.Name],
+			(*localCounters)[mod.Name],
 			true,
 			traceFileName,
 			fileCodeId,

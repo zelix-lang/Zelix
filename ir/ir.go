@@ -99,7 +99,7 @@ func BuildIr(
 			mod,
 			&fileCode,
 			modulePropCounters,
-			localCounters,
+			&localCounters,
 			&fileTree,
 			traceFileName,
 			fileId,
