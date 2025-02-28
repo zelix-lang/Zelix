@@ -14,7 +14,10 @@
 
 package variable
 
-import "fluent/analyzer/object"
+import (
+	"fluent/analyzer/object"
+	"fluent/filecode/trace"
+)
 
 // Variable represents a variable in the Fluent programming language.
 type Variable struct {
@@ -22,4 +25,6 @@ type Variable struct {
 	Constant bool
 	// Value holds the value of the variable, which is of type object.Object.
 	Value object.Object
+	// Trace holds the trace of the variable.
+	Trace trace.Trace
 }

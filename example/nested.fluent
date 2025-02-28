@@ -4,4 +4,4 @@ pub fun nested() {
     nested2("asd");
 }
 
-fun nested2(_a: str) {}
+pub fun nested2(_a: str) {}

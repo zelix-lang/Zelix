@@ -40,7 +40,7 @@ func UnusedVariable(name string) string {
 		logger.BuildInfo(
 			"For more information, refer to:",
 			"https://fluent-lang.github.io/book/codes/E0006",
-			"Inside this function:",
+			"Full details:",
 		),
 	)
 

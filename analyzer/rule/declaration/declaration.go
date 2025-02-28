@@ -23,6 +23,7 @@ import (
 	"fluent/analyzer/variable"
 	"fluent/ast"
 	"fluent/filecode"
+	trace2 "fluent/filecode/trace"
 	"fluent/filecode/types"
 )
 
@@ -108,6 +109,10 @@ func AnalyzeDeclaration(
 	scope.Append(*nameNode.Value, variable.Variable{
 		Constant: isConst,
 		Value:    obj,
+		Trace: trace2.Trace{
+			Line:   nameNode.Line,
+			Column: nameNode.Column,
+		},
 	})
 
 	return error3.Error{}, warning

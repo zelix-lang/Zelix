@@ -1,9 +1,10 @@
 import "@std::io::print";
+import "nested.fluent";
 
 fun wrap(a: num[]) -> num[] {
     return a;
 }
 
 pub fun main() {
-    wrap([1, 2, 3, 1 + 2 - 56 * 60]);
+    wrap([1, 2, 3, 1 + 2 - 56 * 25]);
 }

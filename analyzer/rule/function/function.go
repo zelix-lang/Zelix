@@ -39,14 +39,12 @@ import (
 // Parameters:
 // - scope: The scoped stack containing the scopes to be destroyed.
 // - scopeIds: A slice of scope IDs to be destroyed.
-// - fun: The function being analyzed.
 // - warnings: The pool to collect warnings about unused variables.
 // - mainScopeId: The ID of the main scope.
 // - forceDeleteMainScope: A flag indicating whether to forcefully delete the main scope.
 func destroyScope(
 	scope *stack.ScopedStack,
 	scopeIds []int,
-	fun function.Function,
 	warnings *pool.ErrorPool,
 	mainScopeId int,
 	forceDeleteMainScope bool,
@@ -59,12 +57,12 @@ func destroyScope(
 		unusedVariables := scope.DestroyScope(scopeId)
 
 		// Add unused variable warnings
-		for _, variable2 := range unusedVariables {
+		for name, variable2 := range unusedVariables {
 			warnings.AddError(error3.Error{
 				Code:       error3.UnusedVariable,
-				Line:       fun.Trace.Line,
-				Column:     fun.Trace.Column,
-				Additional: []string{*variable2},
+				Line:       variable2.Trace.Line,
+				Column:     variable2.Trace.Column,
+				Additional: []string{name},
 			})
 		}
 	}
@@ -150,6 +148,7 @@ func AnalyzeFunction(
 		scope.Append(param.Name, variable.Variable{
 			Constant: true,
 			Value:    val,
+			Trace:    param.Trace,
 		})
 	}
 
@@ -284,12 +283,12 @@ func AnalyzeFunction(
 
 		if !dontDeleteStack {
 			// Avoid destroying the main scope
-			destroyScope(&scope, scopeIds, fun, warnings, mainScopeId, false)
+			destroyScope(&scope, scopeIds, warnings, mainScopeId, false)
 		}
 	}
 
 	// Destroy the main scope at the end
-	destroyScope(&scope, []int{mainScopeId}, fun, warnings, mainScopeId, true)
+	destroyScope(&scope, []int{mainScopeId}, warnings, mainScopeId, true)
 
 	// Make sure that the function has returned a value
 	if !fun.IsStd && fun.Name != "heap_alloc" && fun.ReturnType.BaseType != "nothing" && !hasReturned {
