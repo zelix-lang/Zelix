@@ -23,6 +23,7 @@ import (
 	"fluent/ir/rule/signed"
 	"fluent/ir/tree"
 	"fluent/ir/value"
+	"fluent/util"
 	"strconv"
 	"strings"
 )
@@ -32,6 +33,7 @@ func MarshalExpression(
 	trace *filecode.FileCode,
 	fileCodeId int,
 	traceFileName string,
+	modulePropCounters *map[string]*util.OrderedMap[*string, *string],
 	counter *int,
 	element *ast.AST,
 	variables map[string]string,

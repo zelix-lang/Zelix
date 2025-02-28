@@ -130,6 +130,7 @@ func BuildIr(
 			traceFileName,
 			fileId,
 			isMain,
+			modulePropCounters,
 			traceCounters,
 			usedStrings,
 			usedNumbers,

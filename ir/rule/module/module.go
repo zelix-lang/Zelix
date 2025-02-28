@@ -74,6 +74,7 @@ func MarshalModule(
 			traceFileName,
 			fileCodeId,
 			false,
+			modulePropCounters,
 			traceCounters,
 			usedStrings,
 			usedNumbers,

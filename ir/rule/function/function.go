@@ -21,6 +21,7 @@ import (
 	"fluent/ir/pool"
 	"fluent/ir/rule/expression"
 	"fluent/ir/tree"
+	"fluent/util"
 	"fmt"
 	"strings"
 )
@@ -33,6 +34,7 @@ func MarshalFunction(
 	traceFileName string,
 	fileCodeId int,
 	isMain bool,
+	modulePropCounters *map[string]*util.OrderedMap[*string, *string],
 	traceCounters *pool.NumPool,
 	usedStrings *pool.StringPool,
 	usedNumbers *pool.StringPool,
@@ -136,6 +138,7 @@ func MarshalFunction(
 				trace,
 				fileCodeId,
 				traceFileName,
+				modulePropCounters,
 				&counter,
 				element,
 				variables,

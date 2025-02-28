@@ -4,10 +4,10 @@ mod Abc {
     let _a: str = "hello world";
     let _b: num = 25;
 
-    fun Abc() {
+    fun Abc(_a: str) {
     }
 }
 
 pub fun main() {
-    true == false || true;
+    new Abc("asd");
 }
