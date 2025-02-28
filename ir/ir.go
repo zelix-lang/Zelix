@@ -137,6 +137,7 @@ func BuildIr(
 			&fileTree,
 			nameCounters,
 			localCounters[fun.Name],
+			&localCounters,
 		)
 	}
 

@@ -41,6 +41,7 @@ func MarshalFunction(
 	fileTree *tree.InstructionTree,
 	nameCounters *map[string]map[string]string,
 	name string,
+	localCounters *map[string]string,
 ) {
 	// Keep a counter for all variables in the function
 	// this is done to prevent name collisions with
@@ -146,6 +147,7 @@ func MarshalFunction(
 				usedStrings,
 				usedNumbers,
 				nameCounters,
+				localCounters,
 			)
 		default:
 		}

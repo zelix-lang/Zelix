@@ -81,6 +81,7 @@ func MarshalModule(
 			fileTree,
 			nameCounters,
 			*computedName,
+			localCounters,
 		)
 
 		return false
