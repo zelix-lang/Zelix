@@ -50,7 +50,7 @@ func TypeMismatch(expected string, got string) string {
 	builder.WriteString(
 		logger.BuildInfo(
 			"For more information, refer to:",
-			"https://fluent-lang.github.io/book/codes/E0009",
+			"https://fluent-lang.github.io/Book/codes/E0009",
 			"Full details:",
 		),
 	)

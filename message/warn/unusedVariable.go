@@ -39,7 +39,7 @@ func UnusedVariable(name string) string {
 	builder.WriteString(
 		logger.BuildInfo(
 			"For more information, refer to:",
-			"https://fluent-lang.github.io/book/codes/E0006",
+			"https://fluent-lang.github.io/Book/codes/E0006",
 			"Full details:",
 		),
 	)

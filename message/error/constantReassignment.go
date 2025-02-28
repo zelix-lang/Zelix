@@ -34,7 +34,7 @@ func ConstantReassignment() string {
 	builder.WriteString(
 		logger.BuildInfo(
 			"For more information, refer to:",
-			"https://fluent-lang.github.io/book/codes/E0016",
+			"https://fluent-lang.github.io/Book/codes/E0016",
 			"Full details:",
 		),
 	)
