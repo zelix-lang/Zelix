@@ -62,7 +62,7 @@ func processCandidate(
 	variables map[string]string,
 ) {
 	// See if we can save memory
-	if value.RetrieveVarOrStr(fileCodeId, candidate, preferredParent, usedStrings, usedNumbers, variables) {
+	if value.RetrieveStaticVal(fileCodeId, candidate, preferredParent, usedStrings, usedNumbers, variables) {
 		return
 	}
 
@@ -117,7 +117,7 @@ func MarshalSignedExpression(
 
 	// See if we can save memory in the 2nd operand
 	if len(children) == 3 {
-		if value.RetrieveVarOrStr(fileCodeId, children[2], pair.Parent, usedStrings, usedNumbers, variables) {
+		if value.RetrieveStaticVal(fileCodeId, children[2], pair.Parent, usedStrings, usedNumbers, variables) {
 			return
 		}
 	}
@@ -139,7 +139,7 @@ func MarshalSignedExpression(
 
 		if len(queue) == 1 {
 			// See if we can save memory in the operand
-			if value.RetrieveVarOrStr(fileCodeId, queue[0], lastParent, usedStrings, usedNumbers, variables) {
+			if value.RetrieveStaticVal(fileCodeId, queue[0], lastParent, usedStrings, usedNumbers, variables) {
 				break
 			}
 

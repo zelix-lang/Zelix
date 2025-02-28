@@ -20,7 +20,7 @@ import (
 	"fluent/ir/tree"
 )
 
-func RetrieveVarOrStr(
+func RetrieveStaticVal(
 	fileCodeId int,
 	expr *ast.AST,
 	parent *tree.InstructionTree,
