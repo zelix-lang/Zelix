@@ -44,21 +44,23 @@ func checkImportRedefinition[T function.Function | module.Module](
 	collection map[string]T,
 	name string,
 	value T,
-	file *filecode.FileCode,
 	entry *map[string]filecode.FileCode,
 ) {
 	public := false
 	var valueTrace trace2.Trace
 	entryDeref := *entry
+	var redefinedPath string
 
 	// Extract fields from value using type switch
 	switch v := any(value).(type) {
 	case function.Function:
 		public = v.Public
 		valueTrace = v.Trace
+		redefinedPath = v.Path
 	case module.Module:
 		public = v.Public
 		valueTrace = v.Trace
+		redefinedPath = v.Path
 	}
 
 	if definedVal, ok := collection[name]; ok && public {
@@ -75,27 +77,28 @@ func checkImportRedefinition[T function.Function | module.Module](
 			path = v.Path
 		}
 
-		error2.Redefinition(name)
-		fmt.Println(
+		redefinedFile := (*entry)[redefinedPath]
+
+		originalContents := entryDeref[path].Contents
+		originalPath := entryDeref[path].Path
+		fmt.Print(
+			error2.Redefinition(name),
 			util.BuildDetails(
-				&file.Contents,
-				&file.Path,
-				valueTrace.Line,
+				&originalContents,
+				&originalPath,
+				trace.Line,
 				valueTrace.Column,
 				true,
 			),
 		)
 
-		logger.Info("'" + name + "' was previously defined here:")
-
-		originalContents := entryDeref[path].Contents
-		originalPath := entryDeref[path].Path
-		fmt.Println(
+		fmt.Print(
+			logger.BuildInfo("'"+name+"' was previously defined here:"),
 			util.BuildDetails(
-				&originalContents,
-				&originalPath,
-				trace.Line,
-				trace.Column,
+				&redefinedFile.Contents,
+				&redefinedPath,
+				valueTrace.Line,
+				valueTrace.Column,
 				true,
 			),
 		)
@@ -188,7 +191,6 @@ func AnalyzeCode(entry map[string]filecode.FileCode, mainPath string, silent boo
 					file.Functions,
 					fun.Name,
 					fun,
-					&file,
 					&entry,
 				)
 
@@ -206,7 +208,6 @@ func AnalyzeCode(entry map[string]filecode.FileCode, mainPath string, silent boo
 					file.Modules,
 					mod.Name,
 					mod,
-					&file,
 					&entry,
 				)
 
