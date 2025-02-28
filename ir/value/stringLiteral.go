@@ -53,6 +53,7 @@ func RetrieveVarOrStr(
 		case ast.BooleanLiteral:
 			// Write the boolean's value
 			WriteBoolLiteral(exprChildren[0], parent)
+			return true
 		case ast.NumberLiteral, ast.DecimalLiteral:
 			// Get the number's value
 			num := *exprChildren[0].Value
