@@ -91,7 +91,7 @@ func BuildCommand(context *cli.Command) {
 	// Used to store precomputed counters for functions' and
 	// modules' names
 	nameCounters := make(map[string]map[string]string)
-	modulePropCounters := make(map[string]*util.OrderedMap[*string, *string])
+	modulePropCounters := make(map[string]*util.OrderedMap[string, *string])
 	// Save in a map the files that have an external
 	// implementation to avoid recompiling them
 	externalImpl := make(map[string]bool)
@@ -170,7 +170,7 @@ func BuildCommand(context *cli.Command) {
 
 		modCounter := 0
 		for _, mod := range fileCode.Modules {
-			modulePropCounters[mod.Name] = util.NewOrderedMap[*string, *string]()
+			modulePropCounters[mod.Name] = util.NewOrderedMap[string, *string]()
 			formattedName := fmt.Sprintf("m__%d_%d", fileCodeCount, modCounter)
 			nameCounter[mod.Name] = formattedName
 			modCounter++
@@ -181,7 +181,7 @@ func BuildCommand(context *cli.Command) {
 
 			for name := range mod.Declarations {
 				counterFormatted := strconv.Itoa(propCounter)
-				propCounters.Set(&name, &counterFormatted)
+				propCounters.Set(name, &counterFormatted)
 				propCounter++
 			}
 
@@ -189,7 +189,7 @@ func BuildCommand(context *cli.Command) {
 			propCounter = 0
 			for name := range mod.Functions {
 				methodName := fmt.Sprintf("%s__m_%d", formattedName, propCounter)
-				propCounters.Set(&name, &methodName)
+				propCounters.Set(name, &methodName)
 				propCounter++
 			}
 		}

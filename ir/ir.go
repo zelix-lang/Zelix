@@ -46,7 +46,7 @@ func BuildIr(
 	traceCounters *pool.NumPool,
 	usedStrings *pool.StringPool,
 	usedNumbers *pool.StringPool,
-	modulePropCounters *map[string]*util.OrderedMap[*string, *string],
+	modulePropCounters *map[string]*util.OrderedMap[string, *string],
 	nameCounters *map[string]map[string]string,
 	localCounters map[string]string,
 ) string {

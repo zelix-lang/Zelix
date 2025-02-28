@@ -34,7 +34,7 @@ func MarshalFunction(
 	traceFileName string,
 	fileCodeId int,
 	isMain bool,
-	modulePropCounters *map[string]*util.OrderedMap[*string, *string],
+	modulePropCounters *map[string]*util.OrderedMap[string, *string],
 	traceCounters *pool.NumPool,
 	usedStrings *pool.StringPool,
 	usedNumbers *pool.StringPool,

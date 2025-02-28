@@ -27,7 +27,7 @@ import (
 func MarshalModule(
 	mod *module.Module,
 	trace *filecode.FileCode,
-	modulePropCounters *map[string]*util.OrderedMap[*string, *string],
+	modulePropCounters *map[string]*util.OrderedMap[string, *string],
 	localCounters *map[string]string,
 	fileTree *tree.InstructionTree,
 	traceFileName string,
@@ -54,9 +54,9 @@ func MarshalModule(
 	propCounters := (*modulePropCounters)[mod.Name]
 
 	// Iterate over all the module's properties
-	propCounters.Iterate(func(name *string, computedName *string) bool {
+	propCounters.Iterate(func(name string, computedName *string) bool {
 		// Get the property
-		prop, ok := mod.Declarations[*name]
+		prop, ok := mod.Declarations[name]
 
 		if ok {
 			modTree.Representation.WriteString(prop.Type.Marshal())
@@ -65,7 +65,7 @@ func MarshalModule(
 		}
 
 		// Otherwise, marshal the method as a function
-		fun := mod.Functions[*name]
+		fun := mod.Functions[name]
 		function.MarshalFunction(
 			fun,
 			trace,

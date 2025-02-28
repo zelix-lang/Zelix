@@ -33,7 +33,7 @@ func MarshalExpression(
 	trace *filecode.FileCode,
 	fileCodeId int,
 	traceFileName string,
-	modulePropCounters *map[string]*util.OrderedMap[*string, *string],
+	modulePropCounters *map[string]*util.OrderedMap[string, *string],
 	counter *int,
 	element *ast.AST,
 	variables map[string]string,
