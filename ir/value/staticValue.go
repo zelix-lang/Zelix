@@ -30,16 +30,16 @@ func RetrieveStaticVal(
 ) bool {
 	// Get the expression's children
 	exprChildren := *expr.Children
+	child := exprChildren[0]
 
 	// Check if we can reuse a string
 	if len(exprChildren) == 1 {
-		switch exprChildren[0].Rule {
+		switch child.Rule {
 		case ast.StringLiteral:
-			strLiteral := exprChildren[0]
 			parent.Representation.WriteString(
 				usedStrings.RequestAddress(
 					fileCodeId,
-					*strLiteral.Value,
+					*child.Value,
 				),
 			)
 
@@ -47,16 +47,16 @@ func RetrieveStaticVal(
 			return true
 		case ast.Identifier:
 			// Write the variable's address
-			parent.Representation.WriteString(variables[*expr.Value])
+			parent.Representation.WriteString(variables[*child.Value])
 			parent.Representation.WriteString(" ")
 			return true
 		case ast.BooleanLiteral:
 			// Write the boolean's value
-			WriteBoolLiteral(exprChildren[0], parent)
+			WriteBoolLiteral(child, parent)
 			return true
 		case ast.NumberLiteral, ast.DecimalLiteral:
 			// Get the number's value
-			num := *exprChildren[0].Value
+			num := *child.Value
 
 			// See if the number's value is either 0 or 1
 			if num == "0" {
