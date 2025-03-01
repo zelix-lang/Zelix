@@ -20,6 +20,7 @@ import (
 	"fluent/ir/pool"
 	"fluent/ir/rule/array"
 	"fluent/ir/rule/call"
+	"fluent/ir/rule/object"
 	"fluent/ir/rule/signed"
 	"fluent/ir/tree"
 	"fluent/ir/value"
@@ -39,6 +40,7 @@ func MarshalExpression(
 	variables map[string]string,
 	traceCounters *pool.NumPool,
 	usedStrings *pool.StringPool,
+	usedArrays *pool.StringPool,
 	usedNumbers *pool.StringPool,
 	nameCounters *map[string]map[string]string,
 	localCounters *map[string]string,
@@ -108,6 +110,25 @@ func MarshalExpression(
 				usedStrings,
 				usedNumbers,
 				&queue,
+			)
+		case ast.ObjectCreation:
+			object.MarshalObjectCreation(
+				&result,
+				child,
+				traceFileName,
+				fileCodeId,
+				trace,
+				modulePropCounters,
+				counter,
+				&pair,
+				traceCounters,
+				nameCounters,
+				variables,
+				usedStrings,
+				usedArrays,
+				usedNumbers,
+				&queue,
+				localCounters,
 			)
 		case ast.Identifier:
 			// Write the variable's name

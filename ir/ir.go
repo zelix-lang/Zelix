@@ -45,6 +45,7 @@ func BuildIr(
 	isMain bool,
 	traceCounters *pool.NumPool,
 	usedStrings *pool.StringPool,
+	usedArrays *pool.StringPool,
 	usedNumbers *pool.StringPool,
 	modulePropCounters *map[string]*util.OrderedMap[string, *string],
 	nameCounters *map[string]map[string]string,
@@ -105,6 +106,7 @@ func BuildIr(
 			fileId,
 			traceCounters,
 			usedStrings,
+			usedArrays,
 			usedNumbers,
 			nameCounters,
 		)
@@ -133,6 +135,7 @@ func BuildIr(
 			modulePropCounters,
 			traceCounters,
 			usedStrings,
+			usedArrays,
 			usedNumbers,
 			&fileTree,
 			nameCounters,

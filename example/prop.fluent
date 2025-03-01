@@ -1,13 +1,9 @@
 import "@std::io::print";
 
 mod Abc {
-    let _a: str = "hello world";
-    let _b: num = 25;
-
-    fun Abc(_a: str) {
-    }
+    let _a: num = 1 + 2 * 3;
 }
 
 pub fun main() {
-    new Abc("asd");
+    new Abc();
 }

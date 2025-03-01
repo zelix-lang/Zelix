@@ -83,6 +83,11 @@ func BuildCommand(context *cli.Command) {
 		Counter: make(map[int]int),
 		Prefix:  "__str__",
 	}
+	usedArrays := pool.StringPool{
+		Storage: make(map[string]string),
+		Counter: make(map[int]int),
+		Prefix:  "__arr__",
+	}
 	usedNumbers := pool.StringPool{
 		Storage: make(map[string]string),
 		Counter: make(map[int]int),
@@ -219,6 +224,7 @@ func BuildCommand(context *cli.Command) {
 			isMain,
 			&traceCounters,
 			&usedStrings,
+			&usedArrays,
 			&usedNumbers,
 			&modulePropCounters,
 			// Prevent copying the map every time
@@ -272,6 +278,14 @@ func BuildCommand(context *cli.Command) {
 		finalBuilder.WriteString(" str \"")
 		finalBuilder.WriteString(str)
 		finalBuilder.WriteString("\"\n")
+	}
+
+	for arrType, address := range usedArrays.Storage {
+		finalBuilder.WriteString("ref ")
+		finalBuilder.WriteString(address)
+		finalBuilder.WriteString(" ")
+		finalBuilder.WriteString(arrType)
+		finalBuilder.WriteString("[0] []\n")
 	}
 
 	for num, address := range usedNumbers.Storage {
