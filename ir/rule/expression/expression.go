@@ -122,7 +122,6 @@ func MarshalExpression(
 				counter,
 				&pair,
 				traceCounters,
-				nameCounters,
 				variables,
 				usedStrings,
 				usedArrays,

@@ -36,7 +36,6 @@ func MarshalObjectCreation(
 	counter *int,
 	pair *tree.MarshalPair,
 	traceCounters *pool.NumPool,
-	nameCounters *map[string]map[string]string,
 	variables map[string]string,
 	usedStrings *pool.StringPool,
 	usedArrays *pool.StringPool,
