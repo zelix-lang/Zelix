@@ -74,7 +74,16 @@ func MarshalExpression(
 			pair.Parent.Representation.WriteString("mov x")
 			pair.Parent.Representation.WriteString(strconv.Itoa(pair.Counter))
 			pair.Parent.Representation.WriteString(" ")
-			pair.Parent.Representation.WriteString(pair.Expected.Marshal())
+
+			if pair.Expected.IsPrimitive {
+				pair.Parent.Representation.WriteString(pair.Expected.Marshal())
+			} else {
+				oldBaseType := pair.Expected.BaseType
+				pair.Expected.BaseType = (*localCounters)[oldBaseType]
+				pair.Parent.Representation.WriteString(pair.Expected.Marshal())
+				pair.Expected.BaseType = oldBaseType
+			}
+
 			pair.Parent.Representation.WriteString(" ")
 		}
 
