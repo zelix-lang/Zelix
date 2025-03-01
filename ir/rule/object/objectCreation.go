@@ -262,6 +262,57 @@ func MarshalObjectCreation(
 			element.Parent.Representation.WriteString(*constructorName)
 			element.Parent.Representation.WriteString(" ")
 			element.Parent.Representation.WriteString(modAddress)
+
+			// Check if we have parameters
+			if len(children) == 1 {
+				return
+			}
+
+			// Get the parameters node
+			paramsNode := children[1]
+			params := *paramsNode.Children
+
+			// Get the constructor
+			constructor := mod.Functions[realName]
+
+			// Iterate over the parameters
+			for i, param := range params {
+				paramChildren := *param.Children
+				expr := paramChildren[0]
+
+				// Get the param struct from the constructor's parameters
+				actualParam := constructor.Params[i]
+
+				// Get a suitable counter for this value
+				suitable := *counter
+				*counter++
+
+				// Write the new memory space
+				element.Parent.Representation.WriteString("x")
+				element.Parent.Representation.WriteString(strconv.Itoa(suitable))
+				element.Parent.Representation.WriteString(" ")
+
+				// Create a local tree to represent the data
+				localTree := tree.InstructionTree{
+					Children:       &[]*tree.InstructionTree{},
+					Representation: &strings.Builder{},
+				}
+
+				// Add the tree to the stack
+				*global.Children = append(
+					[]*tree.InstructionTree{&localTree},
+					*global.Children...,
+				)
+
+				// Schedule the expression
+				*exprQueue = append(*exprQueue, tree.MarshalPair{
+					Child:    expr,
+					Parent:   &localTree,
+					Counter:  suitable,
+					Expected: actualParam.Type,
+					IsParam:  true,
+				})
+			}
 		}
 	}
 
