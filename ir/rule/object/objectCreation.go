@@ -314,6 +314,17 @@ func MarshalObjectCreation(
 					IsParam:  true,
 				})
 			}
+
+			// Add trace information
+			element.Parent.Representation.WriteString(traceFileName)
+			element.Parent.Representation.WriteString(" ")
+
+			lineAddress := traceCounters.RequestAddress(fileCodeId, child.Line)
+			columnAddress := traceCounters.RequestAddress(fileCodeId, child.Column)
+			element.Parent.Representation.WriteString(lineAddress)
+			element.Parent.Representation.WriteString(" ")
+			element.Parent.Representation.WriteString(columnAddress)
+			element.Parent.Representation.WriteString(" ")
 		}
 	}
 
