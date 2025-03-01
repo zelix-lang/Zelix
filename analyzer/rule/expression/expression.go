@@ -157,6 +157,15 @@ func AnalyzeExpression(
 			mod, castOk := convert.(module.Module)
 
 			if !castOk {
+				nMod, nCastOk := convert.(*module.Module)
+
+				if nCastOk {
+					castOk = true
+					mod = *nMod
+				}
+			}
+
+			if !castOk {
 				return object.Object{}, error3.Error{
 					Code:   error3.InvalidPropAccess,
 					Line:   element.Tree.Line,
