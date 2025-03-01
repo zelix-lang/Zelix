@@ -39,6 +39,9 @@ func MarshalArray(
 	// Get the array's children
 	children := *child.Children
 
+	// Write an arr opcode
+	parent.Representation.WriteString("arr ")
+
 	for _, expr := range children {
 		// Check for string literals
 		if value.RetrieveStaticVal(fileCodeId, expr, parent, usedStrings, usedNumbers, variables) {
