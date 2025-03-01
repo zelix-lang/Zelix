@@ -93,7 +93,16 @@ func MarshalFunction(
 		signature.WriteString(name)
 		// Write the parameter's type
 		signature.WriteString(" ")
-		signature.WriteString(param.Type.Marshal())
+
+		if param.Type.IsPrimitive {
+			signature.WriteString(param.Type.Marshal())
+		} else {
+			oldBaseType := param.Type.BaseType
+			param.Type.BaseType = (*localCounters)[oldBaseType]
+			signature.WriteString(param.Type.Marshal())
+			param.Type.BaseType = oldBaseType
+		}
+
 		signature.WriteString(" ")
 		paramCounter++
 	}

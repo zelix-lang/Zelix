@@ -59,7 +59,15 @@ func MarshalModule(
 		prop, ok := mod.Declarations[name]
 
 		if ok {
-			modTree.Representation.WriteString(prop.Type.Marshal())
+			if prop.Type.IsPrimitive {
+				modTree.Representation.WriteString(prop.Type.Marshal())
+			} else {
+				oldBaseType := prop.Type.BaseType
+				prop.Type.BaseType = (*localCounters)[oldBaseType]
+				modTree.Representation.WriteString(prop.Type.Marshal())
+				prop.Type.BaseType = oldBaseType
+			}
+
 			modTree.Representation.WriteString(" ")
 			return false
 		}
