@@ -34,6 +34,7 @@ func MarshalModule(
 	fileCodeId int,
 	traceCounters *pool.NumPool,
 	usedStrings *pool.StringPool,
+	usedArrays *pool.StringPool,
 	usedNumbers *pool.StringPool,
 	nameCounters *map[string]map[string]string,
 ) {
@@ -85,6 +86,7 @@ func MarshalModule(
 			modulePropCounters,
 			traceCounters,
 			usedStrings,
+			usedArrays,
 			usedNumbers,
 			fileTree,
 			nameCounters,
