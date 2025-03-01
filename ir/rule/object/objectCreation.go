@@ -262,6 +262,7 @@ func MarshalObjectCreation(
 			element.Parent.Representation.WriteString(*constructorName)
 			element.Parent.Representation.WriteString(" ")
 			element.Parent.Representation.WriteString(modAddress)
+			element.Parent.Representation.WriteString(" ")
 
 			// Check if we have parameters
 			if len(children) == 1 {
