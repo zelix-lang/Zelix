@@ -331,6 +331,10 @@ func AnalyzeExpression(
 			}
 		}
 
+		if hasNested {
+			continue
+		}
+
 		// Check for type mismatch
 		if element.Expected.BaseType != "" && !element.Expected.Compare(element.Got.Type) {
 			return object.Object{}, error3.Error{
