@@ -12,7 +12,7 @@
    conditions; type `fluent l -f` for details.
 */
 
-package types
+package wrapper
 
 import (
 	"fluent/filecode/trace"

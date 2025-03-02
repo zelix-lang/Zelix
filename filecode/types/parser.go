@@ -17,11 +17,12 @@ package types
 import (
 	"fluent/ast"
 	"fluent/filecode/trace"
+	"fluent/filecode/types/wrapper"
 )
 
 type queueElement struct {
 	node   ast.AST
-	parent *TypeWrapper
+	parent *wrapper.TypeWrapper
 }
 
 // ConvertToTypeWrapper converts an AST to a TypeWrapper.
@@ -30,13 +31,13 @@ type queueElement struct {
 // - tree: the root of the AST to be converted.
 // Returns:
 // - A TypeWrapper representing the structure of the AST.
-func ConvertToTypeWrapper(tree ast.AST) TypeWrapper {
-	result := TypeWrapper{
+func ConvertToTypeWrapper(tree ast.AST) wrapper.TypeWrapper {
+	result := wrapper.TypeWrapper{
 		Trace: trace.Trace{
 			Line:   tree.Line,
 			Column: tree.Column,
 		},
-		Children: &[]*TypeWrapper{},
+		Children: &[]*wrapper.TypeWrapper{},
 	}
 
 	// Use a queue to process the AST in a breadth-first manner.
@@ -72,12 +73,12 @@ func ConvertToTypeWrapper(tree ast.AST) TypeWrapper {
 				parent.IsPrimitive = rule == ast.Primitive
 			case ast.Type:
 				// Create a new TypeWrapper for the child
-				newType := TypeWrapper{
+				newType := wrapper.TypeWrapper{
 					Trace: trace.Trace{
 						Line:   child.Line,
 						Column: child.Column,
 					},
-					Children: &[]*TypeWrapper{},
+					Children: &[]*wrapper.TypeWrapper{},
 				}
 
 				// Add the new TypeWrapper to the parent's children
