@@ -27,7 +27,7 @@ import (
 	"fluent/ast"
 	"fluent/filecode"
 	"fluent/filecode/module"
-	"fluent/filecode/types"
+	"fluent/filecode/types/wrapper"
 )
 
 // literalRules is a map of rules that represent literals
@@ -60,13 +60,13 @@ func AnalyzeExpression(
 	trace *filecode.FileCode,
 	variables *stack.ScopedStack,
 	enforceHeapRequirement bool,
-	firstExpected *types.TypeWrapper,
+	firstExpected *wrapper.TypeWrapper,
 	isPropReassignment bool,
 	allowPointers bool,
 ) (object.Object, error3.Error) {
 	result := object.Object{
-		Type: types.TypeWrapper{
-			Children: &[]*types.TypeWrapper{},
+		Type: wrapper.TypeWrapper{
+			Children: &[]*wrapper.TypeWrapper{},
 		},
 	}
 
@@ -367,6 +367,11 @@ func AnalyzeExpression(
 				Column:     element.Tree.Column,
 				Additional: []string{"num or dec", element.Got.Type.Marshal()},
 			}
+		}
+
+		// Set the inferred type
+		if element.Got.Type.BaseType != "" {
+			element.Tree.InferredType = &element.Got.Type
 		}
 	}
 

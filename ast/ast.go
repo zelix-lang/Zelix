@@ -14,6 +14,8 @@
 
 package ast
 
+import "fluent/filecode/types/wrapper"
+
 // AST represents an abstract syntax tree node.
 type AST struct {
 	// Rule is the parser rule associated with this AST node.
@@ -28,6 +30,8 @@ type AST struct {
 	Column int
 	// File is the name of the source file where this AST node is located.
 	File *string
+	// InferredType is the TypeWrapper that this expression evaluates to.
+	InferredType *wrapper.TypeWrapper
 }
 
 func (a AST) Marshal(spaces int) string {
