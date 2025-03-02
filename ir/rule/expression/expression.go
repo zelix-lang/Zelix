@@ -155,12 +155,11 @@ func MarshalExpression(
 				child,
 				fileCodeId,
 				counter,
-				pair.Parent,
+				&pair,
 				usedStrings,
 				usedNumbers,
 				&queue,
 				variables,
-				pair.Expected,
 			)
 		case ast.NumberLiteral, ast.DecimalLiteral:
 			// Directly write the tree's value
