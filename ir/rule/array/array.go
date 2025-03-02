@@ -29,31 +29,35 @@ func MarshalArray(
 	child *ast.AST,
 	fileCodeId int,
 	counter *int,
-	parent *tree.InstructionTree,
+	pair *tree.MarshalPair,
 	usedStrings *pool.StringPool,
 	usedNumbers *pool.StringPool,
 	exprQueue *[]tree.MarshalPair,
 	variables map[string]string,
-	expected wrapper.TypeWrapper,
 ) {
 	// Get the array's children
 	children := *child.Children
 
 	// Write an arr opcode
-	parent.Representation.WriteString("arr ")
+	pair.Parent.Representation.WriteString("arr ")
+
+	// Prevent collisions
+	if pair.IsParam && pair.Counter == *counter {
+		*counter++
+	}
 
 	for _, expr := range children {
 		// Check for string literals
-		if value.RetrieveStaticVal(fileCodeId, expr, parent, usedStrings, usedNumbers, variables) {
+		if value.RetrieveStaticVal(fileCodeId, expr, pair.Parent, usedStrings, usedNumbers, variables) {
 			continue
 		}
 
 		// Get a suitable counter
 		suitable := *counter
 		*counter++
-		parent.Representation.WriteString("x")
-		parent.Representation.WriteString(strconv.Itoa(suitable))
-		parent.Representation.WriteString(" ")
+		pair.Parent.Representation.WriteString("x")
+		pair.Parent.Representation.WriteString(strconv.Itoa(suitable))
+		pair.Parent.Representation.WriteString(" ")
 
 		// Create a new InstructionTree
 		instructionTree := tree.InstructionTree{
@@ -69,11 +73,11 @@ func MarshalArray(
 			Parent:  &instructionTree,
 			Counter: suitable,
 			Expected: wrapper.TypeWrapper{
-				PointerCount: expected.PointerCount,
-				ArrayCount:   expected.ArrayCount - 1,
-				Children:     expected.Children,
-				BaseType:     expected.BaseType,
-				IsPrimitive:  expected.IsPrimitive,
+				PointerCount: pair.Expected.PointerCount,
+				ArrayCount:   pair.Expected.ArrayCount - 1,
+				Children:     pair.Expected.Children,
+				BaseType:     pair.Expected.BaseType,
+				IsPrimitive:  pair.Expected.IsPrimitive,
 			},
 			IsParam: true,
 		})
