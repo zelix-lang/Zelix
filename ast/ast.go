@@ -16,17 +16,17 @@ package ast
 
 // AST represents an abstract syntax tree node.
 type AST struct {
-	// rule is the parser rule associated with this AST node.
+	// Rule is the parser rule associated with this AST node.
 	Rule Rule
-	// children are the child nodes of this AST node.
+	// Children are the child nodes of this AST node.
 	Children *[]*AST
-	// value is the string value of this AST node.
+	// Value is the string value of this AST node.
 	Value *string
-	// line is the line number in the source file where this AST node is located.
+	// Line is the line number in the source file where this AST node is located.
 	Line int
-	// column is the column number in the source file where this AST node is located.
+	// Column is the column number in the source file where this AST node is located.
 	Column int
-	// file is the name of the source file where this AST node is located.
+	// File is the name of the source file where this AST node is located.
 	File *string
 }
 
