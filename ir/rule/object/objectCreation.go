@@ -18,6 +18,7 @@ import (
 	"fluent/ast"
 	"fluent/filecode"
 	"fluent/ir/pool"
+	"fluent/ir/rule/call"
 	"fluent/ir/tree"
 	"fluent/ir/value"
 	"fluent/util"
@@ -275,55 +276,22 @@ func MarshalObjectCreation(
 			// Get the constructor
 			constructor := mod.Functions[realName]
 
-			// Iterate over the parameters
-			for i, param := range params {
-				paramChildren := *param.Children
-				expr := paramChildren[0]
-
-				// Get the param struct from the constructor's parameters
-				actualParam := constructor.Params[i]
-
-				// Get a suitable counter for this value
-				suitable := *counter
-				*counter++
-
-				// Write the new memory space
-				element.Parent.Representation.WriteString("x")
-				element.Parent.Representation.WriteString(strconv.Itoa(suitable))
-				element.Parent.Representation.WriteString(" ")
-
-				// Create a local tree to represent the data
-				localTree := tree.InstructionTree{
-					Children:       &[]*tree.InstructionTree{},
-					Representation: &strings.Builder{},
-				}
-
-				// Add the tree to the stack
-				*global.Children = append(
-					[]*tree.InstructionTree{&localTree},
-					*global.Children...,
-				)
-
-				// Schedule the expression
-				*exprQueue = append(*exprQueue, tree.MarshalPair{
-					Child:    expr,
-					Parent:   &localTree,
-					Counter:  suitable,
-					Expected: actualParam.Type,
-					IsParam:  true,
-				})
-			}
-
-			// Add trace information
-			element.Parent.Representation.WriteString(traceFileName)
-			element.Parent.Representation.WriteString(" ")
-
-			lineAddress := traceCounters.RequestAddress(fileCodeId, child.Line)
-			columnAddress := traceCounters.RequestAddress(fileCodeId, child.Column)
-			element.Parent.Representation.WriteString(lineAddress)
-			element.Parent.Representation.WriteString(" ")
-			element.Parent.Representation.WriteString(columnAddress)
-			element.Parent.Representation.WriteString(" ")
+			// Marshal the parameters
+			call.MarshalParams(
+				constructor,
+				params,
+				counter,
+				global,
+				fileCodeId,
+				element.Parent,
+				variables,
+				usedStrings,
+				usedNumbers,
+				exprQueue,
+				traceCounters.RequestAddress(fileCodeId, child.Line),
+				traceCounters.RequestAddress(fileCodeId, child.Column),
+				traceFileName,
+			)
 		}
 	}
 
