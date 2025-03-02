@@ -18,12 +18,12 @@ import (
 	"fluent/analyzer/object"
 	"fluent/analyzer/queue"
 	"fluent/ast"
-	"fluent/filecode/types"
+	"fluent/filecode/types/wrapper"
 )
 
 // Create a global "bool" type that can be reused
-var boolType = types.TypeWrapper{
-	Children:    &[]*types.TypeWrapper{},
+var boolType = wrapper.TypeWrapper{
+	Children:    &[]*wrapper.TypeWrapper{},
 	IsPrimitive: true,
 	BaseType:    "bool",
 }
@@ -50,12 +50,12 @@ func AnalyzeBoolean(
 
 	// Schedule the candidate for evaluation
 	candidateElement := queue.ExpectedPair{
-		Expected: &types.TypeWrapper{
-			Children: &[]*types.TypeWrapper{},
+		Expected: &wrapper.TypeWrapper{
+			Children: &[]*wrapper.TypeWrapper{},
 		},
 		Got: &object.Object{
-			Type: types.TypeWrapper{
-				Children: &[]*types.TypeWrapper{},
+			Type: wrapper.TypeWrapper{
+				Children: &[]*wrapper.TypeWrapper{},
 			},
 		},
 		Tree:    children[0],
@@ -72,7 +72,7 @@ func AnalyzeBoolean(
 		}
 
 		// Determine the expected type
-		var expected *types.TypeWrapper
+		var expected *wrapper.TypeWrapper
 
 		prev := children[i-1]
 
@@ -87,8 +87,8 @@ func AnalyzeBoolean(
 		*exprQueue = append(*exprQueue, queue.ExpectedPair{
 			Expected: expected,
 			Got: &object.Object{
-				Type: types.TypeWrapper{
-					Children: &[]*types.TypeWrapper{},
+				Type: wrapper.TypeWrapper{
+					Children: &[]*wrapper.TypeWrapper{},
 				},
 			},
 			Tree:    el,

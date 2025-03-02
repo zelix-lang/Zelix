@@ -16,7 +16,7 @@ package signed
 
 import (
 	"fluent/ast"
-	"fluent/filecode/types"
+	"fluent/filecode/types/wrapper"
 	"fluent/ir/pool"
 	"fluent/ir/tree"
 	"fluent/ir/value"
@@ -25,10 +25,10 @@ import (
 )
 
 // Create global TypeWrappers for the signed expressions
-var booleanWrapper = types.TypeWrapper{
+var booleanWrapper = wrapper.TypeWrapper{
 	BaseType:    "bool",
 	IsPrimitive: true,
-	Children:    &[]*types.TypeWrapper{},
+	Children:    &[]*wrapper.TypeWrapper{},
 }
 
 func writeSignOpcode(sign string, parent *tree.InstructionTree) bool {
@@ -108,7 +108,7 @@ func processCandidate(
 	*global.Children = append([]*tree.InstructionTree{&candidateTree}, *global.Children...)
 
 	// Schedule the candidate
-	var expected types.TypeWrapper
+	var expected wrapper.TypeWrapper
 	if isBool {
 		expected = booleanWrapper
 	} else {
@@ -195,7 +195,7 @@ func MarshalSignedExpression(
 
 			// Schedule the expression
 			expr := queue[0]
-			var expected types.TypeWrapper
+			var expected wrapper.TypeWrapper
 			if expr.Rule == ast.Expression && (*expr.Children)[0].Rule == ast.BooleanExpression {
 				expected = booleanWrapper
 			} else {

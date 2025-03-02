@@ -24,7 +24,7 @@ import (
 	"fluent/analyzer/variable"
 	"fluent/filecode"
 	"fluent/filecode/module"
-	"fluent/filecode/types"
+	"fluent/filecode/types/wrapper"
 	"fluent/logger"
 	"fmt"
 	"strings"
@@ -59,9 +59,9 @@ func AnalyzeModule(
 		Constant: true,
 		Value: object.Object{
 			Value: mod,
-			Type: types.TypeWrapper{
+			Type: wrapper.TypeWrapper{
 				BaseType: mod.Name,
-				Children: &[]*types.TypeWrapper{},
+				Children: &[]*wrapper.TypeWrapper{},
 			},
 		},
 	})

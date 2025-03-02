@@ -16,13 +16,13 @@ package function
 
 import (
 	"fluent/filecode/trace"
-	"fluent/filecode/types"
+	"fluent/filecode/types/wrapper"
 )
 
 // Param represents a function parameter with a name, type, and trace information.
 type Param struct {
 	// Type is the type of the parameter, wrapped in a TypeWrapper.
-	Type types.TypeWrapper
+	Type wrapper.TypeWrapper
 	// Trace contains trace information for the parameter.
 	Trace trace.Trace
 	// Name is the name of the parameter.

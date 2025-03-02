@@ -23,7 +23,7 @@ import (
 	"fluent/analyzer/variable"
 	"fluent/ast"
 	"fluent/filecode"
-	"fluent/filecode/types"
+	"fluent/filecode/types/wrapper"
 )
 
 // AnalyzeFor analyzes a for-loop in the AST.
@@ -70,8 +70,8 @@ func AnalyzeFor(
 		trace,
 		variables,
 		false,
-		&types.TypeWrapper{
-			Children: &[]*types.TypeWrapper{},
+		&wrapper.TypeWrapper{
+			Children: &[]*wrapper.TypeWrapper{},
 		},
 		false,
 		false,

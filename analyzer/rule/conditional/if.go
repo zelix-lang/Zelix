@@ -21,14 +21,14 @@ import (
 	"fluent/analyzer/stack"
 	"fluent/ast"
 	"fluent/filecode"
-	"fluent/filecode/types"
+	"fluent/filecode/types/wrapper"
 )
 
 // Define a global boolean type
-var globalBool = types.TypeWrapper{
+var globalBool = wrapper.TypeWrapper{
 	BaseType:    "bool",
 	IsPrimitive: true,
-	Children:    &[]*types.TypeWrapper{},
+	Children:    &[]*wrapper.TypeWrapper{},
 }
 
 // ProcessSingleConditional analyzes a single conditional expression and schedules

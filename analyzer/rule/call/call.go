@@ -22,7 +22,7 @@ import (
 	"fluent/filecode"
 	function2 "fluent/filecode/function"
 	"fluent/filecode/module"
-	"fluent/filecode/types"
+	"fluent/filecode/types/wrapper"
 	"strconv"
 )
 
@@ -55,7 +55,7 @@ func AnalyzeFunctionCall(
 	var generics map[string]bool
 	var function *function2.Function
 	var found bool
-	var returnType types.TypeWrapper
+	var returnType wrapper.TypeWrapper
 
 	if isObjectCreation {
 		// Find the module inside the trace's module
@@ -89,9 +89,9 @@ func AnalyzeFunctionCall(
 
 		function, found = constructor, true
 		generics = mod.Templates
-		returnType = types.TypeWrapper{
+		returnType = wrapper.TypeWrapper{
 			BaseType: mod.Name,
-			Children: &[]*types.TypeWrapper{},
+			Children: &[]*wrapper.TypeWrapper{},
 		}
 	} else if queueElement.IsPropAccess {
 		function, found = lastPropValue.Functions[*functionName]
@@ -218,7 +218,7 @@ func AnalyzeFunctionCall(
 						if returnType.Compare(paramType) {
 							enforceHeapInParam = result.IsHeap
 							if expected.BaseType == "" {
-								paramType = types.TypeWrapper{
+								paramType = wrapper.TypeWrapper{
 									BaseType:     "(Infer)",
 									PointerCount: param.Type.PointerCount,
 									ArrayCount:   param.Type.ArrayCount,
@@ -235,8 +235,8 @@ func AnalyzeFunctionCall(
 				*exprQueue = append(*exprQueue, queue2.ExpectedPair{
 					Tree: paramNodes,
 					Got: &object.Object{
-						Type: types.TypeWrapper{
-							Children: &[]*types.TypeWrapper{},
+						Type: wrapper.TypeWrapper{
+							Children: &[]*wrapper.TypeWrapper{},
 						},
 						IsHeap: isParamHeap,
 					},

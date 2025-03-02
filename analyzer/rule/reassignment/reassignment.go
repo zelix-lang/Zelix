@@ -20,7 +20,7 @@ import (
 	"fluent/analyzer/stack"
 	"fluent/ast"
 	"fluent/filecode"
-	"fluent/filecode/types"
+	"fluent/filecode/types/wrapper"
 )
 
 // AnalyzeReassignment analyzes the reassignment of variables in the given AST.
@@ -72,8 +72,8 @@ func AnalyzeReassignment(
 		trace,
 		variables,
 		false,
-		&types.TypeWrapper{
-			Children: &[]*types.TypeWrapper{},
+		&wrapper.TypeWrapper{
+			Children: &[]*wrapper.TypeWrapper{},
 		},
 		true,
 		false,

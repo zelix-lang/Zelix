@@ -32,7 +32,7 @@ import (
 	"fluent/ast"
 	"fluent/filecode"
 	"fluent/filecode/function"
-	"fluent/filecode/types"
+	"fluent/filecode/types/wrapper"
 )
 
 // destroyScope destroys the specified scopes and adds warnings for unused variables.
@@ -259,8 +259,8 @@ func AnalyzeFunction(
 					trace,
 					&scope,
 					false,
-					&types.TypeWrapper{
-						Children: &[]*types.TypeWrapper{},
+					&wrapper.TypeWrapper{
+						Children: &[]*wrapper.TypeWrapper{},
 					},
 					false,
 					false,

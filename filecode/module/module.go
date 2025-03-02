@@ -18,7 +18,7 @@ import (
 	"fluent/ast"
 	"fluent/filecode/function"
 	"fluent/filecode/trace"
-	"fluent/filecode/types"
+	"fluent/filecode/types/wrapper"
 )
 
 // Declaration represents a declaration in the Fluent programming language.
@@ -28,7 +28,7 @@ type Declaration struct {
 	// Value is the AST node representing the value of the declaration.
 	Value *ast.AST
 	// Type is the type of the declaration.
-	Type types.TypeWrapper
+	Type wrapper.TypeWrapper
 	// IsIncomplete indicates whether the declaration is incomplete.
 	IsIncomplete bool
 	// Trace contains trace information for the declaration.

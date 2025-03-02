@@ -16,7 +16,7 @@ package array
 
 import (
 	"fluent/ast"
-	"fluent/filecode/types"
+	"fluent/filecode/types/wrapper"
 	"fluent/ir/pool"
 	"fluent/ir/tree"
 	"fluent/ir/value"
@@ -34,7 +34,7 @@ func MarshalArray(
 	usedNumbers *pool.StringPool,
 	exprQueue *[]tree.MarshalPair,
 	variables map[string]string,
-	expected types.TypeWrapper,
+	expected wrapper.TypeWrapper,
 ) {
 	// Get the array's children
 	children := *child.Children
@@ -68,7 +68,7 @@ func MarshalArray(
 			Child:   expr,
 			Parent:  &instructionTree,
 			Counter: suitable,
-			Expected: types.TypeWrapper{
+			Expected: wrapper.TypeWrapper{
 				PointerCount: expected.PointerCount,
 				ArrayCount:   expected.ArrayCount - 1,
 				Children:     expected.Children,

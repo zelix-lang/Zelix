@@ -19,7 +19,7 @@ import (
 	"fluent/analyzer/object"
 	queue2 "fluent/analyzer/queue"
 	"fluent/ast"
-	"fluent/filecode/types"
+	"fluent/filecode/types/wrapper"
 )
 
 // AnalyzeArray analyzes an array node in the AST and schedules its elements for further analysis.
@@ -34,7 +34,7 @@ import (
 // - An error if the array type cannot be inferred, otherwise an empty error.
 func AnalyzeArray(
 	tree *ast.AST,
-	expected *types.TypeWrapper,
+	expected *wrapper.TypeWrapper,
 	exprQueue *[]queue2.ExpectedPair,
 ) error3.Error {
 	// Arrays that appear directly as expressions cannot
@@ -67,7 +67,7 @@ func AnalyzeArray(
 
 	// Clone the expected type to determine the expected type
 	// individually for each element in the array
-	clone := types.TypeWrapper{
+	clone := wrapper.TypeWrapper{
 		PointerCount: expected.PointerCount,
 		ArrayCount:   expected.ArrayCount - 1, // Remove one array count
 		Children:     expected.Children,
@@ -81,8 +81,8 @@ func AnalyzeArray(
 		*exprQueue = append(*exprQueue, queue2.ExpectedPair{
 			Expected: &clone,
 			Got: &object.Object{
-				Type: types.TypeWrapper{
-					Children: &[]*types.TypeWrapper{},
+				Type: wrapper.TypeWrapper{
+					Children: &[]*wrapper.TypeWrapper{},
 				},
 			},
 			Tree:              child,

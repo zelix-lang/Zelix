@@ -18,7 +18,7 @@ import (
 	"fluent/analyzer/object"
 	"fluent/analyzer/queue"
 	"fluent/ast"
-	"fluent/filecode/types"
+	"fluent/filecode/types/wrapper"
 )
 
 // AnalyzePropertyAccess analyzes the property access in the given AST.
@@ -39,14 +39,14 @@ func AnalyzePropertyAccess(
 
 	// Scheduling the candidate for evaluation
 	candidateResult := object.Object{
-		Type: types.TypeWrapper{
-			Children: &[]*types.TypeWrapper{},
+		Type: wrapper.TypeWrapper{
+			Children: &[]*wrapper.TypeWrapper{},
 		},
 	}
 
 	*exprQueue = append(*exprQueue, queue.ExpectedPair{
-		Expected: &types.TypeWrapper{
-			Children: &[]*types.TypeWrapper{},
+		Expected: &wrapper.TypeWrapper{
+			Children: &[]*wrapper.TypeWrapper{},
 		},
 		Got:         &candidateResult,
 		Tree:        children[0],
@@ -57,8 +57,8 @@ func AnalyzePropertyAccess(
 	childrenLen := len(children) - 1
 	for i := 1; i <= childrenLen; i++ {
 		*exprQueue = append(*exprQueue, queue.ExpectedPair{
-			Expected: &types.TypeWrapper{
-				Children: &[]*types.TypeWrapper{},
+			Expected: &wrapper.TypeWrapper{
+				Children: &[]*wrapper.TypeWrapper{},
 			},
 			Got:                currentElement.Got,
 			Tree:               children[i],

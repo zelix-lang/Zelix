@@ -20,7 +20,7 @@ import (
 	"fluent/analyzer/stack"
 	"fluent/ast"
 	"fluent/filecode"
-	"fluent/filecode/types"
+	"fluent/filecode/types/wrapper"
 )
 
 // AnalyzeReturn analyzes the return statement of a function.
@@ -39,7 +39,7 @@ func AnalyzeReturn(
 	tree *ast.AST,
 	trace *filecode.FileCode,
 	variables *stack.ScopedStack,
-	expected *types.TypeWrapper,
+	expected *wrapper.TypeWrapper,
 ) error3.Error {
 	// Check if the tree has children
 	if len(*tree.Children) == 0 {
