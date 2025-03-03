@@ -17,11 +17,11 @@ package call
 import (
 	error3 "fluent/analyzer/error"
 	"fluent/analyzer/object"
+	"fluent/analyzer/property"
 	queue2 "fluent/analyzer/queue"
 	"fluent/ast"
 	"fluent/filecode"
 	function2 "fluent/filecode/function"
-	"fluent/filecode/module"
 	"fluent/filecode/types/wrapper"
 	"strconv"
 )
@@ -44,7 +44,6 @@ func AnalyzeFunctionCall(
 	trace *filecode.FileCode,
 	queueElement *queue2.ExpectedPair,
 	exprQueue *[]queue2.ExpectedPair,
-	lastPropValue *module.Module,
 	isObjectCreation bool,
 ) error3.Error {
 	// Get the function's name
@@ -94,9 +93,18 @@ func AnalyzeFunctionCall(
 			Children: &[]*wrapper.TypeWrapper{},
 		}
 	} else if queueElement.IsPropAccess {
+		lastPropValue, err := property.EvaluateLastPropValue(queueElement)
+		if err.Code != error3.Nothing {
+			return err
+		}
+
 		function, found = lastPropValue.Functions[*functionName]
 		generics = function.Templates
 		returnType = function.ReturnType
+
+		if !returnType.IsPrimitive {
+			*queueElement.LastPropValue = trace.Modules[returnType.BaseType]
+		}
 	} else {
 		function, found = trace.Functions[*functionName]
 		generics = function.Templates
