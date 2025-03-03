@@ -35,4 +35,5 @@ type ExpectedPair struct {
 	IsPropReassignment bool                 // Whether this value is a property reassignment
 	LastPropValue      *interface{}         // The last property value
 	IsParam            bool                 // Whether this value is a parameter
+	HasPointers        bool                 // Whether this value has pointers
 }

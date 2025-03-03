@@ -103,6 +103,7 @@ func AnalyzeExpression(
 				startAt++
 				// Increment the pointer count
 				element.Got.Type.PointerCount++
+				element.HasPointers = true
 
 				if element.HasMetDereference {
 					element.ActualPointers++
@@ -323,7 +324,7 @@ func AnalyzeExpression(
 		}
 
 		// Check if the pointer count is negative
-		if !hasNested && element.ActualPointers < 0 {
+		if !hasNested && element.HasPointers {
 			return object.Object{}, error3.Error{
 				Code:   error3.InvalidDereference,
 				Line:   element.Tree.Line,
