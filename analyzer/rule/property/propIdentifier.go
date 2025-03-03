@@ -16,10 +16,11 @@ package property
 
 import (
 	error3 "fluent/analyzer/error"
+	"fluent/analyzer/property"
 	queue2 "fluent/analyzer/queue"
 	"fluent/ast"
 	"fluent/filecode"
-	"fluent/filecode/module"
+	"fmt"
 )
 
 // ProcessPropIdentifier processes a property identifier within a module.
@@ -27,7 +28,6 @@ import (
 // updates the type of the element, and handles module references.
 //
 // Parameters:
-// - lastPropValue: The module containing the last property value.
 // - element: The expected pair element to be processed.
 // - trace: The file code trace containing module information.
 // - child: The AST node representing the property identifier.
@@ -35,11 +35,16 @@ import (
 // Returns:
 // - An error3.Error indicating the result of the processing.
 func ProcessPropIdentifier(
-	lastPropValue *module.Module,
 	element *queue2.ExpectedPair,
 	trace *filecode.FileCode,
 	child *ast.AST,
 ) error3.Error {
+	lastPropValue, err := property.EvaluateLastPropValue(element)
+
+	if err.Code != error3.Nothing {
+		return err
+	}
+
 	// Check for illegal access
 	if lastPropValue.Path != *child.File {
 		return error3.Error{
@@ -54,6 +59,7 @@ func ProcessPropIdentifier(
 
 	// Return the error if it is not found
 	if !found {
+		fmt.Println(*lastPropValue, child.Marshal(0))
 		return error3.Error{
 			Code:       error3.UndefinedReference,
 			Additional: []string{*child.Value},
@@ -78,6 +84,10 @@ func ProcessPropIdentifier(
 	element.Got.Type.PointerCount += oldPointers
 	element.Got.Type.ArrayCount += oldArrays
 	element.ActualPointers += value.Type.PointerCount
+
+	if !element.Got.Type.IsPrimitive {
+		*element.LastPropValue = trace.Modules[element.Got.Type.BaseType]
+	}
 
 	// Check for modules
 	if !value.Type.IsPrimitive {
