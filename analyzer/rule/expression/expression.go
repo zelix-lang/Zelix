@@ -125,7 +125,7 @@ func AnalyzeExpression(
 		}
 
 		// Check for illegal pointers
-		if element.Got.Type.PointerCount > 0 && !element.IsParam {
+		if element.HasPointers && !element.IsParam {
 			return object.Object{}, error3.Error{
 				Code:   error3.InvalidPointer,
 				Line:   element.Tree.Line,
@@ -324,7 +324,7 @@ func AnalyzeExpression(
 		}
 
 		// Check if the pointer count is negative
-		if !hasNested && element.HasPointers {
+		if !hasNested && element.ActualPointers < 0 {
 			return object.Object{}, error3.Error{
 				Code:   error3.InvalidDereference,
 				Line:   element.Tree.Line,
