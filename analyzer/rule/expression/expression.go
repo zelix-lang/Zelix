@@ -26,7 +26,6 @@ import (
 	"fluent/analyzer/stack"
 	"fluent/ast"
 	"fluent/filecode"
-	"fluent/filecode/module"
 	"fluent/filecode/types/wrapper"
 )
 
@@ -133,50 +132,6 @@ func AnalyzeExpression(
 			}
 		}
 
-		// Check for property access
-		var lastPropValue *module.Module
-		if element.IsPropAccess {
-			if element.LastPropValue == nil {
-				return object.Object{}, error3.Error{
-					Code:   error3.InvalidPropAccess,
-					Line:   element.Tree.Line,
-					Column: element.Tree.Column,
-				}
-			}
-
-			// To save up some resources, LastPropValue is defined only in the candidate
-			// further properties have the last value in the got value
-			var convert interface{}
-
-			if element.LastPropValue != nil {
-				convert = *element.LastPropValue
-			} else {
-				convert = element.Got.Value
-			}
-
-			// Cast the last property value to a module
-			mod, castOk := convert.(module.Module)
-
-			if !castOk {
-				nMod, nCastOk := convert.(*module.Module)
-
-				if nCastOk {
-					castOk = true
-					mod = *nMod
-				}
-			}
-
-			if !castOk {
-				return object.Object{}, error3.Error{
-					Code:   error3.InvalidPropAccess,
-					Line:   element.Tree.Line,
-					Column: element.Tree.Column,
-				}
-			}
-
-			lastPropValue = &mod
-		}
-
 		// Get the child
 		child := (*element.Tree.Children)[startAt]
 
@@ -206,7 +161,6 @@ func AnalyzeExpression(
 			// Check for property access
 			if element.IsPropAccess {
 				err := property.ProcessPropIdentifier(
-					lastPropValue,
 					&element,
 					trace,
 					child,
@@ -256,7 +210,6 @@ func AnalyzeExpression(
 				trace,
 				&element,
 				&queue,
-				lastPropValue,
 				child.Rule == ast.ObjectCreation,
 			)
 
