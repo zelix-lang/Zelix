@@ -44,19 +44,24 @@ func AnalyzePropertyAccess(
 		},
 	}
 
-	*exprQueue = append(*exprQueue, queue.ExpectedPair{
+	currentElement.Got.Value = &candidateResult.Value
+
+	// Temporarily save the children to be appended in a new slice
+	newChildren := make([]queue.ExpectedPair, len(children))
+
+	newChildren[0] = queue.ExpectedPair{
 		Expected: &wrapper.TypeWrapper{
 			Children: &[]*wrapper.TypeWrapper{},
 		},
 		Got:         &candidateResult,
 		Tree:        children[0],
 		ModRequired: true,
-	})
+	}
 
 	// Schedule the other children for evaluation
 	childrenLen := len(children) - 1
 	for i := 1; i <= childrenLen; i++ {
-		*exprQueue = append(*exprQueue, queue.ExpectedPair{
+		newChildren[i] = queue.ExpectedPair{
 			Expected: &wrapper.TypeWrapper{
 				Children: &[]*wrapper.TypeWrapper{},
 			},
@@ -65,6 +70,8 @@ func AnalyzePropertyAccess(
 			IsPropAccess:       true,
 			IsPropReassignment: isPropReassignment && i == childrenLen,
 			LastPropValue:      &candidateResult.Value,
-		})
+		}
 	}
+
+	*exprQueue = append(newChildren, *exprQueue...)
 }
