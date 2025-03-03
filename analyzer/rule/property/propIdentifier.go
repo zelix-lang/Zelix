@@ -20,7 +20,6 @@ import (
 	queue2 "fluent/analyzer/queue"
 	"fluent/ast"
 	"fluent/filecode"
-	"fmt"
 )
 
 // ProcessPropIdentifier processes a property identifier within a module.
@@ -63,7 +62,6 @@ func ProcessPropIdentifier(
 
 	// Return the error if it is not found
 	if !found {
-		fmt.Println(*lastPropValue, child.Marshal(0))
 		return error3.Error{
 			Code:       error3.UndefinedReference,
 			Additional: []string{*child.Value},
