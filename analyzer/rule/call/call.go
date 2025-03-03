@@ -93,9 +93,13 @@ func AnalyzeFunctionCall(
 			Children: &[]*wrapper.TypeWrapper{},
 		}
 	} else if queueElement.IsPropAccess {
-		lastPropValue, err := property.EvaluateLastPropValue(queueElement)
-		if err.Code != error3.Nothing {
-			return err
+		lastPropValue := property.EvaluateLastPropValue(queueElement)
+		if lastPropValue == nil {
+			return error3.Error{
+				Code:   error3.InvalidPropAccess,
+				Line:   queueElement.Tree.Line,
+				Column: queueElement.Tree.Column,
+			}
 		}
 
 		function, found = lastPropValue.Functions[*functionName]

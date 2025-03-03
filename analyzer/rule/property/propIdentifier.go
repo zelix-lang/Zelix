@@ -39,10 +39,14 @@ func ProcessPropIdentifier(
 	trace *filecode.FileCode,
 	child *ast.AST,
 ) error3.Error {
-	lastPropValue, err := property.EvaluateLastPropValue(element)
+	lastPropValue := property.EvaluateLastPropValue(element)
 
-	if err.Code != error3.Nothing {
-		return err
+	if lastPropValue == nil {
+		return error3.Error{
+			Code:   error3.InvalidPropAccess,
+			Line:   element.Tree.Line,
+			Column: element.Tree.Column,
+		}
 	}
 
 	// Check for illegal access

@@ -15,7 +15,6 @@
 package property
 
 import (
-	error3 "fluent/analyzer/error"
 	"fluent/analyzer/queue"
 	"fluent/filecode/module"
 )
@@ -23,22 +22,17 @@ import (
 // EvaluateLastPropValue evaluates the last property value of the given element.
 // If the element is a property access and the last property value is not nil,
 // it attempts to cast the value to a module.Module. If the cast is successful,
-// it returns the module. Otherwise, it returns an error indicating invalid property access.
+// it returns the module. Otherwise, it returns nil.
 //
 // Parameters:
 //   - element: A pointer to a queue.ExpectedPair which contains the property access information.
 //
 // Returns:
 //   - A pointer to a module.Module if the cast is successful.
-//   - An error3.Error indicating invalid property access if the cast fails or the last property value is nil.
-func EvaluateLastPropValue(element *queue.ExpectedPair) (*module.Module, error3.Error) {
+func EvaluateLastPropValue(element *queue.ExpectedPair) *module.Module {
 	if element.IsPropAccess {
 		if element.LastPropValue == nil {
-			return nil, error3.Error{
-				Code:   error3.InvalidPropAccess,
-				Line:   element.Tree.Line,
-				Column: element.Tree.Column,
-			}
+			return nil
 		}
 
 		var convert interface{}
@@ -57,19 +51,11 @@ func EvaluateLastPropValue(element *queue.ExpectedPair) (*module.Module, error3.
 		}
 
 		if !castOk {
-			return nil, error3.Error{
-				Code:   error3.InvalidPropAccess,
-				Line:   element.Tree.Line,
-				Column: element.Tree.Column,
-			}
+			return nil
 		}
 
-		return &mod, error3.Error{}
+		return &mod
 	}
 
-	return nil, error3.Error{
-		Code:   error3.InvalidPropAccess,
-		Line:   element.Tree.Line,
-		Column: element.Tree.Column,
-	}
+	return nil
 }
