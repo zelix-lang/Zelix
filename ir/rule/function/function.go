@@ -20,6 +20,7 @@ import (
 	"fluent/filecode/function"
 	"fluent/ir/pool"
 	"fluent/ir/rule/expression"
+	"fluent/ir/rule/ret"
 	"fluent/ir/tree"
 	"fluent/util"
 	"fmt"
@@ -166,6 +167,25 @@ func MarshalFunction(
 				nameCounters,
 				localCounters,
 				false,
+				nil,
+			)
+		case ast.Return:
+			ret.MarshalReturn(
+				&funTree,
+				trace,
+				fileCodeId,
+				traceFileName,
+				modulePropCounters,
+				&counter,
+				element,
+				variables,
+				traceCounters,
+				usedStrings,
+				usedArrays,
+				usedNumbers,
+				nameCounters,
+				localCounters,
+				&fun.ReturnType,
 			)
 		default:
 		}
