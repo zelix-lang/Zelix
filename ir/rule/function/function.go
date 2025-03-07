@@ -164,6 +164,11 @@ func MarshalFunction(
 		}
 	}
 
+	// Add ret_void instructions if the function does not return anything
+	if fun.ReturnType.BaseType == "nothing" {
+		signature.WriteString("ret_void\n")
+	}
+
 	// Write an end block to the function's signature
 	signature.WriteString("end")
 }
