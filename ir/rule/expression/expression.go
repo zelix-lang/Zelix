@@ -45,19 +45,30 @@ func MarshalExpression(
 	usedNumbers *pool.StringPool,
 	nameCounters *map[string]map[string]string,
 	localCounters *map[string]string,
+	moveToStack bool,
 ) {
 	result := tree.InstructionTree{
 		Children:       &[]*tree.InstructionTree{},
 		Representation: &strings.Builder{},
 	}
 
+	firstEl := tree.MarshalPair{
+		Child:    element,
+		Parent:   &result,
+		IsInline: false,
+		IsParam:  moveToStack,
+	}
+
+	// Get a suitable counter in case we have to move
+	// this value to the stack
+	if moveToStack {
+		firstEl.Counter = *counter
+		*counter++
+	}
+
 	// Use a queue to process the elements of the AST
 	queue := []tree.MarshalPair{
-		{
-			Child:    element,
-			Parent:   &result,
-			IsInline: false,
-		},
+		firstEl,
 	}
 
 	for len(queue) > 0 {

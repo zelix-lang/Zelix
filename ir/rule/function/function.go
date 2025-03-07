@@ -165,6 +165,7 @@ func MarshalFunction(
 				usedNumbers,
 				nameCounters,
 				localCounters,
+				false,
 			)
 		default:
 		}
