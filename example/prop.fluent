@@ -1,18 +1,23 @@
 import "@std::io::print";
 
-mod Bcd {}
+mod Fgd {
+    let c: num = 25;
+}
 
 mod Abc {
-    let _a: &&Bcd[];
+    let b: Fgd = new Fgd();
+}
 
-    fun Abc(_a: Bcd[]) {
-        this._a = &&_a;
-    }
-
-    fun asd() {
+mod Bcd {
+    fun a() -> Abc {
+        return new Abc();
     }
 }
 
+pub fun abc() -> num {
+    return 123;
+}
+
 pub fun main() {
-    new Abc([new Bcd()]).asd();
+    (new Bcd()).a().b.c;
 }
