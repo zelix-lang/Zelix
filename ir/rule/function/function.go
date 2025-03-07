@@ -65,7 +65,13 @@ func MarshalFunction(
 	// Construct the signature of the function
 	signature := strings.Builder{}
 	signature.WriteString("f ")
-	signature.WriteString(fun.ReturnType.Marshal())
+
+	if fun.ReturnType.IsPrimitive {
+		signature.WriteString(fun.ReturnType.Marshal())
+	} else {
+		signature.WriteString((*localCounters)[fun.ReturnType.BaseType])
+	}
+
 	signature.WriteString(" ")
 	if isMain && fun.Name == "main" {
 		signature.WriteString("main")
