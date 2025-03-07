@@ -132,12 +132,17 @@ func MarshalFunction(
 
 	// Use a queue to marshal blocks
 	// in a breadth-first manner
-	blockQueue := []*ast.AST{&fun.Body}
+	blockQueue := []tree.BlockMarshalElement{
+		{
+			Element: &fun.Body,
+		},
+	}
 
 	for len(blockQueue) > 0 {
 		// Get the first block in the queue
-		element := blockQueue[0]
+		queueElement := blockQueue[0]
 		blockQueue = blockQueue[1:]
+		element := queueElement.Element
 
 		// See the element's rule
 		rule := element.Rule
@@ -145,7 +150,11 @@ func MarshalFunction(
 		switch rule {
 		case ast.Block:
 			// Add the block's children to the queue
-			blockQueue = append(blockQueue, *element.Children...)
+			for _, el := range *element.Children {
+				blockQueue = append(blockQueue, tree.BlockMarshalElement{
+					Element: el,
+				})
+			}
 		case ast.Continue, ast.Break:
 			// Directly write the tree's value
 			funTree.Representation.WriteString(*element.Value)
@@ -188,6 +197,11 @@ func MarshalFunction(
 				&fun.ReturnType,
 			)
 		default:
+		}
+
+		// Write an end instruction if needed
+		if queueElement.WriteEnd {
+			signature.WriteString("end\n")
 		}
 	}
 
