@@ -48,6 +48,7 @@ func MarshalReturn(
 
 	// Check if this return in empty
 	if len(children) == 0 {
+		funTree.Representation.WriteString("ret_void\n")
 		return
 	}
 
