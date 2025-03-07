@@ -17,6 +17,7 @@ package expression
 import (
 	"fluent/ast"
 	"fluent/filecode"
+	"fluent/filecode/types/wrapper"
 	"fluent/ir/pool"
 	"fluent/ir/rule/array"
 	"fluent/ir/rule/call"
@@ -46,6 +47,7 @@ func MarshalExpression(
 	nameCounters *map[string]map[string]string,
 	localCounters *map[string]string,
 	moveToStack bool,
+	firstExpected *wrapper.TypeWrapper,
 ) {
 	result := tree.InstructionTree{
 		Children:       &[]*tree.InstructionTree{},
@@ -63,6 +65,7 @@ func MarshalExpression(
 	// this value to the stack
 	if moveToStack {
 		firstEl.Counter = *counter
+		firstEl.Expected = *firstExpected
 		*counter++
 	}
 
