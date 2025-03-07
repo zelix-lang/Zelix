@@ -21,6 +21,7 @@ import (
 	"fluent/ir/rule/array"
 	"fluent/ir/rule/call"
 	"fluent/ir/rule/object"
+	"fluent/ir/rule/property"
 	"fluent/ir/rule/signed"
 	"fluent/ir/tree"
 	"fluent/ir/value"
@@ -187,6 +188,23 @@ func MarshalExpression(
 				usedNumbers,
 				&queue,
 				variables,
+			)
+		case ast.PropertyAccess:
+			property.MarshalPropertyAccess(
+				&result,
+				trace,
+				child,
+				fileCodeId,
+				counter,
+				&pair,
+				modulePropCounters,
+				traceCounters,
+				usedStrings,
+				usedNumbers,
+				&queue,
+				variables,
+				localCounters,
+				traceFileName,
 			)
 		default:
 		}
