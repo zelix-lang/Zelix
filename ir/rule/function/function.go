@@ -192,9 +192,11 @@ func MarshalFunction(
 			}
 
 			blockQueue = append(newChildren, blockQueue...)
-		case ast.Continue, ast.Break:
-			// Directly write the tree's value
-			funTree.Representation.WriteString(*element.Value)
+		case ast.Continue:
+			funTree.Representation.WriteString("continue")
+			funTree.Representation.WriteString("\n")
+		case ast.Break:
+			funTree.Representation.WriteString("break")
 			funTree.Representation.WriteString("\n")
 		case ast.Expression:
 			expression.MarshalExpression(
