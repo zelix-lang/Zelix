@@ -176,22 +176,12 @@ func MarshalFunction(
 			)
 		case ast.Block:
 			// Add the block's children to the queue
-			blockChildren := *element.Children
-			blockChildrenLen := len(blockChildren) - 1
-			if blockChildrenLen == -1 {
-				blockChildrenLen = 0
-			}
-
-			newChildren := make([]tree.BlockMarshalElement, blockChildrenLen)
-
 			for _, el := range *element.Children {
-				newChildren = append(newChildren, tree.BlockMarshalElement{
+				blockQueue = append(blockQueue, tree.BlockMarshalElement{
 					Element:        el,
 					Representation: queueElement.Representation,
 				})
 			}
-
-			blockQueue = append(newChildren, blockQueue...)
 		case ast.Continue:
 			funTree.Representation.WriteString("continue")
 			funTree.Representation.WriteString("\n")
