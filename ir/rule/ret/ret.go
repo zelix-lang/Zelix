@@ -28,7 +28,7 @@ import (
 )
 
 func MarshalReturn(
-	funTree *tree.InstructionTree,
+	representation *strings.Builder,
 	trace *filecode.FileCode,
 	fileCodeId int,
 	traceFileName string,
@@ -48,7 +48,7 @@ func MarshalReturn(
 
 	// Check if this return in empty
 	if len(children) == 0 {
-		funTree.Representation.WriteString("ret_void\n")
+		representation.WriteString("ret_void\n")
 		return
 	}
 
@@ -64,9 +64,9 @@ func MarshalReturn(
 	retTree.Representation.WriteString("ret ")
 
 	// See if we can save memory in the expression
-	if value.RetrieveStaticVal(fileCodeId, expr, &retTree, usedStrings, usedNumbers, variables) {
-		funTree.Representation.WriteString(retTree.Representation.String())
-		funTree.Representation.WriteString("\n")
+	if value.RetrieveStaticVal(fileCodeId, expr, retTree.Representation, usedStrings, usedNumbers, variables) {
+		representation.WriteString(retTree.Representation.String())
+		representation.WriteString("\n")
 		return
 	}
 
@@ -75,7 +75,7 @@ func MarshalReturn(
 
 	// Marshal the expression
 	expression.MarshalExpression(
-		funTree,
+		representation,
 		trace,
 		fileCodeId,
 		traceFileName,
@@ -94,6 +94,6 @@ func MarshalReturn(
 	)
 
 	// Write the instruction tree to global tree
-	funTree.Representation.WriteString(retTree.Representation.String())
-	funTree.Representation.WriteString("\n")
+	representation.WriteString(retTree.Representation.String())
+	representation.WriteString("\n")
 }

@@ -16,7 +16,7 @@ package value
 
 import (
 	"fluent/ast"
-	"fluent/ir/tree"
+	"strings"
 )
 
 // WriteBoolLiteral writes a boolean literal to the parent InstructionTree.
@@ -24,13 +24,13 @@ import (
 //
 // Parameters:
 //   - child: a pointer to the AST node containing the boolean value.
-//   - parent: a pointer to the InstructionTree where the value will be written.
-func WriteBoolLiteral(child *ast.AST, parent *tree.InstructionTree) {
+//   - representation: a pointer to the strings.Builder where the value will be written.
+func WriteBoolLiteral(child *ast.AST, representation *strings.Builder) {
 	// Write 1 if the value is true, 0 otherwise
 	if *child.Value == "true" {
-		parent.Representation.WriteString("__TRUE")
+		representation.WriteString("__TRUE")
 	} else {
-		parent.Representation.WriteString("__FALSE")
+		representation.WriteString("__FALSE")
 	}
-	parent.Representation.WriteString(" ")
+	representation.WriteString(" ")
 }

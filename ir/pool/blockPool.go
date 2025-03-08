@@ -12,14 +12,28 @@
    conditions; type `fluent l -f` for details.
 */
 
-package tree
+package pool
 
 import (
-	"fluent/ast"
+	"fmt"
 	"strings"
 )
 
-type BlockMarshalElement struct {
-	Element        *ast.AST
-	Representation *strings.Builder
+type BlockPool struct {
+	Storage map[string]*strings.Builder
+	Counter int
+}
+
+func (pool *BlockPool) RequestAddress() (*string, *strings.Builder) {
+	// Create a new builder
+	builder := strings.Builder{}
+
+	// Create a new address
+	address := fmt.Sprintf("__block_x%d__", pool.Counter)
+
+	// Write the changes
+	pool.Storage[address] = &builder
+	pool.Counter++
+
+	return &address, &builder
 }

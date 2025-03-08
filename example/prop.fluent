@@ -1,23 +1,7 @@
 import "@std::io::print";
 
-mod Fgd {
-    let c: num = 25;
-}
-
-mod Abc {
-    let b: Fgd = new Fgd();
-}
-
-mod Bcd {
-    fun a() -> Abc {
-        return new Abc();
-    }
-}
-
-pub fun abc() -> num {
-    return 123;
-}
-
 pub fun main() {
-    (new Bcd()).a().b.c;
+    if true {
+        println("Hello, world!");
+    }
 }

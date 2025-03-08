@@ -82,7 +82,7 @@ func MarshalPropertyAccess(
 			lastMod = trace.Modules[inferredType.BaseType]
 
 			// Check if we can save memory on the candidate
-			if value.RetrieveStaticVal(fileCodeId, child, &candidate, usedStrings, usedNumbers, variables) {
+			if value.RetrieveStaticVal(fileCodeId, child, candidate.Representation, usedStrings, usedNumbers, variables) {
 				*lastCandidateAddress = candidate.Representation.String()
 			} else {
 				// Get a suitable counter for this expression

@@ -48,7 +48,7 @@ func MarshalArray(
 
 	for _, expr := range children {
 		// Check for string literals
-		if value.RetrieveStaticVal(fileCodeId, expr, pair.Parent, usedStrings, usedNumbers, variables) {
+		if value.RetrieveStaticVal(fileCodeId, expr, pair.Parent.Representation, usedStrings, usedNumbers, variables) {
 			continue
 		}
 

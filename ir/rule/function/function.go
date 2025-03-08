@@ -19,6 +19,7 @@ import (
 	"fluent/filecode"
 	"fluent/filecode/function"
 	"fluent/ir/pool"
+	"fluent/ir/rule/conditional"
 	"fluent/ir/rule/expression"
 	"fluent/ir/rule/ret"
 	"fluent/ir/tree"
@@ -57,6 +58,11 @@ func MarshalFunction(
 	// Keep in a map the variables used in the function
 	// to retrieve their counter
 	variables := make(map[string]string)
+
+	// Keep track of the appended blocks
+	appendedBlocks := pool.BlockPool{
+		Storage: make(map[string]*strings.Builder),
+	}
 
 	// Inject the "this" variable if this function belongs to a module
 	if injectThis {
@@ -134,7 +140,8 @@ func MarshalFunction(
 	// in a breadth-first manner
 	blockQueue := []tree.BlockMarshalElement{
 		{
-			Element: &fun.Body,
+			Element:        &fun.Body,
+			Representation: funTree.Representation,
 		},
 	}
 
@@ -148,20 +155,50 @@ func MarshalFunction(
 		rule := element.Rule
 
 		switch rule {
+		case ast.If:
+			conditional.MarshalIf(
+				queueElement.Representation,
+				trace,
+				fileCodeId,
+				traceFileName,
+				modulePropCounters,
+				&counter,
+				element,
+				variables,
+				traceCounters,
+				&appendedBlocks,
+				usedStrings,
+				usedArrays,
+				usedNumbers,
+				nameCounters,
+				localCounters,
+				&blockQueue,
+			)
 		case ast.Block:
 			// Add the block's children to the queue
+			blockChildren := *element.Children
+			blockChildrenLen := len(blockChildren) - 1
+			if blockChildrenLen == -1 {
+				blockChildrenLen = 0
+			}
+
+			newChildren := make([]tree.BlockMarshalElement, blockChildrenLen)
+
 			for _, el := range *element.Children {
-				blockQueue = append(blockQueue, tree.BlockMarshalElement{
-					Element: el,
+				newChildren = append(newChildren, tree.BlockMarshalElement{
+					Element:        el,
+					Representation: queueElement.Representation,
 				})
 			}
+
+			blockQueue = append(newChildren, blockQueue...)
 		case ast.Continue, ast.Break:
 			// Directly write the tree's value
 			funTree.Representation.WriteString(*element.Value)
 			funTree.Representation.WriteString("\n")
 		case ast.Expression:
 			expression.MarshalExpression(
-				&funTree,
+				queueElement.Representation,
 				trace,
 				fileCodeId,
 				traceFileName,
@@ -180,7 +217,7 @@ func MarshalFunction(
 			)
 		case ast.Return:
 			ret.MarshalReturn(
-				&funTree,
+				queueElement.Representation,
 				trace,
 				fileCodeId,
 				traceFileName,
@@ -198,11 +235,15 @@ func MarshalFunction(
 			)
 		default:
 		}
+	}
 
-		// Write an end instruction if needed
-		if queueElement.WriteEnd {
-			signature.WriteString("end\n")
-		}
+	// Write nested blocks
+	for address, block := range appendedBlocks.Storage {
+		signature.WriteString("block ")
+		signature.WriteString(address)
+		signature.WriteString("\n")
+		signature.WriteString(block.String())
+		signature.WriteString("end\n")
 	}
 
 	// Add ret_void instructions if the function does not return anything

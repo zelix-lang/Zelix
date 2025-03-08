@@ -32,7 +32,7 @@ import (
 )
 
 func MarshalExpression(
-	funTree *tree.InstructionTree,
+	representation *strings.Builder,
 	trace *filecode.FileCode,
 	fileCodeId int,
 	traceFileName string,
@@ -180,7 +180,7 @@ func MarshalExpression(
 			// Directly write the tree's value
 			pair.Parent.Representation.WriteString(*child.Value)
 		case ast.BooleanLiteral:
-			value.WriteBoolLiteral(child, pair.Parent)
+			value.WriteBoolLiteral(child, pair.Parent.Representation)
 		case ast.Expression:
 			// Add the expression to the queue
 			queue = append(queue, tree.MarshalPair{
@@ -226,11 +226,11 @@ func MarshalExpression(
 
 	// Append all children to the parent tree
 	for _, child := range *result.Children {
-		funTree.Representation.WriteString(child.Representation.String())
-		funTree.Representation.WriteString("\n")
+		representation.WriteString(child.Representation.String())
+		representation.WriteString("\n")
 	}
 
 	// Append the expression itself (without the children)
-	funTree.Representation.WriteString(result.Representation.String())
-	funTree.Representation.WriteString("\n")
+	representation.WriteString(result.Representation.String())
+	representation.WriteString("\n")
 }

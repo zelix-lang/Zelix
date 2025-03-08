@@ -211,7 +211,7 @@ func MarshalObjectCreation(
 			} else {
 				// See if we can save memory on this value
 				val := prop.Value
-				if value.RetrieveStaticVal(fileCodeId, val, element.Parent, usedStrings, usedNumbers, variables) {
+				if value.RetrieveStaticVal(fileCodeId, val, element.Parent.Representation, usedStrings, usedNumbers, variables) {
 					return false
 				}
 

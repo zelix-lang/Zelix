@@ -17,13 +17,13 @@ package value
 import (
 	"fluent/ast"
 	"fluent/ir/pool"
-	"fluent/ir/tree"
+	"strings"
 )
 
 func RetrieveStaticVal(
 	fileCodeId int,
 	expr *ast.AST,
-	parent *tree.InstructionTree,
+	representation *strings.Builder,
 	usedStrings *pool.StringPool,
 	usedNumbers *pool.StringPool,
 	variables map[string]string,
@@ -36,23 +36,23 @@ func RetrieveStaticVal(
 	if len(exprChildren) == 1 {
 		switch child.Rule {
 		case ast.StringLiteral:
-			parent.Representation.WriteString(
+			representation.WriteString(
 				usedStrings.RequestAddress(
 					fileCodeId,
 					*child.Value,
 				),
 			)
 
-			parent.Representation.WriteString(" ")
+			representation.WriteString(" ")
 			return true
 		case ast.Identifier:
 			// Write the variable's address
-			parent.Representation.WriteString(variables[*child.Value])
-			parent.Representation.WriteString(" ")
+			representation.WriteString(variables[*child.Value])
+			representation.WriteString(" ")
 			return true
 		case ast.BooleanLiteral:
 			// Write the boolean's value
-			WriteBoolLiteral(child, parent)
+			WriteBoolLiteral(child, representation)
 			return true
 		case ast.NumberLiteral, ast.DecimalLiteral:
 			// Get the number's value
@@ -61,20 +61,20 @@ func RetrieveStaticVal(
 			// See if the number's value is either 0 or 1
 			if num == "0" {
 				// Write the __FALSE constant
-				parent.Representation.WriteString("__FALSE")
-				parent.Representation.WriteString(" ")
+				representation.WriteString("__FALSE")
+				representation.WriteString(" ")
 				return true
 			} else if num == "1" {
 				// Write the __TRUE constant
-				parent.Representation.WriteString("__TRUE")
-				parent.Representation.WriteString(" ")
+				representation.WriteString("__TRUE")
+				representation.WriteString(" ")
 				return true
 			}
 
 			// Request an address for this number
 			address := usedNumbers.RequestAddress(fileCodeId, num)
-			parent.Representation.WriteString(address)
-			parent.Representation.WriteString(" ")
+			representation.WriteString(address)
+			representation.WriteString(" ")
 
 			return true
 		default:
