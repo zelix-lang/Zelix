@@ -43,7 +43,7 @@ func MarshalFunction(
 	usedArrays *pool.StringPool,
 	usedNumbers *pool.StringPool,
 	fileTree *tree.InstructionTree,
-	name string,
+	name *string,
 	localCounters *map[string]*string,
 ) {
 	// Keep a counter for all variables in the function
@@ -83,7 +83,7 @@ func MarshalFunction(
 	if isMain && fun.Name == "main" {
 		signature.WriteString("main")
 	} else {
-		signature.WriteString(name)
+		signature.WriteString(*name)
 	}
 	signature.WriteString(" ")
 

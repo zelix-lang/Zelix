@@ -166,8 +166,6 @@ func BuildCommand(context *cli.Command) {
 		for _, fun := range fileCode.Functions {
 			// Skip the main function
 			if isMain && fun.Name == "main" {
-				counter := "main"
-				(*nameCounter)[fun.Name] = &counter
 				continue
 			}
 

@@ -136,7 +136,7 @@ func BuildIr(
 			usedArrays,
 			usedNumbers,
 			&fileTree,
-			*localCounters[fun.Name],
+			localCounters[fun.Name],
 			&localCounters,
 		)
 	}

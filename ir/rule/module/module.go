@@ -88,7 +88,7 @@ func MarshalModule(
 			usedArrays,
 			usedNumbers,
 			fileTree,
-			*computedName,
+			computedName,
 			localCounters,
 		)
 
