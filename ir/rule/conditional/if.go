@@ -36,6 +36,7 @@ var booleanTypeWrapper = wrapper.TypeWrapper{
 
 func marshalCondition(
 	representation *strings.Builder,
+	parentAddr *string,
 	trace *filecode.FileCode,
 	fileCodeId int,
 	traceFileName string,
@@ -133,13 +134,14 @@ func marshalCondition(
 	*blockQueue = append(*blockQueue, tree.BlockMarshalElement{
 		Element:        block,
 		Representation: blockBuilder,
+		ParentAddr:     parentAddr,
 	})
 
 	return nextBuilder
 }
 
 func MarshalIf(
-	representation *strings.Builder,
+	queueElement *tree.BlockMarshalElement,
 	trace *filecode.FileCode,
 	fileCodeId int,
 	traceFileName string,
@@ -161,7 +163,7 @@ func MarshalIf(
 
 	// Determine if this expression has an else/elseif block
 	childrenLen := len(children) - 1
-	lastRepresentation := representation
+	lastRepresentation := queueElement.Representation
 
 	// Marshal all other conditions
 	for i := 0; i <= childrenLen; i++ {
@@ -190,6 +192,7 @@ func MarshalIf(
 		// Marshal this condition
 		newRepresentation := marshalCondition(
 			lastRepresentation,
+			queueElement.ParentAddr,
 			trace,
 			fileCodeId,
 			traceFileName,

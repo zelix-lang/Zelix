@@ -158,7 +158,7 @@ func MarshalFunction(
 		switch rule {
 		case ast.If:
 			conditional.MarshalIf(
-				queueElement.Representation,
+				&queueElement,
 				trace,
 				fileCodeId,
 				traceFileName,
