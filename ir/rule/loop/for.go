@@ -20,6 +20,7 @@ import (
 	"fluent/filecode/types/wrapper"
 	"fluent/ir/pool"
 	"fluent/ir/rule/expression"
+	"fluent/ir/rule/relocate"
 	"fluent/ir/tree"
 	"fluent/ir/value"
 	"fluent/util"
@@ -64,6 +65,9 @@ func MarshalFor(
 
 	// Get the block
 	block := children[3]
+
+	// Relocate the rest of the code
+	remainingAddr := relocate.RelocateRemaining(appendedBlocks, blockQueue)
 
 	// Get a suitable counter for the identifier
 	suitable := *counter
@@ -134,6 +138,9 @@ func MarshalFor(
 		representation.WriteString(tempBuilder.String())
 	}
 
+	// Get an address for the break conditional branch
+	breakConditionAddr, breakConditionBuilder := appendedBlocks.RequestAddress()
+
 	// Get an address for the conditional branch
 	conditionAddr, conditionBuilder := appendedBlocks.RequestAddress()
 
@@ -151,8 +158,28 @@ func MarshalFor(
 	storeBlockBuilder.WriteString(" ")
 	storeBlockBuilder.WriteString(usedNumbers.RequestAddress(fileCodeId, "1"))
 	storeBlockBuilder.WriteString("\njump ")
-	storeBlockBuilder.WriteString(*conditionAddr)
+	storeBlockBuilder.WriteString(*breakConditionAddr)
 	storeBlockBuilder.WriteString("\n")
+
+	// Get a suitable counter for break condition
+	suitable = *counter
+	*counter++
+	breakConditionBuilder.WriteString("mov x")
+	breakConditionBuilder.WriteString(strconv.Itoa(suitable))
+	breakConditionBuilder.WriteString(" bool eq ")
+	breakConditionBuilder.WriteString(identifierAddr)
+	breakConditionBuilder.WriteString(" ")
+	breakConditionBuilder.WriteString(rightAddr)
+	breakConditionBuilder.WriteString("\n")
+
+	// Write the break condition
+	breakConditionBuilder.WriteString("if x")
+	breakConditionBuilder.WriteString(strconv.Itoa(suitable))
+	breakConditionBuilder.WriteString(" ")
+	breakConditionBuilder.WriteString(*remainingAddr)
+	breakConditionBuilder.WriteString(" ")
+	breakConditionBuilder.WriteString(*conditionAddr)
+	breakConditionBuilder.WriteString("\n")
 
 	// Get a suitable counter for the condition
 	suitable = *counter
@@ -178,12 +205,12 @@ func MarshalFor(
 	*blockQueue = append(*blockQueue, &tree.BlockMarshalElement{
 		Element:        block,
 		Representation: blockBuilder,
-		ParentAddr:     conditionAddr,
+		ParentAddr:     breakConditionAddr,
 		JumpToParent:   true,
 	})
 
 	// Write the appropriate instructions
 	representation.WriteString("jump ")
-	representation.WriteString(*conditionAddr)
+	representation.WriteString(*breakConditionAddr)
 	representation.WriteString("\n")
 }
