@@ -21,6 +21,7 @@ import (
 	"fluent/ir/pool"
 	"fluent/ir/rule/conditional"
 	"fluent/ir/rule/expression"
+	"fluent/ir/rule/loop"
 	"fluent/ir/rule/ret"
 	"fluent/ir/tree"
 	"fluent/util"
@@ -157,6 +158,25 @@ func MarshalFunction(
 		switch rule {
 		case ast.If:
 			conditional.MarshalIf(
+				queueElement.Representation,
+				trace,
+				fileCodeId,
+				traceFileName,
+				modulePropCounters,
+				&counter,
+				element,
+				variables,
+				traceCounters,
+				&appendedBlocks,
+				usedStrings,
+				usedArrays,
+				usedNumbers,
+				nameCounters,
+				localCounters,
+				&blockQueue,
+			)
+		case ast.For:
+			loop.MarshalFor(
 				queueElement.Representation,
 				trace,
 				fileCodeId,
