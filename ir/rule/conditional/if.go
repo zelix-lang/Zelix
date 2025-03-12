@@ -27,8 +27,7 @@ import (
 	"strings"
 )
 
-// A dummy boolean type wrapper
-var booleanTypeWrapper = wrapper.TypeWrapper{
+var BooleanTypeWrapper = wrapper.TypeWrapper{
 	BaseType:    "bool",
 	IsPrimitive: true,
 	Children:    &[]*wrapper.TypeWrapper{},
@@ -101,7 +100,7 @@ func marshalCondition(
 				nameCounters,
 				localCounters,
 				true,
-				&booleanTypeWrapper,
+				&BooleanTypeWrapper,
 			)
 
 			// Write the instructions
