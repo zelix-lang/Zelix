@@ -194,6 +194,25 @@ func MarshalFunction(
 				localCounters,
 				&blockQueue,
 			)
+		case ast.While:
+			loop.MarshalWhile(
+				queueElement.Representation,
+				trace,
+				fileCodeId,
+				traceFileName,
+				modulePropCounters,
+				&counter,
+				element,
+				variables,
+				traceCounters,
+				&appendedBlocks,
+				usedStrings,
+				usedArrays,
+				usedNumbers,
+				nameCounters,
+				localCounters,
+				&blockQueue,
+			)
 		case ast.Block:
 			// Add the block's children to the queue
 			for _, el := range *element.Children {
