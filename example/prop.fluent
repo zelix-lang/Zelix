@@ -1,21 +1,9 @@
 import "@std::io::print";
 
+pub fun abc<T>(a: T) -> T {
+    return a;
+}
+
 pub fun main() {
-    println("Hello");
-    if true {
-        println("2");
-    }
-
-    println("Hello");
-    println("Hello");
-    println("Hello");
-
-    if true {
-            println("2");
-        }
-
-    println("Hello");
-    println("Hello");
-    println("Hello");
-
+    abc(1);
 }

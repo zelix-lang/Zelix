@@ -207,6 +207,7 @@ func MarshalFor(
 		Representation: blockBuilder,
 		ParentAddr:     breakConditionAddr,
 		JumpToParent:   true,
+		RemainingAddr:  remainingAddr,
 	})
 
 	// Write the appropriate instructions

@@ -241,7 +241,9 @@ func MarshalFunction(
 			funTree.Representation.WriteString(*queueElement.ParentAddr)
 			funTree.Representation.WriteString("\n")
 		case ast.Break:
-			funTree.Representation.WriteString("jump __block_end__\n")
+			funTree.Representation.WriteString("jump ")
+			funTree.Representation.WriteString(*queueElement.RemainingAddr)
+			funTree.Representation.WriteString("\n")
 		case ast.Expression:
 			expression.MarshalExpression(
 				queueElement.Representation,
