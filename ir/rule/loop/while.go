@@ -20,6 +20,7 @@ import (
 	"fluent/ir/pool"
 	"fluent/ir/rule/conditional"
 	"fluent/ir/rule/expression"
+	"fluent/ir/rule/relocate"
 	"fluent/ir/tree"
 	"fluent/ir/value"
 	"fluent/util"
@@ -59,6 +60,9 @@ func MarshalWhile(
 
 	// Request an address for the block
 	blockAddr, blockBuilder := appendedBlocks.RequestAddress()
+
+	// Relocate the rest of the code
+	remainingAddr := relocate.RelocateRemaining(appendedBlocks, blockQueue)
 
 	// Write the appropriate instructions
 	representation.WriteString("jump ")
@@ -102,7 +106,9 @@ func MarshalWhile(
 	conditionalBuilder.WriteString("if ")
 	conditionalBuilder.WriteString(conditionAddr)
 	conditionalBuilder.WriteString(*blockAddr)
-	conditionalBuilder.WriteString(" __block_end__\n")
+	conditionalBuilder.WriteString(" ")
+	conditionalBuilder.WriteString(*remainingAddr)
+	conditionalBuilder.WriteString("\n")
 
 	// Schedule the block
 	*blockQueue = append(*blockQueue, &tree.BlockMarshalElement{
