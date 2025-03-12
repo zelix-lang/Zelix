@@ -215,6 +215,10 @@ func AnalyzeFunctionCall(
 		// Schedule all the parameters for analysis
 		if !preventParamAnalysis {
 			i := 0
+
+			// Prevent inferring twice the same generics
+			inferredGenerics := make(map[string]*object.Object)
+
 			for _, param := range function.Params {
 				// Get the parameter's value
 				value := (*paramsNode.Children)[i]
@@ -222,37 +226,49 @@ func AnalyzeFunctionCall(
 				paramNodes := (*value.Children)[0]
 				isParamHeap := paramType.PointerCount > 0
 				enforceHeapInParam := false
+				passedResult := object.Object{
+					Type: wrapper.TypeWrapper{
+						Children: &[]*wrapper.TypeWrapper{},
+					},
+					IsHeap: isParamHeap,
+				}
+				passedType := &paramType
 
 				if !param.Type.IsPrimitive {
 					// Check for generics
 					if _, found := generics[param.Type.BaseType]; found {
-						// Check if this param has the return type's generic
-						if returnType.Compare(paramType) {
-							enforceHeapInParam = result.IsHeap
-							if expected.BaseType == "" {
-								paramType = wrapper.TypeWrapper{
-									BaseType:     "(Infer)",
-									PointerCount: param.Type.PointerCount,
-									ArrayCount:   param.Type.ArrayCount,
+						// See if we have seen this generic before
+						if inferredGenerics[param.Type.BaseType] != nil {
+							passedType = &inferredGenerics[param.Type.BaseType].Type
+						} else {
+							inferredGenerics[param.Type.BaseType] = &passedResult
+							// Check if this param has the return type's generic
+							if returnType.Compare(paramType) {
+								enforceHeapInParam = result.IsHeap
+								if expected.BaseType == "" {
+									passedType = &wrapper.TypeWrapper{
+										BaseType:     "(Infer)",
+										PointerCount: param.Type.PointerCount,
+										ArrayCount:   param.Type.ArrayCount,
+									}
+								} else {
+									passedType = expected
 								}
 							} else {
-								paramType = *expected
+								passedType.BaseType = "(Infer)"
 							}
-						} else {
-							paramType.BaseType = "(Infer)"
 						}
+					} else {
+						passedType = &paramType
 					}
+				} else {
+					passedType = &paramType
 				}
 
 				*exprQueue = append(*exprQueue, queue2.ExpectedPair{
-					Tree: paramNodes,
-					Got: &object.Object{
-						Type: wrapper.TypeWrapper{
-							Children: &[]*wrapper.TypeWrapper{},
-						},
-						IsHeap: isParamHeap,
-					},
-					Expected:     &paramType,
+					Tree:         paramNodes,
+					Got:          &passedResult,
+					Expected:     passedType,
 					HeapRequired: enforceHeapInParam && enforceHeap,
 					IsParam:      true,
 				})
