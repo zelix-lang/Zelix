@@ -20,6 +20,7 @@ import (
 	"fluent/filecode/types/wrapper"
 	"fluent/ir/pool"
 	"fluent/ir/rule/expression"
+	"fluent/ir/rule/relocate"
 	"fluent/ir/tree"
 	"fluent/ir/value"
 	"fluent/util"
@@ -167,18 +168,8 @@ func MarshalIf(
 	childrenLen := len(children) - 1
 	lastRepresentation := queueElement.Representation
 
-	// Request an address for a new block that will hold the
-	// rest of the code
-	remainingAddr, remainingBuilder := appendedBlocks.RequestAddress()
-
-	// Relocate the rest of the block
-	for _, el := range *blockQueue {
-		if !el.IsMain {
-			continue
-		}
-
-		el.Representation = remainingBuilder
-	}
+	// Relocate the rest of the code
+	remainingAddr := relocate.RelocateRemaining(appendedBlocks, blockQueue)
 
 	// Marshal all other conditions
 	for i := 0; i <= childrenLen; i++ {
