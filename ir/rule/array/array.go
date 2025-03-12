@@ -41,6 +41,10 @@ func MarshalArray(
 	// Write an arr opcode
 	pair.Parent.Representation.WriteString("arr ")
 
+	// Write the array's length
+	pair.Parent.Representation.WriteString(strconv.Itoa(len(children)))
+	pair.Parent.Representation.WriteString(" ")
+
 	// Prevent collisions
 	if pair.IsParam && pair.Counter == *counter {
 		*counter++
