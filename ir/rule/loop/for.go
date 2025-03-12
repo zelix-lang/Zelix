@@ -49,7 +49,6 @@ func MarshalFor(
 	usedStrings *pool.StringPool,
 	usedArrays *pool.StringPool,
 	usedNumbers *pool.StringPool,
-	nameCounters *map[string]map[string]string,
 	localCounters *map[string]string,
 	blockQueue *[]*tree.BlockMarshalElement,
 ) {
@@ -99,7 +98,6 @@ func MarshalFor(
 			usedStrings,
 			usedArrays,
 			usedNumbers,
-			nameCounters,
 			localCounters,
 			true,
 			&numWrapper,
@@ -129,7 +127,6 @@ func MarshalFor(
 			usedStrings,
 			usedArrays,
 			usedNumbers,
-			nameCounters,
 			localCounters,
 			true,
 			&numWrapper,

@@ -36,7 +36,6 @@ func MarshalModule(
 	usedStrings *pool.StringPool,
 	usedArrays *pool.StringPool,
 	usedNumbers *pool.StringPool,
-	nameCounters *map[string]map[string]string,
 ) {
 	// Create a new InstructionTree for the module
 	modTree := tree.InstructionTree{
@@ -89,7 +88,6 @@ func MarshalModule(
 			usedArrays,
 			usedNumbers,
 			fileTree,
-			nameCounters,
 			*computedName,
 			localCounters,
 		)

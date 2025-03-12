@@ -1,7 +1,5 @@
-import "@std::io::print";
+pub mod Abc {
+    pub fun Abc() {
 
-pub fun nested() {
-    nested2("asd");
+    }
 }
-
-pub fun nested2(_a: str) {}

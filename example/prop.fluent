@@ -1,9 +1,5 @@
-import "@std::io::print";
-
-pub fun abc<T>(a: T) -> T {
-    return a;
-}
+import "nested.fluent";
 
 pub fun main() {
-    abc(1);
+    new Abc();
 }

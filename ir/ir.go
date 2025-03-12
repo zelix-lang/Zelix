@@ -48,7 +48,6 @@ func BuildIr(
 	usedArrays *pool.StringPool,
 	usedNumbers *pool.StringPool,
 	modulePropCounters *map[string]*util.OrderedMap[string, *string],
-	nameCounters *map[string]map[string]string,
 	localCounters map[string]string,
 ) string {
 	// Use a strings.Builder to properly handle the IR building
@@ -108,7 +107,6 @@ func BuildIr(
 			usedStrings,
 			usedArrays,
 			usedNumbers,
-			nameCounters,
 		)
 	}
 
@@ -138,7 +136,6 @@ func BuildIr(
 			usedArrays,
 			usedNumbers,
 			&fileTree,
-			nameCounters,
 			localCounters[fun.Name],
 			&localCounters,
 		)

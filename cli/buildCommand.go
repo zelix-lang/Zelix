@@ -209,6 +209,19 @@ func BuildCommand(context *cli.Command) {
 			continue
 		}
 
+		// Add the imports to the local counters
+		for _, importPath := range fileCode.Imports {
+			counters := nameCounters[importPath]
+
+			if counters == nil {
+				continue
+			}
+
+			for name, counter := range counters {
+				nameCounters[fileCode.Path][name] = counter
+			}
+		}
+
 		fileName := util.FileName(&fileCode.Path)
 
 		// Emit a building state
@@ -227,9 +240,6 @@ func BuildCommand(context *cli.Command) {
 			&usedArrays,
 			&usedNumbers,
 			&modulePropCounters,
-			// Prevent copying the map every time
-			// by passing a reference to the map
-			&nameCounters,
 			nameCounters[fileCode.Path],
 		)
 		// Write the IR to the global builder

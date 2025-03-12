@@ -43,7 +43,6 @@ func MarshalFunction(
 	usedArrays *pool.StringPool,
 	usedNumbers *pool.StringPool,
 	fileTree *tree.InstructionTree,
-	nameCounters *map[string]map[string]string,
 	name string,
 	localCounters *map[string]string,
 ) {
@@ -174,7 +173,6 @@ func MarshalFunction(
 				usedStrings,
 				usedArrays,
 				usedNumbers,
-				nameCounters,
 				localCounters,
 				&blockQueue,
 			)
@@ -193,7 +191,6 @@ func MarshalFunction(
 				usedStrings,
 				usedArrays,
 				usedNumbers,
-				nameCounters,
 				localCounters,
 				&blockQueue,
 			)
@@ -212,7 +209,6 @@ func MarshalFunction(
 				usedStrings,
 				usedArrays,
 				usedNumbers,
-				nameCounters,
 				localCounters,
 				&blockQueue,
 			)
@@ -258,7 +254,6 @@ func MarshalFunction(
 				usedStrings,
 				usedArrays,
 				usedNumbers,
-				nameCounters,
 				localCounters,
 				false,
 				nil,
@@ -277,7 +272,6 @@ func MarshalFunction(
 				usedStrings,
 				usedArrays,
 				usedNumbers,
-				nameCounters,
 				localCounters,
 				&fun.ReturnType,
 			)

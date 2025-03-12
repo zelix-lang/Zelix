@@ -101,11 +101,11 @@ func MarshalFunctionCall(
 	counter *int,
 	parent *tree.InstructionTree,
 	traceCounters *pool.NumPool,
-	nameCounters *map[string]map[string]string,
 	variables map[string]string,
 	usedStrings *pool.StringPool,
 	usedNumbers *pool.StringPool,
 	exprQueue *[]tree.MarshalPair,
+	localCounters *map[string]string,
 ) {
 	lineCounter := traceCounters.RequestAddress(fileCodeId, child.Line)
 	colCounter := traceCounters.RequestAddress(fileCodeId, child.Column)
@@ -120,7 +120,7 @@ func MarshalFunctionCall(
 	// Attempt to determine the function's counter
 	fun := trace.Functions[funName]
 	// Get the counter
-	funCounter, ok := (*nameCounters)[fun.Path][funName]
+	funCounter, ok := (*localCounters)[funName]
 
 	if !ok {
 		// External impl available, write the name directly

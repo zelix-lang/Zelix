@@ -44,7 +44,6 @@ func MarshalExpression(
 	usedStrings *pool.StringPool,
 	usedArrays *pool.StringPool,
 	usedNumbers *pool.StringPool,
-	nameCounters *map[string]map[string]string,
 	localCounters *map[string]string,
 	moveToStack bool,
 	firstExpected *wrapper.TypeWrapper,
@@ -129,11 +128,11 @@ func MarshalExpression(
 				counter,
 				pair.Parent,
 				traceCounters,
-				nameCounters,
 				variables,
 				usedStrings,
 				usedNumbers,
 				&queue,
+				localCounters,
 			)
 		case ast.ObjectCreation:
 			object.MarshalObjectCreation(
