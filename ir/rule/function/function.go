@@ -155,6 +155,9 @@ func MarshalFunction(
 		// See the element's rule
 		rule := element.Rule
 
+		// Used to store whether the current element has a nested block
+		hasNested := false
+
 		switch rule {
 		case ast.If:
 			conditional.MarshalIf(
@@ -214,13 +217,21 @@ func MarshalFunction(
 				&blockQueue,
 			)
 		case ast.Block:
+			hasNested = true
+			childrenLen := len(*element.Children) - 1
 			// Add the block's children to the queue
-			for _, el := range *element.Children {
+			for i, el := range *element.Children {
 				blockQueue = append(blockQueue, tree.BlockMarshalElement{
 					Element:        el,
 					Representation: queueElement.Representation,
 					ParentAddr:     queueElement.ParentAddr,
+					JumpToParent:   i == childrenLen && queueElement.JumpToParent,
 				})
+			}
+
+			// Update the flag if there are no children
+			if childrenLen == -1 {
+				hasNested = false
 			}
 		case ast.Continue:
 			funTree.Representation.WriteString("jump ")
@@ -266,6 +277,13 @@ func MarshalFunction(
 				&fun.ReturnType,
 			)
 		default:
+		}
+
+		// Jump to the parent if needed
+		if !hasNested && queueElement.JumpToParent {
+			queueElement.Representation.WriteString("jump ")
+			queueElement.Representation.WriteString(*queueElement.ParentAddr)
+			queueElement.Representation.WriteString("\n")
 		}
 	}
 

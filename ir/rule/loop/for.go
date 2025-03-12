@@ -179,6 +179,7 @@ func MarshalFor(
 		Element:        block,
 		Representation: blockBuilder,
 		ParentAddr:     conditionAddr,
+		JumpToParent:   true,
 	})
 
 	// Write the appropriate instructions

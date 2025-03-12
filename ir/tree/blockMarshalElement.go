@@ -23,4 +23,5 @@ type BlockMarshalElement struct {
 	Element        *ast.AST
 	Representation *strings.Builder
 	ParentAddr     *string
+	JumpToParent   bool
 }

@@ -109,6 +109,7 @@ func MarshalWhile(
 		Element:        block,
 		Representation: blockBuilder,
 		ParentAddr:     conditionalAddr,
+		JumpToParent:   true,
 	})
 
 }

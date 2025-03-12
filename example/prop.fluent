@@ -1,7 +1,6 @@
 import "@std::io::print";
 
 pub fun main() {
-    if true {
-        println("Hello, world!");
+    for 1 to 5 in i {
     }
 }
