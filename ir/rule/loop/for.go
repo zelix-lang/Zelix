@@ -178,6 +178,7 @@ func MarshalFor(
 	*blockQueue = append(*blockQueue, tree.BlockMarshalElement{
 		Element:        block,
 		Representation: blockBuilder,
+		ParentAddr:     conditionAddr,
 	})
 
 	// Write the appropriate instructions
