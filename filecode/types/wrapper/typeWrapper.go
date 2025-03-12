@@ -85,17 +85,19 @@ func (t *TypeWrapper) Compare(other TypeWrapper) bool {
 			break
 		}
 
-		if len(*element.w.Children) != len(*element.other.Children) {
-			result = false
-			break
-		}
+		if element.w.Children != nil && element.other.Children != nil {
+			if len(*element.w.Children) != len(*element.other.Children) {
+				result = false
+				break
+			}
 
-		// Add the children to the queue
-		for i := 0; i < len(*element.w.Children); i++ {
-			queue = append(queue, pairQueueElement{
-				w:     (*element.w.Children)[i],
-				other: (*element.other.Children)[i],
-			})
+			// Add the children to the queue
+			for i := 0; i < len(*element.w.Children); i++ {
+				queue = append(queue, pairQueueElement{
+					w:     (*element.w.Children)[i],
+					other: (*element.other.Children)[i],
+				})
+			}
 		}
 	}
 
