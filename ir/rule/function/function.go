@@ -200,6 +200,7 @@ func MarshalFunction(
 				blockQueue = append(blockQueue, tree.BlockMarshalElement{
 					Element:        el,
 					Representation: queueElement.Representation,
+					ParentAddr:     queueElement.ParentAddr,
 				})
 			}
 		case ast.Continue:
