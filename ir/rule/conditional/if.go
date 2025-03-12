@@ -36,6 +36,7 @@ var BooleanTypeWrapper = wrapper.TypeWrapper{
 func marshalCondition(
 	representation *strings.Builder,
 	parentAddr *string,
+	remainingAddr *string,
 	trace *filecode.FileCode,
 	fileCodeId int,
 	traceFileName string,
@@ -51,7 +52,7 @@ func marshalCondition(
 	usedNumbers *pool.StringPool,
 	nameCounters *map[string]map[string]string,
 	localCounters *map[string]string,
-	blockQueue *[]tree.BlockMarshalElement,
+	blockQueue *[]*tree.BlockMarshalElement,
 	isLast bool,
 ) *strings.Builder {
 	var block *ast.AST
@@ -122,7 +123,8 @@ func marshalCondition(
 			nextBuilder = nextRepresentation
 		} else {
 			// Write an end block
-			representation.WriteString("__block_end__\n")
+			representation.WriteString(*remainingAddr)
+			representation.WriteString("\n")
 		}
 	} else {
 		// Don't request any other block and reuse the existing one
@@ -130,10 +132,11 @@ func marshalCondition(
 	}
 
 	// Schedule the block
-	*blockQueue = append(*blockQueue, tree.BlockMarshalElement{
+	*blockQueue = append(*blockQueue, &tree.BlockMarshalElement{
 		Element:        block,
 		Representation: blockBuilder,
 		ParentAddr:     parentAddr,
+		RemainingAddr:  remainingAddr,
 	})
 
 	return nextBuilder
@@ -155,7 +158,7 @@ func MarshalIf(
 	usedNumbers *pool.StringPool,
 	nameCounters *map[string]map[string]string,
 	localCounters *map[string]string,
-	blockQueue *[]tree.BlockMarshalElement,
+	blockQueue *[]*tree.BlockMarshalElement,
 ) {
 	// Get the expression's children
 	children := *element.Children
@@ -163,6 +166,19 @@ func MarshalIf(
 	// Determine if this expression has an else/elseif block
 	childrenLen := len(children) - 1
 	lastRepresentation := queueElement.Representation
+
+	// Request an address for a new block that will hold the
+	// rest of the code
+	remainingAddr, remainingBuilder := appendedBlocks.RequestAddress()
+
+	// Relocate the rest of the block
+	for _, el := range *blockQueue {
+		if !el.IsMain {
+			continue
+		}
+
+		el.Representation = remainingBuilder
+	}
 
 	// Marshal all other conditions
 	for i := 0; i <= childrenLen; i++ {
@@ -192,6 +208,7 @@ func MarshalIf(
 		newRepresentation := marshalCondition(
 			lastRepresentation,
 			queueElement.ParentAddr,
+			remainingAddr,
 			trace,
 			fileCodeId,
 			traceFileName,

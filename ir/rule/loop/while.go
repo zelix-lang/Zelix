@@ -43,7 +43,7 @@ func MarshalWhile(
 	usedNumbers *pool.StringPool,
 	nameCounters *map[string]map[string]string,
 	localCounters *map[string]string,
-	blockQueue *[]tree.BlockMarshalElement,
+	blockQueue *[]*tree.BlockMarshalElement,
 ) {
 	// Get the children
 	children := *element.Children
@@ -105,7 +105,7 @@ func MarshalWhile(
 	conditionalBuilder.WriteString(" __block_end__\n")
 
 	// Schedule the block
-	*blockQueue = append(*blockQueue, tree.BlockMarshalElement{
+	*blockQueue = append(*blockQueue, &tree.BlockMarshalElement{
 		Element:        block,
 		Representation: blockBuilder,
 		ParentAddr:     conditionalAddr,

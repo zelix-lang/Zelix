@@ -1,6 +1,21 @@
 import "@std::io::print";
 
 pub fun main() {
-    for 1 to 5 in i {
+    println("Hello");
+    if true {
+        println("2");
     }
+
+    println("Hello");
+    println("Hello");
+    println("Hello");
+
+    if true {
+            println("2");
+        }
+
+    println("Hello");
+    println("Hello");
+    println("Hello");
+
 }

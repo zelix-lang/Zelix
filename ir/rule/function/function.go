@@ -137,12 +137,12 @@ func MarshalFunction(
 
 	*fileTree.Children = append(*fileTree.Children, &funTree)
 
-	// Use a queue to marshal blocks
-	// in a breadth-first manner
-	blockQueue := []tree.BlockMarshalElement{
+	// Use a queue to marshal blocks in a breadth-first manner
+	blockQueue := []*tree.BlockMarshalElement{
 		{
 			Element:        &fun.Body,
 			Representation: funTree.Representation,
+			IsMain:         true,
 		},
 	}
 
@@ -161,7 +161,7 @@ func MarshalFunction(
 		switch rule {
 		case ast.If:
 			conditional.MarshalIf(
-				&queueElement,
+				queueElement,
 				trace,
 				fileCodeId,
 				traceFileName,
@@ -221,11 +221,14 @@ func MarshalFunction(
 			childrenLen := len(*element.Children) - 1
 			// Add the block's children to the queue
 			for i, el := range *element.Children {
-				blockQueue = append(blockQueue, tree.BlockMarshalElement{
+				blockQueue = append(blockQueue, &tree.BlockMarshalElement{
 					Element:        el,
 					Representation: queueElement.Representation,
 					ParentAddr:     queueElement.ParentAddr,
-					JumpToParent:   i == childrenLen && queueElement.JumpToParent,
+					IsLast:         i == childrenLen,
+					JumpToParent:   queueElement.JumpToParent,
+					IsMain:         queueElement.IsMain,
+					RemainingAddr:  queueElement.RemainingAddr,
 				})
 			}
 
@@ -280,9 +283,13 @@ func MarshalFunction(
 		}
 
 		// Jump to the parent if needed
-		if !hasNested && queueElement.JumpToParent {
+		if !hasNested && queueElement.IsLast && queueElement.JumpToParent {
 			queueElement.Representation.WriteString("jump ")
 			queueElement.Representation.WriteString(*queueElement.ParentAddr)
+			queueElement.Representation.WriteString("\n")
+		} else if !hasNested && queueElement.IsLast && queueElement.RemainingAddr != nil {
+			queueElement.Representation.WriteString("jump ")
+			queueElement.Representation.WriteString(*queueElement.RemainingAddr)
 			queueElement.Representation.WriteString("\n")
 		}
 	}
