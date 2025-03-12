@@ -51,7 +51,7 @@ func marshalCondition(
 	usedStrings *pool.StringPool,
 	usedArrays *pool.StringPool,
 	usedNumbers *pool.StringPool,
-	localCounters *map[string]string,
+	localCounters *map[string]*string,
 	blockQueue *[]*tree.BlockMarshalElement,
 	isLast bool,
 ) *strings.Builder {
@@ -155,7 +155,7 @@ func MarshalIf(
 	usedStrings *pool.StringPool,
 	usedArrays *pool.StringPool,
 	usedNumbers *pool.StringPool,
-	localCounters *map[string]string,
+	localCounters *map[string]*string,
 	blockQueue *[]*tree.BlockMarshalElement,
 ) {
 	// Get the expression's children

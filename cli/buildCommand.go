@@ -95,7 +95,7 @@ func BuildCommand(context *cli.Command) {
 	}
 	// Used to store precomputed counters for functions' and
 	// modules' names
-	nameCounters := make(map[string]map[string]string)
+	nameCounters := make(map[string]*map[string]*string)
 	modulePropCounters := make(map[string]*util.OrderedMap[string, *string])
 	// Save in a map the files that have an external
 	// implementation to avoid recompiling them
@@ -155,8 +155,8 @@ func BuildCommand(context *cli.Command) {
 		nameCounter, ok := nameCounters[fileCode.Path]
 
 		if !ok {
-			nameCounters[fileCode.Path] = make(map[string]string)
-			nameCounter = nameCounters[fileCode.Path]
+			nameCounter = &map[string]*string{}
+			nameCounters[fileCode.Path] = nameCounter
 		}
 
 		// Determine if this FileCode is the main one
@@ -166,10 +166,13 @@ func BuildCommand(context *cli.Command) {
 		for _, fun := range fileCode.Functions {
 			// Skip the main function
 			if isMain && fun.Name == "main" {
+				counter := "main"
+				(*nameCounter)[fun.Name] = &counter
 				continue
 			}
 
-			nameCounter[fun.Name] = fmt.Sprintf("f__%d_%d", fileCodeCount, functionCounter)
+			counter := fmt.Sprintf("f__%d_%d", fileCodeCount, functionCounter)
+			(*nameCounter)[fun.Name] = &counter
 			functionCounter++
 		}
 
@@ -177,7 +180,7 @@ func BuildCommand(context *cli.Command) {
 		for _, mod := range fileCode.Modules {
 			modulePropCounters[mod.Name] = util.NewOrderedMap[string, *string]()
 			formattedName := fmt.Sprintf("m__%d_%d", fileCodeCount, modCounter)
-			nameCounter[mod.Name] = formattedName
+			(*nameCounter)[mod.Name] = &formattedName
 			modCounter++
 
 			// Also precompute all properties and methods
@@ -217,8 +220,8 @@ func BuildCommand(context *cli.Command) {
 				continue
 			}
 
-			for name, counter := range counters {
-				nameCounters[fileCode.Path][name] = counter
+			for name, counter := range *counters {
+				(*nameCounters[fileCode.Path])[name] = counter
 			}
 		}
 
@@ -240,7 +243,7 @@ func BuildCommand(context *cli.Command) {
 			&usedArrays,
 			&usedNumbers,
 			&modulePropCounters,
-			nameCounters[fileCode.Path],
+			*nameCounters[fileCode.Path],
 		)
 		// Write the IR to the global builder
 		globalBuilder.WriteString(fileIr)

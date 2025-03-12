@@ -44,7 +44,7 @@ func MarshalExpression(
 	usedStrings *pool.StringPool,
 	usedArrays *pool.StringPool,
 	usedNumbers *pool.StringPool,
-	localCounters *map[string]string,
+	localCounters *map[string]*string,
 	moveToStack bool,
 	firstExpected *wrapper.TypeWrapper,
 ) {
@@ -93,7 +93,7 @@ func MarshalExpression(
 				pair.Parent.Representation.WriteString(pair.Expected.Marshal())
 			} else {
 				oldBaseType := pair.Expected.BaseType
-				pair.Expected.BaseType = (*localCounters)[oldBaseType]
+				pair.Expected.BaseType = *(*localCounters)[oldBaseType]
 				pair.Parent.Representation.WriteString(pair.Expected.Marshal())
 				pair.Expected.BaseType = oldBaseType
 			}

@@ -49,7 +49,7 @@ func MarshalFor(
 	usedStrings *pool.StringPool,
 	usedArrays *pool.StringPool,
 	usedNumbers *pool.StringPool,
-	localCounters *map[string]string,
+	localCounters *map[string]*string,
 	blockQueue *[]*tree.BlockMarshalElement,
 ) {
 	// Get the children

@@ -42,7 +42,7 @@ func MarshalObjectCreation(
 	usedArrays *pool.StringPool,
 	usedNumbers *pool.StringPool,
 	exprQueue *[]tree.MarshalPair,
-	localCounters *map[string]string,
+	localCounters *map[string]*string,
 ) {
 	children := *child.Children
 
@@ -89,14 +89,14 @@ func MarshalObjectCreation(
 				element.Parent.Representation.WriteString("mov ")
 				element.Parent.Representation.WriteString(modAddress)
 				element.Parent.Representation.WriteString(" ")
-				element.Parent.Representation.WriteString(name)
+				element.Parent.Representation.WriteString(*name)
 				element.Parent.Representation.WriteString(" ")
 			}
 		}
 
 		// Write the construct instructions
 		element.Parent.Representation.WriteString("co ")
-		element.Parent.Representation.WriteString(name)
+		element.Parent.Representation.WriteString(*name)
 		element.Parent.Representation.WriteString(" ")
 
 		// Iterate over the prop counters
@@ -118,7 +118,7 @@ func MarshalObjectCreation(
 
 				// Change the base type for non-primitive types
 				if !propType.IsPrimitive {
-					baseType = (*localCounters)[propType.BaseType]
+					baseType = *(*localCounters)[propType.BaseType]
 				}
 
 				if propType.PointerCount > 0 {

@@ -44,7 +44,7 @@ func MarshalPropertyAccess(
 	usedNumbers *pool.StringPool,
 	exprQueue *[]tree.MarshalPair,
 	variables map[string]string,
-	localCounters *map[string]string,
+	localCounters *map[string]*string,
 	traceFileName string,
 ) {
 	// Get the property's children
@@ -165,7 +165,7 @@ func MarshalPropertyAccess(
 			if !isLast {
 				// Get the method's type wrapper
 				prop := lastMod.Functions[name]
-				representation.WriteString((*localCounters)[prop.ReturnType.BaseType])
+				representation.WriteString(*(*localCounters)[prop.ReturnType.BaseType])
 				representation.WriteString(" ")
 			}
 
@@ -210,7 +210,7 @@ func MarshalPropertyAccess(
 			if !isLast {
 				// Get the prop's type wrapper
 				prop := lastMod.Declarations[*expr.Value]
-				representation.WriteString((*localCounters)[prop.Type.BaseType])
+				representation.WriteString(*(*localCounters)[prop.Type.BaseType])
 				representation.WriteString(" ")
 			}
 

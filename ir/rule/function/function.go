@@ -44,7 +44,7 @@ func MarshalFunction(
 	usedNumbers *pool.StringPool,
 	fileTree *tree.InstructionTree,
 	name string,
-	localCounters *map[string]string,
+	localCounters *map[string]*string,
 ) {
 	// Keep a counter for all variables in the function
 	// this is done to prevent name collisions with
@@ -76,7 +76,7 @@ func MarshalFunction(
 	if fun.ReturnType.IsPrimitive {
 		signature.WriteString(fun.ReturnType.Marshal())
 	} else {
-		signature.WriteString((*localCounters)[fun.ReturnType.BaseType])
+		signature.WriteString(*(*localCounters)[fun.ReturnType.BaseType])
 	}
 
 	signature.WriteString(" ")
@@ -112,7 +112,7 @@ func MarshalFunction(
 			signature.WriteString(param.Type.Marshal())
 		} else {
 			oldBaseType := param.Type.BaseType
-			param.Type.BaseType = (*localCounters)[oldBaseType]
+			param.Type.BaseType = *(*localCounters)[oldBaseType]
 			signature.WriteString(param.Type.Marshal())
 			param.Type.BaseType = oldBaseType
 		}

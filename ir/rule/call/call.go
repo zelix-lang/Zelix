@@ -105,7 +105,7 @@ func MarshalFunctionCall(
 	usedStrings *pool.StringPool,
 	usedNumbers *pool.StringPool,
 	exprQueue *[]tree.MarshalPair,
-	localCounters *map[string]string,
+	localCounters *map[string]*string,
 ) {
 	lineCounter := traceCounters.RequestAddress(fileCodeId, child.Line)
 	colCounter := traceCounters.RequestAddress(fileCodeId, child.Column)
@@ -126,7 +126,7 @@ func MarshalFunctionCall(
 		// External impl available, write the name directly
 		parent.Representation.WriteString(funName)
 	} else {
-		parent.Representation.WriteString(funCounter)
+		parent.Representation.WriteString(*funCounter)
 	}
 	parent.Representation.WriteString(" ")
 
