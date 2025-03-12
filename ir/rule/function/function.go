@@ -204,11 +204,11 @@ func MarshalFunction(
 				})
 			}
 		case ast.Continue:
-			funTree.Representation.WriteString("continue")
+			funTree.Representation.WriteString("jump ")
+			funTree.Representation.WriteString(*queueElement.ParentAddr)
 			funTree.Representation.WriteString("\n")
 		case ast.Break:
-			funTree.Representation.WriteString("break")
-			funTree.Representation.WriteString("\n")
+			funTree.Representation.WriteString("jump __block_end__\n")
 		case ast.Expression:
 			expression.MarshalExpression(
 				queueElement.Representation,
