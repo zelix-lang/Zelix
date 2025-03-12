@@ -245,7 +245,6 @@ func BuildCommand(context *cli.Command) {
 		)
 		// Write the IR to the global builder
 		globalBuilder.WriteString(fileIr)
-		globalBuilder.WriteString("\n")
 		state.PassAllSpinners()
 		fileCodeCount++
 	}
