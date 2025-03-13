@@ -83,6 +83,7 @@ func BuildCommand(context *cli.Command) {
 		Counter: make(map[int]int),
 		Prefix:  "__str__",
 	}
+	traceStrings := make(map[string]*string)
 	usedArrays := pool.StringPool{
 		Storage: make(map[string]string),
 		Counter: make(map[int]int),
@@ -237,6 +238,7 @@ func BuildCommand(context *cli.Command) {
 			fileCodeCount,
 			isMain,
 			&traceCounters,
+			&traceStrings,
 			&usedStrings,
 			&usedArrays,
 			&usedNumbers,
@@ -281,6 +283,14 @@ func BuildCommand(context *cli.Command) {
 
 	// Use a final builder to write the string references first
 	finalBuilder := strings.Builder{}
+
+	for address, str := range traceStrings {
+		finalBuilder.WriteString("ref ")
+		finalBuilder.WriteString(address)
+		finalBuilder.WriteString(" str \"")
+		finalBuilder.WriteString(*str)
+		finalBuilder.WriteString("\"\n")
+	}
 
 	for str, address := range usedStrings.Storage {
 		finalBuilder.WriteString("ref ")

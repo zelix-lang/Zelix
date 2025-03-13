@@ -44,6 +44,7 @@ func BuildIr(
 	fileId int,
 	isMain bool,
 	traceCounters *pool.NumPool,
+	traceStrings *map[string]*string,
 	usedStrings *pool.StringPool,
 	usedArrays *pool.StringPool,
 	usedNumbers *pool.StringPool,
@@ -55,11 +56,7 @@ func BuildIr(
 
 	// Add trace instructions
 	traceFileName := fmt.Sprintf("__trace_f%d__", fileId)
-	builder.WriteString("ref ")
-	builder.WriteString(traceFileName)
-	builder.WriteString(" str ")
-	builder.WriteString(fileCode.Path)
-	builder.WriteString("\n")
+	(*traceStrings)[traceFileName] = &fileCode.Path
 
 	// Create a global InstructionTree for the file
 	fileTree := tree.InstructionTree{
