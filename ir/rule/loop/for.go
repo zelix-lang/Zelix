@@ -24,6 +24,7 @@ import (
 	"fluent/ir/rule/expression"
 	"fluent/ir/tree"
 	"fluent/ir/value"
+	"fluent/ir/variable"
 	"fluent/util"
 	"fmt"
 	"strconv"
@@ -47,7 +48,7 @@ func MarshalFor(
 	traceFn *function.Function,
 	originalPath *string,
 	element *ast.AST,
-	variables *map[string]string,
+	variables *map[string]*variable.IRVariable,
 	traceCounters *pool.NumPool,
 	appendedBlocks *pool.BlockPool,
 	usedStrings *pool.StringPool,
@@ -75,7 +76,10 @@ func MarshalFor(
 	// Get a suitable counter for the identifier
 	suitable := *counter
 	identifierAddr := fmt.Sprintf("x%d", suitable)
-	(*variables)[*identifier.Value] = identifierAddr
+	(*variables)[*identifier.Value] = &variable.IRVariable{
+		Addr: identifierAddr,
+		Type: &numWrapper,
+	}
 
 	tempBuilder := strings.Builder{}
 	// See if we can save memory on the left value

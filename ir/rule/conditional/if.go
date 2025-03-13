@@ -24,6 +24,7 @@ import (
 	"fluent/ir/rule/expression"
 	"fluent/ir/tree"
 	"fluent/ir/value"
+	"fluent/ir/variable"
 	"fluent/util"
 	"strconv"
 	"strings"
@@ -49,7 +50,7 @@ func marshalCondition(
 	counter *int,
 	element *ast.AST,
 	children []*ast.AST,
-	variables *map[string]string,
+	variables *map[string]*variable.IRVariable,
 	traceCounters *pool.NumPool,
 	appendedBlocks *pool.BlockPool,
 	usedStrings *pool.StringPool,
@@ -160,7 +161,7 @@ func MarshalIf(
 	originalPath *string,
 	counter *int,
 	element *ast.AST,
-	variables *map[string]string,
+	variables *map[string]*variable.IRVariable,
 	traceCounters *pool.NumPool,
 	appendedBlocks *pool.BlockPool,
 	usedStrings *pool.StringPool,

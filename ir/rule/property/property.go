@@ -23,6 +23,7 @@ import (
 	"fluent/ir/rule/call"
 	"fluent/ir/tree"
 	"fluent/ir/value"
+	"fluent/ir/variable"
 	"fluent/util"
 	"fmt"
 	"strconv"
@@ -43,7 +44,7 @@ func MarshalPropertyAccess(
 	usedStrings *pool.StringPool,
 	usedNumbers *pool.StringPool,
 	exprQueue *[]tree.MarshalPair,
-	variables *map[string]string,
+	variables *map[string]*variable.IRVariable,
 	localCounters *map[string]*string,
 	traceFileName string,
 ) {

@@ -22,6 +22,7 @@ import (
 	"fluent/ir/rule/call"
 	"fluent/ir/tree"
 	"fluent/ir/value"
+	"fluent/ir/variable"
 	"fluent/util"
 	"fmt"
 	"strconv"
@@ -41,7 +42,7 @@ func MarshalObjectCreation(
 	counter *int,
 	pair *tree.MarshalPair,
 	traceCounters *pool.NumPool,
-	variables *map[string]string,
+	variables *map[string]*variable.IRVariable,
 	usedStrings *pool.StringPool,
 	usedArrays *pool.StringPool,
 	usedNumbers *pool.StringPool,

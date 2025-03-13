@@ -21,6 +21,7 @@ import (
 	"fluent/ir/pool"
 	"fluent/ir/tree"
 	"fluent/ir/value"
+	"fluent/ir/variable"
 	"strconv"
 	"strings"
 )
@@ -32,7 +33,7 @@ func MarshalParams(
 	global *tree.InstructionTree,
 	fileCodeId int,
 	parent *tree.InstructionTree,
-	variables *map[string]string,
+	variables *map[string]*variable.IRVariable,
 	usedStrings *pool.StringPool,
 	usedNumbers *pool.StringPool,
 	exprQueue *[]tree.MarshalPair,
@@ -129,7 +130,7 @@ func MarshalFunctionCall(
 	counter *int,
 	parent *tree.InstructionTree,
 	traceCounters *pool.NumPool,
-	variables *map[string]string,
+	variables *map[string]*variable.IRVariable,
 	usedStrings *pool.StringPool,
 	usedNumbers *pool.StringPool,
 	exprQueue *[]tree.MarshalPair,

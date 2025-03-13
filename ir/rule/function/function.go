@@ -25,6 +25,7 @@ import (
 	"fluent/ir/rule/loop"
 	"fluent/ir/rule/ret"
 	"fluent/ir/tree"
+	"fluent/ir/variable"
 	"fluent/util"
 	"fmt"
 	"strings"
@@ -60,7 +61,7 @@ func MarshalFunction(
 
 	// Keep in a map the variables used in the function
 	// to retrieve their counter
-	variables := make(map[string]string)
+	variables := make(map[string]*variable.IRVariable)
 
 	// Keep track of the appended blocks
 	appendedBlocks := pool.BlockPool{
@@ -69,7 +70,11 @@ func MarshalFunction(
 
 	// Inject the "this" variable if this function belongs to a module
 	if injectThis {
-		variables["this"] = "p0"
+		variables["this"] = &variable.IRVariable{
+			Addr: "p0",
+			// "this" doesn't need a type, as it is not reassigned
+			Type: nil,
+		}
 	}
 
 	// Construct the signature of the function
@@ -104,7 +109,11 @@ func MarshalFunction(
 	for _, param := range fun.Params {
 		// Calculate the parameter's name
 		name := fmt.Sprintf("p%d", paramCounter)
-		variables[param.Name] = name
+		variables[param.Name] = &variable.IRVariable{
+			Addr: name,
+			// Parameters don't need a type, as they are not reassigned
+			Type: nil,
+		}
 
 		// Write the parameter's name
 		signature.WriteString(name)

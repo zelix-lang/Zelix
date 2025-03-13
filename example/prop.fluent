@@ -1,10 +1,7 @@
 import "@std::io::print";
 
-pub mod Abc {
-    pub fun Abc() {
-    }
-}
-
 pub fun main() {
-    new Abc();
+    let a: num = 1;
+    let b: &num = &a;
+    b = &a;
 }

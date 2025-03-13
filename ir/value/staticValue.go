@@ -17,6 +17,7 @@ package value
 import (
 	"fluent/ast"
 	"fluent/ir/pool"
+	"fluent/ir/variable"
 	"strings"
 )
 
@@ -26,7 +27,7 @@ func RetrieveStaticVal(
 	representation *strings.Builder,
 	usedStrings *pool.StringPool,
 	usedNumbers *pool.StringPool,
-	variables *map[string]string,
+	variables *map[string]*variable.IRVariable,
 ) bool {
 	// Get the expression's children
 	exprChildren := *expr.Children
@@ -47,7 +48,7 @@ func RetrieveStaticVal(
 			return true
 		case ast.Identifier:
 			// Write the variable's address
-			representation.WriteString((*variables)[*child.Value])
+			representation.WriteString((*variables)[*child.Value].Addr)
 			representation.WriteString(" ")
 			return true
 		case ast.BooleanLiteral:

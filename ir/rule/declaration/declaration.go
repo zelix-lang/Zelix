@@ -22,6 +22,7 @@ import (
 	"fluent/ir/pool"
 	expression2 "fluent/ir/rule/expression"
 	"fluent/ir/tree"
+	"fluent/ir/variable"
 	"fluent/util"
 	"fmt"
 )
@@ -37,7 +38,7 @@ func MarshalDeclaration(
 	originalPath *string,
 	counter *int,
 	element *ast.AST,
-	variables *map[string]string,
+	variables *map[string]*variable.IRVariable,
 	traceCounters *pool.NumPool,
 	usedStrings *pool.StringPool,
 	usedArrays *pool.StringPool,
@@ -57,7 +58,10 @@ func MarshalDeclaration(
 	expression := children[3]
 
 	// Save the variable
-	(*variables)[name] = fmt.Sprintf("x%d", *counter)
+	(*variables)[name] = &variable.IRVariable{
+		Addr: fmt.Sprintf("x%d", *counter),
+		Type: &varType,
+	}
 
 	// Marshal the expression directly
 	expression2.MarshalExpression(

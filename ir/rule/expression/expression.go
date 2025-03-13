@@ -27,6 +27,7 @@ import (
 	"fluent/ir/rule/signed"
 	"fluent/ir/tree"
 	"fluent/ir/value"
+	"fluent/ir/variable"
 	"fluent/util"
 	"strconv"
 	"strings"
@@ -43,7 +44,7 @@ func MarshalExpression(
 	modulePropCounters *map[string]*util.OrderedMap[string, *string],
 	counter *int,
 	element *ast.AST,
-	variables *map[string]string,
+	variables *map[string]*variable.IRVariable,
 	traceCounters *pool.NumPool,
 	usedStrings *pool.StringPool,
 	usedArrays *pool.StringPool,

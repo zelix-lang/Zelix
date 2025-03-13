@@ -20,6 +20,7 @@ import (
 	"fluent/ir/pool"
 	"fluent/ir/tree"
 	"fluent/ir/value"
+	"fluent/ir/variable"
 	"strconv"
 	"strings"
 )
@@ -33,7 +34,7 @@ func MarshalArray(
 	usedStrings *pool.StringPool,
 	usedNumbers *pool.StringPool,
 	exprQueue *[]tree.MarshalPair,
-	variables *map[string]string,
+	variables *map[string]*variable.IRVariable,
 ) {
 	// Get the array's children
 	children := *child.Children

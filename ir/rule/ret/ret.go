@@ -23,6 +23,7 @@ import (
 	"fluent/ir/rule/expression"
 	"fluent/ir/tree"
 	"fluent/ir/value"
+	"fluent/ir/variable"
 	"fluent/util"
 	"strconv"
 	"strings"
@@ -39,7 +40,7 @@ func MarshalReturn(
 	originalPath *string,
 	counter *int,
 	element *ast.AST,
-	variables *map[string]string,
+	variables *map[string]*variable.IRVariable,
 	traceCounters *pool.NumPool,
 	usedStrings *pool.StringPool,
 	usedArrays *pool.StringPool,
