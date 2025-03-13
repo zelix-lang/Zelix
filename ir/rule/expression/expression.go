@@ -187,7 +187,12 @@ func MarshalExpression(
 			)
 		case ast.NumberLiteral, ast.DecimalLiteral:
 			// Directly write the tree's value
-			pair.Parent.Representation.WriteString(*child.Value)
+			pair.Parent.Representation.WriteString(
+				usedNumbers.RequestAddress(
+					fileCodeId,
+					*child.Value,
+				),
+			)
 		case ast.BooleanLiteral:
 			value.WriteBoolLiteral(child, pair.Parent.Representation)
 		case ast.Expression:
