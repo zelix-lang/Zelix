@@ -2,7 +2,6 @@ import "@std::io::print";
 
 pub mod Abc {
     pub fun Abc() {
-        a();
     }
 }
 
