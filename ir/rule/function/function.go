@@ -20,6 +20,7 @@ import (
 	"fluent/filecode/function"
 	"fluent/ir/pool"
 	"fluent/ir/rule/conditional"
+	"fluent/ir/rule/declaration"
 	"fluent/ir/rule/expression"
 	"fluent/ir/rule/loop"
 	"fluent/ir/rule/ret"
@@ -256,6 +257,25 @@ func MarshalFunction(
 			funTree.Representation.WriteString("jump ")
 			funTree.Representation.WriteString(*queueElement.RemainingAddr)
 			funTree.Representation.WriteString("\n")
+		case ast.Declaration:
+			declaration.MarshalDeclaration(
+				queueElement,
+				trace,
+				fileCodeId,
+				traceFileName,
+				isMod,
+				modulePropCounters,
+				fun,
+				originalPath,
+				&counter,
+				element,
+				&variables,
+				traceCounters,
+				usedStrings,
+				usedArrays,
+				usedNumbers,
+				localCounters,
+			)
 		case ast.Expression:
 			expression.MarshalExpression(
 				queueElement.Representation,
