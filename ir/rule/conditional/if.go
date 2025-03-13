@@ -136,6 +136,7 @@ func marshalCondition(
 		Representation: blockBuilder,
 		ParentAddr:     parentAddr,
 		RemainingAddr:  remainingAddr,
+		Id:             appendedBlocks.Counter,
 	})
 
 	return nextBuilder
@@ -166,7 +167,7 @@ func MarshalIf(
 	lastRepresentation := queueElement.Representation
 
 	// Relocate the rest of the code
-	remainingAddr := relocate.Remaining(appendedBlocks, blockQueue, queueElement.Id)
+	remainingAddr := relocate.Remaining(appendedBlocks, blockQueue, queueElement)
 
 	// Marshal all other conditions
 	for i := 0; i <= childrenLen; i++ {

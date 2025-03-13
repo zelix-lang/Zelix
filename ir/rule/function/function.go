@@ -229,6 +229,7 @@ func MarshalFunction(
 
 			// Update the flag if there are no children
 			if childrenLen == -1 {
+				queueElement.IsLast = true
 				hasNested = false
 			}
 		case ast.Continue:

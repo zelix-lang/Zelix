@@ -66,7 +66,7 @@ func MarshalFor(
 	block := children[3]
 
 	// Relocate the rest of the code
-	remainingAddr := relocate.Remaining(appendedBlocks, blockQueue, queueElement.Id)
+	remainingAddr := relocate.Remaining(appendedBlocks, blockQueue, queueElement)
 
 	// Get a suitable counter for the identifier
 	suitable := *counter
@@ -205,6 +205,7 @@ func MarshalFor(
 		ParentAddr:     breakConditionAddr,
 		JumpToParent:   true,
 		RemainingAddr:  remainingAddr,
+		Id:             appendedBlocks.Counter,
 	})
 
 	// Write the appropriate instructions

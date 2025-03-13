@@ -22,15 +22,20 @@ import (
 func Remaining(
 	appendedBlocks *pool.BlockPool,
 	blockQueue *[]*tree.BlockMarshalElement,
-	target int,
+	queueElement *tree.BlockMarshalElement,
 ) *string {
+	// If this is the last child, redirect directly to the remaining
+	if queueElement.IsLast || len(*queueElement.Element.Children) == 0 {
+		return queueElement.RemainingAddr
+	}
+
 	// Request an address for a new block that will hold the
 	// rest of the code
 	remainingAddr, remainingBuilder := appendedBlocks.RequestAddress()
 
 	// Relocate the rest of the block
 	for _, el := range *blockQueue {
-		if el.Id != target {
+		if el.Id != queueElement.Id {
 			continue
 		}
 
