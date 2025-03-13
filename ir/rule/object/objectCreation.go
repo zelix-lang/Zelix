@@ -269,6 +269,8 @@ func MarshalObjectCreation(
 
 			// Check if we have parameters
 			if len(children) == 1 {
+				element.Parent.Representation.WriteString(traceFileName)
+				element.Parent.Representation.WriteString(" ")
 				element.Parent.Representation.WriteString(lineAddress)
 				element.Parent.Representation.WriteString(" ")
 				element.Parent.Representation.WriteString(colAddress)
