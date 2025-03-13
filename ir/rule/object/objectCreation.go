@@ -264,8 +264,15 @@ func MarshalObjectCreation(
 			element.Parent.Representation.WriteString(modAddress)
 			element.Parent.Representation.WriteString(" ")
 
+			lineAddress := traceCounters.RequestAddress(fileCodeId, child.Line)
+			colAddress := traceCounters.RequestAddress(fileCodeId, child.Column)
+
 			// Check if we have parameters
 			if len(children) == 1 {
+				element.Parent.Representation.WriteString(lineAddress)
+				element.Parent.Representation.WriteString(" ")
+				element.Parent.Representation.WriteString(colAddress)
+				element.Parent.Representation.WriteString(" ")
 				return
 			}
 
@@ -288,8 +295,8 @@ func MarshalObjectCreation(
 				usedStrings,
 				usedNumbers,
 				exprQueue,
-				traceCounters.RequestAddress(fileCodeId, child.Line),
-				traceCounters.RequestAddress(fileCodeId, child.Column),
+				lineAddress,
+				colAddress,
 				traceFileName,
 			)
 		}
