@@ -1,5 +1,13 @@
 import "@std::io::print";
 
 pub fun main() {
-    println("Hello, world!");
+    print("Hello, world!");
+    if true {
+        if true {
+            println("Hello, world!");
+        } else {
+            println("Hello, world!");
+        }
+    }
+    print("Hello, world!");
 }

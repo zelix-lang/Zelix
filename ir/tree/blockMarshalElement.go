@@ -25,6 +25,6 @@ type BlockMarshalElement struct {
 	ParentAddr     *string
 	RemainingAddr  *string
 	JumpToParent   bool
-	IsMain         bool
+	Id             int
 	IsLast         bool
 }

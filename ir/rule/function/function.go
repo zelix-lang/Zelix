@@ -141,7 +141,6 @@ func MarshalFunction(
 		{
 			Element:        &fun.Body,
 			Representation: funTree.Representation,
-			IsMain:         true,
 		},
 	}
 
@@ -178,7 +177,7 @@ func MarshalFunction(
 			)
 		case ast.For:
 			loop.MarshalFor(
-				queueElement.Representation,
+				queueElement,
 				trace,
 				fileCodeId,
 				traceFileName,
@@ -196,7 +195,7 @@ func MarshalFunction(
 			)
 		case ast.While:
 			loop.MarshalWhile(
-				queueElement.Representation,
+				queueElement,
 				trace,
 				fileCodeId,
 				traceFileName,
@@ -223,7 +222,7 @@ func MarshalFunction(
 					ParentAddr:     queueElement.ParentAddr,
 					IsLast:         i == childrenLen,
 					JumpToParent:   queueElement.JumpToParent,
-					IsMain:         queueElement.IsMain,
+					Id:             queueElement.Id,
 					RemainingAddr:  queueElement.RemainingAddr,
 				})
 			}

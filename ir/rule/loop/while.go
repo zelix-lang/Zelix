@@ -29,7 +29,7 @@ import (
 )
 
 func MarshalWhile(
-	representation *strings.Builder,
+	queueElement *tree.BlockMarshalElement,
 	trace *filecode.FileCode,
 	fileCodeId int,
 	traceFileName string,
@@ -61,12 +61,12 @@ func MarshalWhile(
 	blockAddr, blockBuilder := appendedBlocks.RequestAddress()
 
 	// Relocate the rest of the code
-	remainingAddr := relocate.Remaining(appendedBlocks, blockQueue)
+	remainingAddr := relocate.Remaining(appendedBlocks, blockQueue, queueElement.Id)
 
 	// Write the appropriate instructions
-	representation.WriteString("jump ")
-	representation.WriteString(*conditionalAddr)
-	representation.WriteString("\n")
+	queueElement.Representation.WriteString("jump ")
+	queueElement.Representation.WriteString(*conditionalAddr)
+	queueElement.Representation.WriteString("\n")
 
 	// Create a temporary builder to marshal the condition
 	tempBuilder := strings.Builder{}

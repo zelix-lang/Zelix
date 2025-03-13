@@ -22,6 +22,7 @@ import (
 func Remaining(
 	appendedBlocks *pool.BlockPool,
 	blockQueue *[]*tree.BlockMarshalElement,
+	target int,
 ) *string {
 	// Request an address for a new block that will hold the
 	// rest of the code
@@ -29,7 +30,7 @@ func Remaining(
 
 	// Relocate the rest of the block
 	for _, el := range *blockQueue {
-		if !el.IsMain {
+		if el.Id != target {
 			continue
 		}
 

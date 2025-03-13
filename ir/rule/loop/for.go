@@ -36,7 +36,7 @@ var numWrapper = wrapper.TypeWrapper{
 }
 
 func MarshalFor(
-	representation *strings.Builder,
+	queueElement *tree.BlockMarshalElement,
 	trace *filecode.FileCode,
 	fileCodeId int,
 	traceFileName string,
@@ -66,7 +66,7 @@ func MarshalFor(
 	block := children[3]
 
 	// Relocate the rest of the code
-	remainingAddr := relocate.Remaining(appendedBlocks, blockQueue)
+	remainingAddr := relocate.Remaining(appendedBlocks, blockQueue, queueElement.Id)
 
 	// Get a suitable counter for the identifier
 	suitable := *counter
@@ -77,11 +77,11 @@ func MarshalFor(
 	// See if we can save memory on the left value
 	if value.RetrieveStaticVal(fileCodeId, leftExpr, &tempBuilder, usedStrings, usedNumbers, variables) {
 		// Move the left value to the stack
-		representation.WriteString("mov ")
-		representation.WriteString(identifierAddr)
-		representation.WriteString(" num ")
-		representation.WriteString(tempBuilder.String())
-		representation.WriteString("\n")
+		queueElement.Representation.WriteString("mov ")
+		queueElement.Representation.WriteString(identifierAddr)
+		queueElement.Representation.WriteString(" num ")
+		queueElement.Representation.WriteString(tempBuilder.String())
+		queueElement.Representation.WriteString("\n")
 		*counter++
 	} else {
 		// Marshal the expression directly
@@ -103,7 +103,7 @@ func MarshalFor(
 			&numWrapper,
 		)
 
-		representation.WriteString(tempBuilder.String())
+		queueElement.Representation.WriteString(tempBuilder.String())
 	}
 
 	// See if we can save memory on the right value
@@ -132,7 +132,7 @@ func MarshalFor(
 			&numWrapper,
 		)
 
-		representation.WriteString(tempBuilder.String())
+		queueElement.Representation.WriteString(tempBuilder.String())
 	}
 
 	// Get an address for the break conditional branch
@@ -208,7 +208,7 @@ func MarshalFor(
 	})
 
 	// Write the appropriate instructions
-	representation.WriteString("jump ")
-	representation.WriteString(*breakConditionAddr)
-	representation.WriteString("\n")
+	queueElement.Representation.WriteString("jump ")
+	queueElement.Representation.WriteString(*breakConditionAddr)
+	queueElement.Representation.WriteString("\n")
 }
