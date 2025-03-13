@@ -92,12 +92,40 @@ func MarshalParams(
 	parent.Representation.WriteString(" ")
 }
 
+func RequestTrace(
+	traceFn *function.Function,
+	originalPath *string,
+	traceCounters *pool.NumPool,
+	traceFileName string,
+	fileCodeId int,
+	line int,
+	col int,
+	isMod bool,
+) (string, string, string) {
+	// Determine if the main function is the caller
+	callerIsMain := !isMod && traceFn.Path == *originalPath && traceFn.Name == "main"
+
+	// Determine trace information
+	if callerIsMain {
+		// Request trace information
+		lineCounter := traceCounters.RequestAddress(fileCodeId, line)
+		colCounter := traceCounters.RequestAddress(fileCodeId, col)
+
+		return lineCounter, colCounter, traceFileName
+	}
+
+	return "__line", "__col", "__file"
+}
+
 func MarshalFunctionCall(
 	global *tree.InstructionTree,
 	child *ast.AST,
 	traceFileName string,
 	fileCodeId int,
+	originalPath *string,
+	isMod bool,
 	trace *filecode.FileCode,
+	traceFn *function.Function,
 	counter *int,
 	parent *tree.InstructionTree,
 	traceCounters *pool.NumPool,
@@ -107,9 +135,6 @@ func MarshalFunctionCall(
 	exprQueue *[]tree.MarshalPair,
 	localCounters *map[string]*string,
 ) {
-	lineCounter := traceCounters.RequestAddress(fileCodeId, child.Line)
-	colCounter := traceCounters.RequestAddress(fileCodeId, child.Column)
-
 	// Write the call instruction to the parent
 	parent.Representation.WriteString("c ")
 
@@ -117,12 +142,15 @@ func MarshalFunctionCall(
 	children := *child.Children
 	funName := *children[0].Value
 
+	// Determine if the main function is being called
+	var isMain bool
 	// Attempt to determine the function's counter
 	fun := trace.Functions[funName]
 	// Get the counter
 	funCounter, ok := (*localCounters)[funName]
 
 	if !ok {
+		isMain = funName == "main"
 		// External impl available, write the name directly
 		parent.Representation.WriteString(funName)
 	} else {
@@ -130,11 +158,30 @@ func MarshalFunctionCall(
 	}
 	parent.Representation.WriteString(" ")
 
+	// Add trace information
+	var lineCounter string
+	var colCounter string
+	var traceFile string
+
+	// Determine trace information
+	if !isMain {
+		lineCounter, colCounter, traceFile = RequestTrace(
+			traceFn,
+			originalPath,
+			traceCounters,
+			traceFileName,
+			fileCodeId,
+			child.Line,
+			child.Column,
+			isMod,
+		)
+	}
+
 	// Determine if the function call has parameters
 	hasParams := len(children) > 1
 
 	if !hasParams {
-		parent.Representation.WriteString(traceFileName)
+		parent.Representation.WriteString(traceFile)
 		parent.Representation.WriteString(" ")
 		parent.Representation.WriteString(lineCounter)
 		parent.Representation.WriteString(" ")
@@ -156,7 +203,7 @@ func MarshalFunctionCall(
 			exprQueue,
 			lineCounter,
 			colCounter,
-			traceFileName,
+			traceFile,
 		)
 	}
 }

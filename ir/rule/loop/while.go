@@ -17,6 +17,7 @@ package loop
 import (
 	"fluent/ast"
 	"fluent/filecode"
+	"fluent/filecode/function"
 	"fluent/ir/pool"
 	"fluent/ir/relocate"
 	"fluent/ir/rule/conditional"
@@ -33,7 +34,10 @@ func MarshalWhile(
 	trace *filecode.FileCode,
 	fileCodeId int,
 	traceFileName string,
+	isMod bool,
 	modulePropCounters *map[string]*util.OrderedMap[string, *string],
+	traceFn *function.Function,
+	originalPath *string,
 	counter *int,
 	element *ast.AST,
 	variables *map[string]string,
@@ -82,8 +86,11 @@ func MarshalWhile(
 		expression.MarshalExpression(
 			&tempBuilder,
 			trace,
+			traceFn,
 			fileCodeId,
+			isMod,
 			traceFileName,
+			originalPath,
 			modulePropCounters,
 			counter,
 			condition,

@@ -17,6 +17,7 @@ package expression
 import (
 	"fluent/ast"
 	"fluent/filecode"
+	"fluent/filecode/function"
 	"fluent/filecode/types/wrapper"
 	"fluent/ir/pool"
 	"fluent/ir/rule/array"
@@ -34,8 +35,11 @@ import (
 func MarshalExpression(
 	representation *strings.Builder,
 	trace *filecode.FileCode,
+	traceFn *function.Function,
 	fileCodeId int,
+	isMod bool,
 	traceFileName string,
+	originalPath *string,
 	modulePropCounters *map[string]*util.OrderedMap[string, *string],
 	counter *int,
 	element *ast.AST,
@@ -124,7 +128,10 @@ func MarshalExpression(
 				child,
 				traceFileName,
 				fileCodeId,
+				originalPath,
+				isMod,
 				trace,
+				traceFn,
 				counter,
 				pair.Parent,
 				traceCounters,
@@ -140,7 +147,10 @@ func MarshalExpression(
 				child,
 				traceFileName,
 				fileCodeId,
+				originalPath,
+				isMod,
 				trace,
+				traceFn,
 				modulePropCounters,
 				counter,
 				&pair,

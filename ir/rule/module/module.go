@@ -26,6 +26,7 @@ import (
 
 func MarshalModule(
 	mod *module.Module,
+	originalPath *string,
 	trace *filecode.FileCode,
 	modulePropCounters *map[string]*util.OrderedMap[string, *string],
 	localCounters *map[string]*string,
@@ -82,6 +83,8 @@ func MarshalModule(
 			traceFileName,
 			fileCodeId,
 			false,
+			true,
+			originalPath,
 			modulePropCounters,
 			traceCounters,
 			usedStrings,

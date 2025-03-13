@@ -17,6 +17,7 @@ package object
 import (
 	"fluent/ast"
 	"fluent/filecode"
+	"fluent/filecode/function"
 	"fluent/ir/pool"
 	"fluent/ir/rule/call"
 	"fluent/ir/tree"
@@ -32,7 +33,10 @@ func MarshalObjectCreation(
 	child *ast.AST,
 	traceFileName string,
 	fileCodeId int,
+	originalPath *string,
+	isMod bool,
 	trace *filecode.FileCode,
+	traceFn *function.Function,
 	modulePropCounters *map[string]*util.OrderedMap[string, *string],
 	counter *int,
 	pair *tree.MarshalPair,
@@ -264,12 +268,20 @@ func MarshalObjectCreation(
 			element.Parent.Representation.WriteString(modAddress)
 			element.Parent.Representation.WriteString(" ")
 
-			lineAddress := traceCounters.RequestAddress(fileCodeId, child.Line)
-			colAddress := traceCounters.RequestAddress(fileCodeId, child.Column)
+			lineAddress, colAddress, fileAddress := call.RequestTrace(
+				traceFn,
+				originalPath,
+				traceCounters,
+				traceFileName,
+				fileCodeId,
+				child.Line,
+				child.Column,
+				isMod,
+			)
 
 			// Check if we have parameters
 			if len(children) == 1 {
-				element.Parent.Representation.WriteString(traceFileName)
+				element.Parent.Representation.WriteString(fileAddress)
 				element.Parent.Representation.WriteString(" ")
 				element.Parent.Representation.WriteString(lineAddress)
 				element.Parent.Representation.WriteString(" ")
@@ -299,7 +311,7 @@ func MarshalObjectCreation(
 				exprQueue,
 				lineAddress,
 				colAddress,
-				traceFileName,
+				fileAddress,
 			)
 		}
 	}

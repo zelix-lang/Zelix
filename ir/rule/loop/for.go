@@ -17,6 +17,7 @@ package loop
 import (
 	"fluent/ast"
 	"fluent/filecode"
+	"fluent/filecode/function"
 	"fluent/filecode/types/wrapper"
 	"fluent/ir/pool"
 	"fluent/ir/relocate"
@@ -40,8 +41,11 @@ func MarshalFor(
 	trace *filecode.FileCode,
 	fileCodeId int,
 	traceFileName string,
+	isMod bool,
 	modulePropCounters *map[string]*util.OrderedMap[string, *string],
 	counter *int,
+	traceFn *function.Function,
+	originalPath *string,
 	element *ast.AST,
 	variables *map[string]string,
 	traceCounters *pool.NumPool,
@@ -88,8 +92,11 @@ func MarshalFor(
 		expression.MarshalExpression(
 			&tempBuilder,
 			trace,
+			traceFn,
 			fileCodeId,
+			isMod,
 			traceFileName,
+			originalPath,
 			modulePropCounters,
 			counter,
 			leftExpr,
@@ -117,8 +124,11 @@ func MarshalFor(
 		expression.MarshalExpression(
 			&tempBuilder,
 			trace,
+			traceFn,
 			fileCodeId,
+			isMod,
 			traceFileName,
+			originalPath,
 			modulePropCounters,
 			counter,
 			rightExpr,

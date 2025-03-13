@@ -43,6 +43,7 @@ func BuildIr(
 	entry map[string]filecode.FileCode,
 	fileId int,
 	isMain bool,
+	originalPath *string,
 	traceCounters *pool.NumPool,
 	traceStrings *map[string]*string,
 	usedStrings *pool.StringPool,
@@ -94,6 +95,7 @@ func BuildIr(
 
 		module.MarshalModule(
 			mod,
+			originalPath,
 			&fileCode,
 			modulePropCounters,
 			&localCounters,
@@ -127,6 +129,8 @@ func BuildIr(
 			traceFileName,
 			fileId,
 			isMain,
+			false,
+			originalPath,
 			modulePropCounters,
 			traceCounters,
 			usedStrings,

@@ -17,6 +17,7 @@ package conditional
 import (
 	"fluent/ast"
 	"fluent/filecode"
+	"fluent/filecode/function"
 	"fluent/filecode/types/wrapper"
 	"fluent/ir/pool"
 	"fluent/ir/relocate"
@@ -39,9 +40,12 @@ func marshalCondition(
 	parentAddr *string,
 	remainingAddr *string,
 	trace *filecode.FileCode,
+	isMod bool,
 	fileCodeId int,
 	traceFileName string,
 	modulePropCounters *map[string]*util.OrderedMap[string, *string],
+	traceFn *function.Function,
+	originalPath *string,
 	counter *int,
 	element *ast.AST,
 	children []*ast.AST,
@@ -88,8 +92,11 @@ func marshalCondition(
 			expression.MarshalExpression(
 				representation,
 				trace,
+				traceFn,
 				fileCodeId,
+				isMod,
 				traceFileName,
+				originalPath,
 				modulePropCounters,
 				counter,
 				condition,
@@ -147,7 +154,10 @@ func MarshalIf(
 	trace *filecode.FileCode,
 	fileCodeId int,
 	traceFileName string,
+	isMod bool,
 	modulePropCounters *map[string]*util.OrderedMap[string, *string],
+	traceFn *function.Function,
+	originalPath *string,
 	counter *int,
 	element *ast.AST,
 	variables *map[string]string,
@@ -199,9 +209,12 @@ func MarshalIf(
 			queueElement.ParentAddr,
 			remainingAddr,
 			trace,
+			isMod,
 			fileCodeId,
 			traceFileName,
 			modulePropCounters,
+			traceFn,
+			originalPath,
 			counter,
 			child,
 			exprChildren,

@@ -1,13 +1,11 @@
 import "@std::io::print";
 
-pub fun main() {
-    print("a");
-    if true {
-        if true {
-            println("b");
-        } else {
-            println("c");
-        }
+pub mod Abc {
+    pub fun Abc() {
+        a();
     }
-    print("d");
+}
+
+pub fun main() {
+    new Abc();
 }

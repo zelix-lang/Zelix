@@ -17,6 +17,7 @@ package ret
 import (
 	"fluent/ast"
 	"fluent/filecode"
+	"fluent/filecode/function"
 	"fluent/filecode/types/wrapper"
 	"fluent/ir/pool"
 	"fluent/ir/rule/expression"
@@ -32,7 +33,10 @@ func MarshalReturn(
 	trace *filecode.FileCode,
 	fileCodeId int,
 	traceFileName string,
+	isMod bool,
 	modulePropCounters *map[string]*util.OrderedMap[string, *string],
+	traceFn *function.Function,
+	originalPath *string,
 	counter *int,
 	element *ast.AST,
 	variables *map[string]string,
@@ -76,8 +80,11 @@ func MarshalReturn(
 	expression.MarshalExpression(
 		representation,
 		trace,
+		traceFn,
 		fileCodeId,
+		isMod,
 		traceFileName,
+		originalPath,
 		modulePropCounters,
 		counter,
 		expr,

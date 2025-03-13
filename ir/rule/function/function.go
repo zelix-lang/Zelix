@@ -37,6 +37,8 @@ func MarshalFunction(
 	traceFileName string,
 	fileCodeId int,
 	isMain bool,
+	isMod bool,
+	originalPath *string,
 	modulePropCounters *map[string]*util.OrderedMap[string, *string],
 	traceCounters *pool.NumPool,
 	usedStrings *pool.StringPool,
@@ -122,7 +124,9 @@ func MarshalFunction(
 	}
 
 	// Write trace parameters
-	signature.WriteString("__file str __line str __col str")
+	if !(isMain && name == nil) {
+		signature.WriteString("__file str __line str __col str")
+	}
 
 	// Write a newline to the signature
 	signature.WriteString("\n")
@@ -164,7 +168,10 @@ func MarshalFunction(
 				trace,
 				fileCodeId,
 				traceFileName,
+				isMod,
 				modulePropCounters,
+				fun,
+				originalPath,
 				&counter,
 				element,
 				&variables,
@@ -183,8 +190,11 @@ func MarshalFunction(
 				trace,
 				fileCodeId,
 				traceFileName,
+				isMod,
 				modulePropCounters,
 				&counter,
+				fun,
+				originalPath,
 				element,
 				&variables,
 				traceCounters,
@@ -202,7 +212,10 @@ func MarshalFunction(
 				trace,
 				fileCodeId,
 				traceFileName,
+				isMod,
 				modulePropCounters,
+				fun,
+				originalPath,
 				&counter,
 				element,
 				&variables,
@@ -247,8 +260,11 @@ func MarshalFunction(
 			expression.MarshalExpression(
 				queueElement.Representation,
 				trace,
+				fun,
 				fileCodeId,
+				isMod,
 				traceFileName,
+				originalPath,
 				modulePropCounters,
 				&counter,
 				element,
@@ -267,7 +283,10 @@ func MarshalFunction(
 				trace,
 				fileCodeId,
 				traceFileName,
+				isMod,
 				modulePropCounters,
+				fun,
+				originalPath,
 				&counter,
 				element,
 				&variables,

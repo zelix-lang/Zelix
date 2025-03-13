@@ -237,6 +237,7 @@ func BuildCommand(context *cli.Command) {
 			fileCodesMap,
 			fileCodeCount,
 			isMain,
+			&originalPath,
 			&traceCounters,
 			&traceStrings,
 			&usedStrings,
