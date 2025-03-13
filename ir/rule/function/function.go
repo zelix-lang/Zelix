@@ -158,6 +158,7 @@ func MarshalFunction(
 
 		switch rule {
 		case ast.If:
+			hasNested = true
 			conditional.MarshalIf(
 				queueElement,
 				trace,
@@ -176,6 +177,7 @@ func MarshalFunction(
 				&blockQueue,
 			)
 		case ast.For:
+			hasNested = true
 			loop.MarshalFor(
 				queueElement,
 				trace,
@@ -194,6 +196,7 @@ func MarshalFunction(
 				&blockQueue,
 			)
 		case ast.While:
+			hasNested = true
 			loop.MarshalWhile(
 				queueElement,
 				trace,
