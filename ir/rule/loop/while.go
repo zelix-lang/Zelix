@@ -61,7 +61,7 @@ func MarshalWhile(
 	blockAddr, blockBuilder := appendedBlocks.RequestAddress()
 
 	// Relocate the rest of the code
-	remainingAddr := relocate.RelocateRemaining(appendedBlocks, blockQueue)
+	remainingAddr := relocate.Remaining(appendedBlocks, blockQueue)
 
 	// Write the appropriate instructions
 	representation.WriteString("jump ")

@@ -19,7 +19,7 @@ import (
 	"fluent/ir/tree"
 )
 
-func RelocateRemaining(
+func Remaining(
 	appendedBlocks *pool.BlockPool,
 	blockQueue *[]*tree.BlockMarshalElement,
 ) *string {

@@ -1,5 +1,5 @@
-import "nested.fluent";
+import "@std::io::print";
 
 pub fun main() {
-    new Abc();
+    println("Hello, world!");
 }

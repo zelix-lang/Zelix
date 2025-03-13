@@ -66,7 +66,7 @@ func MarshalFor(
 	block := children[3]
 
 	// Relocate the rest of the code
-	remainingAddr := relocate.RelocateRemaining(appendedBlocks, blockQueue)
+	remainingAddr := relocate.Remaining(appendedBlocks, blockQueue)
 
 	// Get a suitable counter for the identifier
 	suitable := *counter

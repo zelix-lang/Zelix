@@ -166,7 +166,7 @@ func MarshalIf(
 	lastRepresentation := queueElement.Representation
 
 	// Relocate the rest of the code
-	remainingAddr := relocate.RelocateRemaining(appendedBlocks, blockQueue)
+	remainingAddr := relocate.Remaining(appendedBlocks, blockQueue)
 
 	// Marshal all other conditions
 	for i := 0; i <= childrenLen; i++ {
