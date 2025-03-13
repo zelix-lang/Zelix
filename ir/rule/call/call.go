@@ -133,7 +133,14 @@ func MarshalFunctionCall(
 	// Determine if the function call has parameters
 	hasParams := len(children) > 1
 
-	if hasParams {
+	if !hasParams {
+		parent.Representation.WriteString(traceFileName)
+		parent.Representation.WriteString(" ")
+		parent.Representation.WriteString(lineCounter)
+		parent.Representation.WriteString(" ")
+		parent.Representation.WriteString(colCounter)
+		parent.Representation.WriteString(" ")
+	} else {
 		// Get the call's parameters
 		params := *children[1].Children
 		MarshalParams(
