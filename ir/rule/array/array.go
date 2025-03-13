@@ -33,7 +33,7 @@ func MarshalArray(
 	usedStrings *pool.StringPool,
 	usedNumbers *pool.StringPool,
 	exprQueue *[]tree.MarshalPair,
-	variables map[string]string,
+	variables *map[string]string,
 ) {
 	// Get the array's children
 	children := *child.Children

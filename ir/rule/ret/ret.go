@@ -35,7 +35,7 @@ func MarshalReturn(
 	modulePropCounters *map[string]*util.OrderedMap[string, *string],
 	counter *int,
 	element *ast.AST,
-	variables map[string]string,
+	variables *map[string]string,
 	traceCounters *pool.NumPool,
 	usedStrings *pool.StringPool,
 	usedArrays *pool.StringPool,

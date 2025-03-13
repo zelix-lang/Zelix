@@ -84,7 +84,7 @@ func processCandidate(
 	usedStrings *pool.StringPool,
 	usedNumbers *pool.StringPool,
 	exprQueue *[]tree.MarshalPair,
-	variables map[string]string,
+	variables *map[string]string,
 ) {
 	// See if we can save memory
 	if value.RetrieveStaticVal(fileCodeId, candidate, preferredParent.Representation, usedStrings, usedNumbers, variables) {
@@ -134,7 +134,7 @@ func MarshalSignedExpression(
 	usedStrings *pool.StringPool,
 	usedNumbers *pool.StringPool,
 	exprQueue *[]tree.MarshalPair,
-	variables map[string]string,
+	variables *map[string]string,
 ) {
 	children := *child.Children
 	var expr *ast.AST

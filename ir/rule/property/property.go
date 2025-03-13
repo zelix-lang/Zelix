@@ -43,7 +43,7 @@ func MarshalPropertyAccess(
 	usedStrings *pool.StringPool,
 	usedNumbers *pool.StringPool,
 	exprQueue *[]tree.MarshalPair,
-	variables map[string]string,
+	variables *map[string]string,
 	localCounters *map[string]*string,
 	traceFileName string,
 ) {

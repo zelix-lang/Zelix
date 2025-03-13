@@ -36,7 +36,7 @@ func MarshalWhile(
 	modulePropCounters *map[string]*util.OrderedMap[string, *string],
 	counter *int,
 	element *ast.AST,
-	variables map[string]string,
+	variables *map[string]string,
 	traceCounters *pool.NumPool,
 	appendedBlocks *pool.BlockPool,
 	usedStrings *pool.StringPool,

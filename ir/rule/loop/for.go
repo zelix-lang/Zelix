@@ -43,7 +43,7 @@ func MarshalFor(
 	modulePropCounters *map[string]*util.OrderedMap[string, *string],
 	counter *int,
 	element *ast.AST,
-	variables map[string]string,
+	variables *map[string]string,
 	traceCounters *pool.NumPool,
 	appendedBlocks *pool.BlockPool,
 	usedStrings *pool.StringPool,
@@ -71,7 +71,7 @@ func MarshalFor(
 	// Get a suitable counter for the identifier
 	suitable := *counter
 	identifierAddr := fmt.Sprintf("x%d", suitable)
-	variables[*identifier.Value] = identifierAddr
+	(*variables)[*identifier.Value] = identifierAddr
 
 	tempBuilder := strings.Builder{}
 	// See if we can save memory on the left value
