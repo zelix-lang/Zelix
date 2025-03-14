@@ -17,6 +17,7 @@ package lexer
 import (
 	"fluent/token"
 	"regexp"
+	"runtime"
 	"strconv"
 	"strings"
 )
@@ -120,6 +121,11 @@ func Lex(input string, file string) ([]token.Token, Error) {
 
 	// Used to skip indexes
 	countToIndex := 0
+
+	// Make sure to replace "\r\n" with "\n" if the user is on Windows
+	if runtime.GOOS == "windows" {
+		input = strings.ReplaceAll(input, "\r\n", "\n")
+	}
 
 	// Iterate over each character
 	for i, char := range input {
