@@ -165,7 +165,7 @@ func MarshalExpression(
 			)
 		case ast.Identifier:
 			// Write the variable's name
-			pair.Parent.Representation.WriteString(*child.Value)
+			pair.Parent.Representation.WriteString((*variables)[*child.Value].Addr)
 		case ast.StringLiteral:
 			// Request an address space for the string literal
 			pair.Parent.Representation.WriteString(
