@@ -1,7 +1,9 @@
 import "@std::io::print";
 
+mod Abc {
+    let a: num = 25;
+}
+
 pub fun main() {
-    let a: num = 1;
-    let b: &num = &a;
-    b = &a;
+    new Abc().a = 24;
 }
