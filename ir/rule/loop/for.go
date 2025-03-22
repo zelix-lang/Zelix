@@ -73,28 +73,33 @@ func MarshalFor(
 	// Relocate the rest of the code
 	remainingAddr := relocate.Remaining(appendedBlocks, blockQueue, queueElement)
 
-	// Get a suitable counter for the identifier
+	// Get a backup variable to increment the loop counter
 	suitable := *counter
+	backupAddr := fmt.Sprintf("x%d", suitable)
+	*counter++
+
+	// Get a suitable counter for the identifier
+	suitable = *counter
 	identifierAddr := fmt.Sprintf("x%d", suitable)
 	(*variables)[*identifier.Value] = &variable.IRVariable{
 		Addr: identifierAddr,
 		Type: &numWrapper,
 	}
 
-	tempBuilder := strings.Builder{}
+	leftTempBuilder := strings.Builder{}
+	isBuilderStatic := true
+	leftBranchAddr := ""
 	// See if we can save memory on the left value
-	if value.RetrieveStaticVal(fileCodeId, leftExpr, &tempBuilder, usedStrings, usedNumbers, variables) {
-		// Move the left value to the stack
-		queueElement.Representation.WriteString("mov ")
-		queueElement.Representation.WriteString(identifierAddr)
-		queueElement.Representation.WriteString(" num ")
-		queueElement.Representation.WriteString(tempBuilder.String())
-		queueElement.Representation.WriteString("\n")
+	if value.RetrieveStaticVal(fileCodeId, leftExpr, &leftTempBuilder, usedStrings, usedNumbers, variables) {
 		*counter++
 	} else {
+		isBuilderStatic = false
+		*counter++
+
+		leftBranchAddr = fmt.Sprintf("x%d", *counter)
 		// Marshal the expression directly
 		expression.MarshalExpression(
-			&tempBuilder,
+			&leftTempBuilder,
 			trace,
 			traceFn,
 			fileCodeId,
@@ -114,11 +119,10 @@ func MarshalFor(
 			&numWrapper,
 		)
 
-		queueElement.Representation.WriteString(tempBuilder.String())
+		queueElement.Representation.WriteString(leftTempBuilder.String())
 	}
 
-	// See if we can save memory on the right value
-	tempBuilder.Reset()
+	tempBuilder := strings.Builder{}
 	var rightAddr string
 	if value.RetrieveStaticVal(fileCodeId, rightExpr, &tempBuilder, usedStrings, usedNumbers, variables) {
 		rightAddr = tempBuilder.String()
@@ -152,25 +156,46 @@ func MarshalFor(
 	// Get an address for the break conditional branch
 	breakConditionAddr, breakConditionBuilder := appendedBlocks.RequestAddress()
 
-	// Get an address for the conditional branch
-	conditionAddr, conditionBuilder := appendedBlocks.RequestAddress()
-
 	// Get an address for the loop's block
 	blockAddr, blockBuilder := appendedBlocks.RequestAddress()
 
-	// Get an address for the block that reassigns the variable
-	storeBlockAddr, storeBlockBuilder := appendedBlocks.RequestAddress()
+	// Get an address for the block that changes the value of the counter
+	storeAddr, storeBuilder := appendedBlocks.RequestAddress()
 
-	// Write the store block
-	storeBlockBuilder.WriteString("store ")
-	storeBlockBuilder.WriteString(identifierAddr)
-	storeBlockBuilder.WriteString(" add ")
-	storeBlockBuilder.WriteString(identifierAddr)
-	storeBlockBuilder.WriteString(" ")
-	storeBlockBuilder.WriteString(usedNumbers.RequestAddress(fileCodeId, "1"))
-	storeBlockBuilder.WriteString("\njump ")
-	storeBlockBuilder.WriteString(*breakConditionAddr)
-	storeBlockBuilder.WriteString("\n")
+	// Move the backup variable
+	storeBuilder.WriteString("mov ")
+	storeBuilder.WriteString(backupAddr)
+	storeBuilder.WriteString(" num add ")
+	storeBuilder.WriteString(identifierAddr)
+	storeBuilder.WriteString(" ")
+	storeBuilder.WriteString(usedNumbers.RequestAddress(fileCodeId, "1"))
+	storeBuilder.WriteString("\njump ")
+	storeBuilder.WriteString(*breakConditionAddr)
+	storeBuilder.WriteString("\n")
+
+	// Decide the value of the identifier
+	breakConditionBuilder.WriteString("pick ")
+	breakConditionBuilder.WriteString(identifierAddr)
+
+	if queueElement.ParentAddr == nil {
+		breakConditionBuilder.WriteString(" entry ")
+	} else {
+		breakConditionBuilder.WriteString(" ")
+		breakConditionBuilder.WriteString(*queueElement.ParentAddr)
+		breakConditionBuilder.WriteString(" ")
+	}
+
+	if isBuilderStatic {
+		breakConditionBuilder.WriteString(leftTempBuilder.String())
+	} else {
+		breakConditionBuilder.WriteString(leftBranchAddr)
+		breakConditionBuilder.WriteString(" ")
+	}
+
+	breakConditionBuilder.WriteString(*storeAddr)
+	breakConditionBuilder.WriteString(" ")
+	breakConditionBuilder.WriteString(backupAddr)
+	breakConditionBuilder.WriteString("\n")
 
 	// Get a suitable counter for the break condition
 	suitable = *counter
@@ -189,34 +214,18 @@ func MarshalFor(
 	breakConditionBuilder.WriteString(" ")
 	breakConditionBuilder.WriteString(*remainingAddr)
 	breakConditionBuilder.WriteString(" ")
-	breakConditionBuilder.WriteString(*conditionAddr)
+	breakConditionBuilder.WriteString(*blockAddr)
 	breakConditionBuilder.WriteString("\n")
 
 	// Get a suitable counter for the condition
 	suitable = *counter
 	*counter++
-	conditionBuilder.WriteString("mov x")
-	conditionBuilder.WriteString(strconv.Itoa(suitable))
-	conditionBuilder.WriteString(" bool lt ")
-	conditionBuilder.WriteString(identifierAddr)
-	conditionBuilder.WriteString(" ")
-	conditionBuilder.WriteString(rightAddr)
-	conditionBuilder.WriteString("\n")
-
-	// Write the condition
-	conditionBuilder.WriteString("if x")
-	conditionBuilder.WriteString(strconv.Itoa(suitable))
-	conditionBuilder.WriteString(" ")
-	conditionBuilder.WriteString(*blockAddr)
-	conditionBuilder.WriteString(" ")
-	conditionBuilder.WriteString(*storeBlockAddr)
-	conditionBuilder.WriteString("\n")
 
 	// Schedule the block for marshaling
 	*blockQueue = append(*blockQueue, &tree.BlockMarshalElement{
 		Element:        block,
 		Representation: blockBuilder,
-		ParentAddr:     breakConditionAddr,
+		ParentAddr:     storeAddr,
 		JumpToParent:   true,
 		RemainingAddr:  remainingAddr,
 		Id:             appendedBlocks.Counter,

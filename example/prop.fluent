@@ -1,9 +1,7 @@
 import "@std::io::print";
 
-mod Abc {
-    let a: num = 25;
-}
-
 pub fun main() {
-    new Abc().a = 24;
+    for 5 to 7 in i {
+        print("i = ");
+    }
 }
