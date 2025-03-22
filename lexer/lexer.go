@@ -140,6 +140,15 @@ func Lex(input string, file string) ([]token.Token, Error) {
 		}
 
 		if char == '\n' {
+			if inString {
+				return make([]token.Token, 0), Error{
+					Line:    line,
+					Column:  column,
+					File:    file,
+					Message: "String not closed",
+				}
+			}
+
 			line++
 			column = 0
 			inComment = false
