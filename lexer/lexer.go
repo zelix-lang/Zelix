@@ -22,6 +22,9 @@ import (
 	"strings"
 )
 
+// Determine if the user is on Windows
+var windows = runtime.GOOS == "windows"
+
 // Punctuation characters are meant to be separated tokens
 // i.e.: "my_var.create" => ["my_var", ".", "create"]
 // therefore, create a map with all the punctuation characters
@@ -122,11 +125,6 @@ func Lex(input string, file string) ([]token.Token, Error) {
 	// Used to skip indexes
 	countToIndex := 0
 
-	// Make sure to replace "\r\n" with "\n" if the user is on Windows
-	if runtime.GOOS == "windows" {
-		input = strings.ReplaceAll(input, "\r\n", "\n")
-	}
-
 	// Iterate over each character
 	for i, char := range input {
 		if i < countToIndex {
@@ -136,10 +134,14 @@ func Lex(input string, file string) ([]token.Token, Error) {
 
 		column++
 
+		// Ignore carriage returns on Windows
+		if windows && char == '\r' {
+			continue
+		}
+
 		if char == '\n' {
 			line++
 			column = 0
-
 			inComment = false
 
 			continue
