@@ -19,6 +19,8 @@ import (
 	"fluent/ir/tree"
 )
 
+var blockEnd = "__block_end__"
+
 func Remaining(
 	appendedBlocks *pool.BlockPool,
 	blockQueue *[]*tree.BlockMarshalElement,
@@ -26,6 +28,10 @@ func Remaining(
 ) *string {
 	// If this is the last child, redirect directly to the remaining
 	if queueElement.IsLast || len(*queueElement.Element.Children) == 0 {
+		if queueElement.RemainingAddr == nil {
+			return &blockEnd
+		}
+
 		return queueElement.RemainingAddr
 	}
 
