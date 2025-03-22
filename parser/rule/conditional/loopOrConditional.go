@@ -29,7 +29,7 @@ func ProcessLoopOrConditional(
 	// therefore, it is re-utilized
 	isIf bool,
 	isElseIf bool,
-) (ast.AST, error.Error) {
+) (*ast.AST, *error.Error) {
 	var rule ast.Rule
 
 	if isIf {
@@ -50,7 +50,7 @@ func ProcessLoopOrConditional(
 
 	// Check the input length
 	if len(input) < 3 {
-		return ast.AST{}, error.Error{
+		return nil, &error.Error{
 			Line:     input[0].Line,
 			Column:   input[0].Column,
 			File:     &input[0].File,
@@ -73,7 +73,7 @@ func ProcessLoopOrConditional(
 	)
 
 	if condition == nil {
-		return ast.AST{}, error.Error{
+		return nil, &error.Error{
 			Line:     input[0].Line,
 			Column:   input[0].Column,
 			File:     &input[0].File,
@@ -84,11 +84,11 @@ func ProcessLoopOrConditional(
 	// Create a new condition node and append it
 	conditionNode, parsingError := expression.ProcessExpression(condition)
 
-	if parsingError.IsError() {
-		return ast.AST{}, parsingError
+	if parsingError != nil {
+		return nil, parsingError
 	}
 
-	*result.Children = append(*result.Children, &conditionNode)
+	*result.Children = append(*result.Children, conditionNode)
 
 	// Extract the block
 	var block []token.Token
@@ -117,5 +117,5 @@ func ProcessLoopOrConditional(
 		Parent: &blockNode,
 	})
 
-	return result, error.Error{}
+	return &result, nil
 }

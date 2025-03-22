@@ -163,9 +163,9 @@ func ConvertToFileCode(entry string, silent bool) map[string]filecode.FileCode {
 		// Parse the tokens to an AST
 		ast, parsingError := parser.Parse(tokens, *path)
 
-		if parsingError.IsError() {
+		if parsingError != nil {
 			state.FailAllSpinners()
-			errorMessage := util.BuildMessageFromParsingError(parsingError)
+			errorMessage := util.BuildMessageFromParsingError(*parsingError)
 
 			// Build and print the error
 			util.PrintError(&contents, path, &errorMessage, parsingError.Line, parsingError.Column)

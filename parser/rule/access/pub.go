@@ -32,10 +32,10 @@ import (
 // Returns:
 //   - ast.AST: The abstract syntax tree resulting from the parsing.
 //   - error.Error: An error object if the parsing fails.
-func ProcessPub(input []token.Token) (ast.AST, error.Error) {
+func ProcessPub(input []token.Token) (*ast.AST, *error.Error) {
 	// Check the input
 	if len(input) < 6 {
-		return ast.AST{}, error.Error{
+		return nil, &error.Error{
 			Line:     input[0].Line,
 			Column:   input[0].Column,
 			File:     &input[0].File,
@@ -47,7 +47,7 @@ func ProcessPub(input []token.Token) (ast.AST, error.Error) {
 	declaration := input[1].TokenType
 
 	if declaration != token.Function && declaration != token.Mod {
-		return ast.AST{}, error.Error{
+		return nil, &error.Error{
 			Line:     input[1].Line,
 			Column:   input[1].Column,
 			File:     &input[1].File,

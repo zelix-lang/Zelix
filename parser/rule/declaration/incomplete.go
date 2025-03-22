@@ -33,10 +33,10 @@ import (
 // Returns:
 //   - ast.AST: the abstract syntax tree representing the incomplete declaration.
 //   - error.Error: an error object if the input is invalid.
-func ProcessIncompleteDeclaration(input []token.Token) (ast.AST, error.Error) {
+func ProcessIncompleteDeclaration(input []token.Token) (*ast.AST, *error.Error) {
 	// Check the input's length
 	if len(input) < 4 { // Minimum length: let x: T;
-		return ast.AST{}, error.Error{
+		return nil, &error.Error{
 			Line:     input[0].Line,
 			Column:   input[0].Column,
 			File:     &input[0].File,
@@ -68,7 +68,7 @@ func ProcessIncompleteDeclaration(input []token.Token) (ast.AST, error.Error) {
 		// Add the declaration type to the result
 		*result.Children = append(*result.Children, &declarationType)
 	default:
-		return ast.AST{}, error.Error{
+		return nil, &error.Error{
 			Line:     input[0].Line,
 			Column:   input[0].Column,
 			File:     &input[0].File,
@@ -79,16 +79,16 @@ func ProcessIncompleteDeclaration(input []token.Token) (ast.AST, error.Error) {
 	// The 2nd element must be an identifier
 	name, parsingError := identifier.ProcessIdentifier(&input[1])
 
-	if parsingError.IsError() {
-		return ast.AST{}, parsingError
+	if parsingError != nil {
+		return nil, parsingError
 	}
 
 	// Add the identifier to the result
-	*result.Children = append(*result.Children, &name)
+	*result.Children = append(*result.Children, name)
 
 	// The 3rd element must be a colon
 	if input[2].TokenType != token.Colon {
-		return ast.AST{}, error.Error{
+		return nil, &error.Error{
 			Line:     input[2].Line,
 			Column:   input[2].Column,
 			File:     &input[2].File,
@@ -102,13 +102,13 @@ func ProcessIncompleteDeclaration(input []token.Token) (ast.AST, error.Error) {
 	// Call the type parser
 	typeAST, parsingError := _type.ProcessType(typeTokens, input[0])
 
-	if parsingError.IsError() {
-		return ast.AST{}, parsingError
+	if parsingError != nil {
+		return nil, parsingError
 	}
 
 	// Add the type to the result
-	*result.Children = append(*result.Children, &typeAST)
+	*result.Children = append(*result.Children, typeAST)
 
 	// Return the result
-	return result, error.Error{}
+	return &result, nil
 }

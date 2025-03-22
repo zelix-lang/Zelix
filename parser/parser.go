@@ -34,7 +34,7 @@ import (
 // Returns:
 //   - ast.AST: the resulting abstract syntax tree.
 //   - error.Error: an error object if an error occurred during parsing.
-func Parse(tokens []token.Token, file string) (ast.AST, error.Error) {
+func Parse(tokens []token.Token, file string) (*ast.AST, *error.Error) {
 	emptyString := ""
 	result := ast.AST{
 		Rule:     ast.Program,
@@ -68,7 +68,7 @@ func Parse(tokens []token.Token, file string) (ast.AST, error.Error) {
 			)
 
 			if extracted == nil {
-				return result, error.Error{
+				return nil, &error.Error{
 					Line:     unit.Line,
 					Column:   unit.Column,
 					File:     &unit.File,
@@ -81,11 +81,11 @@ func Parse(tokens []token.Token, file string) (ast.AST, error.Error) {
 			// Parse the import rule
 			child, parsingError := _import.ProcessImport(extracted)
 
-			if parsingError.IsError() {
-				return result, parsingError
+			if parsingError != nil {
+				return nil, parsingError
 			}
 
-			*result.Children = append(*result.Children, &child)
+			*result.Children = append(*result.Children, child)
 		case token.Pub, token.Function, token.Mod:
 			// Extract the whole block
 			extracted := util.ExtractTokensBefore(
@@ -98,7 +98,7 @@ func Parse(tokens []token.Token, file string) (ast.AST, error.Error) {
 			)
 
 			if extracted == nil {
-				return result, error.Error{
+				return nil, &error.Error{
 					Line:     unit.Line,
 					Column:   unit.Column,
 					File:     &unit.File,
@@ -109,8 +109,8 @@ func Parse(tokens []token.Token, file string) (ast.AST, error.Error) {
 			skip = i + len(extracted) + 1
 
 			// Parse the access modifier
-			var child ast.AST
-			var parsingError error.Error
+			var child *ast.AST
+			var parsingError *error.Error
 
 			if tokenType == token.Pub {
 				child, parsingError = access.ProcessPub(extracted)
@@ -120,13 +120,13 @@ func Parse(tokens []token.Token, file string) (ast.AST, error.Error) {
 				child, parsingError = function.ProcessFunction(extracted, false)
 			}
 
-			if parsingError.IsError() {
-				return result, parsingError
+			if parsingError != nil {
+				return nil, parsingError
 			}
 
-			*result.Children = append(*result.Children, &child)
+			*result.Children = append(*result.Children, child)
 		default:
-			return ast.AST{}, error.Error{
+			return nil, &error.Error{
 				Line:     unit.Line,
 				Column:   unit.Column,
 				File:     &unit.File,
@@ -135,5 +135,5 @@ func Parse(tokens []token.Token, file string) (ast.AST, error.Error) {
 		}
 	}
 
-	return result, error.Error{}
+	return &result, nil
 }

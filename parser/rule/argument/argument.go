@@ -34,10 +34,10 @@ import (
 // Returns:
 // - ast.AST: The resulting abstract syntax tree representing the parsed arguments.
 // - error.Error: An error object containing details if parsing fails.
-func ProcessArguments(input []token.Token) (ast.AST, error.Error) {
+func ProcessArguments(input []token.Token) (*ast.AST, *error.Error) {
 	// Check the input length
 	if len(input) < 3 {
-		return ast.AST{}, error.Error{
+		return nil, &error.Error{
 			Line:     input[0].Line,
 			Column:   input[0].Column,
 			File:     &input[0].File,
@@ -72,7 +72,7 @@ func ProcessArguments(input []token.Token) (ast.AST, error.Error) {
 	for i, unit := range input {
 		// Check if we are expecting more arguments
 		if !allowMore {
-			return ast.AST{}, error.Error{
+			return nil, &error.Error{
 				Line:     unit.Line,
 				Column:   unit.Column,
 				File:     &unit.File,
@@ -85,8 +85,8 @@ func ProcessArguments(input []token.Token) (ast.AST, error.Error) {
 			// Pass the unit to the identifier parser
 			name, err := identifier.ProcessIdentifier(&unit)
 
-			if err.IsError() {
-				return ast.AST{}, err
+			if err != nil {
+				return nil, err
 			}
 
 			// Set the current argument name
@@ -101,7 +101,7 @@ func ProcessArguments(input []token.Token) (ast.AST, error.Error) {
 		// Check colons
 		if expectingColon {
 			if unit.TokenType != token.Colon {
-				return ast.AST{}, error.Error{
+				return nil, &error.Error{
 					Line:     unit.Line,
 					Column:   unit.Column,
 					File:     &unit.File,
@@ -119,7 +119,7 @@ func ProcessArguments(input []token.Token) (ast.AST, error.Error) {
 			nestingLevel--
 
 			if nestingLevel < 0 {
-				return ast.AST{}, error.Error{
+				return nil, &error.Error{
 					Line:     unit.Line,
 					Column:   unit.Column,
 					File:     &unit.File,
@@ -161,11 +161,11 @@ func ProcessArguments(input []token.Token) (ast.AST, error.Error) {
 			// Parse the argument's type and push it to the result
 			argType, err := _type.ProcessType(currentArgTypeTokens, unit)
 
-			if err.IsError() {
-				return ast.AST{}, err
+			if err != nil {
+				return nil, err
 			}
 
-			*argument.Children = append(*argument.Children, &argType)
+			*argument.Children = append(*argument.Children, argType)
 			*result.Children = append(*result.Children, &argument)
 
 			// Clear the current argument data
@@ -180,7 +180,7 @@ func ProcessArguments(input []token.Token) (ast.AST, error.Error) {
 	}
 
 	if nestingLevel > 0 {
-		return ast.AST{}, error.Error{
+		return nil, &error.Error{
 			Line:     input[0].Line,
 			Column:   input[0].Column,
 			File:     &input[0].File,
@@ -188,5 +188,5 @@ func ProcessArguments(input []token.Token) (ast.AST, error.Error) {
 		}
 	}
 
-	return result, error.Error{}
+	return &result, nil
 }

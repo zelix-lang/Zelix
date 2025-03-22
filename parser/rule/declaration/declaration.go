@@ -32,9 +32,9 @@ import (
 // Returns:
 //   - ast.AST: the resulting abstract syntax tree of the declaration.
 //   - error.Error: any error encountered during parsing.
-func ProcessDeclaration(input []token.Token) (ast.AST, error.Error) {
+func ProcessDeclaration(input []token.Token) (*ast.AST, *error.Error) {
 	if len(input) < 6 {
-		return ast.AST{}, error.Error{
+		return nil, &error.Error{
 			Line:     input[0].Line,
 			Column:   input[0].Column,
 			File:     &input[0].File,
@@ -50,7 +50,7 @@ func ProcessDeclaration(input []token.Token) (ast.AST, error.Error) {
 	)
 
 	if split == nil {
-		return ast.AST{}, error.Error{
+		return nil, &error.Error{
 			Line:     input[0].Line,
 			Column:   input[0].Column,
 			File:     &input[0].File,
@@ -59,7 +59,7 @@ func ProcessDeclaration(input []token.Token) (ast.AST, error.Error) {
 	}
 
 	if len(split) != 2 {
-		return ast.AST{}, error.Error{
+		return nil, &error.Error{
 			Line:     input[0].Line,
 			Column:   input[0].Column,
 			File:     &input[0].File,
@@ -69,19 +69,19 @@ func ProcessDeclaration(input []token.Token) (ast.AST, error.Error) {
 
 	variable, parsingError := ProcessIncompleteDeclaration(split[0])
 
-	if parsingError.IsError() {
-		return ast.AST{}, parsingError
+	if parsingError != nil {
+		return nil, parsingError
 	}
 
 	variable.Rule = ast.Declaration
 
 	value, parsingError := expression.ProcessExpression(split[1])
 
-	if parsingError.IsError() {
-		return ast.AST{}, parsingError
+	if parsingError != nil {
+		return nil, parsingError
 	}
 
-	*variable.Children = append(*variable.Children, &value)
+	*variable.Children = append(*variable.Children, value)
 
-	return variable, error.Error{}
+	return variable, nil
 }

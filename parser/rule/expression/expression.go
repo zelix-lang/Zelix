@@ -38,49 +38,49 @@ import (
 // Returns:
 // - ast.AST: The resulting abstract syntax tree node.
 // - error.Error: An error object if any parsing error occurs.
-func processSingleToken(unit *token.Token) (ast.AST, error.Error) {
+func processSingleToken(unit *token.Token) (*ast.AST, *error.Error) {
 	switch unit.TokenType {
 	case token.BoolLiteral:
-		return ast.AST{
+		return &ast.AST{
 			Rule:   ast.BooleanLiteral,
 			Value:  &unit.Value,
 			Line:   unit.Line,
 			Column: unit.Column,
 			File:   &unit.File,
-		}, error.Error{}
+		}, nil
 	case token.NumLiteral:
-		return ast.AST{
+		return &ast.AST{
 			Rule:   ast.NumberLiteral,
 			Value:  &unit.Value,
 			Line:   unit.Line,
 			Column: unit.Column,
 			File:   &unit.File,
-		}, error.Error{}
+		}, nil
 	case token.DecimalLiteral:
-		return ast.AST{
+		return &ast.AST{
 			Rule:   ast.DecimalLiteral,
 			Value:  &unit.Value,
 			Line:   unit.Line,
 			Column: unit.Column,
 			File:   &unit.File,
-		}, error.Error{}
+		}, nil
 	case token.StringLiteral:
-		return ast.AST{
+		return &ast.AST{
 			Rule:   ast.StringLiteral,
 			Value:  &unit.Value,
 			Line:   unit.Line,
 			Column: unit.Column,
 			File:   &unit.File,
-		}, error.Error{}
+		}, nil
 	// The only other case allowed is an identifier
 	default:
 		id, parsingError := identifier.ProcessIdentifier(unit)
 
-		if parsingError.IsError() {
-			return ast.AST{}, parsingError
+		if parsingError != nil {
+			return nil, parsingError
 		}
 
-		return id, error.Error{}
+		return id, nil
 	}
 }
 
@@ -95,13 +95,13 @@ func processSingleToken(unit *token.Token) (ast.AST, error.Error) {
 // Returns:
 // - ast.AST: The resulting abstract syntax tree.
 // - error.Error: An error object if any parsing error occurs.
-func ProcessExpression(input []token.Token) (ast.AST, error.Error) {
+func ProcessExpression(input []token.Token) (*ast.AST, *error.Error) {
 	// Use a queue to avoid recursion
 	var processQueue []queue.Element
 
 	// Check for empty input
 	if len(input) == 0 {
-		return ast.AST{}, error.Error{
+		return nil, &error.Error{
 			Line:     0,
 			Column:   0,
 			Expected: []ast.Rule{ast.Expression},
@@ -131,7 +131,7 @@ func ProcessExpression(input []token.Token) (ast.AST, error.Error) {
 
 		// Check for empty input
 		if inputLen == 0 {
-			return ast.AST{}, error.Error{
+			return nil, &error.Error{
 				Line:     0,
 				Column:   0,
 				Expected: []ast.Rule{ast.Expression},
@@ -199,14 +199,14 @@ func ProcessExpression(input []token.Token) (ast.AST, error.Error) {
 			// Pass the tokens to the array parser
 			arr, parsingError := array.ProcessArray(input, &processQueue)
 
-			if parsingError.IsError() {
-				return ast.AST{}, parsingError
+			if parsingError != nil {
+				return nil, parsingError
 			}
 
 			// Add the array to the parent
 			*parent.Children = append(*parent.Children, &ast.AST{
 				Rule:     ast.Expression,
-				Children: &[]*ast.AST{&arr},
+				Children: &[]*ast.AST{arr},
 				Line:     arr.Line,
 				Column:   arr.Column,
 				File:     arr.File,
@@ -220,10 +220,10 @@ func ProcessExpression(input []token.Token) (ast.AST, error.Error) {
 		if inputLen == 1 {
 			child, parsingError := processSingleToken(&input[0])
 
-			if parsingError.IsError() {
-				return ast.AST{}, parsingError
+			if parsingError != nil {
+				return nil, parsingError
 			}
-			*parent.Children = append(*parent.Children, &child)
+			*parent.Children = append(*parent.Children, child)
 			continue
 		}
 
@@ -243,7 +243,7 @@ func ProcessExpression(input []token.Token) (ast.AST, error.Error) {
 			)
 
 			if nestedExpression == nil {
-				return ast.AST{}, error.Error{
+				return nil, &error.Error{
 					Line:     input[0].Line,
 					Column:   input[0].Column,
 					File:     &input[0].File,
@@ -314,12 +314,12 @@ func ProcessExpression(input []token.Token) (ast.AST, error.Error) {
 					true,
 				)
 
-				if parsingError.IsError() {
-					return ast.AST{}, parsingError
+				if parsingError != nil {
+					return nil, parsingError
 				}
 
 				// Append the negation to the parent
-				*parent.Children = append(*parent.Children, &expression)
+				*parent.Children = append(*parent.Children, expression)
 				continue
 			}
 
@@ -336,7 +336,7 @@ func ProcessExpression(input []token.Token) (ast.AST, error.Error) {
 				)
 
 				if callTokens == nil {
-					return ast.AST{}, error.Error{
+					return nil, &error.Error{
 						Line:     input[0].Line,
 						Column:   input[0].Column,
 						File:     &input[0].File,
@@ -348,8 +348,8 @@ func ProcessExpression(input []token.Token) (ast.AST, error.Error) {
 				// Append the closing parenthesis
 				callTokens = append(callTokens, input[startAt-1])
 
-				var nestedResult ast.AST
-				var parsingError error.Error
+				var nestedResult *ast.AST
+				var parsingError *error.Error
 
 				// Pass the tokens to the appropriate parser
 				if input[0].TokenType == token.New {
@@ -358,22 +358,22 @@ func ProcessExpression(input []token.Token) (ast.AST, error.Error) {
 					nestedResult, parsingError = call.ProcessFunctionCall(callTokens, &processQueue)
 				}
 
-				if parsingError.IsError() {
-					return ast.AST{}, parsingError
+				if parsingError != nil {
+					return nil, parsingError
 				}
 
-				candidate = &nestedResult
+				candidate = nestedResult
 			} else {
 				startAt = 1
 
 				// Parse the first token
 				child, parsingError := processSingleToken(&input[0])
 
-				if parsingError.IsError() {
-					return ast.AST{}, parsingError
+				if parsingError != nil {
+					return nil, parsingError
 				}
 
-				candidate = &child
+				candidate = child
 			}
 		}
 
@@ -393,8 +393,8 @@ func ProcessExpression(input []token.Token) (ast.AST, error.Error) {
 
 		// Check for booleans
 		if _, ok := boolean.Operators[nextTokenType]; ok {
-			var expression ast.AST
-			var parsingError error.Error
+			var expression *ast.AST
+			var parsingError *error.Error
 
 			if nextTokenType == token.Or {
 				expression, parsingError = signed.ProcessSignedOp(
@@ -424,11 +424,11 @@ func ProcessExpression(input []token.Token) (ast.AST, error.Error) {
 				)
 			}
 
-			if parsingError.IsError() {
-				return ast.AST{}, parsingError
+			if parsingError != nil {
+				return nil, parsingError
 			}
 
-			*parent.Children = append(*parent.Children, &expression)
+			*parent.Children = append(*parent.Children, expression)
 			continue
 		}
 
@@ -468,15 +468,15 @@ func ProcessExpression(input []token.Token) (ast.AST, error.Error) {
 				true,
 			)
 
-			if parsingError.IsError() {
-				return ast.AST{}, parsingError
+			if parsingError != nil {
+				return nil, parsingError
 			}
 
 			// Extend the queue
 			if isBoolean {
-				candidate = &expression
+				candidate = expression
 			} else {
-				*parent.Children = append(*parent.Children, &expression)
+				*parent.Children = append(*parent.Children, expression)
 			}
 
 			continue
@@ -500,16 +500,16 @@ func ProcessExpression(input []token.Token) (ast.AST, error.Error) {
 				true,
 			)
 
-			if parsingError.IsError() {
-				return ast.AST{}, parsingError
+			if parsingError != nil {
+				return nil, parsingError
 			}
 
-			*parent.Children = append(*parent.Children, &expression)
+			*parent.Children = append(*parent.Children, expression)
 			continue
 		}
 
 		if nextTokenType != token.Dot {
-			return ast.AST{}, error.Error{
+			return nil, &error.Error{
 				Line:     input[startAt].Line,
 				Column:   input[startAt].Column,
 				File:     &input[startAt].File,
@@ -531,17 +531,17 @@ func ProcessExpression(input []token.Token) (ast.AST, error.Error) {
 			false,
 		)
 
-		if parsingError.IsError() {
-			return ast.AST{}, parsingError
+		if parsingError != nil {
+			return nil, parsingError
 		}
 
 		// Append the property access to the parent
-		*parent.Children = append(*parent.Children, &propertyAccess)
+		*parent.Children = append(*parent.Children, propertyAccess)
 	}
 
 	if len(*result.Children) == 1 && (*result.Children)[0].Rule == ast.Expression {
-		return *((*result.Children)[0]), error.Error{}
+		return (*result.Children)[0], nil
 	}
 
-	return result, error.Error{}
+	return &result, nil
 }

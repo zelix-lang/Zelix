@@ -54,10 +54,10 @@ func ProcessSignedOp(
 	hasSkippedTokens bool,
 	isBoolean bool,
 	includeSigns bool,
-) (ast.AST, error.Error) {
+) (*ast.AST, *error.Error) {
 	// Check the input length
 	if len(input) < 1 {
-		return ast.AST{}, error.Error{
+		return nil, &error.Error{
 			Line:     candidate.Line,
 			Column:   candidate.Column,
 			File:     candidate.File,
@@ -98,7 +98,7 @@ func ProcessSignedOp(
 
 		if unit.TokenType == token.Not {
 			if !isBoolean {
-				return ast.AST{}, error.Error{
+				return nil, &error.Error{
 					Line:     unit.Line,
 					Column:   unit.Column,
 					File:     &unit.File,
@@ -107,7 +107,7 @@ func ProcessSignedOp(
 			}
 
 			if expectingOperator && hasSkippedTokens {
-				return ast.AST{}, error.Error{
+				return nil, &error.Error{
 					Line:     unit.Line,
 					Column:   unit.Column,
 					File:     &unit.File,
@@ -134,7 +134,7 @@ func ProcessSignedOp(
 
 		if expectingOperator {
 			if _, ok := allowedSigns[unit.TokenType]; !ok {
-				return ast.AST{}, error.Error{
+				return nil, &error.Error{
 					Line:     unit.Line,
 					Column:   unit.Column,
 					File:     &unit.File,
@@ -170,7 +170,7 @@ func ProcessSignedOp(
 		)
 
 		if extracted == nil {
-			return ast.AST{}, error.Error{
+			return nil, &error.Error{
 				Line:     unit.Line,
 				Column:   unit.Column,
 				File:     &unit.File,
@@ -284,7 +284,7 @@ func ProcessSignedOp(
 
 	// The loop should never end not expecting an operator
 	if !expectingOperator || inNegation {
-		return ast.AST{}, error.Error{
+		return nil, &error.Error{
 			Line:     input[len(input)-1].Line,
 			Column:   input[len(input)-1].Column,
 			File:     &input[len(input)-1].File,
@@ -293,5 +293,5 @@ func ProcessSignedOp(
 	}
 
 	// Used to skip tokens
-	return result, error.Error{}
+	return &result, nil
 }

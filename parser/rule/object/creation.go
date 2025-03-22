@@ -35,10 +35,10 @@ import (
 // Returns:
 //   - ast.AST: the abstract syntax tree representing the object creation.
 //   - error.Error: an error object containing details if an error occurs during processing.
-func ProcessObjectCreation(input []token.Token, expressionQueue *[]queue.Element) (ast.AST, error.Error) {
+func ProcessObjectCreation(input []token.Token, expressionQueue *[]queue.Element) (*ast.AST, *error.Error) {
 	// Check the input's length
 	if len(input) < 4 {
-		return ast.AST{}, error.Error{
+		return nil, &error.Error{
 			Line:     input[0].Line,
 			Column:   input[0].Column,
 			File:     &input[0].File,
@@ -58,12 +58,12 @@ func ProcessObjectCreation(input []token.Token, expressionQueue *[]queue.Element
 	// The second token is the object's name, it must be an identifier
 	id, parsingError := identifier.ProcessIdentifier(&input[1])
 
-	if parsingError.IsError() {
-		return ast.AST{}, parsingError
+	if parsingError != nil {
+		return nil, parsingError
 	}
 
 	// Append the identifier to the result's children
-	*result.Children = append(*result.Children, &id)
+	*result.Children = append(*result.Children, id)
 
 	// Used to skip some tokens if needed
 	startAt := 2
@@ -81,7 +81,7 @@ func ProcessObjectCreation(input []token.Token, expressionQueue *[]queue.Element
 		)
 
 		if genericsRaw == nil {
-			return ast.AST{}, error.Error{
+			return nil, &error.Error{
 				Line:     input[startAt].Line,
 				Column:   input[startAt].Column,
 				File:     &input[startAt].File,
@@ -92,12 +92,12 @@ func ProcessObjectCreation(input []token.Token, expressionQueue *[]queue.Element
 		// Pass the tokens to the generics parser
 		generics, parsingError := generic.ProcessGenerics(genericsRaw[1:])
 
-		if parsingError.IsError() {
-			return ast.AST{}, parsingError
+		if parsingError != nil {
+			return nil, parsingError
 		}
 
 		// Append the generics to the result's children
-		*result.Children = append(*result.Children, &generics)
+		*result.Children = append(*result.Children, generics)
 
 		// Skip the generics
 		startAt += len(genericsRaw) + 1
@@ -106,14 +106,14 @@ func ProcessObjectCreation(input []token.Token, expressionQueue *[]queue.Element
 	// Parse arguments
 	arguments, parsingError := call.ProcessCallArguments(input[startAt:], expressionQueue)
 
-	if parsingError.IsError() {
-		return ast.AST{}, parsingError
+	if parsingError != nil {
+		return nil, parsingError
 	}
 
 	if arguments.Rule != ast.Program {
 		// Append the arguments to the result's children
-		*result.Children = append(*result.Children, &arguments)
+		*result.Children = append(*result.Children, arguments)
 	}
 
-	return result, error.Error{}
+	return &result, nil
 }

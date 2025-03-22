@@ -35,10 +35,10 @@ import (
 // Returns:
 //   - ast.AST: the abstract syntax tree representing the module.
 //   - error.Error: an error object if any parsing error occurs.
-func ProcessMod(input []token.Token, public bool) (ast.AST, error.Error) {
+func ProcessMod(input []token.Token, public bool) (*ast.AST, *error.Error) {
 	// Check the input's length
 	if len(input) < 3 {
-		return ast.AST{}, error.Error{
+		return nil, &error.Error{
 			Line:     input[0].Line,
 			Column:   input[0].Column,
 			File:     &input[0].File,
@@ -70,11 +70,11 @@ func ProcessMod(input []token.Token, public bool) (ast.AST, error.Error) {
 	// Extract the module name
 	moduleName, parsingError := identifier.ProcessIdentifier(&input[1])
 
-	if parsingError.IsError() {
-		return ast.AST{}, parsingError
+	if parsingError != nil {
+		return nil, parsingError
 	}
 
-	*result.Children = append(*result.Children, &moduleName)
+	*result.Children = append(*result.Children, moduleName)
 
 	// Used to skip some tokens if needed
 	startAt := 2
@@ -91,7 +91,7 @@ func ProcessMod(input []token.Token, public bool) (ast.AST, error.Error) {
 		)
 
 		if genericsRaw == nil {
-			return ast.AST{}, error.Error{
+			return nil, &error.Error{
 				Line:     input[startAt].Line,
 				Column:   input[startAt].Column,
 				File:     &input[startAt].File,
@@ -105,16 +105,16 @@ func ProcessMod(input []token.Token, public bool) (ast.AST, error.Error) {
 		// Pass the input to the template parser
 		generics, parsingError := template.ProcessTemplates(genericsRaw)
 
-		if parsingError.IsError() {
-			return ast.AST{}, parsingError
+		if parsingError != nil {
+			return nil, parsingError
 		}
 
 		// Append the generics to the result's children
-		*result.Children = append(*result.Children, &generics)
+		*result.Children = append(*result.Children, generics)
 	}
 
 	if input[startAt].TokenType != token.OpenCurly {
-		return ast.AST{}, error.Error{
+		return nil, &error.Error{
 			Line:     input[startAt].Line,
 			Column:   input[startAt].Column,
 			File:     &input[startAt].File,
@@ -162,7 +162,7 @@ func ProcessMod(input []token.Token, public bool) (ast.AST, error.Error) {
 			)
 
 			if extracted == nil {
-				return ast.AST{}, error.Error{
+				return nil, &error.Error{
 					Line:     unit.Line,
 					Column:   unit.Column,
 					File:     &unit.File,
@@ -173,8 +173,8 @@ func ProcessMod(input []token.Token, public bool) (ast.AST, error.Error) {
 			skip = i + len(extracted) + 1
 
 			// Pass the input to the incomplete declaration parser
-			var child ast.AST
-			var parsingError error.Error
+			var child *ast.AST
+			var parsingError *error.Error
 
 			if util.TokenSliceContains(extracted, map[token.Type]struct{}{token.Assign: {}}) {
 				child, parsingError = declaration.ProcessDeclaration(extracted)
@@ -182,12 +182,12 @@ func ProcessMod(input []token.Token, public bool) (ast.AST, error.Error) {
 				child, parsingError = declaration.ProcessIncompleteDeclaration(extracted)
 			}
 
-			if parsingError.IsError() {
-				return ast.AST{}, parsingError
+			if parsingError != nil {
+				return nil, parsingError
 			}
 
 			// Append the declaration to the block's children
-			*blockAST.Children = append(*blockAST.Children, &child)
+			*blockAST.Children = append(*blockAST.Children, child)
 		case token.Pub, token.Function:
 			// Extract the whole block
 			extracted := util.ExtractTokensBefore(
@@ -200,7 +200,7 @@ func ProcessMod(input []token.Token, public bool) (ast.AST, error.Error) {
 			)
 
 			if extracted == nil {
-				return ast.AST{}, error.Error{
+				return nil, &error.Error{
 					Line:     unit.Line,
 					Column:   unit.Column,
 					File:     &unit.File,
@@ -219,15 +219,15 @@ func ProcessMod(input []token.Token, public bool) (ast.AST, error.Error) {
 			// Pass the input to the function parser
 			child, parsingError := function.ProcessFunction(extracted, isPublic)
 
-			if parsingError.IsError() {
-				return ast.AST{}, parsingError
+			if parsingError != nil {
+				return nil, parsingError
 			}
 
 			// Append the function to the block's children
-			*blockAST.Children = append(*blockAST.Children, &child)
+			*blockAST.Children = append(*blockAST.Children, child)
 		default:
 			// Invalid token
-			return ast.AST{}, error.Error{
+			return nil, &error.Error{
 				Line:     unit.Line,
 				Column:   unit.Column,
 				File:     &unit.File,
@@ -236,5 +236,5 @@ func ProcessMod(input []token.Token, public bool) (ast.AST, error.Error) {
 		}
 	}
 
-	return result, error.Error{}
+	return &result, nil
 }

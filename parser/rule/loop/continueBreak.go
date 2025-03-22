@@ -26,7 +26,7 @@ import (
 // Returns:
 // - ast.AST: the generated AST node.
 // - error.Error: an error object if the statement is invalid.
-func ProcessContinueOrBreak(statement []token.Token) (ast.AST, error.Error) {
+func ProcessContinueOrBreak(statement []token.Token) (*ast.AST, *error.Error) {
 	// Get the first token
 	el := statement[0]
 
@@ -49,7 +49,7 @@ func ProcessContinueOrBreak(statement []token.Token) (ast.AST, error.Error) {
 
 	// Ensure there are no tokens after the keyword
 	if len(statement) > 1 {
-		return ast.AST{}, error.Error{
+		return nil, &error.Error{
 			Line:     el.Line,
 			Column:   el.Column,
 			File:     &el.File,
@@ -58,5 +58,5 @@ func ProcessContinueOrBreak(statement []token.Token) (ast.AST, error.Error) {
 	}
 
 	// Return the AST node
-	return node, error.Error{}
+	return &node, nil
 }

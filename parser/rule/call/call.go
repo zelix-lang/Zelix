@@ -36,10 +36,10 @@ import (
 func ProcessCallArguments(
 	input []token.Token,
 	expressionQueue *[]queue.Element,
-) (ast.AST, error.Error) {
+) (*ast.AST, *error.Error) {
 	// Check the 2nd token
 	if input[0].TokenType != token.OpenParen {
-		return ast.AST{}, error.Error{
+		return nil, &error.Error{
 			Line:     input[1].Line,
 			Column:   input[1].Column,
 			File:     &input[1].File,
@@ -49,7 +49,7 @@ func ProcessCallArguments(
 
 	// Check the last token
 	if input[len(input)-1].TokenType != token.CloseParen {
-		return ast.AST{}, error.Error{
+		return nil, &error.Error{
 			Line:     input[len(input)-1].Line,
 			Column:   input[len(input)-1].Column,
 			File:     &input[len(input)-1].File,
@@ -59,7 +59,7 @@ func ProcessCallArguments(
 
 	// Check if there are parameters
 	if len(input) < 3 {
-		return ast.AST{}, error.Error{}
+		return &ast.AST{}, nil
 	}
 
 	// Strip the first 1 token and the last token to get the parameters
@@ -109,7 +109,7 @@ func ProcessCallArguments(
 	}
 
 	// Append the parameters to the result
-	return parametersNode, error.Error{}
+	return &parametersNode, nil
 }
 
 // ProcessFunctionCall processes a function call from the given input tokens and updates the expression queue.
@@ -122,10 +122,10 @@ func ProcessCallArguments(
 // Returns:
 // - ast.AST: The AST node representing the function call.
 // - error.Error: An error object if the parsing fails.
-func ProcessFunctionCall(input []token.Token, expressionQueue *[]queue.Element) (ast.AST, error.Error) {
+func ProcessFunctionCall(input []token.Token, expressionQueue *[]queue.Element) (*ast.AST, *error.Error) {
 	// Check the input length
 	if len(input) < 3 {
-		return ast.AST{}, error.Error{
+		return nil, &error.Error{
 			Line:     input[0].Line,
 			Column:   input[0].Column,
 			File:     &input[0].File,
@@ -136,8 +136,8 @@ func ProcessFunctionCall(input []token.Token, expressionQueue *[]queue.Element) 
 	// Check the 1st token
 	functionName, parsingError := identifier.ProcessIdentifier(&input[0])
 
-	if parsingError.IsError() {
-		return ast.AST{}, parsingError
+	if parsingError != nil {
+		return nil, parsingError
 	}
 
 	// Create a result node
@@ -150,19 +150,19 @@ func ProcessFunctionCall(input []token.Token, expressionQueue *[]queue.Element) 
 	}
 
 	// Append the function name to the result
-	*result.Children = append(*result.Children, &functionName)
+	*result.Children = append(*result.Children, functionName)
 
 	// Parse the call arguments
 	callArguments, parsingError := ProcessCallArguments(input[1:], expressionQueue)
 
-	if parsingError.IsError() {
-		return ast.AST{}, parsingError
+	if parsingError != nil {
+		return nil, parsingError
 	}
 
 	if callArguments.Rule != ast.Program {
 		// Append the call arguments to the function call
-		*result.Children = append(*result.Children, &callArguments)
+		*result.Children = append(*result.Children, callArguments)
 	}
 
-	return result, error.Error{}
+	return &result, nil
 }
