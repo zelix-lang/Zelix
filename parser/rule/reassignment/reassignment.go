@@ -88,16 +88,19 @@ func FindAndProcessReassignment(input []token.Token) (ast.AST, error.Error, bool
 	// Also make sure the property access ends in an identifier
 	if exprLeftChild.Rule == ast.PropertyAccess {
 		propAccessChildren := *exprLeftChild.Children
-		lastExpr := propAccessChildren[len(propAccessChildren)-1]
-		last := (*lastExpr.Children)[0]
+		// Force all children to be identifiers
+		for _, expr := range propAccessChildren {
+			exprChildren := *expr.Children
+			child := exprChildren[0]
 
-		if last.Rule != ast.Identifier {
-			return ast.AST{}, error.Error{
-				Line:     last.Line,
-				Column:   last.Column,
-				File:     &firstToken.File,
-				Expected: []ast.Rule{ast.Identifier},
-			}, false
+			if child.Rule != ast.Identifier {
+				return ast.AST{}, error.Error{
+					Line:     child.Line,
+					Column:   child.Column,
+					File:     &firstToken.File,
+					Expected: []ast.Rule{ast.Identifier},
+				}, false
+			}
 		}
 	}
 
