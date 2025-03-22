@@ -172,7 +172,7 @@ func MarshalFor(
 	storeBlockBuilder.WriteString(*breakConditionAddr)
 	storeBlockBuilder.WriteString("\n")
 
-	// Get a suitable counter for break condition
+	// Get a suitable counter for the break condition
 	suitable = *counter
 	*counter++
 	breakConditionBuilder.WriteString("mov x")
