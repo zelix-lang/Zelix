@@ -45,7 +45,7 @@ func AnalyzeFunctionCall(
 	queueElement *queue2.ExpectedPair,
 	exprQueue *[]queue2.ExpectedPair,
 	isObjectCreation bool,
-) error3.Error {
+) *error3.Error {
 	// Get the function's name
 	functionName := (*tree.Children)[0].Value
 	// Determine if the function has parameters
@@ -61,7 +61,7 @@ func AnalyzeFunctionCall(
 		mod, ok := trace.Modules[*functionName]
 
 		if !ok || (!mod.Public && trace.Path != mod.Path) {
-			return error3.Error{
+			return &error3.Error{
 				Line:       tree.Line,
 				Column:     tree.Column,
 				Code:       error3.UndefinedReference,
@@ -74,7 +74,7 @@ func AnalyzeFunctionCall(
 
 		if !ok {
 			if hasParams {
-				return error3.Error{
+				return &error3.Error{
 					Line:   tree.Line,
 					Column: tree.Column,
 					Code:   error3.DoesNotHaveConstructor,
@@ -83,7 +83,7 @@ func AnalyzeFunctionCall(
 
 			queueElement.Got.Type.BaseType = mod.Name
 			queueElement.Got.Value = mod
-			return error3.Error{}
+			return nil
 		}
 
 		function, found = constructor, true
@@ -95,7 +95,7 @@ func AnalyzeFunctionCall(
 	} else if queueElement.IsPropAccess {
 		lastPropValue := property.EvaluateLastPropValue(queueElement)
 		if lastPropValue == nil {
-			return error3.Error{
+			return &error3.Error{
 				Code:   error3.InvalidPropAccess,
 				Line:   queueElement.Tree.Line,
 				Column: queueElement.Tree.Column,
@@ -117,7 +117,7 @@ func AnalyzeFunctionCall(
 
 	// Check if the function was found (and whether the current function has permission to call it)
 	if !found || (!function.Public && trace.Path != function.Path) {
-		return error3.Error{
+		return &error3.Error{
 			Line:       tree.Line,
 			Column:     tree.Column,
 			Code:       error3.UndefinedReference,
@@ -169,7 +169,7 @@ func AnalyzeFunctionCall(
 
 			// Check if the module was found
 			if !found {
-				return error3.Error{
+				return &error3.Error{
 					Line:       tree.Line,
 					Column:     tree.Column,
 					Code:       error3.UndefinedReference,
@@ -192,7 +192,7 @@ func AnalyzeFunctionCall(
 			if len(*paramsNode.Children) == 1 {
 				preventParamAnalysis = true
 			} else {
-				return error3.Error{
+				return &error3.Error{
 					Line:       tree.Line,
 					Column:     tree.Column,
 					Code:       error3.ParameterCountMismatch,
@@ -203,7 +203,7 @@ func AnalyzeFunctionCall(
 
 		if len(*paramsNode.Children) != len(function.Params) {
 			if !preventParamAnalysis {
-				return error3.Error{
+				return &error3.Error{
 					Line:       tree.Line,
 					Column:     tree.Column,
 					Code:       error3.ParameterCountMismatch,
@@ -279,7 +279,7 @@ func AnalyzeFunctionCall(
 	} else {
 		// Check for parameter count mismatch
 		if len(function.Params) > 0 {
-			return error3.Error{
+			return &error3.Error{
 				Line:       tree.Line,
 				Column:     tree.Column,
 				Code:       error3.ParameterCountMismatch,
@@ -288,5 +288,5 @@ func AnalyzeFunctionCall(
 		}
 	}
 
-	return error3.Error{}
+	return nil
 }

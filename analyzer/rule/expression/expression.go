@@ -62,7 +62,7 @@ func AnalyzeExpression(
 	firstExpected *wrapper.TypeWrapper,
 	isPropReassignment bool,
 	allowPointers bool,
-) (object.Object, error3.Error) {
+) (*object.Object, *error3.Error) {
 	result := object.Object{
 		Type: wrapper.TypeWrapper{
 			Children: &[]*wrapper.TypeWrapper{},
@@ -125,7 +125,7 @@ func AnalyzeExpression(
 
 		// Check for illegal pointers
 		if element.HasPointers && !element.IsParam {
-			return object.Object{}, error3.Error{
+			return nil, &error3.Error{
 				Code:   error3.InvalidPointer,
 				Line:   element.Tree.Line,
 				Column: element.Tree.Column,
@@ -137,7 +137,7 @@ func AnalyzeExpression(
 
 		// See if the address of this value can be taken
 		if literalRules[child.Rule] && element.Got.Type.PointerCount > 0 {
-			return object.Object{}, error3.Error{
+			return nil, &error3.Error{
 				Code:   error3.CannotTakeAddress,
 				Line:   child.Line,
 				Column: child.Column,
@@ -167,8 +167,8 @@ func AnalyzeExpression(
 				)
 
 				// Return the error if it is not nothing
-				if err.Code != error3.Nothing {
-					return object.Object{}, err
+				if err != nil {
+					return nil, err
 				}
 				continue
 			}
@@ -177,7 +177,7 @@ func AnalyzeExpression(
 			value := variables.Load(child.Value)
 
 			if value == nil {
-				return object.Object{}, error3.Error{
+				return nil, &error3.Error{
 					Code:       error3.UndefinedReference,
 					Additional: []string{*child.Value},
 					Line:       element.Tree.Line,
@@ -195,8 +195,8 @@ func AnalyzeExpression(
 			err := array.AnalyzeArray(child, element.Expected, &queue)
 
 			// Return the error if it is not nothing
-			if err.Code != error3.Nothing {
-				return object.Object{}, err
+			if err != nil {
+				return nil, err
 			}
 
 			element.Got.Type = *element.Expected
@@ -214,8 +214,8 @@ func AnalyzeExpression(
 			)
 
 			// Return the error if it is not nothing
-			if err.Code != error3.Nothing {
-				return object.Object{}, err
+			if err != nil {
+				return nil, err
 			}
 		case ast.Expression:
 			hasNested = true
@@ -252,8 +252,8 @@ func AnalyzeExpression(
 			)
 
 			// Return the error if it is not nothing
-			if err.Code != error3.Nothing {
-				return object.Object{}, err
+			if err != nil {
+				return nil, err
 			}
 		case ast.BooleanExpression:
 			// Pass the input to the boolean analyzer
@@ -278,7 +278,7 @@ func AnalyzeExpression(
 
 		// Check if the pointer count is negative
 		if !hasNested && element.ActualPointers < 0 {
-			return object.Object{}, error3.Error{
+			return nil, &error3.Error{
 				Code:   error3.InvalidDereference,
 				Line:   element.Tree.Line,
 				Column: element.Tree.Column,
@@ -291,7 +291,7 @@ func AnalyzeExpression(
 
 		// Check for type mismatch
 		if element.Expected.BaseType != "" && !element.Expected.Compare(element.Got.Type) {
-			return object.Object{}, error3.Error{
+			return nil, &error3.Error{
 				Code:       error3.TypeMismatch,
 				Line:       element.Tree.Line,
 				Column:     element.Tree.Column,
@@ -301,7 +301,7 @@ func AnalyzeExpression(
 
 		// Check if the data escapes the function
 		if enforceHeapRequirement && element.HeapRequired && !element.Got.IsHeap {
-			return object.Object{}, error3.Error{
+			return nil, &error3.Error{
 				Code:   error3.DataOutlivesStack,
 				Line:   element.Tree.Line,
 				Column: element.Tree.Column,
@@ -309,7 +309,7 @@ func AnalyzeExpression(
 		}
 
 		if element.ModRequired && element.Got.Value == nil {
-			return object.Object{}, error3.Error{
+			return nil, &error3.Error{
 				Code:       error3.TypeMismatch,
 				Line:       element.Tree.Line,
 				Column:     element.Tree.Column,
@@ -319,7 +319,7 @@ func AnalyzeExpression(
 
 		// Check for arithmetic operations
 		if element.IsArithmetic && element.Got.Type.BaseType != "num" && element.Got.Type.BaseType != "dec" && element.Got.Type.BaseType != "(Infer)" {
-			return object.Object{}, error3.Error{
+			return nil, &error3.Error{
 				Code:       error3.TypeMismatch,
 				Line:       element.Tree.Line,
 				Column:     element.Tree.Column,
@@ -333,5 +333,5 @@ func AnalyzeExpression(
 		}
 	}
 
-	return result, error3.Error{}
+	return &result, nil
 }

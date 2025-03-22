@@ -47,7 +47,7 @@ func AnalyzeDeclaration(
 	trace *filecode.FileCode,
 	generics *map[string]bool,
 	parentName string,
-) (error3.Error, error3.Error) {
+) (*error3.Error, *error3.Error) {
 	// Get the children of the statement
 	children := *statement.Children
 	isConst := *children[0].Value == "const"
@@ -57,12 +57,12 @@ func AnalyzeDeclaration(
 
 	// Check if the var name is already defined
 	if scope.Load(nameNode.Value) != nil {
-		return error3.Error{
+		return &error3.Error{
 			Code:       error3.Redefinition,
 			Line:       nameNode.Line,
 			Column:     nameNode.Column,
 			Additional: []string{*nameNode.Value},
-		}, error3.Error{}
+		}, nil
 	}
 
 	// Convert the type node to a TypeWrapper
@@ -71,8 +71,8 @@ func AnalyzeDeclaration(
 	// Check for undefined references in the type
 	err := value.AnalyzeUndefinedReference(trace, typeWrapper, generics)
 
-	if err.Code != error3.Nothing {
-		return err, error3.Error{}
+	if err != nil {
+		return err, nil
 	}
 
 	// Check for illegal self-reference
@@ -80,18 +80,18 @@ func AnalyzeDeclaration(
 		exprChildren := *expr.Children
 		candidate := exprChildren[0]
 		if candidate.Rule != ast.Identifier || (candidate.Rule == ast.Identifier && *candidate.Value != "this") {
-			return error3.Error{
+			return &error3.Error{
 				Code:   error3.SelfReference,
 				Line:   expr.Line,
 				Column: expr.Column,
-			}, error3.Error{}
+			}, nil
 		}
 	}
 
-	var warning error3.Error
+	var warning *error3.Error
 	// Check that the name is in snake_case
 	if !format.CheckCase(nameNode.Value, format.SnakeCase) {
-		warning = error3.Error{
+		warning = &error3.Error{
 			Code:   error3.NameShouldBeSnakeCase,
 			Line:   nameNode.Line,
 			Column: nameNode.Column,
@@ -101,19 +101,19 @@ func AnalyzeDeclaration(
 	// Pass the expression to the expression analyzer
 	obj, err := expression.AnalyzeExpression(&expr, trace, scope, false, &typeWrapper, false, true)
 
-	if err.Code != error3.Nothing {
-		return err, error3.Error{}
+	if err != nil {
+		return err, nil
 	}
 
 	// Save the object in the variables
 	scope.Append(*nameNode.Value, variable.Variable{
 		Constant: isConst,
-		Value:    obj,
+		Value:    *obj,
 		Trace: trace2.Trace{
 			Line:   nameNode.Line,
 			Column: nameNode.Column,
 		},
 	})
 
-	return error3.Error{}, warning
+	return nil, warning
 }

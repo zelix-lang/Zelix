@@ -58,7 +58,7 @@ func destroyScope(
 
 		// Add unused variable warnings
 		for name, variable2 := range unusedVariables {
-			warnings.AddError(error3.Error{
+			warnings.AddError(&error3.Error{
 				Code:       error3.UnusedVariable,
 				Line:       variable2.Trace.Line,
 				Column:     variable2.Trace.Column,
@@ -99,7 +99,7 @@ func AnalyzeFunction(
 
 	// Check that the case matches snake_case
 	if fun.Name != parentName && !format.CheckCase(&fun.Name, format.SnakeCase) {
-		warnings.AddError(error3.Error{
+		warnings.AddError(&error3.Error{
 			Code:       error3.NameShouldBeSnakeCase,
 			Line:       fun.Trace.Line,
 			Column:     fun.Trace.Column,
@@ -247,7 +247,7 @@ func AnalyzeFunction(
 				}
 			case ast.Break, ast.Continue:
 				if !inLoop {
-					errors.AddError(error3.Error{
+					errors.AddError(&error3.Error{
 						Code:   error3.InvalidLoopInstruction,
 						Line:   statement.Line,
 						Column: statement.Column,
@@ -292,7 +292,7 @@ func AnalyzeFunction(
 
 	// Make sure that the function has returned a value
 	if !fun.IsStd && fun.Name != "heap_alloc" && fun.ReturnType.BaseType != "nothing" && !hasReturned {
-		errors.AddError(error3.Error{
+		errors.AddError(&error3.Error{
 			Code:   error3.MustReturnAValue,
 			Line:   fun.Trace.Line,
 			Column: fun.Trace.Column,

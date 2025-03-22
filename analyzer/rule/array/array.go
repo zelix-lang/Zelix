@@ -36,11 +36,11 @@ func AnalyzeArray(
 	tree *ast.AST,
 	expected *wrapper.TypeWrapper,
 	exprQueue *[]queue2.ExpectedPair,
-) error3.Error {
+) *error3.Error {
 	// Arrays that appear directly as expressions cannot
 	// have their type inferred
 	if expected.ArrayCount < 1 && expected.BaseType == "" {
-		return error3.Error{
+		return &error3.Error{
 			Code:   error3.CannotInferType,
 			Line:   tree.Line,
 			Column: tree.Column,
@@ -49,7 +49,7 @@ func AnalyzeArray(
 
 	// Check for invalid nested arrays
 	if expected.ArrayCount < 1 {
-		return error3.Error{
+		return &error3.Error{
 			Code:       error3.TypeMismatch,
 			Line:       tree.Line,
 			Column:     tree.Column,
@@ -62,7 +62,7 @@ func AnalyzeArray(
 
 	if len(children) < 1 {
 		// No children, return (Infer the type)
-		return error3.Error{}
+		return nil
 	}
 
 	// Clone the expected type to determine the expected type
@@ -92,5 +92,5 @@ func AnalyzeArray(
 		})
 	}
 
-	return error3.Error{}
+	return nil
 }

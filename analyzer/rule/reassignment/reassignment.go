@@ -39,7 +39,7 @@ func AnalyzeReassignment(
 	variables *stack.ScopedStack,
 	trace *filecode.FileCode,
 	collectedAssignments *[]*ast.AST,
-) error3.Error {
+) *error3.Error {
 	// Get the tree's children
 	children := *tree.Children
 
@@ -80,7 +80,7 @@ func AnalyzeReassignment(
 	)
 
 	// Return the err if needed
-	if err.Code != error3.Nothing {
+	if err != nil {
 		return err
 	}
 
@@ -99,9 +99,9 @@ func AnalyzeReassignment(
 	)
 
 	// Return the err if needed
-	if err.Code != error3.Nothing {
+	if err != nil {
 		return err
 	}
 
-	return error3.Error{}
+	return nil
 }

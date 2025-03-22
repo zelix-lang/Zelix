@@ -31,16 +31,16 @@ func AnalyzeUndefinedReference(
 	trace *filecode.FileCode,
 	wrapper wrapper.TypeWrapper,
 	generics *map[string]bool,
-) error3.Error {
+) *error3.Error {
 	if !wrapper.IsPrimitive {
 		// Check for generics
 		if _, ok := (*generics)[wrapper.BaseType]; ok {
-			return error3.Error{}
+			return nil
 		}
 
 		// See if the mod exists in the trace
 		if _, ok := trace.Modules[wrapper.BaseType]; !ok {
-			return error3.Error{
+			return &error3.Error{
 				Line:       wrapper.Trace.Line,
 				Column:     wrapper.Trace.Column,
 				Code:       error3.UndefinedReference,
@@ -49,5 +49,5 @@ func AnalyzeUndefinedReference(
 		}
 	}
 
-	return error3.Error{}
+	return nil
 }

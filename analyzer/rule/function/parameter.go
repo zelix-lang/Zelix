@@ -40,20 +40,22 @@ func AnalyzeParameter(
 	param *function.Param,
 	trace *filecode.FileCode,
 	generics *map[string]bool,
-) (error3.Error, error3.Error) {
-	warning := error3.Error{}
+) (*error3.Error, *error3.Error) {
+	var warning *error3.Error
 
 	// Check that the case matches snake_case
 	if !format.CheckCase(name, format.SnakeCase) {
-		warning.Code = error3.NameShouldBeSnakeCase
-		warning.Line = param.Trace.Line
-		warning.Column = param.Trace.Column
-		warning.Additional = []string{*name}
+		warning = &error3.Error{
+			Code:       error3.NameShouldBeSnakeCase,
+			Line:       param.Trace.Line,
+			Column:     param.Trace.Column,
+			Additional: []string{*name},
+		}
 	}
 
 	// Check that the type is not "nothing"
 	if param.Type.BaseType == "nothing" {
-		return error3.Error{
+		return &error3.Error{
 			Code:   error3.ParamTypeNothing,
 			Line:   param.Trace.Line,
 			Column: param.Trace.Column,

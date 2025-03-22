@@ -38,12 +38,12 @@ func AnalyzeArithmetic(
 	input *ast.AST,
 	currentElement *queue.ExpectedPair,
 	exprQueue *[]queue.ExpectedPair,
-) error3.Error {
+) *error3.Error {
 	expected := currentElement.Expected
 
 	// Check if we can infer the type of the expression
 	if expected.BaseType == "" {
-		return error3.Error{
+		return &error3.Error{
 			Code:   error3.CannotInferType,
 			Line:   input.Line,
 			Column: input.Column,
@@ -52,7 +52,7 @@ func AnalyzeArithmetic(
 
 	// Check if the expected is either a num or a dec
 	if expected.BaseType != "num" && expected.BaseType != "dec" && expected.BaseType != "(Infer)" {
-		return error3.Error{
+		return &error3.Error{
 			Code:       error3.TypeMismatch,
 			Line:       input.Line,
 			Column:     input.Column,
@@ -145,5 +145,5 @@ func AnalyzeArithmetic(
 	}
 
 	currentElement.Got.Type.BaseType = currentElement.Expected.BaseType
-	return error3.Error{}
+	return nil
 }

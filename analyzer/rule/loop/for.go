@@ -45,7 +45,7 @@ func AnalyzeFor(
 	variables *stack.ScopedStack,
 	blockQueue *[]queue.BlockQueueElement,
 	scopeIds []int,
-) (error3.Error, *string, *variable.Variable) {
+) (*error3.Error, *string, *variable.Variable) {
 	children := *tree.Children
 
 	// Get the range expression
@@ -56,7 +56,7 @@ func AnalyzeFor(
 
 	// Check if the var name is already defined
 	if variables.Load(varName.Value) != nil {
-		return error3.Error{
+		return &error3.Error{
 			Code:       error3.Redefinition,
 			Line:       varName.Line,
 			Column:     varName.Column,
@@ -77,12 +77,12 @@ func AnalyzeFor(
 		false,
 	)
 
-	if err.Code != error3.Nothing {
+	if err != nil {
 		return err, nil, nil
 	}
 
 	if leftObj.Type.BaseType != "num" && leftObj.Type.BaseType != "dec" {
-		return error3.Error{
+		return &error3.Error{
 			Code:       error3.TypeMismatch,
 			Line:       varName.Line,
 			Column:     varName.Column,
@@ -101,7 +101,7 @@ func AnalyzeFor(
 		false,
 	)
 
-	if err.Code != error3.Nothing {
+	if err != nil {
 		return err, nil, nil
 	}
 
@@ -114,7 +114,7 @@ func AnalyzeFor(
 		InLoop: true,
 	})
 
-	return error3.Error{}, varName.Value, &variable.Variable{
+	return nil, varName.Value, &variable.Variable{
 		Constant: true,
 		Value: object.Object{
 			Type:   leftObj.Type,

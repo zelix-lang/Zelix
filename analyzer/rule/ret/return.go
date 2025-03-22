@@ -40,16 +40,16 @@ func AnalyzeReturn(
 	trace *filecode.FileCode,
 	variables *stack.ScopedStack,
 	expected *wrapper.TypeWrapper,
-) error3.Error {
+) *error3.Error {
 	// Check if the tree has children
 	if len(*tree.Children) == 0 {
-		return error3.Error{}
+		return nil
 	}
 
 	// Check if the function doesn't expect a return value
 	exprNode := (*tree.Children)[0]
 	if expected.BaseType == "nothing" {
-		return error3.Error{
+		return &error3.Error{
 			Code:   error3.ShouldNotReturn,
 			Line:   exprNode.Line,
 			Column: exprNode.Column,
@@ -68,18 +68,18 @@ func AnalyzeReturn(
 	)
 
 	// Return the error if there is one
-	if err.Code != error3.Nothing {
+	if err != nil {
 		return err
 	}
 
 	// Check if the data escapes the function
 	if !expr.IsHeap && expr.Type.PointerCount > 0 {
-		return error3.Error{
+		return &error3.Error{
 			Code:   error3.DataOutlivesStack,
 			Line:   exprNode.Line,
 			Column: exprNode.Column,
 		}
 	}
 
-	return error3.Error{}
+	return nil
 }

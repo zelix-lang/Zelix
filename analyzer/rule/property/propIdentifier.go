@@ -37,11 +37,11 @@ func ProcessPropIdentifier(
 	element *queue2.ExpectedPair,
 	trace *filecode.FileCode,
 	child *ast.AST,
-) error3.Error {
+) *error3.Error {
 	lastPropValue := property.EvaluateLastPropValue(element)
 
 	if lastPropValue == nil {
-		return error3.Error{
+		return &error3.Error{
 			Code:   error3.InvalidPropAccess,
 			Line:   element.Tree.Line,
 			Column: element.Tree.Column,
@@ -50,7 +50,7 @@ func ProcessPropIdentifier(
 
 	// Check for illegal access
 	if lastPropValue.Path != *child.File {
-		return error3.Error{
+		return &error3.Error{
 			Code:   error3.IllegalPropAccess,
 			Line:   element.Tree.Line,
 			Column: element.Tree.Column,
@@ -62,7 +62,7 @@ func ProcessPropIdentifier(
 
 	// Return the error if it is not found
 	if !found {
-		return error3.Error{
+		return &error3.Error{
 			Code:       error3.UndefinedReference,
 			Additional: []string{*child.Value},
 			Line:       element.Tree.Line,
@@ -72,7 +72,7 @@ func ProcessPropIdentifier(
 
 	// Check for constant reassignments
 	if element.IsPropReassignment && value.IsConstant {
-		return error3.Error{
+		return &error3.Error{
 			Code:   error3.ConstantReassignment,
 			Line:   element.Tree.Line,
 			Column: element.Tree.Column,
@@ -98,7 +98,7 @@ func ProcessPropIdentifier(
 
 		// Return the error if it is not found
 		if !found {
-			return error3.Error{
+			return &error3.Error{
 				Code:       error3.UndefinedReference,
 				Additional: []string{value.Type.BaseType},
 				Line:       element.Tree.Line,
@@ -110,5 +110,5 @@ func ProcessPropIdentifier(
 		element.Got.Value = mod
 	}
 
-	return error3.Error{}
+	return nil
 }

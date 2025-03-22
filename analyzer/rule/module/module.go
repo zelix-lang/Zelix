@@ -70,7 +70,7 @@ func AnalyzeModule(
 	for _, fun := range mod.Functions {
 		// Make sure that the function does not have generics
 		if len(fun.Templates) != 0 {
-			globalErrors.AddError(error3.Error{
+			globalErrors.AddError(&error3.Error{
 				Line:   fun.Trace.Line,
 				Column: fun.Trace.Column,
 				Code:   error3.ShouldNotHaveGenerics,
@@ -115,7 +115,7 @@ func AnalyzeModule(
 				}
 
 				if _, ok := assignedProps[name]; !ok {
-					globalErrors.AddError(error3.Error{
+					globalErrors.AddError(&error3.Error{
 						Line:   declaration.Trace.Line,
 						Column: declaration.Trace.Column,
 						Code:   error3.ValueNotAssigned,
@@ -144,7 +144,7 @@ func AnalyzeModule(
 		err := value.AnalyzeUndefinedReference(trace, declaration.Type, &mod.Templates)
 		queue = append(queue, declaration)
 
-		if err.Code != error3.Nothing {
+		if err != nil {
 			globalErrors.AddError(err)
 		} else {
 			// Append only if the type is good to go
@@ -154,7 +154,7 @@ func AnalyzeModule(
 			initializedCaught = true
 			// Check that the module has a constructor
 			if _, ok := mod.Functions[mod.Name]; !ok {
-				globalErrors.AddError(error3.Error{
+				globalErrors.AddError(&error3.Error{
 					Line:   declaration.Trace.Line,
 					Column: declaration.Trace.Column,
 					Code:   error3.ValueNotAssigned,
@@ -207,7 +207,7 @@ func AnalyzeModule(
 				),
 			)
 
-			globalErrors.AddError(error3.Error{
+			globalErrors.AddError(&error3.Error{
 				Line:       element.Trace.Line,
 				Column:     element.Trace.Column,
 				Code:       error3.CircularModuleDependency,

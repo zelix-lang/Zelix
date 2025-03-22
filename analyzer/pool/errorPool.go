@@ -18,7 +18,7 @@ import error3 "fluent/analyzer/error"
 
 // ErrorPool is a struct that holds a slice of errors and a count of errors.
 type ErrorPool struct {
-	Errors []error3.Error
+	Errors []*error3.Error
 	Count  int
 }
 
@@ -26,7 +26,7 @@ type ErrorPool struct {
 // Returns: *ErrorPool - a pointer to the newly created ErrorPool.
 func NewErrorPool() *ErrorPool {
 	return &ErrorPool{
-		Errors: make([]error3.Error, 0),
+		Errors: make([]*error3.Error, 0),
 		Count:  0,
 	}
 }
@@ -34,14 +34,14 @@ func NewErrorPool() *ErrorPool {
 // AddError adds a new error to the ErrorPool if the count is less than 10.
 // Parameters:
 //   - err: error3.Error - the error to be added.
-func (e *ErrorPool) AddError(err error3.Error) {
+func (e *ErrorPool) AddError(err *error3.Error) {
 	// Keep a max of 10 errors
 	if e.Count >= 10 {
 		return
 	}
 
 	// Skip if the error is nothing
-	if err.Code == error3.Nothing {
+	if err == nil {
 		return
 	}
 
@@ -52,7 +52,7 @@ func (e *ErrorPool) AddError(err error3.Error) {
 // Extend adds multiple errors to the ErrorPool.
 // Parameters:
 //   - errs: []error3.Error - a slice of errors to be added.
-func (e *ErrorPool) Extend(errs []error3.Error) {
+func (e *ErrorPool) Extend(errs []*error3.Error) {
 	for _, err := range errs {
 		e.AddError(err)
 	}
