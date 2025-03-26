@@ -37,6 +37,29 @@ var numWrapper = wrapper.TypeWrapper{
 	Children:    &[]*wrapper.TypeWrapper{},
 }
 
+// MarshalFor marshals a for-loop construct into the intermediate representation (IR).
+// It processes the loop's initialization, condition, and increment expressions,
+// and generates the corresponding IR code.
+//
+// Parameters:
+// - queueElement: The current block element being marshaled.
+// - trace: The file code trace information.
+// - fileCodeId: The ID of the file code.
+// - traceFileName: The name of the trace file.
+// - isMod: A flag indicating if the module is modified.
+// - modulePropCounters: A map of module property counters.
+// - counter: A pointer to the current counter value.
+// - traceFn: The function trace information.
+// - originalPath: The original path of the file.
+// - element: The AST element representing the for-loop.
+// - variables: A map of IR variables.
+// - traceCounters: A pool of numeric counters.
+// - appendedBlocks: A pool of block elements.
+// - usedStrings: A pool of used strings.
+// - usedArrays: A pool of used arrays.
+// - usedNumbers: A pool of used numbers.
+// - localCounters: A map of local counters.
+// - blockQueue: A queue of block elements to be marshaled.
 func MarshalFor(
 	queueElement *tree.BlockMarshalElement,
 	trace *filecode.FileCode,
