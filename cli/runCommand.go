@@ -16,12 +16,20 @@ package cli
 
 import (
 	"github.com/urfave/cli/v3"
+	"os"
+	"os/exec"
 )
 
 // RunCommand represents the run command of the Fluent CLI
 // it runs a fluent file
 func RunCommand(context *cli.Command) {
-	CheckCommand(context)
+	finalPath := BuildCommand(context)
 
-	// TODO!
+	// Directly execute the final executable
+	cmd := exec.Command(finalPath)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	cmd.Stdin = os.Stdin
+
+	_ = cmd.Run()
 }
