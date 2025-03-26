@@ -36,6 +36,35 @@ var BooleanTypeWrapper = wrapper.TypeWrapper{
 	Children:    &[]*wrapper.TypeWrapper{},
 }
 
+// marshalCondition marshals a conditional block into a string representation.
+// It handles the condition and the block associated with it, and schedules the block for further processing.
+//
+// Parameters:
+// - representation: A strings.Builder to build the string representation of the condition.
+// - parentAddr: The address of the parent block.
+// - remainingAddr: The address of the remaining block.
+// - trace: The file code trace information.
+// - isMod: A boolean indicating if the module is modified.
+// - fileCodeId: The ID of the file code.
+// - traceFileName: The name of the trace file.
+// - modulePropCounters: A map of module property counters.
+// - traceFn: The function trace information.
+// - originalPath: The original path of the file.
+// - counter: A pointer to an integer counter.
+// - element: The AST element representing the condition.
+// - children: A slice of AST elements representing the children of the condition.
+// - variables: A map of IR variables.
+// - traceCounters: A pool of numeric counters for tracing.
+// - appendedBlocks: A pool of blocks to be appended.
+// - usedStrings: A pool of used strings.
+// - usedArrays: A pool of used arrays.
+// - usedNumbers: A pool of used numbers.
+// - localCounters: A map of local counters.
+// - blockQueue: A slice of block marshal elements representing the block queue.
+// - isLast: A boolean indicating if this is the last condition.
+//
+// Returns:
+// - A strings.Builder containing the next block's string representation.
 func marshalCondition(
 	representation *strings.Builder,
 	parentAddr *string,
