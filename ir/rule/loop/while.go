@@ -30,6 +30,30 @@ import (
 	"strings"
 )
 
+// MarshalWhile marshals a while loop into the intermediate representation.
+// It takes various parameters to handle the marshalling process, including
+// the queue element, trace information, file code ID, module properties,
+// and pools for managing variables, strings, arrays, and numbers.
+//
+// Parameters:
+// - queueElement: The current block marshal element in the queue.
+// - trace: The file code trace information.
+// - fileCodeId: The ID of the file code.
+// - traceFileName: The name of the trace file.
+// - isMod: A boolean indicating if the module is modified.
+// - modulePropCounters: A map of module property counters.
+// - traceFn: The function trace information.
+// - originalPath: The original path of the file.
+// - counter: A pointer to the counter for generating unique IDs.
+// - element: The AST element representing the while loop.
+// - variables: A map of IR variables.
+// - traceCounters: A pool for managing trace counters.
+// - appendedBlocks: A pool for managing appended blocks.
+// - usedStrings: A pool for managing used strings.
+// - usedArrays: A pool for managing used arrays.
+// - usedNumbers: A pool for managing used numbers.
+// - localCounters: A map of local counters.
+// - blockQueue: A queue of block marshal elements.
 func MarshalWhile(
 	queueElement *tree.BlockMarshalElement,
 	trace *filecode.FileCode,
