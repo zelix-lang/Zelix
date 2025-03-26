@@ -14,10 +14,16 @@
 
 package tree
 
+// ModMarshalPair represents a pair of module marshaling information.
 type ModMarshalPair struct {
-	Name            string
-	Parent          *InstructionTree
+	// Name is the name of the module.
+	Name string
+	// Parent is a pointer to the parent instruction tree.
+	Parent *InstructionTree
+	// CallConstructor indicates whether the constructor should be called.
 	CallConstructor bool
-	IsParam         bool
-	Counter         int
+	// IsParam indicates whether this is a parameter.
+	IsParam bool
+	// Counter is a counter for the module.
+	Counter int
 }
