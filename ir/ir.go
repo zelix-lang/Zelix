@@ -25,19 +25,26 @@ import (
 	"strings"
 )
 
-// BuildIr constructs the Intermediate Representation (IR) for the given file code.
-// It processes the file code, appends imported modules and functions, and writes
-// the functions to the IR.
+// BuildIr constructs the Intermediate Representation (IR) for a given file.
+// It processes the file's imports, functions, and modules, and marshals them
+// into a string representation.
 //
 // Parameters:
-// - fileCode: The file code to build the IR for.
-// - entry: A map of file codes representing the imported files.
-// - fileId: The ID of the file being processed.
-// - traceCounters: A pointer to a map of trace counters.
-// - usedStrings: A pointer to a map of used strings.
+// - fileCode: The FileCode object representing the file to be processed.
+// - entry: A map of file names to FileCode objects for all files in the project.
+// - fileId: An integer identifier for the file.
+// - isMain: A boolean indicating if the file is the main entry point.
+// - originalPath: A pointer to the original path of the file.
+// - traceCounters: A pool of counters for tracing purposes.
+// - traceStrings: A map of trace strings.
+// - usedStrings: A pool of used strings.
+// - usedArrays: A pool of used arrays.
+// - usedNumbers: A pool of used numbers.
+// - modulePropCounters: A map of module property counters.
+// - localCounters: A map of local counters.
 //
 // Returns:
-// - A string representing the constructed IR.
+// - A string representing the IR of the file.
 func BuildIr(
 	fileCode filecode.FileCode,
 	entry map[string]filecode.FileCode,
