@@ -25,6 +25,19 @@ import (
 	"strings"
 )
 
+// MarshalArray serializes an AST array node into a string representation
+// and updates the instruction tree and expression queue accordingly.
+//
+// Parameters:
+// - global: The global instruction tree.
+// - child: The AST node representing the array.
+// - fileCodeId: The ID of the file code.
+// - counter: A pointer to the counter used for generating unique identifiers.
+// - pair: The marshal pair containing the parent instruction tree and expected type.
+// - usedStrings: A pool of used string literals.
+// - usedNumbers: A pool of used number literals.
+// - exprQueue: A queue of marshal pairs for further processing.
+// - variables: A map of variable names to their IRVariable representations.
 func MarshalArray(
 	global *tree.InstructionTree,
 	child *ast.AST,
