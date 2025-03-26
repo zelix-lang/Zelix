@@ -29,6 +29,29 @@ import (
 	"strings"
 )
 
+// MarshalObjectCreation marshals the creation of an object in the instruction tree.
+// It processes the AST node, generates the necessary instructions, and handles
+// the properties and constructor calls for the module.
+//
+// Parameters:
+// - global: The global instruction tree.
+// - child: The AST node representing the object creation.
+// - traceFileName: The name of the trace file.
+// - fileCodeId: The ID of the file code.
+// - originalPath: The original path of the file.
+// - isMod: A boolean indicating if the module is modified.
+// - trace: The file code trace.
+// - traceFn: The function trace.
+// - modulePropCounters: A map of module property counters.
+// - counter: A pointer to the counter for generating unique IDs.
+// - pair: The marshal pair containing parent and counter information.
+// - traceCounters: The pool of trace counters.
+// - variables: A map of IR variables.
+// - usedStrings: The pool of used strings.
+// - usedArrays: The pool of used arrays.
+// - usedNumbers: The pool of used numbers.
+// - exprQueue: The queue of expressions to be marshaled.
+// - localCounters: A map of local counters.
 func MarshalObjectCreation(
 	global *tree.InstructionTree,
 	child *ast.AST,
