@@ -3,8 +3,8 @@
 // Feel free to modify it as needed
 // -----------------------------------------------------
 
-Name = "Fluent Tests"
-Description = "A Fluent project"
-Author = "Rodrigo R."
-License = "GPL-3.0"
-Entry = "main.fluent"
+Name = "Fluent Tests";
+Description = "A Fluent project";
+Author = "Rodrigo R.";
+License = "GPL-3.0";
+Entry = "main.fluent";
