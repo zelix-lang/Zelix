@@ -111,6 +111,23 @@ func MarshalParams(
 	parent.Representation.WriteString(" ")
 }
 
+// RequestTrace determines the trace information for a function call.
+// It checks if the main function is the caller and requests trace information accordingly.
+//
+// Parameters:
+// - traceFn: The function for which trace information is being requested.
+// - originalPath: The original path of the function.
+// - traceCounters: A pool of trace counters.
+// - traceFileName: The name of the trace file.
+// - fileCodeId: The ID of the file code.
+// - line: The line number in the source code.
+// - col: The column number in the source code.
+// - isMod: A boolean indicating if the function is a module.
+//
+// Returns:
+// - The line counter as a string.
+// - The column counter as a string.
+// - The trace file name as a string.
 func RequestTrace(
 	traceFn *function.Function,
 	originalPath *string,
