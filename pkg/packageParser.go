@@ -24,6 +24,11 @@ import (
 
 var invalidStructureMsg = "Invalid package structure"
 
+// ParsePackage reads a file from the given location, lexes its contents,
+// parses the tokens into an AST, and extracts package information from the AST.
+// It returns a pointer to a Package struct containing the parsed information.
+// If any errors occur during reading, lexing, or parsing, the function will
+// print the error and exit the program.
 func ParsePackage(location string) *Package {
 	result := Package{}
 
