@@ -24,6 +24,20 @@ import (
 	"strings"
 )
 
+// MarshalModule marshals a module into an InstructionTree.
+// Parameters:
+// - mod: The module to be marshaled.
+// - originalPath: The original path of the module.
+// - trace: The file code trace.
+// - modulePropCounters: A map of module property counters.
+// - localCounters: A map of local counters.
+// - fileTree: The instruction tree to which the module will be added.
+// - traceFileName: The name of the trace file.
+// - fileCodeId: The file code ID.
+// - traceCounters: A pool of numeric counters for tracing.
+// - usedStrings: A pool of used strings.
+// - usedArrays: A pool of used arrays.
+// - usedNumbers: A pool of used numbers.
 func MarshalModule(
 	mod *module.Module,
 	originalPath *string,
