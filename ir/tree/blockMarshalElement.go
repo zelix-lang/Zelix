@@ -19,12 +19,20 @@ import (
 	"strings"
 )
 
+// BlockMarshalElement represents an element in the block marshaling process.
 type BlockMarshalElement struct {
-	Element        *ast.AST
+	// Element is the AST node associated with this block.
+	Element *ast.AST
+	// Representation is a string builder for the block's representation.
 	Representation *strings.Builder
-	ParentAddr     *string
-	RemainingAddr  *string
-	JumpToParent   bool
-	Id             int
-	IsLast         bool
+	// ParentAddr is the address of the parent block.
+	ParentAddr *string
+	// RemainingAddr is the address of the remaining block.
+	RemainingAddr *string
+	// JumpToParent indicates whether to jump to the parent block.
+	JumpToParent bool
+	// Id is the identifier of the block.
+	Id int
+	// IsLast indicates whether this is the last block.
+	IsLast bool
 }
