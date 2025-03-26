@@ -19,11 +19,13 @@ import (
 	"strings"
 )
 
+// BlockPool represents a pool of blocks with a storage map and a counter.
 type BlockPool struct {
-	Storage map[string]*strings.Builder
-	Counter int
+	Storage map[string]*strings.Builder // Storage holds the block data.
+	Counter int                         // Counter keeps track of the number of blocks.
 }
 
+// RequestAddress creates a new block address and builder, stores them in the pool, and returns them.
 func (pool *BlockPool) RequestAddress() (*string, *strings.Builder) {
 	// Create a new builder
 	builder := strings.Builder{}
