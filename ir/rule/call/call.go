@@ -26,6 +26,24 @@ import (
 	"strings"
 )
 
+// MarshalParams marshals the parameters of a function call into the parent instruction tree.
+// It processes each parameter, retrieves static values if needed, generates a suitable counter,
+// and adds the expression to the queue. It also adds trace parameters to the parent representation.
+//
+// Parameters:
+// - fun: The function whose parameters are being marshaled.
+// - params: The AST nodes representing the parameters.
+// - counter: A pointer to an integer counter used for generating unique identifiers.
+// - global: The global instruction tree.
+// - fileCodeId: The ID of the file code.
+// - parent: The parent instruction tree.
+// - variables: A map of variable names to IRVariable pointers.
+// - usedStrings: A pool of used strings.
+// - usedNumbers: A pool of used numbers.
+// - exprQueue: A queue of expressions to be marshaled.
+// - lineCounter: The line counter for trace information.
+// - colCounter: The column counter for trace information.
+// - traceFileName: The name of the trace file.
 func MarshalParams(
 	fun *function.Function,
 	params []*ast.AST,
