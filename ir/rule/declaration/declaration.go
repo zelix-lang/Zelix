@@ -27,6 +27,27 @@ import (
 	"fmt"
 )
 
+// MarshalDeclaration marshals a declaration into the provided queue element.
+// It processes the AST element, extracts the variable name, type, and expression,
+// and saves the variable in the provided variables map. It then marshals the expression.
+//
+// Parameters:
+// - queueElement: The queue element to marshal the declaration into.
+// - trace: The file code trace.
+// - fileCodeId: The ID of the file code.
+// - traceFileName: The name of the trace file.
+// - isMod: A boolean indicating if it is a module.
+// - modulePropCounters: A map of module property counters.
+// - traceFn: The function trace.
+// - originalPath: The original path of the file.
+// - counter: A pointer to the counter for generating unique addresses.
+// - element: The AST element representing the declaration.
+// - variables: A map of variables to update with the new variable.
+// - traceCounters: A pool of number counters for tracing.
+// - usedStrings: A pool of used strings.
+// - usedArrays: A pool of used arrays.
+// - usedNumbers: A pool of used numbers.
+// - localCounters: A map of local counters.
 func MarshalDeclaration(
 	queueElement *tree.BlockMarshalElement,
 	trace *filecode.FileCode,
