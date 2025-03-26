@@ -183,6 +183,9 @@ func ask(
 	return ""
 }
 
+// InitCommand initializes the command for creating a new Fluent project.
+// Parameters:
+// - context: The CLI context containing command arguments and flags.
 func InitCommand(context *cli.Command) {
 	ShowHeaderMessage()
 	fmt.Print(ansi.BrightBlack)
