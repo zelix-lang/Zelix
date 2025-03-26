@@ -83,6 +83,21 @@ func writeSignOpcode(sign string, parent *tree.InstructionTree) bool {
 	}
 	return false
 }
+
+// processCandidate processes a candidate AST node and schedules it for further processing.
+//
+// Parameters:
+// - global: The global InstructionTree.
+// - candidate: The candidate AST node to process.
+// - fileCodeId: The ID of the file code.
+// - isBool: A boolean indicating if the candidate is a boolean expression.
+// - counter: A pointer to the counter used for generating unique identifiers.
+// - pair: The MarshalPair containing the parent InstructionTree and expected type.
+// - preferredParent: The preferred parent InstructionTree for the candidate.
+// - usedStrings: The pool of used strings.
+// - usedNumbers: The pool of used numbers.
+// - exprQueue: The queue of expressions to be processed.
+// - variables: The map of variables used in the IR.
 func processCandidate(
 	global *tree.InstructionTree,
 	candidate *ast.AST,
