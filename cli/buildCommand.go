@@ -41,7 +41,7 @@ var isWindows = runtime.GOOS == "windows"
 var isPOSIX = !isWindows
 
 // BuildCommand compiles the given Fluent project into an executable
-func BuildCommand(context *cli.Command) {
+func BuildCommand(context *cli.Command) string {
 	fmt.Print(ansi.Colorize(ansi.BoldBrightYellow, "⚠️ Checking if fluentc is installed....\r"))
 
 	// Invoke a system command to check if fluentc is installed
@@ -353,4 +353,6 @@ func BuildCommand(context *cli.Command) {
 
 	// Errors are handled by the compiler backend
 	_ = cmd.Run()
+
+	return outPath
 }
