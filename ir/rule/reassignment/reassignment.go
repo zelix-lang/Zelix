@@ -31,6 +31,26 @@ import (
 	"strings"
 )
 
+// MarshalReassignment marshals a reassignment operation in the intermediate representation (IR).
+// It handles both variable reassignments and property reassignments.
+//
+// Parameters:
+// - queueElement: The element in the block queue to be marshaled.
+// - trace: The file code trace.
+// - fileCodeId: The ID of the file code.
+// - traceFileName: The name of the trace file.
+// - isMod: A boolean indicating if the operation is a module.
+// - modulePropCounters: A map of module property counters.
+// - traceFn: The function trace.
+// - originalPath: The original path of the file.
+// - counter: A pointer to the counter for generating unique addresses.
+// - element: The AST element representing the reassignment.
+// - variables: A map of IR variables.
+// - traceCounters: A pool of numeric counters.
+// - usedStrings: A pool of used strings.
+// - usedArrays: A pool of used arrays.
+// - usedNumbers: A pool of used numbers.
+// - localCounters: A map of local counters.
 func MarshalReassignment(
 	queueElement *tree.BlockMarshalElement,
 	trace *filecode.FileCode,
