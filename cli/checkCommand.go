@@ -47,9 +47,8 @@ func CheckCommand(context *cli.Command) ([]filecode.FileCode, map[string]filecod
 
 	// Check if the path exists
 	if target == "" {
-		logger.Error("No path provided")
-		logger.Info("Usage: fluent <check|c> <path>")
-		os.Exit(1)
+		// Use the current directory as the target
+		target, _ = os.Getwd()
 	}
 
 	// Convert the path to an absolute path
