@@ -1,7 +1,14 @@
 import "@std::io::print";
 
+mod Bbc {
+    let b: num = 20;
+}
+
+mod Abc {
+    let a: Bbc = new Bbc();
+}
+
 pub fun main() {
-    for 5 to 7 in i {
-        print("i = ");
-    }
+    let a: Abc = new Abc();
+    a.a.b = 25;
 }

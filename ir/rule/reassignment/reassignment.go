@@ -23,10 +23,12 @@ import (
 	"fluent/ir/pool"
 	expression2 "fluent/ir/rule/expression"
 	"fluent/ir/tree"
+	"fluent/ir/value"
 	"fluent/ir/variable"
 	"fluent/util"
 	"fmt"
 	"strconv"
+	"strings"
 )
 
 func MarshalReassignment(
@@ -103,16 +105,48 @@ func MarshalReassignment(
 	// Otherwise, we have a property reassignment
 	// Calculate the inferred type of the entire
 	// expression
-	var inferredType *wrapper.TypeWrapper
+	var inferredType []*wrapper.TypeWrapper
 	var lastModule *module.Module
+	var candidateAddr string
+	var candidateVarName *string
 
 	// Get the left expression's children
 	leftChildren := *left.Children
 
 	// Get the candidate
 	candidate := leftChildren[0]
-	inferredType = candidate.InferredType
-	lastModule = trace.Modules[inferredType.BaseType]
+
+	// Marshal the candidate if needed
+	if (*candidate.Children)[0].Rule == ast.Identifier {
+		candidateVarName = (*candidate.Children)[0].Value
+		candidateAddr = (*variables)[*candidateVarName].Addr
+	} else {
+		candidateAddr = fmt.Sprintf("x%d", *counter)
+		// Marshal the candidate directly
+		expression2.MarshalExpression(
+			queueElement.Representation,
+			trace,
+			traceFn,
+			fileCodeId,
+			isMod,
+			traceFileName,
+			originalPath,
+			modulePropCounters,
+			counter,
+			rightExpr,
+			variables,
+			traceCounters,
+			usedStrings,
+			usedArrays,
+			usedNumbers,
+			localCounters,
+			true,
+			candidate.InferredType,
+		)
+	}
+
+	inferredType = []*wrapper.TypeWrapper{candidate.InferredType}
+	lastModule = trace.Modules[candidate.InferredType.BaseType]
 
 	// Iterate over all elements of the AST to
 	// calculate the type this expression evaluates to
@@ -126,87 +160,89 @@ func MarshalReassignment(
 		case ast.Identifier:
 			// Find the declaration
 			declaration := lastModule.Declarations[*child.Value]
-			inferredType = &declaration.Type
+			inferredType = append(inferredType, &declaration.Type)
 
 			// Update the last module if needed
 			if !declaration.Type.IsPrimitive {
 				lastModule = trace.Modules[declaration.Type.BaseType]
-			}
-		case ast.FunctionCall:
-			// Get the expression's children
-			callChildren := *child.Children
-
-			// Get the function's name
-			name := *callChildren[0].Value
-
-			// Retrieve the function
-			fun := lastModule.Functions[name]
-
-			// Modify the inferred type accordingly
-			inferredType = &fun.ReturnType
-
-			// Update the last module if needed
-			if !fun.ReturnType.IsPrimitive {
-				lastModule = trace.Modules[fun.ReturnType.BaseType]
 			}
 		default:
 		}
 	}
 
 	// Calculate the counter the right expression is going to have
-	rightExprCounter := *counter
+	var rightExprAddr string
 
-	// Marshal the right expression directly
-	expression2.MarshalExpression(
-		queueElement.Representation,
-		trace,
-		traceFn,
-		fileCodeId,
-		isMod,
-		traceFileName,
-		originalPath,
-		modulePropCounters,
-		counter,
-		rightExpr,
-		variables,
-		traceCounters,
-		usedStrings,
-		usedArrays,
-		usedNumbers,
-		localCounters,
-		true,
-		inferredType,
-	)
+	// See if we can save memory on the right expression
+	tempBuilder := strings.Builder{}
+	if value.RetrieveStaticVal(fileCodeId, rightExpr, &tempBuilder, usedStrings, usedNumbers, variables) {
+		str := tempBuilder.String()
+		// Remove the last space
+		rightExprAddr = str[:len(str)-1]
+	} else {
+		rightExprAddr = fmt.Sprintf("x%d ", *counter)
+		// Marshal the right expression directly
+		expression2.MarshalExpression(
+			queueElement.Representation,
+			trace,
+			traceFn,
+			fileCodeId,
+			isMod,
+			traceFileName,
+			originalPath,
+			modulePropCounters,
+			counter,
+			rightExpr,
+			variables,
+			traceCounters,
+			usedStrings,
+			usedArrays,
+			usedNumbers,
+			localCounters,
+			true,
+			inferredType[len(inferredType)-1],
+		)
+	}
 
-	// Calculate the counter the expression is going to have
-	exprCounter := *counter
+	// Marshal all expression
+	for i := len(leftChildren) - 1; i >= 1; i-- {
+		childExpr := leftChildren[i]
+		childType := inferredType[i]
+		child := (*childExpr.Children)[0]
 
-	// Marshal the left expression directly
-	expression2.MarshalExpression(
-		queueElement.Representation,
-		trace,
-		traceFn,
-		fileCodeId,
-		isMod,
-		traceFileName,
-		originalPath,
-		modulePropCounters,
-		counter,
-		leftExpr,
-		variables,
-		traceCounters,
-		usedStrings,
-		usedArrays,
-		usedNumbers,
-		localCounters,
-		true,
-		inferredType,
-	)
+		// Find the mod
+		prev := inferredType[i-1]
+		// Get the declaration's index
+		idx, _ := (*modulePropCounters)[prev.BaseType].Get(*child.Value)
 
-	// Add store instructions
-	queueElement.Representation.WriteString("store x")
-	queueElement.Representation.WriteString(strconv.Itoa(exprCounter))
-	queueElement.Representation.WriteString(" x")
-	queueElement.Representation.WriteString(strconv.Itoa(rightExprCounter))
-	queueElement.Representation.WriteString("\n")
+		// Get a suitable counter to move this expression
+		suitable := *counter
+		*counter++
+
+		// Move the element to the stack
+		queueElement.Representation.WriteString("mov x")
+		queueElement.Representation.WriteString(strconv.Itoa(suitable))
+		queueElement.Representation.WriteString(" ")
+
+		if childType.IsPrimitive {
+			queueElement.Representation.WriteString(childType.Marshal())
+		} else {
+			queueElement.Representation.WriteString(*(*localCounters)[childType.BaseType])
+		}
+		queueElement.Representation.WriteString(" mod_copy ")
+		queueElement.Representation.WriteString(candidateAddr)
+		queueElement.Representation.WriteString(" ")
+		queueElement.Representation.WriteString(*idx)
+		queueElement.Representation.WriteString(" ")
+		queueElement.Representation.WriteString(rightExprAddr)
+		queueElement.Representation.WriteString("\n")
+
+		rightExprAddr = fmt.Sprintf("x%d", suitable)
+		candidateAddr = rightExprAddr
+	}
+
+	// Update the candidate in order to adhere to SSA if needed
+	if candidateVarName != nil {
+		(*variables)[*candidateVarName].Addr = candidateAddr
+	}
 }
