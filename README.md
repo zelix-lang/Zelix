@@ -10,9 +10,11 @@
 
 Welcome to the official Fluent repository! Here, you will find the source code of the Fluent language. Have fun!
 
-> **NOTE**
+> **NOTE:**
 > This project is still in development and may not be stable.
 > **Fluent is still not a language for production use.**
+> All development changes are going to be uploaded
+> to the [`dev`](https://github.com/fluent-lang/Fluent/tree/dev) branch.
 
 ---
 
