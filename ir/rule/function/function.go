@@ -32,6 +32,29 @@ import (
 	"strings"
 )
 
+// MarshalFunction marshals a function into an intermediate representation (IR).
+// It constructs the function's signature, processes its parameters, and marshals
+// its body into a tree structure. This function handles various AST nodes such as
+// If, For, While, Block, Continue, Break, Assignment, Declaration, Expression, and Return.
+//
+// Parameters:
+// - fun: The function to be marshaled.
+// - trace: The file code trace.
+// - modType: The module type.
+// - injectThis: Whether to inject the "this" variable.
+// - traceFileName: The trace file name.
+// - fileCodeId: The file code ID.
+// - isMain: Whether the function is the main function.
+// - isMod: Whether the function is part of a module.
+// - originalPath: The original path of the function.
+// - modulePropCounters: The module property counters.
+// - traceCounters: The trace counters pool.
+// - usedStrings: The pool of used strings.
+// - usedArrays: The pool of used arrays.
+// - usedNumbers: The pool of used numbers.
+// - fileTree: The instruction tree for the file.
+// - name: The name of the function.
+// - localCounters: The local counters map.
 func MarshalFunction(
 	fun *function.Function,
 	trace *filecode.FileCode,
