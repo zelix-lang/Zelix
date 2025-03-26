@@ -21,6 +21,16 @@ import (
 	"strings"
 )
 
+// RetrieveStaticVal processes a static value from the AST and writes its representation.
+// It returns true if the value was successfully processed, otherwise false.
+//
+// Parameters:
+// - fileCodeId: An integer representing the file code ID.
+// - expr: A pointer to the AST node representing the expression.
+// - representation: A pointer to a strings.Builder to write the representation.
+// - usedStrings: A pointer to a pool.StringPool for managing used strings.
+// - usedNumbers: A pointer to a pool.StringPool for managing used numbers.
+// - variables: A pointer to a map of variable names to IRVariable pointers.
 func RetrieveStaticVal(
 	fileCodeId int,
 	expr *ast.AST,
