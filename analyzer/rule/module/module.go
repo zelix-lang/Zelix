@@ -18,6 +18,7 @@ import (
 	error3 "fluent/analyzer/error"
 	"fluent/analyzer/object"
 	"fluent/analyzer/pool"
+	"fluent/analyzer/rule/expression"
 	function2 "fluent/analyzer/rule/function"
 	"fluent/analyzer/rule/value"
 	"fluent/analyzer/stack"
@@ -158,6 +159,21 @@ func AnalyzeModule(
 					Code:   error3.ValueNotAssigned,
 				})
 			}
+		}
+
+		// Analyze the expression's value
+		_, err = expression.AnalyzeExpression(
+			declaration.Value,
+			trace,
+			&variables,
+			false,
+			&declaration.Type,
+			false,
+			true,
+		)
+
+		if err != nil {
+			globalErrors.AddError(err)
 		}
 	}
 
