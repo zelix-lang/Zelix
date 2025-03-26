@@ -18,13 +18,14 @@ import (
 	error3 "fluent/analyzer/error"
 	"fluent/analyzer/object"
 	"fluent/analyzer/pool"
+	"fluent/analyzer/rule/expression"
 	function2 "fluent/analyzer/rule/function"
 	"fluent/analyzer/rule/value"
 	"fluent/analyzer/stack"
 	"fluent/analyzer/variable"
 	"fluent/filecode"
 	"fluent/filecode/module"
-	"fluent/filecode/types"
+	"fluent/filecode/types/wrapper"
 	"fluent/logger"
 	"fmt"
 	"strings"
@@ -59,9 +60,9 @@ func AnalyzeModule(
 		Constant: true,
 		Value: object.Object{
 			Value: mod,
-			Type: types.TypeWrapper{
+			Type: wrapper.TypeWrapper{
 				BaseType: mod.Name,
-				Children: &[]*types.TypeWrapper{},
+				Children: &[]*wrapper.TypeWrapper{},
 			},
 		},
 	})
@@ -70,7 +71,7 @@ func AnalyzeModule(
 	for _, fun := range mod.Functions {
 		// Make sure that the function does not have generics
 		if len(fun.Templates) != 0 {
-			globalErrors.AddError(error3.Error{
+			globalErrors.AddError(&error3.Error{
 				Line:   fun.Trace.Line,
 				Column: fun.Trace.Column,
 				Code:   error3.ShouldNotHaveGenerics,
@@ -84,7 +85,7 @@ func AnalyzeModule(
 
 		// Analyze the function
 		errors, warnings, reassignments := function2.AnalyzeFunction(
-			fun,
+			*fun,
 			trace,
 			mod.Name,
 			&mod.Templates,
@@ -115,7 +116,7 @@ func AnalyzeModule(
 				}
 
 				if _, ok := assignedProps[name]; !ok {
-					globalErrors.AddError(error3.Error{
+					globalErrors.AddError(&error3.Error{
 						Line:   declaration.Trace.Line,
 						Column: declaration.Trace.Column,
 						Code:   error3.ValueNotAssigned,
@@ -144,22 +145,35 @@ func AnalyzeModule(
 		err := value.AnalyzeUndefinedReference(trace, declaration.Type, &mod.Templates)
 		queue = append(queue, declaration)
 
-		if err.Code != error3.Nothing {
+		if err != nil {
 			globalErrors.AddError(err)
-		} else {
-			// Append only if the type is good to go
 		}
 
 		if !initializedCaught && declaration.IsIncomplete {
 			initializedCaught = true
 			// Check that the module has a constructor
 			if _, ok := mod.Functions[mod.Name]; !ok {
-				globalErrors.AddError(error3.Error{
+				globalErrors.AddError(&error3.Error{
 					Line:   declaration.Trace.Line,
 					Column: declaration.Trace.Column,
 					Code:   error3.ValueNotAssigned,
 				})
 			}
+		}
+
+		// Analyze the expression's value
+		_, err = expression.AnalyzeExpression(
+			declaration.Value,
+			trace,
+			&variables,
+			false,
+			&declaration.Type,
+			false,
+			true,
+		)
+
+		if err != nil {
+			globalErrors.AddError(err)
 		}
 	}
 
@@ -207,7 +221,7 @@ func AnalyzeModule(
 				),
 			)
 
-			globalErrors.AddError(error3.Error{
+			globalErrors.AddError(&error3.Error{
 				Line:       element.Trace.Line,
 				Column:     element.Trace.Column,
 				Code:       error3.CircularModuleDependency,

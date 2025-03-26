@@ -17,7 +17,7 @@ package function
 import (
 	"fluent/ast"
 	"fluent/filecode/trace"
-	"fluent/filecode/types"
+	"fluent/filecode/types/wrapper"
 )
 
 // Function represents a function in the Fluent programming language.
@@ -29,7 +29,7 @@ type Function struct {
 	// Params is a map of parameter names to their types.
 	Params []Param
 	// ReturnType is the type of the function's return value.
-	ReturnType types.TypeWrapper
+	ReturnType wrapper.TypeWrapper
 	// Body is the abstract syntax tree (AST) of the function's body.
 	Body ast.AST
 	// Trace contains trace information for the function.

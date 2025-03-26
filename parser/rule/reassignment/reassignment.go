@@ -32,12 +32,12 @@ import (
 // - ast.AST: The resulting AST node for the assignment.
 // - error.Error: An error object if any error occurs.
 // - bool: A boolean indicating whether the reassignment was successfully processed.
-func FindAndProcessReassignment(input []token.Token) (ast.AST, error.Error, bool) {
+func FindAndProcessReassignment(input []token.Token) (*ast.AST, *error.Error, bool) {
 	firstToken := input[0]
 
 	// Check if the input has reassignment tokens
 	if !util.TokenSliceContains(input, map[token.Type]struct{}{token.Assign: {}}) {
-		return ast.AST{}, error.Error{}, false
+		return nil, nil, false
 	}
 
 	// Split the tokens by reassignment operators
@@ -50,7 +50,7 @@ func FindAndProcessReassignment(input []token.Token) (ast.AST, error.Error, bool
 
 	// The split must have 2 elements
 	if len(split) != 2 {
-		return ast.AST{}, error.Error{
+		return nil, &error.Error{
 			Line:     firstToken.Line,
 			Column:   firstToken.Column,
 			File:     &firstToken.File,
@@ -70,14 +70,14 @@ func FindAndProcessReassignment(input []token.Token) (ast.AST, error.Error, bool
 	// Process an expression node for both sides of the assigment
 	expressionLeft, err := expression.ProcessExpression(split[0])
 
-	if err.IsError() {
-		return ast.AST{}, err, false
+	if err != nil {
+		return nil, err, false
 	}
 
 	// The left expression must be either an identifier or a property access
 	exprLeftChild := (*expressionLeft.Children)[0]
 	if exprLeftChild.Rule != ast.Identifier && exprLeftChild.Rule != ast.PropertyAccess {
-		return ast.AST{}, error.Error{
+		return nil, &error.Error{
 			Line:     firstToken.Line,
 			Column:   firstToken.Column,
 			File:     &firstToken.File,
@@ -88,27 +88,30 @@ func FindAndProcessReassignment(input []token.Token) (ast.AST, error.Error, bool
 	// Also make sure the property access ends in an identifier
 	if exprLeftChild.Rule == ast.PropertyAccess {
 		propAccessChildren := *exprLeftChild.Children
-		lastExpr := propAccessChildren[len(propAccessChildren)-1]
-		last := (*lastExpr.Children)[0]
+		// Force all children to be identifiers
+		for _, expr := range propAccessChildren {
+			exprChildren := *expr.Children
+			child := exprChildren[0]
 
-		if last.Rule != ast.Identifier {
-			return ast.AST{}, error.Error{
-				Line:     last.Line,
-				Column:   last.Column,
-				File:     &firstToken.File,
-				Expected: []ast.Rule{ast.Identifier},
-			}, false
+			if child.Rule != ast.Identifier {
+				return nil, &error.Error{
+					Line:     child.Line,
+					Column:   child.Column,
+					File:     &firstToken.File,
+					Expected: []ast.Rule{ast.Identifier},
+				}, false
+			}
 		}
 	}
 
 	expressionRight, err := expression.ProcessExpression(split[1])
 
-	if err.IsError() {
-		return ast.AST{}, err, false
+	if err != nil {
+		return nil, err, false
 	}
 
 	// Push both sides to the assignment node
-	*assignmentNode.Children = append(*assignmentNode.Children, &expressionLeft)
-	*assignmentNode.Children = append(*assignmentNode.Children, &expressionRight)
-	return assignmentNode, error.Error{}, true
+	*assignmentNode.Children = append(*assignmentNode.Children, expressionLeft)
+	*assignmentNode.Children = append(*assignmentNode.Children, expressionRight)
+	return &assignmentNode, nil, true
 }

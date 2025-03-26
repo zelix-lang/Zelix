@@ -40,7 +40,7 @@ import (
 //	contents: The contents of the file where the entity is defined.
 //	path: The path to the file where the entity is defined.
 func CheckRedefinition[T function.Function | module.Module](
-	definedValues map[string]T,
+	definedValues map[string]*T,
 	name string,
 	entity any,
 	contents string,

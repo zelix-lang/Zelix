@@ -31,7 +31,7 @@ import (
 // Returns:
 //   - ast.AST: The abstract syntax tree node representing the return statement.
 //   - error.Error: An error object if the statement is invalid, otherwise an empty error.
-func ProcessReturn(statement []token.Token) (ast.AST, error.Error) {
+func ProcessReturn(statement []token.Token) (*ast.AST, *error.Error) {
 	// There is no need to check the input's length
 	// "return;" is valid anyway, which means the input is 1 token long
 	// hence, the input's length is always valid
@@ -49,13 +49,13 @@ func ProcessReturn(statement []token.Token) (ast.AST, error.Error) {
 		// Parse the expression
 		expr, err := expression.ProcessExpression(statement[1:])
 
-		if err.IsError() {
-			return ast.AST{}, err
+		if err != nil {
+			return nil, err
 		}
 
 		// Add the expression to the result
-		*result.Children = append(*result.Children, &expr)
+		*result.Children = append(*result.Children, expr)
 	}
 
-	return result, error.Error{}
+	return &result, nil
 }

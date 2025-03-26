@@ -14,7 +14,9 @@
 
 package object
 
-import "fluent/filecode/types"
+import (
+	"fluent/filecode/types/wrapper"
+)
 
 // Object represents a generic object in the Fluent programming language.
 // It contains information about whether the object is allocated on the heap,
@@ -25,5 +27,5 @@ type Object struct {
 	// Value holds the actual value of the object.
 	Value interface{}
 	// Type represents the type information of the object.
-	Type types.TypeWrapper
+	Type wrapper.TypeWrapper
 }

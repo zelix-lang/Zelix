@@ -24,9 +24,9 @@ type FileCode struct {
 	// Path is the file path.
 	Path string
 	// Functions is a map of function names to their corresponding Function objects.
-	Functions map[string]function.Function
+	Functions map[string]*function.Function
 	// Modules is a map of module names to their corresponding Module objects.
-	Modules map[string]module.Module
+	Modules map[string]*module.Module
 	// Imports is a list of imported packages.
 	Imports []string
 	// The contents of the file that this FileCode represents.

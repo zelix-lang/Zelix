@@ -34,7 +34,7 @@ func MustReturnValue() string {
 	builder.WriteString(
 		logger.BuildInfo(
 			"For more information, refer to:",
-			"https://fluent-lang.github.io/book/codes/E0004",
+			"https://fluent-lang.github.io/Book/codes/E0004",
 			"Full details:",
 		),
 	)

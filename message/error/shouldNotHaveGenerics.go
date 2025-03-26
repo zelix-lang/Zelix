@@ -34,7 +34,7 @@ func ShouldNotHaveGenerics() string {
 	builder.WriteString(
 		logger.BuildInfo(
 			"For more information, refer to:",
-			"https://fluent-lang.github.io/book/codes/E0018",
+			"https://fluent-lang.github.io/Book/codes/E0018",
 			"Full details:",
 		),
 	)

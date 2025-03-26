@@ -17,12 +17,12 @@ package call
 import (
 	error3 "fluent/analyzer/error"
 	"fluent/analyzer/object"
+	"fluent/analyzer/property"
 	queue2 "fluent/analyzer/queue"
 	"fluent/ast"
 	"fluent/filecode"
 	function2 "fluent/filecode/function"
-	"fluent/filecode/module"
-	"fluent/filecode/types"
+	"fluent/filecode/types/wrapper"
 	"strconv"
 )
 
@@ -44,25 +44,24 @@ func AnalyzeFunctionCall(
 	trace *filecode.FileCode,
 	queueElement *queue2.ExpectedPair,
 	exprQueue *[]queue2.ExpectedPair,
-	lastPropValue *module.Module,
 	isObjectCreation bool,
-) error3.Error {
+) *error3.Error {
 	// Get the function's name
 	functionName := (*tree.Children)[0].Value
 	// Determine if the function has parameters
 	hasParams := len(*tree.Children) > 1
 
 	var generics map[string]bool
-	var function function2.Function
+	var function *function2.Function
 	var found bool
-	var returnType types.TypeWrapper
+	var returnType wrapper.TypeWrapper
 
 	if isObjectCreation {
 		// Find the module inside the trace's module
 		mod, ok := trace.Modules[*functionName]
 
 		if !ok || (!mod.Public && trace.Path != mod.Path) {
-			return error3.Error{
+			return &error3.Error{
 				Line:       tree.Line,
 				Column:     tree.Column,
 				Code:       error3.UndefinedReference,
@@ -75,7 +74,7 @@ func AnalyzeFunctionCall(
 
 		if !ok {
 			if hasParams {
-				return error3.Error{
+				return &error3.Error{
 					Line:   tree.Line,
 					Column: tree.Column,
 					Code:   error3.DoesNotHaveConstructor,
@@ -84,19 +83,32 @@ func AnalyzeFunctionCall(
 
 			queueElement.Got.Type.BaseType = mod.Name
 			queueElement.Got.Value = mod
-			return error3.Error{}
+			return nil
 		}
 
 		function, found = constructor, true
 		generics = mod.Templates
-		returnType = types.TypeWrapper{
+		returnType = wrapper.TypeWrapper{
 			BaseType: mod.Name,
-			Children: &[]*types.TypeWrapper{},
+			Children: &[]*wrapper.TypeWrapper{},
 		}
 	} else if queueElement.IsPropAccess {
+		lastPropValue := property.EvaluateLastPropValue(queueElement)
+		if lastPropValue == nil {
+			return &error3.Error{
+				Code:   error3.InvalidPropAccess,
+				Line:   queueElement.Tree.Line,
+				Column: queueElement.Tree.Column,
+			}
+		}
+
 		function, found = lastPropValue.Functions[*functionName]
 		generics = function.Templates
 		returnType = function.ReturnType
+
+		if !returnType.IsPrimitive {
+			*queueElement.LastPropValue = trace.Modules[returnType.BaseType]
+		}
 	} else {
 		function, found = trace.Functions[*functionName]
 		generics = function.Templates
@@ -105,7 +117,7 @@ func AnalyzeFunctionCall(
 
 	// Check if the function was found (and whether the current function has permission to call it)
 	if !found || (!function.Public && trace.Path != function.Path) {
-		return error3.Error{
+		return &error3.Error{
 			Line:       tree.Line,
 			Column:     tree.Column,
 			Code:       error3.UndefinedReference,
@@ -157,7 +169,7 @@ func AnalyzeFunctionCall(
 
 			// Check if the module was found
 			if !found {
-				return error3.Error{
+				return &error3.Error{
 					Line:       tree.Line,
 					Column:     tree.Column,
 					Code:       error3.UndefinedReference,
@@ -180,7 +192,7 @@ func AnalyzeFunctionCall(
 			if len(*paramsNode.Children) == 1 {
 				preventParamAnalysis = true
 			} else {
-				return error3.Error{
+				return &error3.Error{
 					Line:       tree.Line,
 					Column:     tree.Column,
 					Code:       error3.ParameterCountMismatch,
@@ -191,7 +203,7 @@ func AnalyzeFunctionCall(
 
 		if len(*paramsNode.Children) != len(function.Params) {
 			if !preventParamAnalysis {
-				return error3.Error{
+				return &error3.Error{
 					Line:       tree.Line,
 					Column:     tree.Column,
 					Code:       error3.ParameterCountMismatch,
@@ -203,6 +215,10 @@ func AnalyzeFunctionCall(
 		// Schedule all the parameters for analysis
 		if !preventParamAnalysis {
 			i := 0
+
+			// Prevent inferring twice the same generics
+			inferredGenerics := make(map[string]*object.Object)
+
 			for _, param := range function.Params {
 				// Get the parameter's value
 				value := (*paramsNode.Children)[i]
@@ -210,37 +226,49 @@ func AnalyzeFunctionCall(
 				paramNodes := (*value.Children)[0]
 				isParamHeap := paramType.PointerCount > 0
 				enforceHeapInParam := false
+				passedResult := object.Object{
+					Type: wrapper.TypeWrapper{
+						Children: &[]*wrapper.TypeWrapper{},
+					},
+					IsHeap: isParamHeap,
+				}
+				passedType := &paramType
 
 				if !param.Type.IsPrimitive {
 					// Check for generics
 					if _, found := generics[param.Type.BaseType]; found {
-						// Check if this param has the return type's generic
-						if returnType.Compare(paramType) {
-							enforceHeapInParam = result.IsHeap
-							if expected.BaseType == "" {
-								paramType = types.TypeWrapper{
-									BaseType:     "(Infer)",
-									PointerCount: param.Type.PointerCount,
-									ArrayCount:   param.Type.ArrayCount,
+						// See if we have seen this generic before
+						if inferredGenerics[param.Type.BaseType] != nil {
+							passedType = &inferredGenerics[param.Type.BaseType].Type
+						} else {
+							inferredGenerics[param.Type.BaseType] = &passedResult
+							// Check if this param has the return type's generic
+							if returnType.Compare(paramType) {
+								enforceHeapInParam = result.IsHeap
+								if expected.BaseType == "" {
+									passedType = &wrapper.TypeWrapper{
+										BaseType:     "(Infer)",
+										PointerCount: param.Type.PointerCount,
+										ArrayCount:   param.Type.ArrayCount,
+									}
+								} else {
+									passedType = expected
 								}
 							} else {
-								paramType = *expected
+								passedType.BaseType = "(Infer)"
 							}
-						} else {
-							paramType.BaseType = "(Infer)"
 						}
+					} else {
+						passedType = &paramType
 					}
+				} else {
+					passedType = &paramType
 				}
 
 				*exprQueue = append(*exprQueue, queue2.ExpectedPair{
-					Tree: paramNodes,
-					Got: &object.Object{
-						Type: types.TypeWrapper{
-							Children: &[]*types.TypeWrapper{},
-						},
-						IsHeap: isParamHeap,
-					},
-					Expected:     &paramType,
+					Tree:         paramNodes,
+					Got:          &passedResult,
+					Expected:     passedType,
 					HeapRequired: enforceHeapInParam && enforceHeap,
 					IsParam:      true,
 				})
@@ -251,7 +279,7 @@ func AnalyzeFunctionCall(
 	} else {
 		// Check for parameter count mismatch
 		if len(function.Params) > 0 {
-			return error3.Error{
+			return &error3.Error{
 				Line:       tree.Line,
 				Column:     tree.Column,
 				Code:       error3.ParameterCountMismatch,
@@ -260,5 +288,5 @@ func AnalyzeFunctionCall(
 		}
 	}
 
-	return error3.Error{}
+	return nil
 }

@@ -18,7 +18,7 @@ import (
 	"fluent/ast"
 	"fluent/filecode/function"
 	"fluent/filecode/trace"
-	"fluent/filecode/types"
+	"fluent/filecode/types/wrapper"
 )
 
 // Declaration represents a declaration in the Fluent programming language.
@@ -28,7 +28,7 @@ type Declaration struct {
 	// Value is the AST node representing the value of the declaration.
 	Value *ast.AST
 	// Type is the type of the declaration.
-	Type types.TypeWrapper
+	Type wrapper.TypeWrapper
 	// IsIncomplete indicates whether the declaration is incomplete.
 	IsIncomplete bool
 	// Trace contains trace information for the declaration.
@@ -42,7 +42,7 @@ type Module struct {
 	// Public indicates whether the module is public.
 	Public bool
 	// Functions is a map of function names to their definitions.
-	Functions map[string]function.Function
+	Functions map[string]*function.Function
 	// Declarations is a list of declarations in the module.
 	Declarations map[string]Declaration
 	// Templates is a list of generic types in the module.

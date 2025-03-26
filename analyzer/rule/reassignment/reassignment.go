@@ -20,7 +20,7 @@ import (
 	"fluent/analyzer/stack"
 	"fluent/ast"
 	"fluent/filecode"
-	"fluent/filecode/types"
+	"fluent/filecode/types/wrapper"
 )
 
 // AnalyzeReassignment analyzes the reassignment of variables in the given AST.
@@ -39,7 +39,7 @@ func AnalyzeReassignment(
 	variables *stack.ScopedStack,
 	trace *filecode.FileCode,
 	collectedAssignments *[]*ast.AST,
-) error3.Error {
+) *error3.Error {
 	// Get the tree's children
 	children := *tree.Children
 
@@ -72,15 +72,15 @@ func AnalyzeReassignment(
 		trace,
 		variables,
 		false,
-		&types.TypeWrapper{
-			Children: &[]*types.TypeWrapper{},
+		&wrapper.TypeWrapper{
+			Children: &[]*wrapper.TypeWrapper{},
 		},
 		true,
 		false,
 	)
 
 	// Return the err if needed
-	if err.Code != error3.Nothing {
+	if err != nil {
 		return err
 	}
 
@@ -99,9 +99,9 @@ func AnalyzeReassignment(
 	)
 
 	// Return the err if needed
-	if err.Code != error3.Nothing {
+	if err != nil {
 		return err
 	}
 
-	return error3.Error{}
+	return nil
 }

@@ -21,14 +21,14 @@ import (
 	"fluent/analyzer/stack"
 	"fluent/ast"
 	"fluent/filecode"
-	"fluent/filecode/types"
+	"fluent/filecode/types/wrapper"
 )
 
 // Define a global boolean type
-var globalBool = types.TypeWrapper{
+var globalBool = wrapper.TypeWrapper{
 	BaseType:    "bool",
 	IsPrimitive: true,
-	Children:    &[]*types.TypeWrapper{},
+	Children:    &[]*wrapper.TypeWrapper{},
 }
 
 // ProcessSingleConditional analyzes a single conditional expression and schedules
@@ -51,7 +51,7 @@ func ProcessSingleConditional(
 	blockQueue *[]queue.BlockQueueElement,
 	scopeIds []int,
 	inLoop bool,
-) error3.Error {
+) *error3.Error {
 	expr := children[0]
 	mainBlock := children[1]
 
@@ -65,7 +65,7 @@ func ProcessSingleConditional(
 		false,
 	)
 
-	if err.Code != error3.Nothing {
+	if err != nil {
 		return err
 	}
 
@@ -79,7 +79,7 @@ func ProcessSingleConditional(
 		ID:     scopeIds,
 		InLoop: inLoop,
 	})
-	return error3.Error{}
+	return nil
 }
 
 // AnalyzeIf analyzes an if-else conditional structure in the AST.
@@ -101,12 +101,12 @@ func AnalyzeIf(
 	blockQueue *[]queue.BlockQueueElement,
 	scopeIds []int,
 	inLoop bool,
-) error3.Error {
+) *error3.Error {
 	// Get the expression and main block
 	children := *tree.Children
 	err := ProcessSingleConditional(children, trace, variables, blockQueue, scopeIds, inLoop)
 
-	if err.Code != error3.Nothing {
+	if err != nil {
 		return err
 	}
 
@@ -120,7 +120,7 @@ func AnalyzeIf(
 		case ast.ElseIf:
 			err := ProcessSingleConditional(children, trace, variables, blockQueue, scopeIds, inLoop)
 
-			if err.Code != error3.Nothing {
+			if err != nil {
 				return err
 			}
 		case ast.Else:
@@ -138,5 +138,5 @@ func AnalyzeIf(
 		}
 	}
 
-	return error3.Error{}
+	return nil
 }

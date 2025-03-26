@@ -32,13 +32,13 @@ import (
 // Returns:
 //   - ast.AST: The abstract syntax tree representing the generics.
 //   - error.Error: An error object if any parsing error occurs.
-func ProcessGenerics(input []token.Token) (ast.AST, error.Error) {
+func ProcessGenerics(input []token.Token) (*ast.AST, *error.Error) {
 	// Checked for inferred types
 	if len(input) == 0 {
-		return ast.AST{
+		return &ast.AST{
 			Rule:     ast.InferredType,
 			Children: &[]*ast.AST{},
-		}, error.Error{}
+		}, nil
 	}
 
 	result := ast.AST{
@@ -62,13 +62,13 @@ func ProcessGenerics(input []token.Token) (ast.AST, error.Error) {
 		// Call the type parser
 		genericType, parsingError := _type.ProcessType(generic, input[0])
 
-		if parsingError.IsError() {
-			return ast.AST{}, parsingError
+		if parsingError != nil {
+			return nil, parsingError
 		}
 
 		// Append the generic type to the result's children
-		*result.Children = append(*result.Children, &genericType)
+		*result.Children = append(*result.Children, genericType)
 	}
 
-	return result, error.Error{}
+	return &result, nil
 }

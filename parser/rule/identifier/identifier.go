@@ -29,10 +29,10 @@ import (
 // Returns:
 // - ast.AST: The AST node representing the identifier.
 // - error.Error: An error object if the token is not an identifier.
-func ProcessIdentifier(unit *token.Token) (ast.AST, error.Error) {
+func ProcessIdentifier(unit *token.Token) (*ast.AST, *error.Error) {
 	// See if the token is an identifier
 	if unit.TokenType != token.Identifier {
-		return ast.AST{}, error.Error{
+		return nil, &error.Error{
 			Line:     unit.Line,
 			Column:   unit.Column,
 			File:     &unit.File,
@@ -41,12 +41,12 @@ func ProcessIdentifier(unit *token.Token) (ast.AST, error.Error) {
 	}
 
 	// Create the identifier AST
-	return ast.AST{
+	return &ast.AST{
 		Rule:     ast.Identifier,
 		Value:    &unit.Value,
 		Line:     unit.Line,
 		Column:   unit.Column,
 		File:     &unit.File,
 		Children: &[]*ast.AST{},
-	}, error.Error{}
+	}, nil
 }

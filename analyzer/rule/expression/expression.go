@@ -26,8 +26,7 @@ import (
 	"fluent/analyzer/stack"
 	"fluent/ast"
 	"fluent/filecode"
-	"fluent/filecode/module"
-	"fluent/filecode/types"
+	"fluent/filecode/types/wrapper"
 )
 
 // literalRules is a map of rules that represent literals
@@ -60,13 +59,13 @@ func AnalyzeExpression(
 	trace *filecode.FileCode,
 	variables *stack.ScopedStack,
 	enforceHeapRequirement bool,
-	firstExpected *types.TypeWrapper,
+	firstExpected *wrapper.TypeWrapper,
 	isPropReassignment bool,
 	allowPointers bool,
-) (object.Object, error3.Error) {
+) (*object.Object, *error3.Error) {
 	result := object.Object{
-		Type: types.TypeWrapper{
-			Children: &[]*types.TypeWrapper{},
+		Type: wrapper.TypeWrapper{
+			Children: &[]*wrapper.TypeWrapper{},
 		},
 	}
 
@@ -103,6 +102,7 @@ func AnalyzeExpression(
 				startAt++
 				// Increment the pointer count
 				element.Got.Type.PointerCount++
+				element.HasPointers = true
 
 				if element.HasMetDereference {
 					element.ActualPointers++
@@ -124,47 +124,12 @@ func AnalyzeExpression(
 		}
 
 		// Check for illegal pointers
-		if element.Got.Type.PointerCount < 0 && !element.IsParam {
-			return object.Object{}, error3.Error{
+		if element.HasPointers && !element.IsParam {
+			return nil, &error3.Error{
 				Code:   error3.InvalidPointer,
 				Line:   element.Tree.Line,
 				Column: element.Tree.Column,
 			}
-		}
-
-		// Check for property access
-		var lastPropValue *module.Module
-		if element.IsPropAccess {
-			if element.LastPropValue == nil {
-				return object.Object{}, error3.Error{
-					Code:   error3.InvalidPropAccess,
-					Line:   element.Tree.Line,
-					Column: element.Tree.Column,
-				}
-			}
-
-			// To save up some resources, LastPropValue is defined only in the candidate
-			// further properties have the last value in the got value
-			var convert interface{}
-
-			if element.LastPropValue != nil {
-				convert = *element.LastPropValue
-			} else {
-				convert = element.Got.Value
-			}
-
-			// Cast the last property value to a module
-			mod, castOk := convert.(module.Module)
-
-			if !castOk {
-				return object.Object{}, error3.Error{
-					Code:   error3.InvalidPropAccess,
-					Line:   element.Tree.Line,
-					Column: element.Tree.Column,
-				}
-			}
-
-			lastPropValue = &mod
 		}
 
 		// Get the child
@@ -172,7 +137,7 @@ func AnalyzeExpression(
 
 		// See if the address of this value can be taken
 		if literalRules[child.Rule] && element.Got.Type.PointerCount > 0 {
-			return object.Object{}, error3.Error{
+			return nil, &error3.Error{
 				Code:   error3.CannotTakeAddress,
 				Line:   child.Line,
 				Column: child.Column,
@@ -196,15 +161,14 @@ func AnalyzeExpression(
 			// Check for property access
 			if element.IsPropAccess {
 				err := property.ProcessPropIdentifier(
-					lastPropValue,
 					&element,
 					trace,
 					child,
 				)
 
 				// Return the error if it is not nothing
-				if err.Code != error3.Nothing {
-					return object.Object{}, err
+				if err != nil {
+					return nil, err
 				}
 				continue
 			}
@@ -213,7 +177,7 @@ func AnalyzeExpression(
 			value := variables.Load(child.Value)
 
 			if value == nil {
-				return object.Object{}, error3.Error{
+				return nil, &error3.Error{
 					Code:       error3.UndefinedReference,
 					Additional: []string{*child.Value},
 					Line:       element.Tree.Line,
@@ -231,8 +195,8 @@ func AnalyzeExpression(
 			err := array.AnalyzeArray(child, element.Expected, &queue)
 
 			// Return the error if it is not nothing
-			if err.Code != error3.Nothing {
-				return object.Object{}, err
+			if err != nil {
+				return nil, err
 			}
 
 			element.Got.Type = *element.Expected
@@ -246,13 +210,12 @@ func AnalyzeExpression(
 				trace,
 				&element,
 				&queue,
-				lastPropValue,
 				child.Rule == ast.ObjectCreation,
 			)
 
 			// Return the error if it is not nothing
-			if err.Code != error3.Nothing {
-				return object.Object{}, err
+			if err != nil {
+				return nil, err
 			}
 		case ast.Expression:
 			hasNested = true
@@ -289,8 +252,8 @@ func AnalyzeExpression(
 			)
 
 			// Return the error if it is not nothing
-			if err.Code != error3.Nothing {
-				return object.Object{}, err
+			if err != nil {
+				return nil, err
 			}
 		case ast.BooleanExpression:
 			// Pass the input to the boolean analyzer
@@ -315,16 +278,20 @@ func AnalyzeExpression(
 
 		// Check if the pointer count is negative
 		if !hasNested && element.ActualPointers < 0 {
-			return object.Object{}, error3.Error{
+			return nil, &error3.Error{
 				Code:   error3.InvalidDereference,
 				Line:   element.Tree.Line,
 				Column: element.Tree.Column,
 			}
 		}
 
+		if hasNested {
+			continue
+		}
+
 		// Check for type mismatch
 		if element.Expected.BaseType != "" && !element.Expected.Compare(element.Got.Type) {
-			return object.Object{}, error3.Error{
+			return nil, &error3.Error{
 				Code:       error3.TypeMismatch,
 				Line:       element.Tree.Line,
 				Column:     element.Tree.Column,
@@ -334,7 +301,7 @@ func AnalyzeExpression(
 
 		// Check if the data escapes the function
 		if enforceHeapRequirement && element.HeapRequired && !element.Got.IsHeap {
-			return object.Object{}, error3.Error{
+			return nil, &error3.Error{
 				Code:   error3.DataOutlivesStack,
 				Line:   element.Tree.Line,
 				Column: element.Tree.Column,
@@ -342,7 +309,7 @@ func AnalyzeExpression(
 		}
 
 		if element.ModRequired && element.Got.Value == nil {
-			return object.Object{}, error3.Error{
+			return nil, &error3.Error{
 				Code:       error3.TypeMismatch,
 				Line:       element.Tree.Line,
 				Column:     element.Tree.Column,
@@ -352,14 +319,19 @@ func AnalyzeExpression(
 
 		// Check for arithmetic operations
 		if element.IsArithmetic && element.Got.Type.BaseType != "num" && element.Got.Type.BaseType != "dec" && element.Got.Type.BaseType != "(Infer)" {
-			return object.Object{}, error3.Error{
+			return nil, &error3.Error{
 				Code:       error3.TypeMismatch,
 				Line:       element.Tree.Line,
 				Column:     element.Tree.Column,
 				Additional: []string{"num or dec", element.Got.Type.Marshal()},
 			}
 		}
+
+		// Set the inferred type
+		if element.Got.Type.BaseType != "" {
+			element.Tree.InferredType = &element.Got.Type
+		}
 	}
 
-	return result, error3.Error{}
+	return &result, nil
 }

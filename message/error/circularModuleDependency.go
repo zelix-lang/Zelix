@@ -40,7 +40,7 @@ func CircularModuleDependency(chain string) string {
 	builder.WriteString(
 		logger.BuildInfo(
 			"For more information, refer to:",
-			"https://fluent-lang.github.io/book/codes/E0020",
+			"https://fluent-lang.github.io/Book/codes/E0020",
 			"Full dependency chain:",
 		),
 	)

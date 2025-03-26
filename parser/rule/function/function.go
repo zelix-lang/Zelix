@@ -36,14 +36,14 @@ import (
 // Returns:
 // - ast.AST: The abstract syntax tree representation of the function.
 // - error.Error: An error object if parsing fails.
-func ProcessFunction(input []token.Token, public bool) (ast.AST, error.Error) {
+func ProcessFunction(input []token.Token, public bool) (*ast.AST, *error.Error) {
 	// Check the input length
 	inputLen := len(input)
 
 	if inputLen < 5 {
 		trace := input[0]
 
-		return ast.AST{}, error.Error{
+		return nil, &error.Error{
 			Line:     trace.Line,
 			Column:   trace.Column,
 			File:     &trace.File,
@@ -73,8 +73,8 @@ func ProcessFunction(input []token.Token, public bool) (ast.AST, error.Error) {
 	// Parse the function's name
 	name, err := identifier.ProcessIdentifier(&input[1])
 
-	if err.IsError() {
-		return result, err
+	if err != nil {
+		return nil, err
 	}
 
 	// Add the name to the result
@@ -101,7 +101,7 @@ func ProcessFunction(input []token.Token, public bool) (ast.AST, error.Error) {
 		)
 
 		if extracted == nil {
-			return ast.AST{}, error.Error{
+			return nil, &error.Error{
 				Line:     input[2].Line,
 				Column:   input[2].Column,
 				File:     &input[2].File,
@@ -115,17 +115,17 @@ func ProcessFunction(input []token.Token, public bool) (ast.AST, error.Error) {
 		// Parse the templates
 		templates, err := template.ProcessTemplates(extracted)
 
-		if err.IsError() {
-			return ast.AST{}, err
+		if err != nil {
+			return nil, err
 		}
 
 		// Append the templates to the result
-		*result.Children = append(*result.Children, &templates)
+		*result.Children = append(*result.Children, templates)
 	}
 
 	// Check for the opening parenthesis
 	if input[startAt].TokenType != token.OpenParen {
-		return ast.AST{}, error.Error{
+		return nil, &error.Error{
 			Line:     input[startAt].Line,
 			Column:   input[startAt].Column,
 			File:     &input[startAt].File,
@@ -146,7 +146,7 @@ func ProcessFunction(input []token.Token, public bool) (ast.AST, error.Error) {
 		)
 
 		if extracted == nil {
-			return ast.AST{}, error.Error{
+			return nil, &error.Error{
 				Line:     input[startAt].Line,
 				Column:   input[startAt].Column,
 				File:     &input[startAt].File,
@@ -160,18 +160,18 @@ func ProcessFunction(input []token.Token, public bool) (ast.AST, error.Error) {
 		// Parse the arguments
 		arguments, err := argument.ProcessArguments(extracted)
 
-		if err.IsError() {
-			return ast.AST{}, err
+		if err != nil {
+			return nil, err
 		}
 
 		// Append the arguments to the result
-		*result.Children = append(*result.Children, &arguments)
+		*result.Children = append(*result.Children, arguments)
 	} else {
 		startAt += 2
 	}
 
 	if startAt >= inputLen {
-		return ast.AST{}, error.Error{
+		return nil, &error.Error{
 			Line:     input[startAt-1].Line,
 			Column:   input[startAt-1].Column,
 			File:     &input[startAt-1].File,
@@ -192,7 +192,7 @@ func ProcessFunction(input []token.Token, public bool) (ast.AST, error.Error) {
 		)
 
 		if extracted == nil {
-			return ast.AST{}, error.Error{
+			return nil, &error.Error{
 				Line:     input[startAt].Line,
 				Column:   input[startAt].Column,
 				File:     &input[startAt].File,
@@ -205,16 +205,16 @@ func ProcessFunction(input []token.Token, public bool) (ast.AST, error.Error) {
 		// Parse the return types
 		returnType, err := _type.ProcessType(extracted, input[startAt-1])
 
-		if err.IsError() {
-			return ast.AST{}, err
+		if err != nil {
+			return nil, err
 		}
 
 		// Append the return types to the result
-		*result.Children = append(*result.Children, &returnType)
+		*result.Children = append(*result.Children, returnType)
 	}
 
 	if startAt >= inputLen {
-		return ast.AST{}, error.Error{
+		return nil, &error.Error{
 			Line:     input[startAt-1].Line,
 			Column:   input[startAt-1].Column,
 			File:     &input[startAt-1].File,
@@ -224,7 +224,7 @@ func ProcessFunction(input []token.Token, public bool) (ast.AST, error.Error) {
 
 	// Check for block opening
 	if input[startAt].TokenType != token.OpenCurly {
-		return ast.AST{}, error.Error{
+		return nil, &error.Error{
 			Line:     input[startAt].Line,
 			Column:   input[startAt].Column,
 			File:     &input[startAt].File,
@@ -235,11 +235,11 @@ func ProcessFunction(input []token.Token, public bool) (ast.AST, error.Error) {
 	// Parse the block directly
 	block, err := block2.ProcessBlock(input[startAt+1:])
 
-	if err.IsError() {
-		return ast.AST{}, err
+	if err != nil {
+		return nil, err
 	}
 
 	// Append the block to the result
-	*result.Children = append(*result.Children, &block)
-	return result, error.Error{}
+	*result.Children = append(*result.Children, block)
+	return &result, nil
 }

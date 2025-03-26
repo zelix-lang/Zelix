@@ -17,30 +17,29 @@ package error
 type Code int
 
 const (
-	Nothing                  Code = iota
-	NameShouldBeSnakeCase         // E0001
-	ParamTypeNothing              // E0002
-	DataOutlivesStack             // E0003
-	MustReturnAValue              // E0004
-	UndefinedReference            // E0005
-	UnusedVariable                // E0006
-	Redefinition                  // E0007
-	InvalidDereference            // E0008
-	TypeMismatch                  // E0009
-	ParameterCountMismatch        // E0010
-	CannotInferType               // E0011
-	ShouldNotReturn               // E0012
-	CannotTakeAddress             // E0013
-	InvalidPropAccess             // E0014
-	IllegalPropAccess             // E0015
-	ConstantReassignment          // E0016
-	DoesNotHaveConstructor        // E0017
-	ShouldNotHaveGenerics         // E0018
-	ValueNotAssigned              // E0019
-	CircularModuleDependency      // E0020
-	SelfReference                 // E0021
-	InvalidLoopInstruction        // E0022
-	InvalidPointer                // E0023
+	NameShouldBeSnakeCase    Code = iota // E0001
+	ParamTypeNothing                     // E0002
+	DataOutlivesStack                    // E0003
+	MustReturnAValue                     // E0004
+	UndefinedReference                   // E0005
+	UnusedVariable                       // E0006
+	Redefinition                         // E0007
+	InvalidDereference                   // E0008
+	TypeMismatch                         // E0009
+	ParameterCountMismatch               // E0010
+	CannotInferType                      // E0011
+	ShouldNotReturn                      // E0012
+	CannotTakeAddress                    // E0013
+	InvalidPropAccess                    // E0014
+	IllegalPropAccess                    // E0015
+	ConstantReassignment                 // E0016
+	DoesNotHaveConstructor               // E0017
+	ShouldNotHaveGenerics                // E0018
+	ValueNotAssigned                     // E0019
+	CircularModuleDependency             // E0020
+	SelfReference                        // E0021
+	InvalidLoopInstruction               // E0022
+	InvalidPointer                       // E0023
 )
 
 // Error represents an error with details about its location and additional information.

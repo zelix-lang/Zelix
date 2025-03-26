@@ -14,18 +14,46 @@
 
 package ast
 
+import "fluent/filecode/types/wrapper"
+
 // AST represents an abstract syntax tree node.
 type AST struct {
-	// rule is the parser rule associated with this AST node.
+	// Rule is the parser rule associated with this AST node.
 	Rule Rule
-	// children are the child nodes of this AST node.
+	// Children are the child nodes of this AST node.
 	Children *[]*AST
-	// value is the string value of this AST node.
+	// Value is the string value of this AST node.
 	Value *string
-	// line is the line number in the source file where this AST node is located.
+	// Line is the line number in the source file where this AST node is located.
 	Line int
-	// column is the column number in the source file where this AST node is located.
+	// Column is the column number in the source file where this AST node is located.
 	Column int
-	// file is the name of the source file where this AST node is located.
+	// File is the name of the source file where this AST node is located.
 	File *string
+	// InferredType is the TypeWrapper that this expression evaluates to.
+	InferredType *wrapper.TypeWrapper
+}
+
+func (a AST) Marshal(spaces int) string {
+	var result string
+	result += a.Rule.String() + " "
+	if a.Value != nil {
+		result += *a.Value
+	}
+	if a.Children != nil {
+		result += " {"
+		for _, child := range *a.Children {
+			result += "\n"
+			for i := 0; i < spaces; i++ {
+				result += " "
+			}
+			result += child.Marshal(spaces + 2)
+		}
+		result += "\n"
+		for i := 0; i < spaces-2; i++ {
+			result += " "
+		}
+		result += "}"
+	}
+	return result
 }

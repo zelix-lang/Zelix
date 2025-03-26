@@ -41,7 +41,7 @@ func Redefinition(name string) string {
 	builder.WriteString(
 		logger.BuildInfo(
 			"For more information, refer to:",
-			"https://fluent-lang.github.io/book/codes/E0007",
+			"https://fluent-lang.github.io/Book/codes/E0007",
 			"Full details:",
 		),
 	)

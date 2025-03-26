@@ -17,7 +17,7 @@ package value
 import (
 	error3 "fluent/analyzer/error"
 	"fluent/filecode"
-	"fluent/filecode/types"
+	"fluent/filecode/types/wrapper"
 )
 
 // AnalyzeUndefinedReference checks if a given type wrapper has an undefined reference in the provided file code trace.
@@ -29,18 +29,18 @@ import (
 //   - wrapper: A TypeWrapper structure that holds information about the type being analyzed.
 func AnalyzeUndefinedReference(
 	trace *filecode.FileCode,
-	wrapper types.TypeWrapper,
+	wrapper wrapper.TypeWrapper,
 	generics *map[string]bool,
-) error3.Error {
+) *error3.Error {
 	if !wrapper.IsPrimitive {
 		// Check for generics
 		if _, ok := (*generics)[wrapper.BaseType]; ok {
-			return error3.Error{}
+			return nil
 		}
 
 		// See if the mod exists in the trace
 		if _, ok := trace.Modules[wrapper.BaseType]; !ok {
-			return error3.Error{
+			return &error3.Error{
 				Line:       wrapper.Trace.Line,
 				Column:     wrapper.Trace.Column,
 				Code:       error3.UndefinedReference,
@@ -49,5 +49,5 @@ func AnalyzeUndefinedReference(
 		}
 	}
 
-	return error3.Error{}
+	return nil
 }

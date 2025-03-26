@@ -98,6 +98,15 @@ func main() {
 					return nil
 				},
 			},
+			{
+				Name:    "init",
+				Usage:   "Inits a new Fluent project",
+				Aliases: []string{"i"},
+				Action: func(_ context.Context, cmd *cli.Command) error {
+					cli2.InitCommand(cmd)
+					return nil
+				},
+			},
 		},
 	}
 

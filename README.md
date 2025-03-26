@@ -102,7 +102,7 @@ Please refer to [SECURITY.md](SECURITY.md) for more information on how to report
 This project is licensed under the GNU General Public License v3.0. See the [LICENSE](LICENSE) file for more information.
 
 ```
-Copyright (C) 2024 Rodrigo R. & All Fluent Contributors
+Copyright (C) 2025 Rodrigo R. & All Fluent Contributors
 This program comes with ABSOLUTELY NO WARRANTY; for details type `fluent license`.
 This is free software, and you are welcome to redistribute it under certain conditions;
 type `fluent license --full` for details.

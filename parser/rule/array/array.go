@@ -32,10 +32,10 @@ import (
 // Returns:
 // - ast.AST: The AST representation of the array.
 // - error.Error: An error object if the processing fails.
-func ProcessArray(input []token.Token, exprQueue *[]queue.Element) (ast.AST, error.Error) {
+func ProcessArray(input []token.Token, exprQueue *[]queue.Element) (*ast.AST, *error.Error) {
 	// Check the input's length
 	if len(input) < 2 {
-		return ast.AST{}, error.Error{
+		return nil, &error.Error{
 			Line:     input[0].Line,
 			Column:   input[0].Column,
 			File:     &input[0].File,
@@ -45,7 +45,7 @@ func ProcessArray(input []token.Token, exprQueue *[]queue.Element) (ast.AST, err
 
 	// Check the last token
 	if input[len(input)-1].TokenType != token.CloseBracket {
-		return ast.AST{}, error.Error{
+		return nil, &error.Error{
 			Line:     input[len(input)-1].Line,
 			Column:   input[len(input)-1].Column,
 			File:     &input[len(input)-1].File,
@@ -63,7 +63,7 @@ func ProcessArray(input []token.Token, exprQueue *[]queue.Element) (ast.AST, err
 
 	// Check for empty arrays
 	if len(input) == 2 {
-		return result, error.Error{}
+		return &result, nil
 	}
 
 	// Split the elements by commas
@@ -75,7 +75,7 @@ func ProcessArray(input []token.Token, exprQueue *[]queue.Element) (ast.AST, err
 	)
 
 	if elements == nil {
-		return ast.AST{}, error.Error{
+		return nil, &error.Error{
 			Line:     input[0].Line,
 			Column:   input[0].Column,
 			File:     &input[0].File,
@@ -103,5 +103,5 @@ func ProcessArray(input []token.Token, exprQueue *[]queue.Element) (ast.AST, err
 		*result.Children = append(*result.Children, &expressionNode)
 	}
 
-	return result, error.Error{}
+	return &result, nil
 }

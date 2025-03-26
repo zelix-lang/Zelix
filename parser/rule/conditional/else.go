@@ -31,12 +31,12 @@ import (
 // Returns:
 // - An AST node representing the else block.
 // - An error object if there is an issue with processing the else block.
-func ProcessElse(block []token.Token, blockQueue *[]queue.Element) (ast.AST, error.Error) {
+func ProcessElse(block []token.Token, blockQueue *[]queue.Element) (*ast.AST, *error.Error) {
 	firstToken := block[0]
 
 	// Check the input length
 	if len(block) < 2 {
-		return ast.AST{}, error.Error{
+		return nil, &error.Error{
 			Line:     firstToken.Line,
 			Column:   firstToken.Column,
 			File:     &firstToken.File,
@@ -75,5 +75,5 @@ func ProcessElse(block []token.Token, blockQueue *[]queue.Element) (ast.AST, err
 		Tokens: block[1:], // Exclude the open curly
 	})
 
-	return elseNode, error.Error{}
+	return &elseNode, nil
 }

@@ -1,16 +1,5 @@
-import "@std::io::print";
-import "block.fluent";
+pub mod Abc {
+    pub fun Abc() {
 
-/*
-    The Fluent Programming Language
-    Test file 5
-*/
-
-pub fun nested() {
-    ((println("Hello, world!")));
-    (((((((println("Hello, world!"))))))));
-
-    if true {
-        (((((((println("Hello, world!"))))))));
     }
 }

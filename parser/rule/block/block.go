@@ -34,12 +34,12 @@ import (
 // Returns:
 // - ast.AST: the abstract syntax tree representing the block.
 // - error.Error: any error encountered during parsing.
-func ProcessBlock(input []token.Token) (ast.AST, error.Error) {
+func ProcessBlock(input []token.Token) (*ast.AST, *error.Error) {
 	if len(input) == 0 {
-		return ast.AST{
+		return &ast.AST{
 			Rule:     ast.Block,
 			Children: &[]*ast.AST{},
-		}, error.Error{}
+		}, nil
 	}
 
 	// All tokens have been checked before they reach this function
@@ -97,7 +97,7 @@ func ProcessBlock(input []token.Token) (ast.AST, error.Error) {
 				)
 
 				if block == nil {
-					return ast.AST{}, error.Error{
+					return nil, &error.Error{
 						Line:     el.Line,
 						Column:   el.Column,
 						File:     &el.File,
@@ -137,7 +137,7 @@ func ProcessBlock(input []token.Token) (ast.AST, error.Error) {
 
 					if isElseIf || isElse {
 						if lastIf == nil {
-							return ast.AST{}, error.Error{
+							return nil, &error.Error{
 								Line:     el.Line,
 								Column:   el.Column,
 								File:     &el.File,
@@ -147,8 +147,8 @@ func ProcessBlock(input []token.Token) (ast.AST, error.Error) {
 					}
 
 					// Parse the condition
-					var condition ast.AST
-					var parsingError error.Error
+					var condition *ast.AST
+					var parsingError *error.Error
 
 					if isFor {
 						condition, parsingError = loop.ProcessForLoop(block, &processQueue)
@@ -163,18 +163,18 @@ func ProcessBlock(input []token.Token) (ast.AST, error.Error) {
 						)
 					}
 
-					if parsingError.IsError() {
-						return ast.AST{}, parsingError
+					if parsingError != nil {
+						return nil, parsingError
 					}
 
 					if isIf {
-						lastIf = &condition
+						lastIf = condition
 					} else if isElseIf || isElse {
-						*lastIf.Children = append(*lastIf.Children, &condition)
+						*lastIf.Children = append(*lastIf.Children, condition)
 					}
 
 					if !isElseIf && !isElse {
-						*result.Children = append(*result.Children, &condition)
+						*result.Children = append(*result.Children, condition)
 					}
 				}
 			default:
@@ -190,7 +190,7 @@ func ProcessBlock(input []token.Token) (ast.AST, error.Error) {
 				)
 
 				if statement == nil {
-					return ast.AST{}, error.Error{
+					return nil, &error.Error{
 						Line:     el.Line,
 						Column:   el.Column,
 						File:     &el.File,
@@ -200,8 +200,8 @@ func ProcessBlock(input []token.Token) (ast.AST, error.Error) {
 
 				skip = i + len(statement) + 1
 
-				var specialCaseNode ast.AST
-				var specialCaseError error.Error
+				var specialCaseNode *ast.AST
+				var specialCaseError *error.Error
 
 				// Process special cases
 				if tokenType == token.Let || tokenType == token.Const {
@@ -224,13 +224,13 @@ func ProcessBlock(input []token.Token) (ast.AST, error.Error) {
 				}
 
 				// Check for special cases
-				if specialCaseNode.Rule != ast.Program {
-					if specialCaseError.IsError() {
-						return ast.AST{}, specialCaseError
-					}
+				if specialCaseError != nil {
+					return nil, specialCaseError
+				}
 
+				if specialCaseNode != nil {
 					// Append the node to the result
-					*result.Children = append(*result.Children, &specialCaseNode)
+					*result.Children = append(*result.Children, specialCaseNode)
 
 					// Avoid further processing
 					continue
@@ -239,14 +239,14 @@ func ProcessBlock(input []token.Token) (ast.AST, error.Error) {
 				// Parse as an expression
 				expr, parsingError := expression.ProcessExpression(statement)
 
-				if parsingError.IsError() {
-					return ast.AST{}, parsingError
+				if parsingError != nil {
+					return nil, parsingError
 				}
 
-				*result.Children = append(*result.Children, &expr)
+				*result.Children = append(*result.Children, expr)
 			}
 		}
 	}
 
-	return result, error.Error{}
+	return &result, nil
 }

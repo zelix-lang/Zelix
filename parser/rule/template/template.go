@@ -31,10 +31,10 @@ import (
 // Returns:
 //   - ast.AST: The resulting abstract syntax tree.
 //   - error.Error: An error object if a parsing error occurs.
-func ProcessTemplates(input []token.Token) (ast.AST, error.Error) {
+func ProcessTemplates(input []token.Token) (*ast.AST, *error.Error) {
 	// Check the input length
 	if len(input) < 2 { // The GreaterThan token (at the end) is not included
-		return ast.AST{}, error.Error{
+		return nil, &error.Error{
 			Line:     input[0].Line,
 			Column:   input[0].Column,
 			File:     &input[0].File,
@@ -57,7 +57,7 @@ func ProcessTemplates(input []token.Token) (ast.AST, error.Error) {
 		// Check for commas
 		if expectingComma {
 			if input[i].TokenType != token.Comma {
-				return ast.AST{}, error.Error{
+				return nil, &error.Error{
 					Line:     input[i].Line,
 					Column:   input[i].Column,
 					File:     &input[i].File,
@@ -74,12 +74,12 @@ func ProcessTemplates(input []token.Token) (ast.AST, error.Error) {
 		template, parsingError := identifier.ProcessIdentifier(&input[i])
 
 		// Check for parsing errors
-		if parsingError.IsError() {
-			return ast.AST{}, parsingError
+		if parsingError != nil {
+			return nil, parsingError
 		}
 
 		// Append the template to the result
-		*result.Children = append(*result.Children, &template)
+		*result.Children = append(*result.Children, template)
 
 		// Set the flag to expect a comma
 		expectingComma = true
@@ -87,7 +87,7 @@ func ProcessTemplates(input []token.Token) (ast.AST, error.Error) {
 
 	// The loop should never end with the flag set to false
 	if !expectingComma {
-		return ast.AST{}, error.Error{
+		return nil, &error.Error{
 			Line:     input[len(input)-1].Line,
 			Column:   input[len(input)-1].Column,
 			File:     &input[len(input)-1].File,
@@ -95,5 +95,5 @@ func ProcessTemplates(input []token.Token) (ast.AST, error.Error) {
 		}
 	}
 
-	return result, error.Error{}
+	return &result, nil
 }

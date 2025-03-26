@@ -23,8 +23,3 @@ type Error struct {
 	File     *string    // File name where the error occurred.
 	Expected []ast.Rule // Expected rules at the error location.
 }
-
-// IsError checks if the Error instance represents an error by verifying if there are any expected rules.
-func (error Error) IsError() bool {
-	return len(error.Expected) > 0
-}

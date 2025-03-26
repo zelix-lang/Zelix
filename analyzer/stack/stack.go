@@ -58,18 +58,18 @@ func (s *ScopedStack) NewScope() int {
 //
 // Returns:
 //
-//	[]*string: A slice of pointers to the names of variables that were not used in the destroyed scope.
-func (s *ScopedStack) DestroyScope(id int) []*string {
+//	A map of names and pointers to the variables that were not used in the destroyed scope.
+func (s *ScopedStack) DestroyScope(id int) map[string]*variable.Variable {
 	// Get the scope that holds the given id
 	scope := s.Scopes[id]
 
 	delete(s.Scopes, id)
 	s.Count--
 
-	unusedVars := make([]*string, 0)
+	unusedVars := make(map[string]*variable.Variable)
 
 	// Iterate over the variables in the last scope
-	for key := range scope.Variables {
+	for key, val := range scope.Variables {
 		// Skip variables that are intended to be unused
 		if key[0] == '_' {
 			continue
@@ -77,7 +77,7 @@ func (s *ScopedStack) DestroyScope(id int) []*string {
 
 		// See if the variable was used
 		if _, ok := scope.UsedVariables[key]; !ok {
-			unusedVars = append(unusedVars, &key)
+			unusedVars[key] = &val
 		}
 	}
 

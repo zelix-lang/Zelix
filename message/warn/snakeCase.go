@@ -35,7 +35,7 @@ func SnakeCase(name string) string {
 	builder.WriteString(
 		logger.BuildInfo(
 			"For more information, refer to:",
-			"https://fluent-lang.github.io/book/codes/E0001",
+			"https://fluent-lang.github.io/Book/codes/E0001",
 			"Full details:",
 		),
 	)

@@ -19,7 +19,7 @@ import (
 	"fluent/analyzer/object"
 	"fluent/analyzer/queue"
 	"fluent/ast"
-	"fluent/filecode/types"
+	"fluent/filecode/types/wrapper"
 )
 
 // AnalyzeArithmetic analyzes an arithmetic expression in the AST.
@@ -38,12 +38,12 @@ func AnalyzeArithmetic(
 	input *ast.AST,
 	currentElement *queue.ExpectedPair,
 	exprQueue *[]queue.ExpectedPair,
-) error3.Error {
+) *error3.Error {
 	expected := currentElement.Expected
 
 	// Check if we can infer the type of the expression
 	if expected.BaseType == "" {
-		return error3.Error{
+		return &error3.Error{
 			Code:   error3.CannotInferType,
 			Line:   input.Line,
 			Column: input.Column,
@@ -52,7 +52,7 @@ func AnalyzeArithmetic(
 
 	// Check if the expected is either a num or a dec
 	if expected.BaseType != "num" && expected.BaseType != "dec" && expected.BaseType != "(Infer)" {
-		return error3.Error{
+		return &error3.Error{
 			Code:       error3.TypeMismatch,
 			Line:       input.Line,
 			Column:     input.Column,
@@ -61,14 +61,14 @@ func AnalyzeArithmetic(
 	}
 
 	// Handle inferred types
-	var candidateType *types.TypeWrapper
+	var candidateType *wrapper.TypeWrapper
 	if expected.BaseType == "(Infer)" {
-		candidateType = &types.TypeWrapper{
-			Children: &[]*types.TypeWrapper{},
+		candidateType = &wrapper.TypeWrapper{
+			Children: &[]*wrapper.TypeWrapper{},
 		}
 	} else {
 		// Clone the expected element to avoid memory issues
-		candidateType = &types.TypeWrapper{
+		candidateType = &wrapper.TypeWrapper{
 			PointerCount: expected.PointerCount,
 			ArrayCount:   expected.ArrayCount,
 			Children:     expected.Children,
@@ -87,8 +87,8 @@ func AnalyzeArithmetic(
 		// Push the candidate to determine the expression's type
 		candidate := children[0]
 		candidateElement := object.Object{
-			Type: types.TypeWrapper{
-				Children: &[]*types.TypeWrapper{},
+			Type: wrapper.TypeWrapper{
+				Children: &[]*wrapper.TypeWrapper{},
 			},
 		}
 
@@ -135,8 +135,8 @@ func AnalyzeArithmetic(
 		*exprQueue = append(*exprQueue, queue.ExpectedPair{
 			Expected: candidateType,
 			Got: &object.Object{
-				Type: types.TypeWrapper{
-					Children: &[]*types.TypeWrapper{},
+				Type: wrapper.TypeWrapper{
+					Children: &[]*wrapper.TypeWrapper{},
 				},
 			},
 			Tree:    element,
@@ -145,5 +145,5 @@ func AnalyzeArithmetic(
 	}
 
 	currentElement.Got.Type.BaseType = currentElement.Expected.BaseType
-	return error3.Error{}
+	return nil
 }

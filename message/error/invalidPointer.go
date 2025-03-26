@@ -39,7 +39,7 @@ func InvalidPointer() string {
 	builder.WriteString(
 		logger.BuildInfo(
 			"For more information, refer to:",
-			"https://fluent-lang.github.io/book/codes/E0023",
+			"https://fluent-lang.github.io/Book/codes/E0023",
 			"Full details:",
 		),
 	)

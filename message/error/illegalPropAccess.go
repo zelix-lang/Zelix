@@ -33,7 +33,7 @@ func IllegalPropAccess() string {
 	builder.WriteString(
 		logger.BuildInfo(
 			"For more information, refer to:",
-			"https://fluent-lang.github.io/book/codes/E0015",
+			"https://fluent-lang.github.io/Book/codes/E0015",
 			"Full details:",
 		),
 	)

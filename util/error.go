@@ -20,6 +20,7 @@ import (
 	"fluent/logger"
 	"fluent/parser/error"
 	"fmt"
+	"math"
 	"strconv"
 	"strings"
 )
@@ -89,6 +90,36 @@ func getLines(content *string, minimumValue int, targetLines map[int]bool) ([]st
 	return result, elementsInserted
 }
 
+// sameDigitCount checks if two integers have the same number of digits.
+//
+// Parameters:
+//   - a: The first integer.
+//   - b: The second integer.
+//
+// Returns:
+//   - true if both integers have the same number of digits, false otherwise.
+func sameDigitCount(a, b int) bool {
+	if a == 0 && b == 0 {
+		return true
+	}
+	if a == 0 || b == 0 {
+		return false
+	}
+	return int(math.Log10(math.Abs(float64(a)))) == int(math.Log10(math.Abs(float64(b))))
+}
+
+// BuildDetails constructs a detailed string representation of a specific line in the source code,
+// highlighting the line and column where an error or warning occurred.
+//
+// Parameters:
+//   - contents: A pointer to the string containing the full content.
+//   - filepath: A pointer to the string containing the file path.
+//   - line: The line number where the error or warning occurred (1-based).
+//   - column: The column number where the error or warning occurred (1-based).
+//   - isError: A boolean indicating if the message is an error (true) or a warning (false).
+//
+// Returns:
+//   - A formatted string with the line number, line content, and a pinpoint to the column.
 func BuildDetails(contents, filepath *string, line int, column int, isError bool) string {
 	builder := strings.Builder{}
 	var highlightColor string
@@ -110,11 +141,11 @@ func BuildDetails(contents, filepath *string, line int, column int, isError bool
 	startAt := 0
 
 	// Print some context
-	if insertedLines == 3 {
+	if insertedLines > 1 {
 		startAt++
 		builder.WriteString("         ")
 		// See if line - 1 ends in 9
-		if (line-1)%10 == 9 {
+		if (line-1)%10 == 9 && !sameDigitCount(line, line-1) {
 			builder.WriteString(" ")
 		}
 
@@ -149,6 +180,10 @@ func BuildDetails(contents, filepath *string, line int, column int, isError bool
 	pinpointStr := strings.Builder{}
 	for i := 0; i < len(targetLine); i++ {
 		character := targetLine[i]
+
+		if column == -1 {
+			pinpointStr.WriteRune('^')
+		}
 
 		if character == ' ' && !pinpointMet {
 			pinpointStr.WriteRune(' ')

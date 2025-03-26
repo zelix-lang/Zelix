@@ -33,12 +33,12 @@ import (
 //
 //	ast.AST - The AST node representing the import statement.
 //	error.Error - An error object if the tokens are invalid.
-func ProcessImport(tokens []token.Token) (ast.AST, error.Error) {
+func ProcessImport(tokens []token.Token) (*ast.AST, *error.Error) {
 	// The first token is always an import keyword
 	// We are not going to process it
 
 	if len(tokens) != 2 {
-		return ast.AST{}, error.Error{
+		return nil, &error.Error{
 			Line:     tokens[0].Line,
 			Column:   tokens[0].Column,
 			File:     &tokens[0].File,
@@ -48,7 +48,7 @@ func ProcessImport(tokens []token.Token) (ast.AST, error.Error) {
 
 	// Basic validation for the string literal
 	if tokens[1].TokenType != token.StringLiteral {
-		return ast.AST{}, error.Error{
+		return nil, &error.Error{
 			Line:     tokens[1].Line,
 			Column:   tokens[1].Column,
 			File:     &tokens[1].File,
@@ -74,5 +74,5 @@ func ProcessImport(tokens []token.Token) (ast.AST, error.Error) {
 		File:   &tokens[0].File,
 	}
 
-	return child, error.Error{}
+	return &child, nil
 }

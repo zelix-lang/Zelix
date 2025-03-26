@@ -1,17 +1,14 @@
 import "@std::io::print";
-import "@std::io::panic";
 
-mod Asd {
-    pub fun Asd() {
-        let _a: Asd = this;
-    }
+mod Bbc {
+    let b: num = 20;
+}
+
+mod Abc {
+    let a: Bbc = new Bbc();
 }
 
 pub fun main() {
-    let _a: Asd = new Asd();
-    panic(25);
-
-    for 1 to 5 in i {
-        // Instructions go here
-    }
+    let a: Abc = new Abc();
+    a.a.b = 25;
 }

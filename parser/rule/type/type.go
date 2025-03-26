@@ -43,10 +43,10 @@ var allowedIdentifiers = map[token.Type]struct{}{
 // Returns:
 //   - ast.AST: The generated abstract syntax tree for the type.
 //   - error.Error: An error object containing details if the processing fails.
-func ProcessType(input []token.Token, trace token.Token) (ast.AST, error.Error) {
+func ProcessType(input []token.Token, trace token.Token) (*ast.AST, *error.Error) {
 	// Check the input's length
 	if len(input) < 1 {
-		return ast.AST{}, error.Error{
+		return nil, &error.Error{
 			Line:     trace.Line,
 			Column:   trace.Column,
 			File:     &trace.File,
@@ -100,7 +100,7 @@ func ProcessType(input []token.Token, trace token.Token) (ast.AST, error.Error) 
 			// Parse array types
 			if expectingOpenBracket || unit.TokenType == token.OpenBracket {
 				if baseTypeIsNothing {
-					return ast.AST{}, error.Error{
+					return nil, &error.Error{
 						Line:     unit.Line,
 						Column:   unit.Column,
 						File:     &unit.File,
@@ -109,7 +109,7 @@ func ProcessType(input []token.Token, trace token.Token) (ast.AST, error.Error) 
 				}
 
 				if !hasMetIdentifier || unit.TokenType != token.OpenBracket {
-					return ast.AST{}, error.Error{
+					return nil, &error.Error{
 						Line:     unit.Line,
 						Column:   unit.Column,
 						File:     &unit.File,
@@ -134,7 +134,7 @@ func ProcessType(input []token.Token, trace token.Token) (ast.AST, error.Error) 
 
 			if expectingCloseBracket {
 				if unit.TokenType != token.CloseBracket {
-					return ast.AST{}, error.Error{
+					return nil, &error.Error{
 						Line:     unit.Line,
 						Column:   unit.Column,
 						File:     &unit.File,
@@ -152,7 +152,7 @@ func ProcessType(input []token.Token, trace token.Token) (ast.AST, error.Error) 
 			if unit.TokenType == token.Ampersand || unit.TokenType == token.And {
 				hasPointers = true
 				if hasMetIdentifier {
-					return ast.AST{}, error.Error{
+					return nil, &error.Error{
 						Line:     unit.Line,
 						Column:   unit.Column,
 						File:     &unit.File,
@@ -185,7 +185,7 @@ func ProcessType(input []token.Token, trace token.Token) (ast.AST, error.Error) 
 
 			if _, ok := allowedIdentifiers[unit.TokenType]; ok {
 				if hasMetIdentifier {
-					return ast.AST{}, error.Error{
+					return nil, &error.Error{
 						Line:     unit.Line,
 						Column:   unit.Column,
 						File:     &unit.File,
@@ -215,7 +215,7 @@ func ProcessType(input []token.Token, trace token.Token) (ast.AST, error.Error) 
 							skip = i + 3
 						} else {
 							if i+3 > len(input) {
-								return ast.AST{}, error.Error{
+								return nil, &error.Error{
 									Line:     input[i+2].Line,
 									Column:   input[i+2].Column,
 									File:     &input[i+2].File,
@@ -234,7 +234,7 @@ func ProcessType(input []token.Token, trace token.Token) (ast.AST, error.Error) 
 							)
 
 							if extracted == nil {
-								return ast.AST{}, error.Error{
+								return nil, &error.Error{
 									Line:     input[i+2].Line,
 									Column:   input[i+2].Column,
 									File:     &input[i+2].File,
@@ -256,7 +256,7 @@ func ProcessType(input []token.Token, trace token.Token) (ast.AST, error.Error) 
 							)
 
 							if split == nil {
-								return ast.AST{}, error.Error{
+								return nil, &error.Error{
 									Line:     input[i+2].Line,
 									Column:   input[i+2].Column,
 									File:     &input[i+2].File,
@@ -283,12 +283,12 @@ func ProcessType(input []token.Token, trace token.Token) (ast.AST, error.Error) 
 						}
 					}
 
-					*result.Children = append(*result.Children, &child)
+					*result.Children = append(*result.Children, child)
 				} else {
 					// Check for pointers to "nothing"
 					baseTypeIsNothing = unit.TokenType == token.Nothing
 					if baseTypeIsNothing && hasPointers {
-						return ast.AST{}, error.Error{
+						return nil, &error.Error{
 							Line:     unit.Line,
 							Column:   unit.Column,
 							File:     &unit.File,
@@ -311,7 +311,7 @@ func ProcessType(input []token.Token, trace token.Token) (ast.AST, error.Error) 
 			}
 
 			// Invalid token
-			return ast.AST{}, error.Error{
+			return nil, &error.Error{
 				Line:     unit.Line,
 				Column:   unit.Column,
 				File:     &unit.File,
@@ -321,7 +321,7 @@ func ProcessType(input []token.Token, trace token.Token) (ast.AST, error.Error) 
 
 		// Check if the type is valid
 		if !hasMetIdentifier || expectingCloseBracket {
-			return ast.AST{}, error.Error{
+			return nil, &error.Error{
 				Line:     input[0].Line,
 				Column:   input[0].Column,
 				File:     &input[0].File,
@@ -330,5 +330,5 @@ func ProcessType(input []token.Token, trace token.Token) (ast.AST, error.Error) 
 		}
 	}
 
-	return result, error.Error{}
+	return &result, nil
 }
