@@ -150,6 +150,18 @@ func processCandidate(
 	})
 }
 
+// MarshalSignedExpression marshals a signed expression into the intermediate representation (IR).
+//
+// Parameters:
+// - global: The global InstructionTree.
+// - child: The AST node representing the signed expression.
+// - fileCodeId: The ID of the file code.
+// - counter: A pointer to the counter used for generating unique identifiers.
+// - pair: The MarshalPair containing the parent InstructionTree and expected type.
+// - usedStrings: The pool of used strings.
+// - usedNumbers: The pool of used numbers.
+// - exprQueue: The queue of expressions to be processed.
+// - variables: The map of variables used in the IR.
 func MarshalSignedExpression(
 	global *tree.InstructionTree,
 	child *ast.AST,
