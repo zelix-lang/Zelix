@@ -19,8 +19,11 @@ import (
 	"fluent/filecode"
 	"fluent/filecode/converter"
 	"fluent/logger"
+	"fluent/pkg"
+	"fluent/util"
 	"github.com/urfave/cli/v3"
 	"os"
+	"path"
 	"path/filepath"
 )
 
@@ -40,17 +43,17 @@ func CheckCommand(context *cli.Command) ([]filecode.FileCode, map[string]filecod
 	ShowHeaderMessage()
 
 	// Retrieve the path from the context
-	path := context.Args().First()
+	target := context.Args().First()
 
 	// Check if the path exists
-	if path == "" {
+	if target == "" {
 		logger.Error("No path provided")
 		logger.Info("Usage: fluent <check|c> <path>")
 		os.Exit(1)
 	}
 
 	// Convert the path to an absolute path
-	path, absError := filepath.Abs(path)
+	target, absError := filepath.Abs(target)
 
 	if absError != nil {
 		logger.Error("Could not convert the path to an absolute path")
@@ -58,13 +61,34 @@ func CheckCommand(context *cli.Command) ([]filecode.FileCode, map[string]filecod
 		os.Exit(1)
 	}
 
+	// Make sure the path exists and is a directory
+	if !util.DirExists(target) {
+		logger.Error("The provided path does not exist or is not a directory")
+		logger.Help("Validate the path and try again")
+		os.Exit(1)
+	}
+
+	// Get the package.fluent file
+	packagePath := filepath.Join(target, "package.fluent")
+	if !util.FileExists(packagePath) {
+		logger.Error("The package.fluent file does not exist in the provided path")
+		logger.Help("Make sure the file exists and try again")
+		os.Exit(1)
+	}
+
+	// Parse the package file
+	metadata := pkg.ParsePackage(packagePath)
+
+	// Join the path with the entry file
+	target = path.Join(target, metadata.Entry)
+
 	// Convert the code to file codes
-	fileCodes := converter.ConvertToFileCode(path, false)
+	fileCodes := converter.ConvertToFileCode(target, false)
 
 	// Analyze the project's codebase
-	sortedFileCodes := analyzer.AnalyzeCode(fileCodes, path, false)
+	sortedFileCodes := analyzer.AnalyzeCode(fileCodes, target, false)
 
 	// The build command depends on the check command
 	// hence, it also needs the file codes
-	return sortedFileCodes, fileCodes, path
+	return sortedFileCodes, fileCodes, target
 }
