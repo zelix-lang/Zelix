@@ -21,6 +21,16 @@ import (
 
 var blockEnd = "__block_end__"
 
+// Remaining relocates the remaining blocks in the queue.
+// It returns the address of the remaining block.
+//
+// Parameters:
+// - appendedBlocks: A pointer to the BlockPool where new blocks are appended.
+// - blockQueue: A pointer to a slice of BlockMarshalElement pointers representing the block queue.
+// - queueElement: A pointer to the current BlockMarshalElement being processed.
+//
+// Returns:
+// - A pointer to a string representing the address of the remaining block.
 func Remaining(
 	appendedBlocks *pool.BlockPool,
 	blockQueue *[]*tree.BlockMarshalElement,
