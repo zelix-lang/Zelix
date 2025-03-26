@@ -16,7 +16,10 @@ package variable
 
 import "fluent/filecode/types/wrapper"
 
+// IRVariable represents a variable in the intermediate representation (IR).
 type IRVariable struct {
+	// Addr is the address of the variable.
 	Addr string
+	// Type is the type of the variable, wrapped in a TypeWrapper.
 	Type *wrapper.TypeWrapper
 }
