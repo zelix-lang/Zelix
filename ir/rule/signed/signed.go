@@ -32,6 +32,16 @@ var booleanWrapper = wrapper.TypeWrapper{
 	Children:    &[]*wrapper.TypeWrapper{},
 }
 
+// writeSignOpcode writes the appropriate opcode to the parent InstructionTree
+// based on the provided sign. It returns true if the sign represents a boolean
+// operation, otherwise false.
+//
+// Parameters:
+// - sign: The sign of the operation (e.g., "+", "-", "==").
+// - parent: The parent InstructionTree to which the opcode will be written.
+//
+// Returns:
+// - bool: True if the sign represents a boolean operation, otherwise false.
 func writeSignOpcode(sign string, parent *tree.InstructionTree) bool {
 	switch sign {
 	case "+":
@@ -73,7 +83,6 @@ func writeSignOpcode(sign string, parent *tree.InstructionTree) bool {
 	}
 	return false
 }
-
 func processCandidate(
 	global *tree.InstructionTree,
 	candidate *ast.AST,
