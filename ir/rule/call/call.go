@@ -153,6 +153,27 @@ func RequestTrace(
 	return "__line", "__col", "__file"
 }
 
+// MarshalFunctionCall marshals a function call into the parent instruction tree.
+// It writes the call instruction, determines if the main function is being called,
+// adds trace information, and processes the function call parameters if present.
+//
+// Parameters:
+// - global: The global instruction tree.
+// - child: The AST node representing the function call.
+// - traceFileName: The name of the trace file.
+// - fileCodeId: The ID of the file code.
+// - originalPath: The original path of the function.
+// - isMod: A boolean indicating if the function is a module.
+// - trace: The file code trace information.
+// - traceFn: The function for which trace information is being requested.
+// - counter: A pointer to an integer counter used for generating unique identifiers.
+// - parent: The parent instruction tree.
+// - traceCounters: A pool of trace counters.
+// - variables: A map of variable names to IRVariable pointers.
+// - usedStrings: A pool of used strings.
+// - usedNumbers: A pool of used numbers.
+// - exprQueue: A queue of expressions to be marshaled.
+// - localCounters: A map of local counters for functions.
 func MarshalFunctionCall(
 	global *tree.InstructionTree,
 	child *ast.AST,
