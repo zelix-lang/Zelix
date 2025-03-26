@@ -100,7 +100,7 @@ func pushToken(
 // Lex converts a string of source dode into
 // an array of tokens without processing imports
 // in O(n) time
-func Lex(input string, file string) ([]token.Token, Error) {
+func Lex(input string, file string) ([]token.Token, *Error) {
 	// Used to keep track of the line and column
 	line := 1
 	column := 0
@@ -141,7 +141,7 @@ func Lex(input string, file string) ([]token.Token, Error) {
 
 		if char == '\n' {
 			if inString {
-				return make([]token.Token, 0), Error{
+				return make([]token.Token, 0), &Error{
 					Line:    line,
 					Column:  column,
 					File:    file,
@@ -222,7 +222,7 @@ func Lex(input string, file string) ([]token.Token, Error) {
 			escaped, err := strconv.Unquote(`"` + combined + `"`)
 
 			if err != nil {
-				return make([]token.Token, 0), Error{
+				return make([]token.Token, 0), &Error{
 					Line:    line,
 					Column:  column,
 					File:    file,
@@ -326,7 +326,7 @@ func Lex(input string, file string) ([]token.Token, Error) {
 	}
 
 	if inBlockComment {
-		return make([]token.Token, 0), Error{
+		return make([]token.Token, 0), &Error{
 			Line:    line,
 			Column:  column,
 			File:    file,
@@ -337,5 +337,5 @@ func Lex(input string, file string) ([]token.Token, Error) {
 	// Push the last token
 	pushToken(&currentToken, &result, line, column, file, decimalLiteral)
 
-	return result, Error{}
+	return result, nil
 }

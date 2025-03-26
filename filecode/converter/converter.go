@@ -148,7 +148,7 @@ func ConvertToFileCode(entry string, silent bool) map[string]filecode.FileCode {
 
 		tokens, lexerError := lexer.Lex(contents, *path)
 
-		if lexerError.Message != "" {
+		if lexerError != nil {
 			state.FailAllSpinners()
 			// Build and print the error
 			util.PrintError(&contents, path, &lexerError.Message, lexerError.Line, lexerError.Column)
