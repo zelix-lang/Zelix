@@ -32,6 +32,24 @@ import (
 
 var emptyString = ""
 
+// MarshalPropertyAccess marshals property access expressions into the intermediate representation (IR).
+// It processes the children of the given AST node and generates the corresponding IR instructions.
+//
+// Parameters:
+// - global: The global instruction tree.
+// - trace: The file code trace information.
+// - child: The AST node representing the property access.
+// - fileCodeId: The ID of the file code.
+// - counter: A pointer to the counter for generating unique identifiers.
+// - pair: The marshal pair containing the parent instruction tree.
+// - modulePropCounters: A map of module property counters.
+// - traceCounters: A pool of trace counters.
+// - usedStrings: A pool of used strings.
+// - usedNumbers: A pool of used numbers.
+// - exprQueue: A queue of marshal pairs for expressions.
+// - variables: A map of IR variables.
+// - localCounters: A map of local counters.
+// - traceFileName: The name of the trace file.
 func MarshalPropertyAccess(
 	global *tree.InstructionTree,
 	trace *filecode.FileCode,
