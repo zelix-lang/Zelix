@@ -33,6 +33,29 @@ import (
 	"strings"
 )
 
+// MarshalExpression marshals an AST element into a string representation.
+// It processes the AST element and its children, converting them into a
+// string representation suitable for further processing or output.
+//
+// Parameters:
+// - representation: A pointer to a strings.Builder to store the resulting string representation.
+// - trace: A pointer to a filecode.FileCode for tracing information.
+// - traceFn: A pointer to a function.Function for function-specific tracing information.
+// - fileCodeId: An integer representing the file code ID.
+// - isMod: A boolean indicating if the module is modified.
+// - traceFileName: A string representing the trace file name.
+// - originalPath: A pointer to a string representing the original path.
+// - modulePropCounters: A pointer to a map of module property counters.
+// - counter: A pointer to an integer counter for tracking elements.
+// - element: A pointer to an ast.AST element to be marshaled.
+// - variables: A pointer to a map of IR variables.
+// - traceCounters: A pointer to a pool.NumPool for trace counters.
+// - usedStrings: A pointer to a pool.StringPool for used strings.
+// - usedArrays: A pointer to a pool.StringPool for used arrays.
+// - usedNumbers: A pointer to a pool.StringPool for used numbers.
+// - localCounters: A pointer to a map of local counters.
+// - moveToStack: A boolean indicating if the value should be moved to the stack.
+// - firstExpected: A pointer to a wrapper.TypeWrapper for the first expected type.
 func MarshalExpression(
 	representation *strings.Builder,
 	trace *filecode.FileCode,
