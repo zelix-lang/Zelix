@@ -179,6 +179,28 @@ func marshalCondition(
 	return nextBuilder
 }
 
+// MarshalIf marshals an if-else conditional block into a string representation.
+// It handles the condition and the block associated with it, and schedules the block for further processing.
+//
+// Parameters:
+// - queueElement: The block marshal element representing the current block in the queue.
+// - trace: The file code trace information.
+// - fileCodeId: The ID of the file code.
+// - traceFileName: The name of the trace file.
+// - isMod: A boolean indicating if the module is modified.
+// - modulePropCounters: A map of module property counters.
+// - traceFn: The function trace information.
+// - originalPath: The original path of the file.
+// - counter: A pointer to an integer counter.
+// - element: The AST element representing the condition.
+// - variables: A map of IR variables.
+// - traceCounters: A pool of numeric counters for tracing.
+// - appendedBlocks: A pool of blocks to be appended.
+// - usedStrings: A pool of used strings.
+// - usedArrays: A pool of used arrays.
+// - usedNumbers: A pool of used numbers.
+// - localCounters: A map of local counters.
+// - blockQueue: A slice of block marshal elements representing the block queue.
 func MarshalIf(
 	queueElement *tree.BlockMarshalElement,
 	trace *filecode.FileCode,
