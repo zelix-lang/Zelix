@@ -5,7 +5,7 @@ mod Bbc {
 }
 
 mod Abc {
-    let a: Bbc = new a();
+    let a: Bbc = new Bcd();
 }
 
 pub fun main() {
