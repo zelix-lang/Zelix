@@ -146,8 +146,6 @@ func AnalyzeModule(
 
 		if err != nil {
 			globalErrors.AddError(err)
-		} else {
-			// Append only if the type is good to go
 		}
 
 		if !initializedCaught && declaration.IsIncomplete {
