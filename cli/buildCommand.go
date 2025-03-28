@@ -62,9 +62,7 @@ func BuildCommand(context *cli.Command) string {
 		fmt.Print("                                        \r")
 	}
 
-	fileCodes, fileCodesMap, originalPath := CheckCommand(context)
-	// Retrieve the path from the context
-	userPath := util.GetDir(context.Args().First())
+	fileCodes, fileCodesMap, dirPath, originalPath := CheckCommand(context)
 
 	// Use a global builder to build the whole program into a single IR file
 	globalBuilder := strings.Builder{}
@@ -252,16 +250,8 @@ func BuildCommand(context *cli.Command) string {
 		fileCodeCount++
 	}
 
-	// Get the pwd
-	pwd, err := os.Getwd()
-
-	if err != nil {
-		logger.Error("Could not get the current working directory.")
-		os.Exit(1)
-	}
-
 	// Get the out directory path
-	outDir := path.Join(pwd, userPath, "out")
+	outDir := path.Join(dirPath, "out")
 
 	// Make sure the output directory exists
 	if !util.DirExists(outDir) {
