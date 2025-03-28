@@ -53,7 +53,7 @@ func DiscardCwd(path string) string {
 func DirExists(path string) bool {
 	info, err := os.Stat(path)
 
-	if os.IsNotExist(err) {
+	if os.IsNotExist(err) || info == nil {
 		return false
 	}
 
