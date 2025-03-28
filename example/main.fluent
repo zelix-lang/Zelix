@@ -1,5 +1,4 @@
 import "@std::io::print";
-import "prop.fluent";
 
 /*
     The Fluent Programming Language
@@ -7,4 +6,5 @@ import "prop.fluent";
 */
 
 pub fun main() -> nothing {
+    print("Hello, World!");
 }

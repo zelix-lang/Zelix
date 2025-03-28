@@ -39,7 +39,8 @@ import (
 //   - A slice of sorted file codes
 //   - A map of original file codes.
 //   - The original path where the project is located.
-func CheckCommand(context *cli.Command) ([]filecode.FileCode, map[string]filecode.FileCode, string) {
+//   - The path to the entry file.
+func CheckCommand(context *cli.Command) ([]filecode.FileCode, map[string]filecode.FileCode, string, string) {
 	ShowHeaderMessage()
 
 	// Retrieve the path from the context
@@ -79,15 +80,15 @@ func CheckCommand(context *cli.Command) ([]filecode.FileCode, map[string]filecod
 	metadata := pkg.ParsePackage(packagePath)
 
 	// Join the path with the entry file
-	target = path.Join(target, metadata.Entry)
+	mainPath := path.Join(target, metadata.Entry)
 
 	// Convert the code to file codes
-	fileCodes := converter.ConvertToFileCode(target, false)
+	fileCodes := converter.ConvertToFileCode(mainPath, false)
 
 	// Analyze the project's codebase
-	sortedFileCodes := analyzer.AnalyzeCode(fileCodes, target, false)
+	sortedFileCodes := analyzer.AnalyzeCode(fileCodes, mainPath, false)
 
 	// The build command depends on the check command
 	// hence, it also needs the file codes
-	return sortedFileCodes, fileCodes, target
+	return sortedFileCodes, fileCodes, target, mainPath
 }
