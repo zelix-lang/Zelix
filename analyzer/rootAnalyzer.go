@@ -284,6 +284,8 @@ func AnalyzeCode(entry map[string]filecode.FileCode, mainPath string, silent boo
 				errorMessage.WriteString(error2.MainFunctionHasReturn())
 			case error3.MainFunctionHasGenerics:
 				errorMessage.WriteString(error2.MainFunctionHasGenerics())
+			case error3.MainFunctionIsPublic:
+				errorMessage.WriteString(error2.MainFunctionIsPublic())
 			default:
 			}
 
