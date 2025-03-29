@@ -280,6 +280,8 @@ func AnalyzeCode(entry map[string]filecode.FileCode, mainPath string, silent boo
 				errorMessage.WriteString(error2.NoMainFunction())
 			case error3.MainFunctionHasParameters:
 				errorMessage.WriteString(error2.MainFunctionHasParameters())
+			case error3.MainFunctionHasReturn:
+				errorMessage.WriteString(error2.MainFunctionHasReturn())
 			default:
 			}
 
