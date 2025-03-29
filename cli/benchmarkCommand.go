@@ -67,23 +67,21 @@ func BenchmarkCommand(context *cli.Command) {
 
 	// Ensure the "example" directory has files
 	files := util.ReadDir(exampleDir)
-	if len(files) == 0 {
+	if len(files) == 0 || (len(files) == 1 && files[0].Name() == "package.fluent") {
 		logger.Error("The example directory does not exist or is empty")
 		logger.Help("Ensure that the example directory exists")
 		return
 	}
 
-	fmt.Print(
-		fmt.Sprintf(
-			"%s=> Running the benchmark%s %s%d%s%s times on the example directory%s\n\n",
-			ansi.BoldBrightBlue,
-			ansi.Reset,
-			ansi.BoldBrightPurple,
-			times,
-			ansi.Reset,
-			ansi.BoldBrightBlue,
-			ansi.Reset,
-		),
+	fmt.Printf(
+		"%s=> Running the benchmark%s %s%d%s%s times on the example directory%s\n\n",
+		ansi.BoldBrightBlue,
+		ansi.Reset,
+		ansi.BoldBrightPurple,
+		times,
+		ansi.Reset,
+		ansi.BoldBrightBlue,
+		ansi.Reset,
 	)
 
 	// Use a strings.builder to build the output
@@ -143,6 +141,9 @@ func BenchmarkCommand(context *cli.Command) {
 	// Run the benchmark
 	for _, file := range files {
 		name := file.Name()
+		if name == "package.fluent" || name == "out" {
+			continue
+		}
 
 		fileHeader := fmt.Sprintf(
 			"== %s ==",
@@ -220,13 +221,11 @@ func BenchmarkCommand(context *cli.Command) {
 		return
 	}
 
-	fmt.Print(
-		fmt.Sprintf(
-			"%s=> The benchmark results have been written to:\n %s%s\n",
-			ansi.BoldBrightGreen,
-			fileName,
-			ansi.Reset,
-		),
+	fmt.Printf(
+		"%s=> The benchmark results have been written to:\n %s%s\n",
+		ansi.BoldBrightGreen,
+		fileName,
+		ansi.Reset,
 	)
 
 }
