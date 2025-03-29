@@ -28,13 +28,20 @@ import (
 //
 // Parameters:
 //   - code: The FileCode to be analyzed.
+//   - isMain: Whether the file is the main file or not.
 //
 // Returns:
 //   - *pool.ErrorPool: A pool of errors found during the analysis.
 //   - *pool.ErrorPool: A pool of warnings found during the analysis.
-func AnalyzeFileCode(code *filecode.FileCode) (*pool.ErrorPool, *pool.ErrorPool) {
+func AnalyzeFileCode(code *filecode.FileCode, isMain bool) (*pool.ErrorPool, *pool.ErrorPool) {
 	globalErrors := pool.NewErrorPool()
 	globalWarnings := pool.NewErrorPool()
+
+	// Analyze the main function if needed
+	if isMain {
+		err := function2.AnalyzeMainFunction(code.Functions["main"])
+		globalErrors.AddError(err)
+	}
 
 	// Iterate over all the functions
 	for _, function := range code.Functions {
