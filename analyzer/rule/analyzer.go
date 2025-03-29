@@ -32,7 +32,7 @@ import (
 // Returns:
 //   - *pool.ErrorPool: A pool of errors found during the analysis.
 //   - *pool.ErrorPool: A pool of warnings found during the analysis.
-func AnalyzeFileCode(code filecode.FileCode) (*pool.ErrorPool, *pool.ErrorPool) {
+func AnalyzeFileCode(code *filecode.FileCode) (*pool.ErrorPool, *pool.ErrorPool) {
 	globalErrors := pool.NewErrorPool()
 	globalWarnings := pool.NewErrorPool()
 
@@ -44,7 +44,7 @@ func AnalyzeFileCode(code filecode.FileCode) (*pool.ErrorPool, *pool.ErrorPool) 
 		}
 
 		// Analyze the function
-		errors, warnings, _ := function2.AnalyzeFunction(*function, &code, "", &function.Templates, stack.ScopedStack{
+		errors, warnings, _ := function2.AnalyzeFunction(*function, code, "", &function.Templates, stack.ScopedStack{
 			Scopes: make(map[int]stack.Stack),
 		}, false)
 		globalErrors.Extend(errors.Errors)
@@ -59,7 +59,7 @@ func AnalyzeFileCode(code filecode.FileCode) (*pool.ErrorPool, *pool.ErrorPool) 
 		}
 
 		// Analyze the function
-		errors, warnings := module.AnalyzeModule(*mod, &code)
+		errors, warnings := module.AnalyzeModule(*mod, code)
 		globalErrors.Extend(errors.Errors)
 		globalWarnings.Extend(warnings.Errors)
 	}

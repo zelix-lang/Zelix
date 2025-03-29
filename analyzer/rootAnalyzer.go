@@ -219,7 +219,7 @@ func AnalyzeCode(entry map[string]filecode.FileCode, mainPath string, silent boo
 			}
 		}
 
-		errors, warnings := rule.AnalyzeFileCode(file)
+		errors, warnings := rule.AnalyzeFileCode(&file)
 
 		if errors.Count > 0 {
 			state.FailAllSpinners()
