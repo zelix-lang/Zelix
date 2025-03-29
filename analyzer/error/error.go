@@ -44,6 +44,7 @@ const (
 	MainFunctionHasParameters             // E0025
 	MainFunctionHasReturn                 // E0026
 	MainFunctionHasGenerics               // E0027
+	MainFunctionIsPublic                  // E0028
 )
 
 // Error represents an error with details about its location and additional information.
