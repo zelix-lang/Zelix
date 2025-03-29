@@ -29,6 +29,15 @@ func AnalyzeMainFunction(fn *function.Function) *error2.Error {
 		}
 	}
 
+	// Make sure the function is not public
+	if fn.Public {
+		return &error2.Error{
+			Line:   fn.Trace.Line,
+			Column: fn.Trace.Column,
+			Code:   error2.MainFunctionIsPublic,
+		}
+	}
+
 	// Make sure the return is nothing
 	if fn.ReturnType.BaseType != "nothing" {
 		return &error2.Error{
