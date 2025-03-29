@@ -278,6 +278,8 @@ func AnalyzeCode(entry map[string]filecode.FileCode, mainPath string, silent boo
 				errorMessage.WriteString(error2.InvalidPointer())
 			case error3.NoMainFunction:
 				errorMessage.WriteString(error2.NoMainFunction())
+			case error3.MainFunctionHasParameters:
+				errorMessage.WriteString(error2.MainFunctionHasParameters())
 			default:
 			}
 
