@@ -47,5 +47,14 @@ func AnalyzeMainFunction(fn *function.Function) *error2.Error {
 		}
 	}
 
+	// Make sure the function does not have generics
+	if len(fn.Templates) > 0 {
+		return &error2.Error{
+			Line:   fn.Trace.Line,
+			Column: fn.Trace.Column,
+			Code:   error2.MainFunctionHasGenerics,
+		}
+	}
+
 	return nil
 }
