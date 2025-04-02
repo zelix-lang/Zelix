@@ -213,6 +213,9 @@ func MarshalSignedExpression(
 	lastParent := pair.Parent
 
 	for len(queue) > 0 {
+		suitable = *counter
+		*counter++
+
 		// Create a new InstructionTree for this expression
 		exprTree := tree.InstructionTree{
 			Children:       &[]*tree.InstructionTree{},
@@ -261,6 +264,10 @@ func MarshalSignedExpression(
 		// Write mov instructions to the tree
 		exprTree.Representation.WriteString("alloca x")
 		exprTree.Representation.WriteString(strconv.Itoa(suitable))
+		exprTree.Representation.WriteString(" &")
+		exprTree.Representation.WriteString(pair.Expected.Marshal())
+		exprTree.Representation.WriteString("\nstore x")
+		exprTree.Representation.WriteString(strconv.Itoa(suitable))
 		exprTree.Representation.WriteString(" ")
 
 		// Get the candidate
@@ -280,7 +287,5 @@ func MarshalSignedExpression(
 
 		// Update the last parent
 		lastParent = &exprTree
-		suitable = *counter
-		*counter++
 	}
 }

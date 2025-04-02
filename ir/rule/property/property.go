@@ -171,7 +171,7 @@ func MarshalPropertyAccess(
 
 			representation.WriteString("alloca x")
 			representation.WriteString(strconv.Itoa(suitable))
-			representation.WriteString(" ")
+			representation.WriteString(" &")
 		}
 
 		// Write the appropriate format
@@ -185,6 +185,8 @@ func MarshalPropertyAccess(
 				// Get the method's type wrapper
 				prop := lastMod.Functions[name]
 				representation.WriteString(*(*localCounters)[prop.ReturnType.BaseType])
+				representation.WriteString("\nstore x")
+				representation.WriteString(strconv.Itoa(suitable))
 				representation.WriteString(" ")
 			}
 

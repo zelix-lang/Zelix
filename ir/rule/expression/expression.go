@@ -126,6 +126,8 @@ func MarshalExpression(
 				pair.Expected.BaseType = oldBaseType
 			}
 
+			pair.Parent.Representation.WriteString("\nstore x")
+			pair.Parent.Representation.WriteString(strconv.Itoa(pair.Counter))
 			pair.Parent.Representation.WriteString(" ")
 		}
 
