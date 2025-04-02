@@ -115,9 +115,12 @@ func MarshalReassignment(
 			storedVar.Type,
 		)
 
-		// Give this variable another address in order
-		// to adhere to SSA form
-		storedVar.Addr = fmt.Sprintf("x%d", suitable)
+		// Write store instructions
+		queueElement.Representation.WriteString("store ")
+		queueElement.Representation.WriteString(storedVar.Addr)
+		queueElement.Representation.WriteString(" x")
+		queueElement.Representation.WriteString(strconv.Itoa(suitable))
+		queueElement.Representation.WriteString("\n")
 
 		return
 	}
@@ -190,6 +193,7 @@ func MarshalReassignment(
 		}
 	}
 
+	// TODO: Refactor this to produce accurate IR
 	// Calculate the counter the right expression is going to have
 	var rightExprAddr string
 
@@ -242,13 +246,18 @@ func MarshalReassignment(
 		// Move the element to the stack
 		queueElement.Representation.WriteString("alloca x")
 		queueElement.Representation.WriteString(strconv.Itoa(suitable))
-		queueElement.Representation.WriteString(" ")
+		queueElement.Representation.WriteString(" &")
 
-		if childType.IsPrimitive {
-			queueElement.Representation.WriteString(childType.Marshal())
+		if i == 1 {
+			queueElement.Representation.WriteString(*(*localCounters)[prev.BaseType])
 		} else {
-			queueElement.Representation.WriteString(*(*localCounters)[childType.BaseType])
+			if childType.IsPrimitive {
+				queueElement.Representation.WriteString(childType.Marshal())
+			} else {
+				queueElement.Representation.WriteString(*(*localCounters)[childType.BaseType])
+			}
 		}
+
 		queueElement.Representation.WriteString("\nstore x")
 		queueElement.Representation.WriteString(strconv.Itoa(suitable))
 		queueElement.Representation.WriteString(" mod_copy ")
@@ -263,8 +272,12 @@ func MarshalReassignment(
 		candidateAddr = rightExprAddr
 	}
 
-	// Update the candidate in order to adhere to SSA if needed
+	// Update the candidate
 	if candidateVarName != nil {
-		(*variables)[*candidateVarName].Addr = candidateAddr
+		queueElement.Representation.WriteString("store ")
+		queueElement.Representation.WriteString((*variables)[*candidateVarName].Addr)
+		queueElement.Representation.WriteString(" ")
+		queueElement.Representation.WriteString(candidateAddr)
+		queueElement.Representation.WriteString("\n")
 	}
 }
