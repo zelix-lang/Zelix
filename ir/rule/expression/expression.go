@@ -113,9 +113,9 @@ func MarshalExpression(
 
 		// Move values to the stack for parameters
 		if pair.IsParam && !pair.IsInline {
-			pair.Parent.Representation.WriteString("mov x")
+			pair.Parent.Representation.WriteString("alloca x")
 			pair.Parent.Representation.WriteString(strconv.Itoa(pair.Counter))
-			pair.Parent.Representation.WriteString(" ")
+			pair.Parent.Representation.WriteString(" &")
 
 			if pair.Expected.IsPrimitive {
 				pair.Parent.Representation.WriteString(pair.Expected.Marshal())

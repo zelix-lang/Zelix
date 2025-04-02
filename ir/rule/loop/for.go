@@ -186,7 +186,7 @@ func MarshalFor(
 	storeAddr, storeBuilder := appendedBlocks.RequestAddress()
 
 	// Move the backup variable
-	storeBuilder.WriteString("mov ")
+	storeBuilder.WriteString("alloca ")
 	storeBuilder.WriteString(backupAddr)
 	storeBuilder.WriteString(" num add ")
 	storeBuilder.WriteString(identifierAddr)
@@ -223,7 +223,7 @@ func MarshalFor(
 	// Get a suitable counter for the break condition
 	suitable = *counter
 	*counter++
-	breakConditionBuilder.WriteString("mov x")
+	breakConditionBuilder.WriteString("alloca x")
 	breakConditionBuilder.WriteString(strconv.Itoa(suitable))
 	breakConditionBuilder.WriteString(" bool eq ")
 	breakConditionBuilder.WriteString(identifierAddr)

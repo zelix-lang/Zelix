@@ -5,6 +5,6 @@ import "@std::io::print";
     Test file 4
 */
 
-pub fun main() -> nothing {
+fun main() -> nothing {
     print("Hello, World!");
 }
