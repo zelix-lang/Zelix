@@ -259,7 +259,7 @@ func MarshalSignedExpression(
 		lastParent.Representation.WriteString(" ")
 
 		// Write mov instructions to the tree
-		exprTree.Representation.WriteString("mov x")
+		exprTree.Representation.WriteString("alloca x")
 		exprTree.Representation.WriteString(strconv.Itoa(suitable))
 		exprTree.Representation.WriteString(" ")
 

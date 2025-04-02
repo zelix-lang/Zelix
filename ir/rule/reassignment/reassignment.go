@@ -240,7 +240,7 @@ func MarshalReassignment(
 		*counter++
 
 		// Move the element to the stack
-		queueElement.Representation.WriteString("mov x")
+		queueElement.Representation.WriteString("alloca x")
 		queueElement.Representation.WriteString(strconv.Itoa(suitable))
 		queueElement.Representation.WriteString(" ")
 

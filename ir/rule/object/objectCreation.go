@@ -114,7 +114,7 @@ func MarshalObjectCreation(
 				*counter++
 
 				// Move this value to the stack
-				element.Parent.Representation.WriteString("mov ")
+				element.Parent.Representation.WriteString("alloca ")
 				element.Parent.Representation.WriteString(modAddress)
 				element.Parent.Representation.WriteString(" ")
 				element.Parent.Representation.WriteString(*name)
@@ -172,7 +172,7 @@ func MarshalObjectCreation(
 							Representation: &strings.Builder{},
 						}
 
-						localTree.Representation.WriteString("mov x")
+						localTree.Representation.WriteString("alloca x")
 						localTree.Representation.WriteString(suitableStr)
 						localTree.Representation.WriteString(" ")
 						localTree.Representation.WriteString(pointerRepresentation)
