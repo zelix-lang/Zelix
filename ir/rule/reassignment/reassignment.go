@@ -249,6 +249,8 @@ func MarshalReassignment(
 		} else {
 			queueElement.Representation.WriteString(*(*localCounters)[childType.BaseType])
 		}
+		queueElement.Representation.WriteString("\nstore x")
+		queueElement.Representation.WriteString(strconv.Itoa(suitable))
 		queueElement.Representation.WriteString(" mod_copy ")
 		queueElement.Representation.WriteString(candidateAddr)
 		queueElement.Representation.WriteString(" ")

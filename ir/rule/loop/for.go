@@ -188,7 +188,9 @@ func MarshalFor(
 	// Move the backup variable
 	storeBuilder.WriteString("alloca ")
 	storeBuilder.WriteString(backupAddr)
-	storeBuilder.WriteString(" num add ")
+	storeBuilder.WriteString(" &num\n store ")
+	storeBuilder.WriteString(backupAddr)
+	storeBuilder.WriteString(" add ")
 	storeBuilder.WriteString(identifierAddr)
 	storeBuilder.WriteString(" ")
 	storeBuilder.WriteString(usedNumbers.RequestAddress(fileCodeId, "1"))

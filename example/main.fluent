@@ -5,6 +5,9 @@ import "@std::io::print";
     Test file 4
 */
 
+fun a(_a: num) {
+}
+
 fun main() -> nothing {
-    print("Hello, World!");
+    a(1 + 2 * 5);
 }
