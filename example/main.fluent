@@ -1,13 +1,13 @@
-import "@std::io::print";
+//import "@std::io::print";
 
-/*
-    The Fluent Programming Language
-    Test file 4
-*/
+mod Bbc {
+    let b: num = 20;
 
-fun a(_a: num) {
+    pub fun Bbc() {
+        this = new Bbc();
+    }
 }
 
-fun main() -> nothing {
-    a(1 + 2 * 5);
+fun main() {
+    new Bbc();
 }
