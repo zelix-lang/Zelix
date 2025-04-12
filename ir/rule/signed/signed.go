@@ -20,7 +20,6 @@ import (
 	"fluent/ir/pool"
 	"fluent/ir/tree"
 	"fluent/ir/value"
-	"fluent/ir/variable"
 	"strconv"
 	"strings"
 )
@@ -109,10 +108,9 @@ func processCandidate(
 	usedStrings *pool.StringPool,
 	usedNumbers *pool.StringPool,
 	exprQueue *[]tree.MarshalPair,
-	variables *map[string]*variable.IRVariable,
 ) {
 	// See if we can save memory
-	if value.RetrieveStaticVal(fileCodeId, candidate, preferredParent.Representation, usedStrings, usedNumbers, variables) {
+	if value.RetrieveStaticVal(fileCodeId, candidate, preferredParent.Representation, usedStrings, usedNumbers) {
 		return
 	}
 
@@ -161,7 +159,6 @@ func processCandidate(
 // - usedStrings: The pool of used strings.
 // - usedNumbers: The pool of used numbers.
 // - exprQueue: The queue of expressions to be processed.
-// - variables: The map of variables used in the IR.
 func MarshalSignedExpression(
 	global *tree.InstructionTree,
 	child *ast.AST,
@@ -171,7 +168,6 @@ func MarshalSignedExpression(
 	usedStrings *pool.StringPool,
 	usedNumbers *pool.StringPool,
 	exprQueue *[]tree.MarshalPair,
-	variables *map[string]*variable.IRVariable,
 ) {
 	children := *child.Children
 	var expr *ast.AST
@@ -195,11 +191,11 @@ func MarshalSignedExpression(
 	isBoolean := writeSignOpcode(generalSign, pair.Parent)
 
 	// Process the first pair outside the queue
-	processCandidate(global, children[0], fileCodeId, isBoolean, counter, pair, pair.Parent, usedStrings, usedNumbers, exprQueue, variables)
+	processCandidate(global, children[0], fileCodeId, isBoolean, counter, pair, pair.Parent, usedStrings, usedNumbers, exprQueue)
 
 	// See if we can save memory in the 2nd operand
 	if len(children) == 3 {
-		if value.RetrieveStaticVal(fileCodeId, children[2], pair.Parent.Representation, usedStrings, usedNumbers, variables) {
+		if value.RetrieveStaticVal(fileCodeId, children[2], pair.Parent.Representation, usedStrings, usedNumbers) {
 			return
 		}
 	}
@@ -224,7 +220,7 @@ func MarshalSignedExpression(
 
 		if len(queue) == 1 {
 			// See if we can save memory in the operand
-			if value.RetrieveStaticVal(fileCodeId, queue[0], lastParent.Representation, usedStrings, usedNumbers, variables) {
+			if value.RetrieveStaticVal(fileCodeId, queue[0], lastParent.Representation, usedStrings, usedNumbers) {
 				break
 			}
 
@@ -283,7 +279,7 @@ func MarshalSignedExpression(
 		isBoolean := writeSignOpcode(sign, &exprTree)
 
 		// Process the first pair outside the queue
-		processCandidate(global, candidate, fileCodeId, isBoolean, counter, pair, &exprTree, usedStrings, usedNumbers, exprQueue, variables)
+		processCandidate(global, candidate, fileCodeId, isBoolean, counter, pair, &exprTree, usedStrings, usedNumbers, exprQueue)
 
 		// Update the last parent
 		lastParent = &exprTree

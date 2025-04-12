@@ -1,13 +1,12 @@
 //import "@std::io::print";
 
-mod Bbc {
-    let b: num = 20;
+fun abc(_b: &num) {
 
-    pub fun Bbc() {
-        this = new Bbc();
-    }
 }
 
 fun main() {
-    new Bbc();
+    let a: num = 25;
+    let b: &num = &a;
+
+    abc(b);
 }

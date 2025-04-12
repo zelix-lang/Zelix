@@ -28,4 +28,5 @@ type MarshalPair struct {
 	Counter  int                 // Counter is used for tracking purposes.
 	IsParam  bool                // IsParam indicates if the pair is a parameter.
 	Expected wrapper.TypeWrapper // Expected is the expected type of the child node.
+	StartAt  int                 // StartAt is the starting position of the child node in the source code.
 }

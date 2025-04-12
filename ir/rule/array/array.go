@@ -20,7 +20,6 @@ import (
 	"fluent/ir/pool"
 	"fluent/ir/tree"
 	"fluent/ir/value"
-	"fluent/ir/variable"
 	"strconv"
 	"strings"
 )
@@ -37,7 +36,6 @@ import (
 // - usedStrings: A pool of used string literals.
 // - usedNumbers: A pool of used number literals.
 // - exprQueue: A queue of marshal pairs for further processing.
-// - variables: A map of variable names to their IRVariable representations.
 func MarshalArray(
 	global *tree.InstructionTree,
 	child *ast.AST,
@@ -47,7 +45,6 @@ func MarshalArray(
 	usedStrings *pool.StringPool,
 	usedNumbers *pool.StringPool,
 	exprQueue *[]tree.MarshalPair,
-	variables *map[string]*variable.IRVariable,
 ) {
 	// Get the array's children
 	children := *child.Children
@@ -66,7 +63,7 @@ func MarshalArray(
 
 	for _, expr := range children {
 		// Check for string literals
-		if value.RetrieveStaticVal(fileCodeId, expr, pair.Parent.Representation, usedStrings, usedNumbers, variables) {
+		if value.RetrieveStaticVal(fileCodeId, expr, pair.Parent.Representation, usedStrings, usedNumbers) {
 			continue
 		}
 

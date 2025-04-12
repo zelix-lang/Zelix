@@ -113,7 +113,7 @@ func MarshalFor(
 	isBuilderStatic := true
 	leftBranchAddr := ""
 	// See if we can save memory on the left value
-	if value.RetrieveStaticVal(fileCodeId, leftExpr, &leftTempBuilder, usedStrings, usedNumbers, variables) {
+	if value.RetrieveStaticVal(fileCodeId, leftExpr, &leftTempBuilder, usedStrings, usedNumbers) {
 		*counter++
 	} else {
 		isBuilderStatic = false
@@ -147,7 +147,7 @@ func MarshalFor(
 
 	tempBuilder := strings.Builder{}
 	var rightAddr string
-	if value.RetrieveStaticVal(fileCodeId, rightExpr, &tempBuilder, usedStrings, usedNumbers, variables) {
+	if value.RetrieveStaticVal(fileCodeId, rightExpr, &tempBuilder, usedStrings, usedNumbers) {
 		rightAddr = tempBuilder.String()
 	} else {
 		rightAddr = fmt.Sprintf("x%d", *counter)

@@ -199,7 +199,7 @@ func MarshalReassignment(
 
 	// See if we can save memory on the right expression
 	tempBuilder := strings.Builder{}
-	if value.RetrieveStaticVal(fileCodeId, rightExpr, &tempBuilder, usedStrings, usedNumbers, variables) {
+	if value.RetrieveStaticVal(fileCodeId, rightExpr, &tempBuilder, usedStrings, usedNumbers) {
 		str := tempBuilder.String()
 		// Remove the last space
 		rightExprAddr = str[:len(str)-1]
