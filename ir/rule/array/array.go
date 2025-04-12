@@ -57,7 +57,7 @@ func MarshalArray(
 	pair.Parent.Representation.WriteString(" ")
 
 	// Prevent collisions
-	if pair.IsParam && pair.Counter == *counter {
+	if (pair.MoveToStack || pair.IsParam) && pair.Counter == *counter {
 		*counter++
 	}
 

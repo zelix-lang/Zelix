@@ -267,11 +267,11 @@ func MarshalObjectCreation(
 
 				// Schedule the expression
 				*exprQueue = append(*exprQueue, tree.MarshalPair{
-					Child:    val,
-					Parent:   &localTree,
-					Counter:  suitable,
-					Expected: prop.Type,
-					IsParam:  true,
+					Child:       val,
+					Parent:      &localTree,
+					Counter:     suitable,
+					Expected:    prop.Type,
+					MoveToStack: true,
 				})
 			}
 

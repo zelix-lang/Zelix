@@ -107,12 +107,12 @@ func MarshalPropertyAccess(
 
 				// Append the candidate to the queue
 				*exprQueue = append(*exprQueue, tree.MarshalPair{
-					Child:    child,
-					Parent:   &candidate,
-					IsInline: false,
-					Counter:  suitable,
-					IsParam:  true,
-					Expected: *inferredType,
+					Child:       child,
+					Parent:      &candidate,
+					IsInline:    false,
+					Counter:     suitable,
+					MoveToStack: true,
+					Expected:    *inferredType,
 				})
 
 				*global.Children = append([]*tree.InstructionTree{&candidate}, *global.Children...)

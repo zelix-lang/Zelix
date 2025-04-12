@@ -22,11 +22,12 @@ import (
 // MarshalPair represents a pair of a child AST node and its parent instruction tree.
 // It also includes metadata about the relationship.
 type MarshalPair struct {
-	Child    *ast.AST            // Child is the AST node.
-	Parent   *InstructionTree    // Parent is the instruction tree containing the child.
-	IsInline bool                // IsInline indicates if the pair is inline.
-	Counter  int                 // Counter is used for tracking purposes.
-	IsParam  bool                // IsParam indicates if the pair is a parameter.
-	Expected wrapper.TypeWrapper // Expected is the expected type of the child node.
-	StartAt  int                 // StartAt is the starting position of the child node in the source code.
+	Child       *ast.AST            // Child is the AST node.
+	Parent      *InstructionTree    // Parent is the instruction tree containing the child.
+	IsInline    bool                // IsInline indicates if the pair is inline.
+	Counter     int                 // Counter is used for tracking purposes.
+	MoveToStack bool                // MoveToStack indicates if the child should be moved to the stack.
+	IsParam     bool                // IsParam indicates if the pair is a parameter.
+	Expected    wrapper.TypeWrapper // Expected is the expected type of the child node.
+	StartAt     int                 // StartAt is the starting position of the child node in the source code.
 }
