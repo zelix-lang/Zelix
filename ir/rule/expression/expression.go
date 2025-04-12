@@ -105,11 +105,10 @@ func MarshalExpression(
 		// Get the first element of the queue
 		pair := queue[0]
 		queue = queue[1:]
+		derefVariables := true
 
 		// Get the children of the current element
 		children := *pair.Child.Children
-		// Used to skip pointers and dereferences
-		startAt := 0
 
 		// Move values to the stack for parameters
 		if pair.IsParam && !pair.IsInline {
@@ -131,21 +130,55 @@ func MarshalExpression(
 			pair.Parent.Representation.WriteString(" ")
 		}
 
-		// Add pointers and dereferences
-		for _, child := range children {
-			if child.Rule == ast.Pointer {
-				pair.Parent.Representation.WriteString("&")
-				startAt++
-			} else if child.Rule == ast.Dereference {
-				pair.Parent.Representation.WriteString("*")
-				startAt++
-			} else {
-				break
-			}
-		}
-
 		// Get the remaining expression
-		child := children[startAt]
+		child := children[pair.StartAt]
+
+		// Check for pointers
+		if child.Rule == ast.Pointer {
+			// Write addr instructions
+			pair.Parent.Representation.WriteString("addr ")
+
+			// See if we have a next pointer
+			if children[pair.StartAt+1].Rule == ast.Pointer {
+				suitable := *counter
+				pair.Parent.Representation.WriteString("x")
+				pair.Parent.Representation.WriteString(strconv.Itoa(suitable))
+				pair.Parent.Representation.WriteString("\n")
+
+				// Increment the counter
+				*counter++
+
+				newTree := tree.InstructionTree{
+					Children:       &[]*tree.InstructionTree{},
+					Representation: &strings.Builder{},
+				}
+
+				// Add new instructions to the current tree
+				*pair.Parent.Children = append([]*tree.InstructionTree{&newTree}, *pair.Parent.Children...)
+
+				// Add the new tree to the queue
+				queue = append(queue, tree.MarshalPair{
+					Child:    pair.Child,
+					Parent:   pair.Parent,
+					IsInline: pair.IsInline,
+					Counter:  suitable,
+					IsParam:  true,
+					Expected: wrapper.TypeWrapper{
+						PointerCount: pair.Expected.PointerCount - 1,
+						ArrayCount:   pair.Expected.ArrayCount,
+						Children:     pair.Expected.Children,
+						BaseType:     pair.Expected.BaseType,
+						IsPrimitive:  pair.Expected.IsPrimitive,
+					},
+					StartAt: pair.StartAt + 1,
+				})
+
+				continue
+			}
+
+			derefVariables = false
+			child = children[pair.StartAt+1]
+		}
 
 		switch child.Rule {
 		case ast.FunctionCall:
@@ -161,7 +194,6 @@ func MarshalExpression(
 				counter,
 				pair.Parent,
 				traceCounters,
-				variables,
 				usedStrings,
 				usedNumbers,
 				&queue,
@@ -181,7 +213,6 @@ func MarshalExpression(
 				counter,
 				&pair,
 				traceCounters,
-				variables,
 				usedStrings,
 				usedArrays,
 				usedNumbers,
@@ -189,8 +220,14 @@ func MarshalExpression(
 				localCounters,
 			)
 		case ast.Identifier:
-			// Write the variable's name
-			pair.Parent.Representation.WriteString((*variables)[*child.Value].Addr)
+			// Get the variable
+			stored := (*variables)[*child.Value]
+
+			if derefVariables {
+				pair.Parent.Representation.WriteString("load ")
+			}
+
+			pair.Parent.Representation.WriteString(stored.Addr)
 		case ast.StringLiteral:
 			// Request an address space for the string literal
 			pair.Parent.Representation.WriteString(
@@ -209,7 +246,6 @@ func MarshalExpression(
 				usedStrings,
 				usedNumbers,
 				&queue,
-				variables,
 			)
 		case ast.NumberLiteral, ast.DecimalLiteral:
 			// Directly write the tree's value
@@ -241,7 +277,6 @@ func MarshalExpression(
 				usedStrings,
 				usedNumbers,
 				&queue,
-				variables,
 			)
 		case ast.PropertyAccess:
 			property.MarshalPropertyAccess(
@@ -256,7 +291,6 @@ func MarshalExpression(
 				usedStrings,
 				usedNumbers,
 				&queue,
-				variables,
 				localCounters,
 				traceFileName,
 			)

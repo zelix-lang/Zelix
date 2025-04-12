@@ -23,7 +23,6 @@ import (
 	"fluent/ir/rule/call"
 	"fluent/ir/tree"
 	"fluent/ir/value"
-	"fluent/ir/variable"
 	"fluent/util"
 	"fmt"
 	"strconv"
@@ -47,7 +46,6 @@ var emptyString = ""
 // - usedStrings: A pool of used strings.
 // - usedNumbers: A pool of used numbers.
 // - exprQueue: A queue of marshal pairs for expressions.
-// - variables: A map of IR variables.
 // - localCounters: A map of local counters.
 // - traceFileName: The name of the trace file.
 func MarshalPropertyAccess(
@@ -62,7 +60,6 @@ func MarshalPropertyAccess(
 	usedStrings *pool.StringPool,
 	usedNumbers *pool.StringPool,
 	exprQueue *[]tree.MarshalPair,
-	variables *map[string]*variable.IRVariable,
 	localCounters *map[string]*string,
 	traceFileName string,
 ) {
@@ -101,7 +98,7 @@ func MarshalPropertyAccess(
 			lastMod = trace.Modules[inferredType.BaseType]
 
 			// Check if we can save memory on the candidate
-			if value.RetrieveStaticVal(fileCodeId, child, candidate.Representation, usedStrings, usedNumbers, variables) {
+			if value.RetrieveStaticVal(fileCodeId, child, candidate.Representation, usedStrings, usedNumbers) {
 				*lastCandidateAddress = candidate.Representation.String()
 			} else {
 				// Get a suitable counter for this expression
@@ -213,7 +210,6 @@ func MarshalPropertyAccess(
 					global,
 					fileCodeId,
 					pair.Parent,
-					variables,
 					usedStrings,
 					usedNumbers,
 					exprQueue,

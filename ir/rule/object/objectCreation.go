@@ -22,7 +22,6 @@ import (
 	"fluent/ir/rule/call"
 	"fluent/ir/tree"
 	"fluent/ir/value"
-	"fluent/ir/variable"
 	"fluent/util"
 	"fmt"
 	"strconv"
@@ -46,7 +45,6 @@ import (
 // - counter: A pointer to the counter for generating unique IDs.
 // - pair: The marshal pair containing parent and counter information.
 // - traceCounters: The pool of trace counters.
-// - variables: A map of IR variables.
 // - usedStrings: The pool of used strings.
 // - usedArrays: The pool of used arrays.
 // - usedNumbers: The pool of used numbers.
@@ -65,7 +63,6 @@ func MarshalObjectCreation(
 	counter *int,
 	pair *tree.MarshalPair,
 	traceCounters *pool.NumPool,
-	variables *map[string]*variable.IRVariable,
 	usedStrings *pool.StringPool,
 	usedArrays *pool.StringPool,
 	usedNumbers *pool.StringPool,
@@ -243,7 +240,7 @@ func MarshalObjectCreation(
 			} else {
 				// See if we can save memory on this value
 				val := prop.Value
-				if value.RetrieveStaticVal(fileCodeId, val, element.Parent.Representation, usedStrings, usedNumbers, variables) {
+				if value.RetrieveStaticVal(fileCodeId, val, element.Parent.Representation, usedStrings, usedNumbers) {
 					return false
 				}
 
@@ -333,7 +330,6 @@ func MarshalObjectCreation(
 				global,
 				fileCodeId,
 				element.Parent,
-				variables,
 				usedStrings,
 				usedNumbers,
 				exprQueue,

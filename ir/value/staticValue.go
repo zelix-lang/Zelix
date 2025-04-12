@@ -17,7 +17,6 @@ package value
 import (
 	"fluent/ast"
 	"fluent/ir/pool"
-	"fluent/ir/variable"
 	"strings"
 )
 
@@ -30,14 +29,12 @@ import (
 // - representation: A pointer to a strings.Builder to write the representation.
 // - usedStrings: A pointer to a pool.StringPool for managing used strings.
 // - usedNumbers: A pointer to a pool.StringPool for managing used numbers.
-// - variables: A pointer to a map of variable names to IRVariable pointers.
 func RetrieveStaticVal(
 	fileCodeId int,
 	expr *ast.AST,
 	representation *strings.Builder,
 	usedStrings *pool.StringPool,
 	usedNumbers *pool.StringPool,
-	variables *map[string]*variable.IRVariable,
 ) bool {
 	// Get the expression's children
 	exprChildren := *expr.Children
@@ -54,11 +51,6 @@ func RetrieveStaticVal(
 				),
 			)
 
-			representation.WriteString(" ")
-			return true
-		case ast.Identifier:
-			// Write the variable's address
-			representation.WriteString((*variables)[*child.Value].Addr)
 			representation.WriteString(" ")
 			return true
 		case ast.BooleanLiteral:

@@ -21,7 +21,6 @@ import (
 	"fluent/ir/pool"
 	"fluent/ir/tree"
 	"fluent/ir/value"
-	"fluent/ir/variable"
 	"strconv"
 	"strings"
 )
@@ -51,7 +50,6 @@ func MarshalParams(
 	global *tree.InstructionTree,
 	fileCodeId int,
 	parent *tree.InstructionTree,
-	variables *map[string]*variable.IRVariable,
 	usedStrings *pool.StringPool,
 	usedNumbers *pool.StringPool,
 	exprQueue *[]tree.MarshalPair,
@@ -70,7 +68,7 @@ func MarshalParams(
 		expr := (*paramNode.Children)[0]
 
 		// Retrieve the string literal if needed
-		if value.RetrieveStaticVal(fileCodeId, expr, parent.Representation, usedStrings, usedNumbers, variables) {
+		if value.RetrieveStaticVal(fileCodeId, expr, parent.Representation, usedStrings, usedNumbers) {
 			continue
 		}
 
@@ -169,7 +167,6 @@ func RequestTrace(
 // - counter: A pointer to an integer counter used for generating unique identifiers.
 // - parent: The parent instruction tree.
 // - traceCounters: A pool of trace counters.
-// - variables: A map of variable names to IRVariable pointers.
 // - usedStrings: A pool of used strings.
 // - usedNumbers: A pool of used numbers.
 // - exprQueue: A queue of expressions to be marshaled.
@@ -186,7 +183,6 @@ func MarshalFunctionCall(
 	counter *int,
 	parent *tree.InstructionTree,
 	traceCounters *pool.NumPool,
-	variables *map[string]*variable.IRVariable,
 	usedStrings *pool.StringPool,
 	usedNumbers *pool.StringPool,
 	exprQueue *[]tree.MarshalPair,
@@ -254,7 +250,6 @@ func MarshalFunctionCall(
 			global,
 			fileCodeId,
 			parent,
-			variables,
 			usedStrings,
 			usedNumbers,
 			exprQueue,

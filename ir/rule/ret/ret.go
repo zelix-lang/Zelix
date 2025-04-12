@@ -87,7 +87,7 @@ func MarshalReturn(
 	retTree.Representation.WriteString("ret ")
 
 	// See if we can save memory in the expression
-	if value.RetrieveStaticVal(fileCodeId, expr, retTree.Representation, usedStrings, usedNumbers, variables) {
+	if value.RetrieveStaticVal(fileCodeId, expr, retTree.Representation, usedStrings, usedNumbers) {
 		representation.WriteString(retTree.Representation.String())
 		representation.WriteString("\n")
 		return
