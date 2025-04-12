@@ -72,12 +72,13 @@ func AnalyzeExpression(
 	// Use a queue to analyze the expression
 	queue := []queue2.ExpectedPair{
 		{
-			Expected:          firstExpected,
-			Got:               &result,
-			Tree:              tree,
-			HasMetDereference: false,
-			ActualPointers:    0,
-			IsParam:           allowPointers,
+			Expected:           firstExpected,
+			Got:                &result,
+			Tree:               tree,
+			HasMetDereference:  false,
+			ActualPointers:     0,
+			IsParam:            allowPointers,
+			IsPropReassignment: isPropReassignment,
 		},
 	}
 
@@ -182,6 +183,15 @@ func AnalyzeExpression(
 					Additional: []string{*child.Value},
 					Line:       element.Tree.Line,
 					Column:     element.Tree.Column,
+				}
+			}
+
+			// Check for reassignments
+			if element.IsPropReassignment && value.Constant {
+				return nil, &error3.Error{
+					Code:   error3.ConstantReassignment,
+					Line:   element.Tree.Line,
+					Column: element.Tree.Column,
 				}
 			}
 
