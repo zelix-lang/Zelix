@@ -139,12 +139,12 @@ func processCandidate(
 	}
 
 	*exprQueue = append(*exprQueue, tree.MarshalPair{
-		Child:    candidate,
-		Parent:   &candidateTree,
-		IsInline: pair.IsInline,
-		Counter:  suitable,
-		IsParam:  true,
-		Expected: expected,
+		Child:       candidate,
+		Parent:      &candidateTree,
+		IsInline:    pair.IsInline,
+		Counter:     suitable,
+		MoveToStack: true,
+		Expected:    expected,
 	})
 }
 
@@ -239,12 +239,12 @@ func MarshalSignedExpression(
 			}
 
 			*exprQueue = append(*exprQueue, tree.MarshalPair{
-				Child:    expr,
-				Parent:   &exprTree,
-				IsInline: pair.IsInline,
-				Counter:  suitable,
-				IsParam:  true,
-				Expected: expected,
+				Child:       expr,
+				Parent:      &exprTree,
+				IsInline:    pair.IsInline,
+				Counter:     suitable,
+				MoveToStack: true,
+				Expected:    expected,
 			})
 
 			*global.Children = append([]*tree.InstructionTree{&exprTree}, *global.Children...)

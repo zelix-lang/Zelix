@@ -82,10 +82,10 @@ func MarshalExpression(
 	}
 
 	firstEl := tree.MarshalPair{
-		Child:    element,
-		Parent:   &result,
-		IsInline: false,
-		IsParam:  moveToStack,
+		Child:       element,
+		Parent:      &result,
+		IsInline:    false,
+		MoveToStack: moveToStack,
 	}
 
 	// Get a suitable counter in case we have to move
@@ -111,10 +111,20 @@ func MarshalExpression(
 		children := *pair.Child.Children
 
 		// Move values to the stack for parameters
-		if pair.IsParam && !pair.IsInline {
-			pair.Parent.Representation.WriteString("alloca x")
+		if (pair.MoveToStack || pair.IsParam) && !pair.IsInline {
+			if !pair.IsParam {
+				pair.Parent.Representation.WriteString("alloca x")
+			} else {
+				pair.Parent.Representation.WriteString("mov x")
+			}
+
 			pair.Parent.Representation.WriteString(strconv.Itoa(pair.Counter))
-			pair.Parent.Representation.WriteString(" &")
+
+			if !pair.IsParam {
+				pair.Parent.Representation.WriteString(" &")
+			} else {
+				pair.Parent.Representation.WriteString(" ")
+			}
 
 			if pair.Expected.IsPrimitive {
 				pair.Parent.Representation.WriteString(pair.Expected.Marshal())
@@ -158,11 +168,12 @@ func MarshalExpression(
 
 				// Add the new tree to the queue
 				queue = append(queue, tree.MarshalPair{
-					Child:    pair.Child,
-					Parent:   pair.Parent,
-					IsInline: pair.IsInline,
-					Counter:  suitable,
-					IsParam:  true,
+					Child:       pair.Child,
+					Parent:      pair.Parent,
+					IsInline:    pair.IsInline,
+					Counter:     suitable,
+					MoveToStack: true,
+
 					Expected: wrapper.TypeWrapper{
 						PointerCount: pair.Expected.PointerCount - 1,
 						ArrayCount:   pair.Expected.ArrayCount,
@@ -260,12 +271,12 @@ func MarshalExpression(
 		case ast.Expression:
 			// Add the expression to the queue
 			queue = append(queue, tree.MarshalPair{
-				Child:    child,
-				Parent:   pair.Parent,
-				Counter:  pair.Counter,
-				Expected: pair.Expected,
-				IsParam:  pair.IsParam,
-				IsInline: true,
+				Child:       child,
+				Parent:      pair.Parent,
+				Counter:     pair.Counter,
+				Expected:    pair.Expected,
+				MoveToStack: pair.MoveToStack,
+				IsInline:    true,
 			})
 		case ast.ArithmeticExpression, ast.BooleanExpression:
 			signed.MarshalSignedExpression(
