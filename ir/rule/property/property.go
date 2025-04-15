@@ -99,7 +99,7 @@ func MarshalPropertyAccess(
 
 			lastMod = trace.Modules[inferredType.BaseType]
 
-			// Retrieve variables if possible instead of clonning values
+			// Retrieve variables if possible instead of cloning values
 			if child.Children != nil && len(*child.Children) > 0 && (*child.Children)[0].Rule == ast.Identifier {
 				// Get the variable
 				storedVar := (*variables)[*(*child.Children)[0].Value]
