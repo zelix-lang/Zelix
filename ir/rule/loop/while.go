@@ -18,6 +18,7 @@ import (
 	"fluent/ast"
 	"fluent/filecode"
 	"fluent/filecode/function"
+	module2 "fluent/filecode/module"
 	"fluent/ir/pool"
 	"fluent/ir/relocate"
 	"fluent/ir/rule/conditional"
@@ -60,7 +61,7 @@ func MarshalWhile(
 	fileCodeId int,
 	traceFileName string,
 	isMod bool,
-	modulePropCounters *map[string]*util.OrderedMap[string, *string],
+	modulePropCounters *map[*module2.Module]*util.OrderedMap[string, *string],
 	traceFn *function.Function,
 	originalPath *string,
 	counter *int,

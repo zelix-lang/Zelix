@@ -18,6 +18,7 @@ import (
 	"fluent/ast"
 	"fluent/filecode"
 	"fluent/filecode/function"
+	module2 "fluent/filecode/module"
 	"fluent/filecode/types/wrapper"
 	"fluent/ir/pool"
 	"fluent/ir/rule/array"
@@ -64,7 +65,7 @@ func MarshalExpression(
 	isMod bool,
 	traceFileName string,
 	originalPath *string,
-	modulePropCounters *map[string]*util.OrderedMap[string, *string],
+	modulePropCounters *map[*module2.Module]*util.OrderedMap[string, *string],
 	counter *int,
 	element *ast.AST,
 	variables *map[string]*variable.IRVariable,
@@ -84,7 +85,6 @@ func MarshalExpression(
 	firstEl := tree.MarshalPair{
 		Child:       element,
 		Parent:      &result,
-		IsInline:    false,
 		MoveToStack: moveToStack,
 	}
 
@@ -121,7 +121,11 @@ func MarshalExpression(
 			pair.Parent.Representation.WriteString(strconv.Itoa(pair.Counter))
 
 			if !pair.IsParam {
-				pair.Parent.Representation.WriteString(" &")
+				if pair.Expected.IsPrimitive {
+					pair.Parent.Representation.WriteString(" &&")
+				} else {
+					pair.Parent.Representation.WriteString(" &")
+				}
 			} else {
 				pair.Parent.Representation.WriteString(" ")
 			}
@@ -297,6 +301,7 @@ func MarshalExpression(
 				fileCodeId,
 				counter,
 				&pair,
+				variables,
 				modulePropCounters,
 				traceCounters,
 				usedStrings,

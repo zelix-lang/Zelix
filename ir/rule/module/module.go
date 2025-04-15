@@ -42,7 +42,7 @@ func MarshalModule(
 	mod *module.Module,
 	originalPath *string,
 	trace *filecode.FileCode,
-	modulePropCounters *map[string]*util.OrderedMap[string, *string],
+	modulePropCounters *map[*module.Module]*util.OrderedMap[string, *string],
 	localCounters *map[string]*string,
 	fileTree *tree.InstructionTree,
 	traceFileName string,
@@ -66,7 +66,7 @@ func MarshalModule(
 	modTree.Representation.WriteString(" ")
 
 	// Get the prop counters
-	propCounters := (*modulePropCounters)[mod.Name]
+	propCounters := (*modulePropCounters)[mod]
 
 	// Iterate over all the module's properties
 	propCounters.Iterate(func(name string, computedName *string) bool {
@@ -74,6 +74,7 @@ func MarshalModule(
 		prop, ok := mod.Declarations[name]
 
 		if ok {
+			modTree.Representation.WriteString("&")
 			if prop.Type.IsPrimitive {
 				modTree.Representation.WriteString(prop.Type.Marshal())
 			} else {

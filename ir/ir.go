@@ -16,6 +16,7 @@ package ir
 
 import (
 	"fluent/filecode"
+	module2 "fluent/filecode/module"
 	"fluent/ir/pool"
 	"fluent/ir/rule/function"
 	"fluent/ir/rule/module"
@@ -56,7 +57,7 @@ func BuildIr(
 	usedStrings *pool.StringPool,
 	usedArrays *pool.StringPool,
 	usedNumbers *pool.StringPool,
-	modulePropCounters *map[string]*util.OrderedMap[string, *string],
+	modulePropCounters *map[*module2.Module]*util.OrderedMap[string, *string],
 	localCounters map[string]*string,
 ) string {
 	// Use a strings.Builder to properly handle the IR building

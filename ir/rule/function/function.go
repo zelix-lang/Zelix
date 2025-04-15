@@ -18,6 +18,7 @@ import (
 	"fluent/ast"
 	"fluent/filecode"
 	"fluent/filecode/function"
+	module2 "fluent/filecode/module"
 	"fluent/ir/pool"
 	"fluent/ir/rule/conditional"
 	"fluent/ir/rule/declaration"
@@ -65,7 +66,7 @@ func MarshalFunction(
 	isMain bool,
 	isMod bool,
 	originalPath *string,
-	modulePropCounters *map[string]*util.OrderedMap[string, *string],
+	modulePropCounters *map[*module2.Module]*util.OrderedMap[string, *string],
 	traceCounters *pool.NumPool,
 	usedStrings *pool.StringPool,
 	usedArrays *pool.StringPool,
@@ -123,7 +124,7 @@ func MarshalFunction(
 
 	// Inject the "this" parameter if needed
 	if injectThis {
-		signature.WriteString("p0 ")
+		signature.WriteString("p0 &")
 		signature.WriteString(modType)
 		signature.WriteString(" ")
 		paramCounter++
@@ -159,7 +160,7 @@ func MarshalFunction(
 
 	// Write trace parameters
 	if !(isMain && name == nil) {
-		signature.WriteString("__file str __line str __col str")
+		signature.WriteString("__file &str __line &str __col &str")
 	}
 
 	// Write a newline to the signature

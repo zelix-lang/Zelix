@@ -18,6 +18,7 @@ import (
 	"fluent/ast"
 	"fluent/filecode"
 	"fluent/filecode/function"
+	module2 "fluent/filecode/module"
 	"fluent/ir/pool"
 	"fluent/ir/rule/call"
 	"fluent/ir/tree"
@@ -59,7 +60,7 @@ func MarshalObjectCreation(
 	isMod bool,
 	trace *filecode.FileCode,
 	traceFn *function.Function,
-	modulePropCounters *map[string]*util.OrderedMap[string, *string],
+	modulePropCounters *map[*module2.Module]*util.OrderedMap[string, *string],
 	counter *int,
 	pair *tree.MarshalPair,
 	traceCounters *pool.NumPool,
@@ -95,7 +96,7 @@ func MarshalObjectCreation(
 		mod := trace.Modules[realName]
 
 		// Get the prop counter
-		propCounter := (*modulePropCounters)[realName]
+		propCounter := (*modulePropCounters)[mod]
 
 		// Determine if the module has a constructor
 		constructorName, found := propCounter.Get(realName)
