@@ -71,6 +71,10 @@ func AnalyzePropertyAccess(
 			IsPropReassignment: isPropReassignment && i == childrenLen,
 			LastPropValue:      &candidateResult.Value,
 		}
+
+		if i == childrenLen {
+			newChildren[i].Expected = currentElement.Expected
+		}
 	}
 
 	*exprQueue = append(newChildren, *exprQueue...)
