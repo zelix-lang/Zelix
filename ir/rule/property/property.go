@@ -175,7 +175,7 @@ func MarshalPropertyAccess(
 
 			representation.WriteString("mov x")
 			representation.WriteString(strconv.Itoa(suitable))
-			representation.WriteString(" &")
+			representation.WriteString(" &&")
 		}
 
 		// Write the appropriate format
