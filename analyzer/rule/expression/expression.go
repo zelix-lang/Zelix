@@ -171,36 +171,35 @@ func AnalyzeExpression(
 				if err != nil {
 					return nil, err
 				}
-				continue
-			}
+			} else {
+				// Check if the variable exists
+				value := variables.Load(child.Value)
 
-			// Check if the variable exists
-			value := variables.Load(child.Value)
-
-			if value == nil {
-				return nil, &error3.Error{
-					Code:       error3.UndefinedReference,
-					Additional: []string{*child.Value},
-					Line:       element.Tree.Line,
-					Column:     element.Tree.Column,
+				if value == nil {
+					return nil, &error3.Error{
+						Code:       error3.UndefinedReference,
+						Additional: []string{*child.Value},
+						Line:       element.Tree.Line,
+						Column:     element.Tree.Column,
+					}
 				}
-			}
 
-			// Check for reassignments
-			if element.IsPropReassignment && value.Constant {
-				return nil, &error3.Error{
-					Code:   error3.ConstantReassignment,
-					Line:   element.Tree.Line,
-					Column: element.Tree.Column,
+				// Check for reassignments
+				if element.IsPropReassignment && value.Constant {
+					return nil, &error3.Error{
+						Code:   error3.ConstantReassignment,
+						Line:   element.Tree.Line,
+						Column: element.Tree.Column,
+					}
 				}
-			}
 
-			oldPointerCount := element.Got.Type.PointerCount
-			element.Got.Type = value.Value.Type
-			element.Got.Type.PointerCount += oldPointerCount
-			element.ActualPointers += value.Value.Type.PointerCount
-			element.Got.Value = value.Value.Value
-			element.Got.IsHeap = value.Value.IsHeap
+				oldPointerCount := element.Got.Type.PointerCount
+				element.Got.Type = value.Value.Type
+				element.Got.Type.PointerCount += oldPointerCount
+				element.ActualPointers += value.Value.Type.PointerCount
+				element.Got.Value = value.Value.Value
+				element.Got.IsHeap = value.Value.IsHeap
+			}
 		case ast.Array:
 			err := array.AnalyzeArray(child, element.Expected, &queue)
 
@@ -253,6 +252,8 @@ func AnalyzeExpression(
 				&queue,
 				isPropReassignment,
 			)
+
+			hasNested = true
 		case ast.ArithmeticExpression:
 			// Pass the input to the arithmetic analyzer
 			err := arithmetic.AnalyzeArithmetic(

@@ -14,5 +14,5 @@ mod Abc {
 
 fun main() {
     let c: Abc = new Abc();
-    c.a.b = 25;
+    let d: &num = &c.a.b;
 }
