@@ -56,6 +56,7 @@ import (
 // - usedNumbers: A pointer to a pool.StringPool for used numbers.
 // - localCounters: A pointer to a map of local counters.
 // - moveToStack: A boolean indicating if the value should be moved to the stack.
+// - isParam: A boolean indicating if the element is a parameter.
 // - firstExpected: A pointer to a wrapper.TypeWrapper for the first expected type.
 func MarshalExpression(
 	representation *strings.Builder,
@@ -75,6 +76,7 @@ func MarshalExpression(
 	usedNumbers *pool.StringPool,
 	localCounters *map[string]*string,
 	moveToStack bool,
+	isParam bool,
 	firstExpected *wrapper.TypeWrapper,
 ) {
 	result := tree.InstructionTree{
@@ -86,6 +88,7 @@ func MarshalExpression(
 		Child:       element,
 		Parent:      &result,
 		MoveToStack: moveToStack,
+		IsParam:     isParam,
 	}
 
 	// Get a suitable counter in case we have to move
@@ -139,8 +142,10 @@ func MarshalExpression(
 				pair.Expected.BaseType = oldBaseType
 			}
 
-			pair.Parent.Representation.WriteString("\nstore x")
-			pair.Parent.Representation.WriteString(strconv.Itoa(pair.Counter))
+			if !pair.IsParam {
+				pair.Parent.Representation.WriteString("\nstore x")
+				pair.Parent.Representation.WriteString(strconv.Itoa(pair.Counter))
+			}
 			pair.Parent.Representation.WriteString(" ")
 		}
 

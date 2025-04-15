@@ -173,7 +173,7 @@ func MarshalPropertyAccess(
 			suitable = *counter
 			*counter++
 
-			representation.WriteString("alloca x")
+			representation.WriteString("mov x")
 			representation.WriteString(strconv.Itoa(suitable))
 			representation.WriteString(" &")
 		}

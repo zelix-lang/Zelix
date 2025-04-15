@@ -104,6 +104,7 @@ func MarshalDeclaration(
 		usedNumbers,
 		localCounters,
 		true,
+		false,
 		&varType,
 	)
 }

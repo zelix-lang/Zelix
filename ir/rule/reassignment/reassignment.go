@@ -47,6 +47,7 @@ func marshalExpr(
 	usedArrays *pool.StringPool,
 	usedNumbers *pool.StringPool,
 	localCounters *map[string]*string,
+	isParam bool,
 	expectedType *wrapper.TypeWrapper,
 ) string {
 	// See if we can save memory if the expression is a static value
@@ -76,6 +77,7 @@ func marshalExpr(
 		usedNumbers,
 		localCounters,
 		true,
+		isParam,
 		expectedType,
 	)
 
@@ -159,6 +161,7 @@ func MarshalReassignment(
 			usedArrays,
 			usedNumbers,
 			localCounters,
+			true,
 			storedVar.Type,
 		)
 
@@ -171,6 +174,9 @@ func MarshalReassignment(
 
 		return
 	}
+
+	// Increment pointer count
+	rightExpr.InferredType.PointerCount += 2
 
 	// Store the new property in the pointer
 	leftAddr := marshalExpr(
@@ -190,6 +196,7 @@ func MarshalReassignment(
 		usedArrays,
 		usedNumbers,
 		localCounters,
+		true,
 		rightExpr.InferredType,
 	)
 
@@ -211,6 +218,7 @@ func MarshalReassignment(
 		usedArrays,
 		usedNumbers,
 		localCounters,
+		true,
 		rightExpr.InferredType,
 	)
 
