@@ -175,6 +175,28 @@ func MarshalReassignment(
 		return
 	}
 
+	// Marshal the right expression
+	rightAddr := marshalExpr(
+		queueElement,
+		trace,
+		fileCodeId,
+		traceFileName,
+		isMod,
+		modulePropCounters,
+		traceFn,
+		originalPath,
+		counter,
+		rightExpr,
+		variables,
+		traceCounters,
+		usedStrings,
+		usedArrays,
+		usedNumbers,
+		localCounters,
+		true,
+		rightExpr.InferredType,
+	)
+
 	// Increment pointer count
 	rightExpr.InferredType.PointerCount += 2
 
@@ -190,28 +212,6 @@ func MarshalReassignment(
 		originalPath,
 		counter,
 		leftExpr,
-		variables,
-		traceCounters,
-		usedStrings,
-		usedArrays,
-		usedNumbers,
-		localCounters,
-		true,
-		rightExpr.InferredType,
-	)
-
-	// Marshal the right expression
-	rightAddr := marshalExpr(
-		queueElement,
-		trace,
-		fileCodeId,
-		traceFileName,
-		isMod,
-		modulePropCounters,
-		traceFn,
-		originalPath,
-		counter,
-		rightExpr,
 		variables,
 		traceCounters,
 		usedStrings,
