@@ -116,6 +116,7 @@ func MarshalReturn(
 		usedNumbers,
 		localCounters,
 		true,
+		true,
 		retType,
 	)
 

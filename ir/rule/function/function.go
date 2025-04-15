@@ -348,6 +348,7 @@ func MarshalFunction(
 				usedNumbers,
 				localCounters,
 				false,
+				false,
 				nil,
 			)
 		case ast.Return:

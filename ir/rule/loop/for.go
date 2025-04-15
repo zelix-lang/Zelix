@@ -140,6 +140,7 @@ func MarshalFor(
 			usedNumbers,
 			localCounters,
 			true,
+			false,
 			&numWrapper,
 		)
 
@@ -171,6 +172,7 @@ func MarshalFor(
 			usedNumbers,
 			localCounters,
 			true,
+			false,
 			&numWrapper,
 		)
 

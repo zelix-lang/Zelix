@@ -138,6 +138,7 @@ func marshalCondition(
 				usedNumbers,
 				localCounters,
 				true,
+				false,
 				&BooleanTypeWrapper,
 			)
 
