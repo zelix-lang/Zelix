@@ -23,6 +23,7 @@ import (
 	"fluent/ir/rule/call"
 	"fluent/ir/tree"
 	"fluent/ir/value"
+	"fluent/ir/variable"
 	"fluent/util"
 	"fmt"
 	"strconv"
@@ -55,7 +56,8 @@ func MarshalPropertyAccess(
 	fileCodeId int,
 	counter *int,
 	pair *tree.MarshalPair,
-	modulePropCounters *map[string]*util.OrderedMap[string, *string],
+	variables *map[string]*variable.IRVariable,
+	modulePropCounters *map[*module.Module]*util.OrderedMap[string, *string],
 	traceCounters *pool.NumPool,
 	usedStrings *pool.StringPool,
 	usedNumbers *pool.StringPool,
@@ -97,8 +99,13 @@ func MarshalPropertyAccess(
 
 			lastMod = trace.Modules[inferredType.BaseType]
 
-			// Check if we can save memory on the candidate
-			if value.RetrieveStaticVal(fileCodeId, child, candidate.Representation, usedStrings, usedNumbers) {
+			// Retrieve variables if possible instead of clonning values
+			if child.Children != nil && len(*child.Children) > 0 && (*child.Children)[0].Rule == ast.Identifier {
+				// Get the variable
+				storedVar := (*variables)[*(*child.Children)[0].Value]
+				*lastCandidateAddress = fmt.Sprintf("%s ", storedVar.Addr)
+			} else if value.RetrieveStaticVal(fileCodeId, child, candidate.Representation, usedStrings, usedNumbers) {
+				// Check if we can save memory on the candidate
 				*lastCandidateAddress = candidate.Representation.String()
 			} else {
 				// Get a suitable counter for this expression
@@ -173,7 +180,7 @@ func MarshalPropertyAccess(
 
 		// Write the appropriate format
 		if isCall {
-			props := (*modulePropCounters)[lastMod.Name]
+			props := (*modulePropCounters)[lastMod]
 			// Get the function's name
 			exprChildren = *expr.Children
 			name := *exprChildren[0].Value
@@ -235,7 +242,7 @@ func MarshalPropertyAccess(
 			representation.WriteString(*lastCandidateAddress)
 
 			// Get the module's ordered map
-			props := (*modulePropCounters)[lastMod.Name]
+			props := (*modulePropCounters)[lastMod]
 			propCounter, _ := props.Get(*expr.Value)
 			representation.WriteString(*propCounter)
 

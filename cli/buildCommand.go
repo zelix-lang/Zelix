@@ -17,6 +17,7 @@ package cli
 import (
 	"fluent/ansi"
 	"fluent/filecode/converter"
+	"fluent/filecode/module"
 	"fluent/ir"
 	"fluent/ir/pool"
 	"fluent/logger"
@@ -95,7 +96,7 @@ func BuildCommand(context *cli.Command) string {
 	// Used to store precomputed counters for functions' and
 	// modules' names
 	nameCounters := make(map[string]*map[string]*string)
-	modulePropCounters := make(map[string]*util.OrderedMap[string, *string])
+	modulePropCounters := make(map[*module.Module]*util.OrderedMap[string, *string])
 	// Save in a map the files that have an external
 	// implementation to avoid recompiling them
 	externalImpl := make(map[string]bool)
@@ -175,14 +176,14 @@ func BuildCommand(context *cli.Command) string {
 
 		modCounter := 0
 		for _, mod := range fileCode.Modules {
-			modulePropCounters[mod.Name] = util.NewOrderedMap[string, *string]()
+			modulePropCounters[mod] = util.NewOrderedMap[string, *string]()
 			formattedName := fmt.Sprintf("m__%d_%d", fileCodeCount, modCounter)
 			(*nameCounter)[mod.Name] = &formattedName
 			modCounter++
 
 			// Also precompute all properties and methods
 			propCounter := 0
-			propCounters := modulePropCounters[mod.Name]
+			propCounters := modulePropCounters[mod]
 
 			for name := range mod.Declarations {
 				counterFormatted := strconv.Itoa(propCounter)
