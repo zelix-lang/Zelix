@@ -11,4 +11,6 @@ type Element struct {
 	Tokens []token.Token
 	// Parent is a pointer to the parent AST node.
 	Parent *ast.AST
+	// IsPropAccess indicates if the element is a property access.
+	IsPropAccess bool
 }

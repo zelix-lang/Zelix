@@ -223,6 +223,7 @@ func ProcessExpression(input []token.Token) (*ast.AST, *error.Error) {
 			if parsingError != nil {
 				return nil, parsingError
 			}
+
 			*parent.Children = append(*parent.Children, child)
 			continue
 		}
@@ -449,6 +450,21 @@ func ProcessExpression(input []token.Token) (*ast.AST, *error.Error) {
 
 		// Check for arithmetic
 		if _, ok := arithmetic.Operators[nextTokenType]; ok {
+			// Edge case: Check for "a.b.c + 25"
+			if element.IsPropAccess {
+				// Get the result's children
+				resultChildren := *result.Children
+				// Get the last child
+				lastChild := resultChildren[len(resultChildren)-1]
+				// Delete the last child
+				*result.Children = resultChildren[:len(resultChildren)-1]
+				// Append the candidate to the last child
+				lastChildExpr := (*lastChild.Children)[len(*lastChild.Children)-1]
+				*lastChildExpr.Children = append(*lastChildExpr.Children, candidate)
+				// Update the candidate
+				candidate = lastChild
+			}
+
 			passedTokens := remainingTokens
 
 			if isBoolean {
@@ -476,7 +492,11 @@ func ProcessExpression(input []token.Token) (*ast.AST, *error.Error) {
 			if isBoolean {
 				candidate = expression
 			} else {
-				*parent.Children = append(*parent.Children, expression)
+				if element.IsPropAccess {
+					*result.Children = append(*result.Children, expression)
+				} else {
+					*parent.Children = append(*parent.Children, expression)
+				}
 			}
 
 			continue

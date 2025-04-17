@@ -44,8 +44,6 @@ func AnalyzePropertyAccess(
 		},
 	}
 
-	currentElement.Got.Value = &candidateResult.Value
-
 	// Temporarily save the children to be appended in a new slice
 	newChildren := make([]queue.ExpectedPair, len(children))
 
