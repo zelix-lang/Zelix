@@ -269,8 +269,9 @@ func ProcessSignedOp(
 			}
 		} else {
 			*exprQueue = append(*exprQueue, queue.Element{
-				Tokens: extracted,
-				Parent: &expressionNode,
+				Tokens:       extracted,
+				Parent:       &expressionNode,
+				IsPropAccess: !includeSigns,
 			})
 		}
 
