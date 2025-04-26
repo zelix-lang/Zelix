@@ -127,7 +127,7 @@ func MarshalWhile(
 			usedNumbers,
 			localCounters,
 			true,
-			false,
+			true,
 			&conditional.BooleanTypeWrapper,
 		)
 
