@@ -15,4 +15,5 @@ mod Abc {
 fun main() {
     let c: Abc = new Abc();
     let d: num = c.a.b + 26335;
+    let e: num = *&d;
 }
