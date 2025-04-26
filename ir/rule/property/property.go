@@ -154,7 +154,7 @@ func MarshalPropertyAccess(
 				Representation: lastExpression.Representation,
 			}
 
-			*global.Children = append(*global.Children, &lastExpressionClone)
+			*global.Children = append([]*tree.InstructionTree{&lastExpressionClone}, *global.Children...)
 
 			// Reset the last expression
 			lastExpression = tree.InstructionTree{
