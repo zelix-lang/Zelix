@@ -63,6 +63,11 @@ func AnalyzeExpression(
 	isPropReassignment bool,
 	allowPointers bool,
 ) (*object.Object, *error3.Error) {
+	// Set the inferred type of the tree if we hav ea first expected element
+	if firstExpected != nil {
+		tree.InferredType = firstExpected
+	}
+
 	result := object.Object{
 		Type: wrapper.TypeWrapper{
 			Children: &[]*wrapper.TypeWrapper{},
@@ -339,7 +344,7 @@ func AnalyzeExpression(
 		}
 
 		// Set the inferred type
-		if element.Got.Type.BaseType != "" {
+		if element.Got.Type.BaseType != "" && element.Tree.InferredType == nil {
 			element.Tree.InferredType = &element.Got.Type
 		}
 	}
