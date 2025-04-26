@@ -146,7 +146,7 @@ func MarshalExpression(
 
 		// Check for pointers
 		if child.Rule == ast.Pointer || child.Rule == ast.Dereference {
-			if children[pair.StartAt+1].Rule == ast.Pointer {
+			if child.Rule == ast.Pointer {
 				// Write addr instructions
 				pair.Parent.Representation.WriteString("addr ")
 			} else {
