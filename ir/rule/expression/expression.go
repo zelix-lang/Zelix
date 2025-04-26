@@ -123,15 +123,7 @@ func MarshalExpression(
 
 			pair.Parent.Representation.WriteString(strconv.Itoa(pair.Counter))
 
-			if !pair.IsParam {
-				if pair.Expected.IsPrimitive {
-					pair.Parent.Representation.WriteString(" &&")
-				} else {
-					pair.Parent.Representation.WriteString(" &")
-				}
-			} else {
-				pair.Parent.Representation.WriteString(" ")
-			}
+			pair.Parent.Representation.WriteString(" ")
 
 			if pair.Expected.IsPrimitive {
 				pair.Parent.Representation.WriteString(pair.Expected.Marshal())
@@ -153,12 +145,16 @@ func MarshalExpression(
 		child := children[pair.StartAt]
 
 		// Check for pointers
-		if child.Rule == ast.Pointer {
-			// Write addr instructions
-			pair.Parent.Representation.WriteString("addr ")
+		if child.Rule == ast.Pointer || child.Rule == ast.Dereference {
+			if children[pair.StartAt+1].Rule == ast.Pointer {
+				// Write addr instructions
+				pair.Parent.Representation.WriteString("addr ")
+			} else {
+				pair.Parent.Representation.WriteString("take ")
+			}
 
 			// See if we have a next pointer
-			if children[pair.StartAt+1].Rule == ast.Pointer {
+			if children[pair.StartAt+1].Rule == ast.Pointer || children[pair.StartAt+1].Rule == ast.Dereference {
 				suitable := *counter
 				pair.Parent.Representation.WriteString("x")
 				pair.Parent.Representation.WriteString(strconv.Itoa(suitable))
