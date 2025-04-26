@@ -171,6 +171,13 @@ func MarshalExpression(
 				// Add new instructions to the current tree
 				*pair.Parent.Children = append([]*tree.InstructionTree{&newTree}, *pair.Parent.Children...)
 
+				newPointerCount := pair.Expected.PointerCount
+				if child.Rule == ast.Pointer {
+					newPointerCount -= 1
+				} else {
+					newPointerCount += 1
+				}
+
 				// Add the new tree to the queue
 				queue = append(queue, tree.MarshalPair{
 					Child:       pair.Child,
@@ -180,7 +187,7 @@ func MarshalExpression(
 					MoveToStack: true,
 
 					Expected: wrapper.TypeWrapper{
-						PointerCount: pair.Expected.PointerCount - 1,
+						PointerCount: newPointerCount,
 						ArrayCount:   pair.Expected.ArrayCount,
 						Children:     pair.Expected.Children,
 						BaseType:     pair.Expected.BaseType,
