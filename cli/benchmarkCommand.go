@@ -157,7 +157,7 @@ func BenchmarkCommand(context *cli.Command) {
 		// Calculate the absolute path of the file
 		filePath := path.Join(exampleDir, name)
 
-		var i int64
+		var i int
 		for i = 1; i <= times; i++ {
 			// Run the check command
 			start := time.Now()
