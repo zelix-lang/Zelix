@@ -226,7 +226,7 @@ func MarshalFor(
 	// Get a suitable counter for the break condition
 	suitable = *counter
 	*counter++
-	breakConditionBuilder.WriteString("alloca x")
+	breakConditionBuilder.WriteString("mov x")
 	breakConditionBuilder.WriteString(strconv.Itoa(suitable))
 	breakConditionBuilder.WriteString(" bool eq ")
 	breakConditionBuilder.WriteString(identifierAddr)
