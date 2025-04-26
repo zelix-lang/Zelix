@@ -181,11 +181,10 @@ func MarshalExpression(
 				// Add the new tree to the queue
 				queue = append(queue, tree.MarshalPair{
 					Child:       pair.Child,
-					Parent:      pair.Parent,
+					Parent:      &newTree,
 					IsInline:    pair.IsInline,
 					Counter:     suitable,
 					MoveToStack: true,
-
 					Expected: wrapper.TypeWrapper{
 						PointerCount: newPointerCount,
 						ArrayCount:   pair.Expected.ArrayCount,
