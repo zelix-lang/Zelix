@@ -49,7 +49,15 @@ func main() {
 				Name:    "build",
 				Usage:   "Compiles your project into an executable",
 				Aliases: []string{"b"},
-				Flags:   []cli.Flag{},
+				Flags: []cli.Flag{
+					&cli.IntFlag{
+						Name:     "optimization",
+						Value:    0,
+						Usage:    "Optimization level (0-3)",
+						Aliases:  []string{"o"},
+						Required: false,
+					},
+				},
 				Action: func(_ context.Context, cmd *cli.Command) error {
 					cli2.BuildCommand(cmd)
 					return nil
