@@ -337,7 +337,7 @@ func BuildCommand(context *cli.Command) string {
 	fmt.Println(ansi.Colorize(ansi.BrightBlack, "⚠️ The output you will see from now on is coming from the fluentc command."))
 
 	// Invoke the fluentc backend
-	cmd = exec.Command("fluentc", "-o", outPath, globalIrPath)
+	cmd = exec.Command("fluentc", "-o", outPath, "-p", globalIrPath)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Stdin = os.Stdin
