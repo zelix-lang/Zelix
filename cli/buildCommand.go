@@ -43,6 +43,15 @@ var isPOSIX = !isWindows
 
 // BuildCommand compiles the given Fluent project into an executable
 func BuildCommand(context *cli.Command) string {
+	// Get the optimization level
+	optimizationLevel := context.Int("optimization")
+
+	// Validate the optimization level
+	if optimizationLevel < 0 || optimizationLevel > 3 {
+		logger.Warn("The optimization level must be between 0 and 3. Defaulting to 1")
+		optimizationLevel = 1
+	}
+
 	fmt.Print(ansi.Colorize(ansi.BoldBrightYellow, "⚠️ Checking if fluentc is installed....\r"))
 
 	// Invoke a system command to check if fluentc is installed
@@ -337,7 +346,7 @@ func BuildCommand(context *cli.Command) string {
 	fmt.Println(ansi.Colorize(ansi.BrightBlack, "⚠️ The output you will see from now on is coming from the fluentc command."))
 
 	// Invoke the fluentc backend
-	cmd = exec.Command("fluentc", "-o", outPath, "-p", globalIrPath)
+	cmd = exec.Command("fluentc", "-O", strconv.Itoa(optimizationLevel), "-o", outPath, "-p", globalIrPath)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Stdin = os.Stdin
