@@ -74,8 +74,8 @@ func MarshalModule(
 		prop, ok := mod.Declarations[name]
 
 		if ok {
-			modTree.Representation.WriteString("&")
 			if prop.Type.IsPrimitive {
+				modTree.Representation.WriteString("&")
 				modTree.Representation.WriteString(prop.Type.Marshal())
 			} else {
 				oldBaseType := prop.Type.BaseType
