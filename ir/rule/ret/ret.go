@@ -64,7 +64,6 @@ func MarshalReturn(
 	traceCounters *pool.NumPool,
 	usedStrings *pool.StringPool,
 	usedArrays *pool.StringPool,
-	usedNumbers *pool.StringPool,
 	localCounters *map[string]*string,
 	retType *wrapper.TypeWrapper,
 ) {
@@ -113,7 +112,6 @@ func MarshalReturn(
 		traceCounters,
 		usedStrings,
 		usedArrays,
-		usedNumbers,
 		localCounters,
 		true,
 		true,
