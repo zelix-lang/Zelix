@@ -4,7 +4,7 @@ go 1.24.0
 
 require (
 	github.com/theckman/yacspin v0.13.12
-	github.com/urfave/cli/v3 v3.2.0
+	github.com/urfave/cli/v3 v3.3.1
 )
 
 require (
