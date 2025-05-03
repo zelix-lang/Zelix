@@ -38,7 +38,6 @@ import (
 // - parent: The parent instruction tree.
 // - variables: A map of variable names to IRVariable pointers.
 // - usedStrings: A pool of used strings.
-// - usedNumbers: A pool of used numbers.
 // - exprQueue: A queue of expressions to be marshaled.
 // - lineCounter: The line counter for trace information.
 // - colCounter: The column counter for trace information.
@@ -51,7 +50,6 @@ func MarshalParams(
 	fileCodeId int,
 	parent *tree.InstructionTree,
 	usedStrings *pool.StringPool,
-	usedNumbers *pool.StringPool,
 	exprQueue *[]tree.MarshalPair,
 	lineCounter string,
 	colCounter string,
@@ -184,7 +182,6 @@ func MarshalFunctionCall(
 	parent *tree.InstructionTree,
 	traceCounters *pool.NumPool,
 	usedStrings *pool.StringPool,
-	usedNumbers *pool.StringPool,
 	exprQueue *[]tree.MarshalPair,
 	localCounters *map[string]*string,
 ) {
@@ -251,7 +248,6 @@ func MarshalFunctionCall(
 			fileCodeId,
 			parent,
 			usedStrings,
-			usedNumbers,
 			exprQueue,
 			lineCounter,
 			colCounter,
