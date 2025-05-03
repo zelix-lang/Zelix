@@ -52,7 +52,6 @@ import (
 // - appendedBlocks: A pool for managing appended blocks.
 // - usedStrings: A pool for managing used strings.
 // - usedArrays: A pool for managing used arrays.
-// - usedNumbers: A pool for managing used numbers.
 // - localCounters: A map of local counters.
 // - blockQueue: A queue of block marshal elements.
 func MarshalWhile(
@@ -71,7 +70,6 @@ func MarshalWhile(
 	appendedBlocks *pool.BlockPool,
 	usedStrings *pool.StringPool,
 	usedArrays *pool.StringPool,
-	usedNumbers *pool.StringPool,
 	localCounters *map[string]*string,
 	blockQueue *[]*tree.BlockMarshalElement,
 ) {
@@ -124,7 +122,6 @@ func MarshalWhile(
 			traceCounters,
 			usedStrings,
 			usedArrays,
-			usedNumbers,
 			localCounters,
 			true,
 			true,
