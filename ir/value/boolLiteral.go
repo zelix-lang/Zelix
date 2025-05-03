@@ -20,7 +20,7 @@ import (
 )
 
 // WriteBoolLiteral writes a boolean literal to the parent InstructionTree.
-// It writes "__TRUE" if the value is true, "__FALSE" otherwise.
+// It writes "1 " if the value is true, "0 " otherwise.
 //
 // Parameters:
 //   - child: a pointer to the AST node containing the boolean value.
