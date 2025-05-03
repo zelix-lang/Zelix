@@ -59,7 +59,6 @@ var BooleanTypeWrapper = wrapper.TypeWrapper{
 // - appendedBlocks: A pool of blocks to be appended.
 // - usedStrings: A pool of used strings.
 // - usedArrays: A pool of used arrays.
-// - usedNumbers: A pool of used numbers.
 // - localCounters: A map of local counters.
 // - blockQueue: A slice of block marshal elements representing the block queue.
 // - isLast: A boolean indicating if this is the last condition.
@@ -85,7 +84,6 @@ func marshalCondition(
 	appendedBlocks *pool.BlockPool,
 	usedStrings *pool.StringPool,
 	usedArrays *pool.StringPool,
-	usedNumbers *pool.StringPool,
 	localCounters *map[string]*string,
 	blockQueue *[]*tree.BlockMarshalElement,
 	isLast bool,
@@ -135,7 +133,6 @@ func marshalCondition(
 				traceCounters,
 				usedStrings,
 				usedArrays,
-				usedNumbers,
 				localCounters,
 				true,
 				false,
@@ -200,7 +197,6 @@ func marshalCondition(
 // - appendedBlocks: A pool of blocks to be appended.
 // - usedStrings: A pool of used strings.
 // - usedArrays: A pool of used arrays.
-// - usedNumbers: A pool of used numbers.
 // - localCounters: A map of local counters.
 // - blockQueue: A slice of block marshal elements representing the block queue.
 func MarshalIf(
@@ -219,7 +215,6 @@ func MarshalIf(
 	appendedBlocks *pool.BlockPool,
 	usedStrings *pool.StringPool,
 	usedArrays *pool.StringPool,
-	usedNumbers *pool.StringPool,
 	localCounters *map[string]*string,
 	blockQueue *[]*tree.BlockMarshalElement,
 ) {
@@ -277,7 +272,6 @@ func MarshalIf(
 			appendedBlocks,
 			usedStrings,
 			usedArrays,
-			usedNumbers,
 			localCounters,
 			blockQueue,
 			isLast,
