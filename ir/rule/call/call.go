@@ -68,7 +68,7 @@ func MarshalParams(
 		expr := (*paramNode.Children)[0]
 
 		// Retrieve the string literal if needed
-		if value.RetrieveStaticVal(fileCodeId, expr, parent.Representation, usedStrings, usedNumbers) {
+		if value.RetrieveStaticVal(fileCodeId, expr, parent.Representation, usedStrings) {
 			continue
 		}
 
