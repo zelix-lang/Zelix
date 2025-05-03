@@ -66,7 +66,6 @@ func MarshalObjectCreation(
 	traceCounters *pool.NumPool,
 	usedStrings *pool.StringPool,
 	usedArrays *pool.StringPool,
-	usedNumbers *pool.StringPool,
 	exprQueue *[]tree.MarshalPair,
 	localCounters *map[string]*string,
 ) {
@@ -210,12 +209,9 @@ func MarshalObjectCreation(
 				if propType.IsPrimitive {
 					switch propType.BaseType {
 					case "num", "bool":
-						instructionTree.Representation.WriteString("__FALSE ")
+						instructionTree.Representation.WriteString("0 ")
 					case "dec":
-						// Request an address for 0.0
-						addr := usedNumbers.RequestAddress(fileCodeId, "0.0")
-						instructionTree.Representation.WriteString(addr)
-						instructionTree.Representation.WriteString(" ")
+						instructionTree.Representation.WriteString("0.0 ")
 					case "str":
 						// Request an address for an empty string
 						addr := usedStrings.RequestAddress(fileCodeId, "")
@@ -328,7 +324,6 @@ func MarshalObjectCreation(
 				fileCodeId,
 				element.Parent,
 				usedStrings,
-				usedNumbers,
 				exprQueue,
 				lineAddress,
 				colAddress,
