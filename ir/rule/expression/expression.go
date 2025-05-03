@@ -264,7 +264,6 @@ func MarshalExpression(
 				counter,
 				&pair,
 				usedStrings,
-				usedNumbers,
 				&queue,
 			)
 		case ast.NumberLiteral, ast.DecimalLiteral:
