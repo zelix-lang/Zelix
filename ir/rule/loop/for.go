@@ -58,7 +58,6 @@ var numWrapper = wrapper.TypeWrapper{
 // - appendedBlocks: A pool of block elements.
 // - usedStrings: A pool of used strings.
 // - usedArrays: A pool of used arrays.
-// - usedNumbers: A pool of used numbers.
 // - localCounters: A map of local counters.
 // - blockQueue: A queue of block elements to be marshaled.
 func MarshalFor(
@@ -77,7 +76,6 @@ func MarshalFor(
 	appendedBlocks *pool.BlockPool,
 	usedStrings *pool.StringPool,
 	usedArrays *pool.StringPool,
-	usedNumbers *pool.StringPool,
 	localCounters *map[string]*string,
 	blockQueue *[]*tree.BlockMarshalElement,
 ) {
@@ -137,7 +135,6 @@ func MarshalFor(
 			traceCounters,
 			usedStrings,
 			usedArrays,
-			usedNumbers,
 			localCounters,
 			true,
 			false,
@@ -169,7 +166,6 @@ func MarshalFor(
 			traceCounters,
 			usedStrings,
 			usedArrays,
-			usedNumbers,
 			localCounters,
 			true,
 			false,
@@ -193,8 +189,7 @@ func MarshalFor(
 	storeBuilder.WriteString(backupAddr)
 	storeBuilder.WriteString(" num add ")
 	storeBuilder.WriteString(identifierAddr)
-	storeBuilder.WriteString(" ")
-	storeBuilder.WriteString(usedNumbers.RequestAddress(fileCodeId, "1"))
+	storeBuilder.WriteString(" 1 ")
 	storeBuilder.WriteString("\njump ")
 	storeBuilder.WriteString(*breakConditionAddr)
 	storeBuilder.WriteString("\n")
