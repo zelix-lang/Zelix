@@ -303,7 +303,6 @@ func MarshalExpression(
 				modulePropCounters,
 				traceCounters,
 				usedStrings,
-				usedNumbers,
 				&queue,
 				localCounters,
 				traceFileName,

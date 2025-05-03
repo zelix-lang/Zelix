@@ -45,7 +45,6 @@ var emptyString = ""
 // - modulePropCounters: A map of module property counters.
 // - traceCounters: A pool of trace counters.
 // - usedStrings: A pool of used strings.
-// - usedNumbers: A pool of used numbers.
 // - exprQueue: A queue of marshal pairs for expressions.
 // - localCounters: A map of local counters.
 // - traceFileName: The name of the trace file.
@@ -60,7 +59,6 @@ func MarshalPropertyAccess(
 	modulePropCounters *map[*module.Module]*util.OrderedMap[string, *string],
 	traceCounters *pool.NumPool,
 	usedStrings *pool.StringPool,
-	usedNumbers *pool.StringPool,
 	exprQueue *[]tree.MarshalPair,
 	localCounters *map[string]*string,
 	traceFileName string,
@@ -218,7 +216,6 @@ func MarshalPropertyAccess(
 					fileCodeId,
 					pair.Parent,
 					usedStrings,
-					usedNumbers,
 					exprQueue,
 					lineCounter,
 					colCounter,
