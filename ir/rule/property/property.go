@@ -104,7 +104,7 @@ func MarshalPropertyAccess(
 				// Get the variable
 				storedVar := (*variables)[*(*child.Children)[0].Value]
 				*lastCandidateAddress = fmt.Sprintf("%s ", storedVar.Addr)
-			} else if value.RetrieveStaticVal(fileCodeId, child, candidate.Representation, usedStrings, usedNumbers) {
+			} else if value.RetrieveStaticVal(fileCodeId, child, candidate.Representation, usedStrings) {
 				// Check if we can save memory on the candidate
 				*lastCandidateAddress = candidate.Representation.String()
 			} else {
