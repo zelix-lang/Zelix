@@ -52,7 +52,7 @@ func marshalExpr(
 ) string {
 	// See if we can save memory if the expression is a static value
 	dummyBuilder := strings.Builder{}
-	if value.RetrieveStaticVal(fileCodeId, expr, &dummyBuilder, usedStrings, usedNumbers) {
+	if value.RetrieveStaticVal(fileCodeId, expr, &dummyBuilder, usedStrings) {
 		return dummyBuilder.String()
 	}
 
