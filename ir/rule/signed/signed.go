@@ -94,7 +94,6 @@ func writeSignOpcode(sign string, parent *tree.InstructionTree) bool {
 // - pair: The MarshalPair containing the parent InstructionTree and expected type.
 // - preferredParent: The preferred parent InstructionTree for the candidate.
 // - usedStrings: The pool of used strings.
-// - usedNumbers: The pool of used numbers.
 // - exprQueue: The queue of expressions to be processed.
 // - variables: The map of variables used in the IR.
 func processCandidate(
@@ -106,7 +105,6 @@ func processCandidate(
 	pair *tree.MarshalPair,
 	preferredParent *tree.InstructionTree,
 	usedStrings *pool.StringPool,
-	usedNumbers *pool.StringPool,
 	exprQueue *[]tree.MarshalPair,
 ) {
 	// See if we can save memory
@@ -157,7 +155,6 @@ func processCandidate(
 // - counter: A pointer to the counter used for generating unique identifiers.
 // - pair: The MarshalPair containing the parent InstructionTree and expected type.
 // - usedStrings: The pool of used strings.
-// - usedNumbers: The pool of used numbers.
 // - exprQueue: The queue of expressions to be processed.
 func MarshalSignedExpression(
 	global *tree.InstructionTree,
@@ -166,7 +163,6 @@ func MarshalSignedExpression(
 	counter *int,
 	pair *tree.MarshalPair,
 	usedStrings *pool.StringPool,
-	usedNumbers *pool.StringPool,
 	exprQueue *[]tree.MarshalPair,
 ) {
 	children := *child.Children
@@ -191,7 +187,7 @@ func MarshalSignedExpression(
 	isBoolean := writeSignOpcode(generalSign, pair.Parent)
 
 	// Process the first pair outside the queue
-	processCandidate(global, children[0], fileCodeId, isBoolean, counter, pair, pair.Parent, usedStrings, usedNumbers, exprQueue)
+	processCandidate(global, children[0], fileCodeId, isBoolean, counter, pair, pair.Parent, usedStrings, exprQueue)
 
 	// See if we can save memory in the 2nd operand
 	if len(children) == 3 {
@@ -276,7 +272,7 @@ func MarshalSignedExpression(
 		isBoolean := writeSignOpcode(sign, &exprTree)
 
 		// Process the first pair outside the queue
-		processCandidate(global, candidate, fileCodeId, isBoolean, counter, pair, &exprTree, usedStrings, usedNumbers, exprQueue)
+		processCandidate(global, candidate, fileCodeId, isBoolean, counter, pair, &exprTree, usedStrings, exprQueue)
 
 		// Update the last parent
 		lastParent = &exprTree
