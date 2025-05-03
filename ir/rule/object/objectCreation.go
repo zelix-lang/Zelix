@@ -48,7 +48,6 @@ import (
 // - traceCounters: The pool of trace counters.
 // - usedStrings: The pool of used strings.
 // - usedArrays: The pool of used arrays.
-// - usedNumbers: The pool of used numbers.
 // - exprQueue: The queue of expressions to be marshaled.
 // - localCounters: A map of local counters.
 func MarshalObjectCreation(
