@@ -47,7 +47,6 @@ import (
 // - traceCounters: A pool of number counters for tracing.
 // - usedStrings: A pool of used strings.
 // - usedArrays: A pool of used arrays.
-// - usedNumbers: A pool of used numbers.
 // - localCounters: A map of local counters.
 func MarshalDeclaration(
 	queueElement *tree.BlockMarshalElement,
@@ -64,7 +63,6 @@ func MarshalDeclaration(
 	traceCounters *pool.NumPool,
 	usedStrings *pool.StringPool,
 	usedArrays *pool.StringPool,
-	usedNumbers *pool.StringPool,
 	localCounters *map[string]*string,
 ) {
 	// Get the children
@@ -101,7 +99,6 @@ func MarshalDeclaration(
 		traceCounters,
 		usedStrings,
 		usedArrays,
-		usedNumbers,
 		localCounters,
 		true,
 		false,
