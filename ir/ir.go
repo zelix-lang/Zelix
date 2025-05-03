@@ -40,7 +40,6 @@ import (
 // - traceStrings: A map of trace strings.
 // - usedStrings: A pool of used strings.
 // - usedArrays: A pool of used arrays.
-// - usedNumbers: A pool of used numbers.
 // - modulePropCounters: A map of module property counters.
 // - localCounters: A map of local counters.
 //
@@ -56,7 +55,6 @@ func BuildIr(
 	traceStrings *map[string]*string,
 	usedStrings *pool.StringPool,
 	usedArrays *pool.StringPool,
-	usedNumbers *pool.StringPool,
 	modulePropCounters *map[*module2.Module]*util.OrderedMap[string, *string],
 	localCounters map[string]*string,
 ) string {
@@ -113,7 +111,6 @@ func BuildIr(
 			traceCounters,
 			usedStrings,
 			usedArrays,
-			usedNumbers,
 		)
 	}
 
@@ -143,7 +140,6 @@ func BuildIr(
 			traceCounters,
 			usedStrings,
 			usedArrays,
-			usedNumbers,
 			&fileTree,
 			localCounters[fun.Name],
 			&localCounters,
