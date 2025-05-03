@@ -236,7 +236,6 @@ func MarshalExpression(
 				traceCounters,
 				usedStrings,
 				usedArrays,
-				usedNumbers,
 				&queue,
 				localCounters,
 			)
