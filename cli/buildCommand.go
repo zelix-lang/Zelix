@@ -86,11 +86,6 @@ func BuildCommand(context *cli.Command) string {
 		Prefix:  "__str__",
 	}
 	traceStrings := make(map[string]*string)
-	usedArrays := pool.StringPool{
-		Storage: make(map[string]string),
-		Counter: make(map[int]int),
-		Prefix:  "__arr__",
-	}
 	// Used to store precomputed counters for functions' and
 	// modules' names
 	nameCounters := make(map[string]*map[string]*string)
@@ -238,7 +233,6 @@ func BuildCommand(context *cli.Command) string {
 			&traceCounters,
 			&traceStrings,
 			&usedStrings,
-			&usedArrays,
 			&modulePropCounters,
 			*nameCounters[fileCode.Path],
 		)
@@ -287,14 +281,6 @@ func BuildCommand(context *cli.Command) string {
 		finalBuilder.WriteString(" &str \"")
 		finalBuilder.WriteString(str)
 		finalBuilder.WriteString("\"\n")
-	}
-
-	for arrType, address := range usedArrays.Storage {
-		finalBuilder.WriteString("ref ")
-		finalBuilder.WriteString(address)
-		finalBuilder.WriteString(" ")
-		finalBuilder.WriteString(arrType)
-		finalBuilder.WriteString("[0] []\n")
 	}
 
 	for num, address := range traceCounters.Storage {
