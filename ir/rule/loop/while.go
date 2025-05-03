@@ -103,7 +103,7 @@ func MarshalWhile(
 	var conditionAddr string
 
 	// See if we can save memory on the condition
-	if value.RetrieveStaticVal(fileCodeId, condition, &tempBuilder, usedStrings, usedNumbers) {
+	if value.RetrieveStaticVal(fileCodeId, condition, &tempBuilder, usedStrings) {
 		conditionAddr = tempBuilder.String()
 	} else {
 		conditionAddr = fmt.Sprintf("x%d ", *counter)
