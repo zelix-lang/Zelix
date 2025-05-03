@@ -28,13 +28,11 @@ import (
 // - expr: A pointer to the AST node representing the expression.
 // - representation: A pointer to a strings.Builder to write the representation.
 // - usedStrings: A pointer to a pool.StringPool for managing used strings.
-// - usedNumbers: A pointer to a pool.StringPool for managing used numbers.
 func RetrieveStaticVal(
 	fileCodeId int,
 	expr *ast.AST,
 	representation *strings.Builder,
 	usedStrings *pool.StringPool,
-	usedNumbers *pool.StringPool,
 ) bool {
 	// Get the expression's children
 	exprChildren := *expr.Children
@@ -56,29 +54,6 @@ func RetrieveStaticVal(
 		case ast.BooleanLiteral:
 			// Write the boolean's value
 			WriteBoolLiteral(child, representation)
-			return true
-		case ast.NumberLiteral, ast.DecimalLiteral:
-			// Get the number's value
-			num := *child.Value
-
-			// See if the number's value is either 0 or 1
-			if num == "0" {
-				// Write the __FALSE constant
-				representation.WriteString("__FALSE")
-				representation.WriteString(" ")
-				return true
-			} else if num == "1" {
-				// Write the __TRUE constant
-				representation.WriteString("__TRUE")
-				representation.WriteString(" ")
-				return true
-			}
-
-			// Request an address for this number
-			address := usedNumbers.RequestAddress(fileCodeId, num)
-			representation.WriteString(address)
-			representation.WriteString(" ")
-
 			return true
 		default:
 		}
