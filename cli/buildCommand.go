@@ -91,11 +91,6 @@ func BuildCommand(context *cli.Command) string {
 		Counter: make(map[int]int),
 		Prefix:  "__arr__",
 	}
-	usedNumbers := pool.StringPool{
-		Storage: make(map[string]string),
-		Counter: make(map[int]int),
-		Prefix:  "__num__",
-	}
 	// Used to store precomputed counters for functions' and
 	// modules' names
 	nameCounters := make(map[string]*map[string]*string)
@@ -244,7 +239,6 @@ func BuildCommand(context *cli.Command) string {
 			&traceStrings,
 			&usedStrings,
 			&usedArrays,
-			&usedNumbers,
 			&modulePropCounters,
 			*nameCounters[fileCode.Path],
 		)
@@ -301,21 +295,6 @@ func BuildCommand(context *cli.Command) string {
 		finalBuilder.WriteString(" ")
 		finalBuilder.WriteString(arrType)
 		finalBuilder.WriteString("[0] []\n")
-	}
-
-	for num, address := range usedNumbers.Storage {
-		finalBuilder.WriteString("ref ")
-		finalBuilder.WriteString(address)
-
-		// Check if the number is a decimal
-		if strings.Contains(num, ".") {
-			finalBuilder.WriteString(" &dec ")
-		} else {
-			finalBuilder.WriteString(" &num ")
-		}
-
-		finalBuilder.WriteString(num)
-		finalBuilder.WriteString("\n")
 	}
 
 	for num, address := range traceCounters.Storage {
