@@ -45,8 +45,6 @@ import (
 // - variables: A pointer to a map of IRVariable structures representing the variables.
 // - traceCounters: A pointer to the NumPool structure containing trace counters.
 // - usedStrings: A pointer to the StringPool structure containing used strings.
-// - usedArrays: A pointer to the StringPool structure containing used arrays.
-// - usedNumbers: A pointer to the StringPool structure containing used numbers.
 // - localCounters: A pointer to a map of local counters.
 // - retType: A pointer to the TypeWrapper structure representing the return type.
 func MarshalReturn(
@@ -63,7 +61,6 @@ func MarshalReturn(
 	variables *map[string]*variable.IRVariable,
 	traceCounters *pool.NumPool,
 	usedStrings *pool.StringPool,
-	usedArrays *pool.StringPool,
 	localCounters *map[string]*string,
 	retType *wrapper.TypeWrapper,
 ) {
@@ -111,7 +108,6 @@ func MarshalReturn(
 		variables,
 		traceCounters,
 		usedStrings,
-		usedArrays,
 		localCounters,
 		true,
 		true,
