@@ -34,7 +34,6 @@ import (
 // - counter: A pointer to the counter used for generating unique identifiers.
 // - pair: The marshal pair containing the parent instruction tree and expected type.
 // - usedStrings: A pool of used string literals.
-// - usedNumbers: A pool of used number literals.
 // - exprQueue: A queue of marshal pairs for further processing.
 func MarshalArray(
 	global *tree.InstructionTree,
@@ -43,7 +42,6 @@ func MarshalArray(
 	counter *int,
 	pair *tree.MarshalPair,
 	usedStrings *pool.StringPool,
-	usedNumbers *pool.StringPool,
 	exprQueue *[]tree.MarshalPair,
 ) {
 	// Get the array's children
