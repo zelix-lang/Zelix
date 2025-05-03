@@ -52,7 +52,6 @@ import (
 // - traceCounters: The trace counters pool.
 // - usedStrings: The pool of used strings.
 // - usedArrays: The pool of used arrays.
-// - usedNumbers: The pool of used numbers.
 // - fileTree: The instruction tree for the file.
 // - name: The name of the function.
 // - localCounters: The local counters map.
@@ -70,7 +69,6 @@ func MarshalFunction(
 	traceCounters *pool.NumPool,
 	usedStrings *pool.StringPool,
 	usedArrays *pool.StringPool,
-	usedNumbers *pool.StringPool,
 	fileTree *tree.InstructionTree,
 	name *string,
 	localCounters *map[string]*string,
@@ -214,7 +212,6 @@ func MarshalFunction(
 				&appendedBlocks,
 				usedStrings,
 				usedArrays,
-				usedNumbers,
 				localCounters,
 				&blockQueue,
 			)
@@ -236,7 +233,6 @@ func MarshalFunction(
 				&appendedBlocks,
 				usedStrings,
 				usedArrays,
-				usedNumbers,
 				localCounters,
 				&blockQueue,
 			)
@@ -258,7 +254,6 @@ func MarshalFunction(
 				&appendedBlocks,
 				usedStrings,
 				usedArrays,
-				usedNumbers,
 				localCounters,
 				&blockQueue,
 			)
@@ -307,7 +302,6 @@ func MarshalFunction(
 				traceCounters,
 				usedStrings,
 				usedArrays,
-				usedNumbers,
 				localCounters,
 			)
 		case ast.Declaration:
@@ -326,7 +320,6 @@ func MarshalFunction(
 				traceCounters,
 				usedStrings,
 				usedArrays,
-				usedNumbers,
 				localCounters,
 			)
 		case ast.Expression:
@@ -345,7 +338,6 @@ func MarshalFunction(
 				traceCounters,
 				usedStrings,
 				usedArrays,
-				usedNumbers,
 				localCounters,
 				false,
 				false,
@@ -367,7 +359,6 @@ func MarshalFunction(
 				traceCounters,
 				usedStrings,
 				usedArrays,
-				usedNumbers,
 				localCounters,
 				&fun.ReturnType,
 			)
