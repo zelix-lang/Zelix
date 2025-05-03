@@ -36,7 +36,6 @@ import (
 // - fileCodeId: The file code ID.
 // - traceCounters: A pool of numeric counters for tracing.
 // - usedStrings: A pool of used strings.
-// - usedArrays: A pool of used arrays.
 func MarshalModule(
 	mod *module.Module,
 	originalPath *string,
@@ -48,7 +47,6 @@ func MarshalModule(
 	fileCodeId int,
 	traceCounters *pool.NumPool,
 	usedStrings *pool.StringPool,
-	usedArrays *pool.StringPool,
 ) {
 	// Create a new InstructionTree for the module
 	modTree := tree.InstructionTree{
@@ -101,7 +99,6 @@ func MarshalModule(
 			modulePropCounters,
 			traceCounters,
 			usedStrings,
-			usedArrays,
 			fileTree,
 			computedName,
 			localCounters,
