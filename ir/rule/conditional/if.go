@@ -112,7 +112,7 @@ func marshalCondition(
 		tempBuilder := strings.Builder{}
 
 		// See if we can save memory on the condition
-		if value.RetrieveStaticVal(fileCodeId, condition, &tempBuilder, usedStrings, usedNumbers) {
+		if value.RetrieveStaticVal(fileCodeId, condition, &tempBuilder, usedStrings) {
 			// Write the instruction
 			representation.WriteString("if ")
 			representation.WriteString(tempBuilder.String())
