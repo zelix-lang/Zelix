@@ -45,7 +45,6 @@ func marshalExpr(
 	traceCounters *pool.NumPool,
 	usedStrings *pool.StringPool,
 	usedArrays *pool.StringPool,
-	usedNumbers *pool.StringPool,
 	localCounters *map[string]*string,
 	isParam bool,
 	expectedType *wrapper.TypeWrapper,
@@ -74,7 +73,6 @@ func marshalExpr(
 		traceCounters,
 		usedStrings,
 		usedArrays,
-		usedNumbers,
 		localCounters,
 		true,
 		isParam,
@@ -102,7 +100,6 @@ func marshalExpr(
 // - traceCounters: A pool of numeric counters.
 // - usedStrings: A pool of used strings.
 // - usedArrays: A pool of used arrays.
-// - usedNumbers: A pool of used numbers.
 // - localCounters: A map of local counters.
 func MarshalReassignment(
 	queueElement *tree.BlockMarshalElement,
@@ -119,7 +116,6 @@ func MarshalReassignment(
 	traceCounters *pool.NumPool,
 	usedStrings *pool.StringPool,
 	usedArrays *pool.StringPool,
-	usedNumbers *pool.StringPool,
 	localCounters *map[string]*string,
 ) {
 	// Get the children
@@ -159,7 +155,6 @@ func MarshalReassignment(
 			traceCounters,
 			usedStrings,
 			usedArrays,
-			usedNumbers,
 			localCounters,
 			true,
 			storedVar.Type,
@@ -191,7 +186,6 @@ func MarshalReassignment(
 		traceCounters,
 		usedStrings,
 		usedArrays,
-		usedNumbers,
 		localCounters,
 		true,
 		rightExpr.InferredType,
@@ -216,7 +210,6 @@ func MarshalReassignment(
 		traceCounters,
 		usedStrings,
 		usedArrays,
-		usedNumbers,
 		localCounters,
 		true,
 		rightExpr.InferredType,
