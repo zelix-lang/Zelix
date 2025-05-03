@@ -53,7 +53,6 @@ import (
 // - traceCounters: A pointer to a pool.NumPool for trace counters.
 // - usedStrings: A pointer to a pool.StringPool for used strings.
 // - usedArrays: A pointer to a pool.StringPool for used arrays.
-// - usedNumbers: A pointer to a pool.StringPool for used numbers.
 // - localCounters: A pointer to a map of local counters.
 // - moveToStack: A boolean indicating if the value should be moved to the stack.
 // - isParam: A boolean indicating if the element is a parameter.
@@ -73,7 +72,6 @@ func MarshalExpression(
 	traceCounters *pool.NumPool,
 	usedStrings *pool.StringPool,
 	usedArrays *pool.StringPool,
-	usedNumbers *pool.StringPool,
 	localCounters *map[string]*string,
 	moveToStack bool,
 	isParam bool,
