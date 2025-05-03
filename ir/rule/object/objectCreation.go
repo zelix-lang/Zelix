@@ -47,7 +47,6 @@ import (
 // - pair: The marshal pair containing parent and counter information.
 // - traceCounters: The pool of trace counters.
 // - usedStrings: The pool of used strings.
-// - usedArrays: The pool of used arrays.
 // - exprQueue: The queue of expressions to be marshaled.
 // - localCounters: A map of local counters.
 func MarshalObjectCreation(
@@ -64,7 +63,6 @@ func MarshalObjectCreation(
 	pair *tree.MarshalPair,
 	traceCounters *pool.NumPool,
 	usedStrings *pool.StringPool,
-	usedArrays *pool.StringPool,
 	exprQueue *[]tree.MarshalPair,
 	localCounters *map[string]*string,
 ) {
@@ -195,13 +193,9 @@ func MarshalObjectCreation(
 				}
 
 				if propType.ArrayCount > 0 {
-					// Request an address for this type
-					addr := usedArrays.RequestAddress(
-						fileCodeId,
-						baseType,
-					)
-
-					instructionTree.Representation.WriteString(addr)
+					instructionTree.Representation.WriteString("arr ")
+					instructionTree.Representation.WriteString(baseType)
+					instructionTree.Representation.WriteString(" 0")
 					return false
 				}
 
