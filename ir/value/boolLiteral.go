@@ -28,9 +28,8 @@ import (
 func WriteBoolLiteral(child *ast.AST, representation *strings.Builder) {
 	// Write 1 if the value is true, 0 otherwise
 	if *child.Value == "true" {
-		representation.WriteString("__TRUE")
+		representation.WriteString("1 ")
 	} else {
-		representation.WriteString("__FALSE")
+		representation.WriteString("0 ")
 	}
-	representation.WriteString(" ")
 }
