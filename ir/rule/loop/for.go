@@ -57,7 +57,6 @@ var numWrapper = wrapper.TypeWrapper{
 // - traceCounters: A pool of numeric counters.
 // - appendedBlocks: A pool of block elements.
 // - usedStrings: A pool of used strings.
-// - usedArrays: A pool of used arrays.
 // - localCounters: A map of local counters.
 // - blockQueue: A queue of block elements to be marshaled.
 func MarshalFor(
@@ -75,7 +74,6 @@ func MarshalFor(
 	traceCounters *pool.NumPool,
 	appendedBlocks *pool.BlockPool,
 	usedStrings *pool.StringPool,
-	usedArrays *pool.StringPool,
 	localCounters *map[string]*string,
 	blockQueue *[]*tree.BlockMarshalElement,
 ) {
@@ -134,7 +132,6 @@ func MarshalFor(
 			variables,
 			traceCounters,
 			usedStrings,
-			usedArrays,
 			localCounters,
 			true,
 			false,
@@ -165,7 +162,6 @@ func MarshalFor(
 			variables,
 			traceCounters,
 			usedStrings,
-			usedArrays,
 			localCounters,
 			true,
 			false,
