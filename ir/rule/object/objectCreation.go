@@ -258,6 +258,7 @@ func MarshalObjectCreation(
 					Counter:     suitable,
 					Expected:    prop.Type,
 					MoveToStack: true,
+					IsParam:     true,
 				})
 			}
 
