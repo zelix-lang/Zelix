@@ -94,10 +94,6 @@ func BuildCommand(context *cli.Command) string {
 	// implementation to avoid recompiling them
 	externalImpl := make(map[string]bool)
 
-	// Write __TRUE, __FALSE constants
-	globalBuilder.WriteString("ref __TRUE num 1\n")
-	globalBuilder.WriteString("ref __FALSE num 0\n")
-
 	// Precompute the counters for the names
 	for _, fileCode := range fileCodes {
 		// Check if this file has an external implementation
