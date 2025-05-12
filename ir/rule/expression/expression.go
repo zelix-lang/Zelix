@@ -239,7 +239,7 @@ func MarshalExpression(
 			stored := (*variables)[*child.Value]
 
 			if derefVariables {
-				pair.Parent.Representation.WriteString("load ")
+				pair.Parent.Representation.WriteString("take ")
 			}
 
 			pair.Parent.Representation.WriteString(stored.Addr)
