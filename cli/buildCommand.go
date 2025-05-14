@@ -133,9 +133,9 @@ func BuildCommand(context *cli.Command) string {
 				)
 
 				// Add the std instruction to the global builder
-				globalBuilder.WriteString("link ")
+				globalBuilder.WriteString("link \"")
 				globalBuilder.WriteString(relativePath)
-				globalBuilder.WriteString("\n")
+				globalBuilder.WriteString("\"\n")
 				continue
 			}
 		}
