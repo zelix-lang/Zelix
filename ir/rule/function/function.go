@@ -102,18 +102,19 @@ func MarshalFunction(
 	signature := strings.Builder{}
 	signature.WriteString("f ")
 
+	if isMain && fun.Name == "main" {
+		signature.WriteString("main")
+	} else {
+		signature.WriteString(*name)
+	}
+	signature.WriteString(" ")
+
 	if fun.ReturnType.IsPrimitive {
 		signature.WriteString(fun.ReturnType.Marshal())
 	} else {
 		signature.WriteString(*(*localCounters)[fun.ReturnType.BaseType])
 	}
 
-	signature.WriteString(" ")
-	if isMain && fun.Name == "main" {
-		signature.WriteString("main")
-	} else {
-		signature.WriteString(*name)
-	}
 	signature.WriteString(" ")
 
 	paramCounter := 0
