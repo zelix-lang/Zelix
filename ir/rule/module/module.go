@@ -105,4 +105,6 @@ func MarshalModule(
 
 		return false
 	})
+
+	modTree.Representation.WriteString("end_mod")
 }
