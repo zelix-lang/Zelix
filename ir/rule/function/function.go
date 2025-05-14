@@ -157,11 +157,11 @@ func MarshalFunction(
 
 	// Write trace parameters
 	if !(isMain && name == nil) {
-		signature.WriteString("__file &str __line &str __col &str")
+		signature.WriteString("__file &str __line &str __col &str ")
 	}
 
 	// Write a newline to the signature
-	signature.WriteString("\n")
+	signature.WriteString("end_params\n")
 
 	// Create a new InstructionTree for the function
 	body := make([]*tree.InstructionTree, 0)
