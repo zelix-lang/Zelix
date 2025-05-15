@@ -142,6 +142,7 @@ func processCandidate(
 		IsInline:    pair.IsInline,
 		Counter:     suitable,
 		MoveToStack: true,
+		IsParam:     true,
 		Expected:    expected,
 	})
 }
@@ -273,6 +274,7 @@ func MarshalSignedExpression(
 				IsInline:    pair.IsInline,
 				Counter:     suitable,
 				MoveToStack: true,
+				IsParam:     true,
 				Expected:    expected,
 			})
 
@@ -289,6 +291,7 @@ func MarshalSignedExpression(
 		// Write mov instructions to the tree
 		exprTree.Representation.WriteString("mov x")
 		exprTree.Representation.WriteString(strconv.Itoa(suitable))
+		exprTree.Representation.WriteString(" ")
 		exprTree.Representation.WriteString(pair.Expected.Marshal())
 		exprTree.Representation.WriteString(" ")
 
