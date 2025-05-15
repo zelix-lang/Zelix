@@ -254,4 +254,6 @@ func MarshalFunctionCall(
 			traceFile,
 		)
 	}
+
+	parent.Representation.WriteString("end_call ")
 }
