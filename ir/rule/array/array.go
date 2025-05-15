@@ -92,7 +92,8 @@ func MarshalArray(
 				BaseType:     pair.Expected.BaseType,
 				IsPrimitive:  pair.Expected.IsPrimitive,
 			},
-			IsParam: true,
+			MoveToStack: true,
+			IsParam:     true,
 		})
 	}
 
