@@ -95,4 +95,6 @@ func MarshalArray(
 			IsParam: true,
 		})
 	}
+
+	pair.Parent.Representation.WriteString("end_arr ")
 }
