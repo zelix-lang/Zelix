@@ -154,7 +154,6 @@ func MarshalExpression(
 				suitable := *counter
 				pair.Parent.Representation.WriteString("x")
 				pair.Parent.Representation.WriteString(strconv.Itoa(suitable))
-				pair.Parent.Representation.WriteString("\n")
 
 				// Increment the counter
 				*counter++
