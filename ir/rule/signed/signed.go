@@ -180,14 +180,47 @@ func MarshalSignedExpression(
 		expr = child
 	}
 
+	// Handle negation operators
+	startAt := 0
+	preferredParent := pair.Parent
+
+	for children[startAt].Rule == ast.BooleanOperator {
+		// Get a new suitable address
+		suitable := *counter
+		suitableStr := strconv.Itoa(suitable)
+		*counter++
+
+		// Create a new builder
+		builder := strings.Builder{}
+
+		// Create a new instruction tree
+		instructionTree := tree.InstructionTree{
+			Children:       &[]*tree.InstructionTree{},
+			Representation: &builder,
+		}
+
+		// Write a not op to the preferred parent
+		preferredParent.Representation.WriteString("not x")
+		preferredParent.Representation.WriteString(suitableStr)
+		builder.WriteString("mov x")
+		builder.WriteString(suitableStr)
+		builder.WriteString(" ")
+		builder.WriteString(pair.Expected.Marshal())
+		builder.WriteString(" ")
+		*global.Children = append([]*tree.InstructionTree{&instructionTree}, *global.Children...)
+
+		preferredParent = &instructionTree
+		startAt++
+	}
+
 	// Determine the expression's sign
-	generalSign := *children[1].Value
+	generalSign := *children[startAt+1].Value
 
 	// Write the appropriate opcode depending on the sign
-	isBoolean := writeSignOpcode(generalSign, pair.Parent)
+	isBoolean := writeSignOpcode(generalSign, preferredParent)
 
 	// Process the first pair outside the queue
-	processCandidate(global, children[0], fileCodeId, isBoolean, counter, pair, pair.Parent, usedStrings, exprQueue)
+	processCandidate(global, children[startAt], fileCodeId, isBoolean, counter, pair, preferredParent, usedStrings, exprQueue)
 
 	// See if we can save memory in the 2nd operand
 	if len(children) == 3 {
@@ -197,12 +230,12 @@ func MarshalSignedExpression(
 	}
 
 	// Process the expression in a breadth-first manner
-	queue := children[2:]
+	queue := children[(2 + startAt):]
 
 	// Get a suitable pointer for the expression
 	suitable := *counter
 	*counter++
-	lastParent := pair.Parent
+	lastParent := preferredParent
 
 	for len(queue) > 0 {
 		suitable = *counter
