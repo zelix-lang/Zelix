@@ -1,6 +1,23 @@
 import "@std::io::print";
 
+mod Bbc {
+    let b: num = 20;
+
+    fun a() {
+
+    }
+}
+
+mod Abc {
+    let a: Bbc = new Bbc();
+}
+
 fun main() {
-    if !true < false {
+    let c: Abc = new Abc();
+    let d: num = c.a.b + 26335;
+    let e: num = *&d;
+
+    if true {
+        println("Hello, world!");
     }
 }
