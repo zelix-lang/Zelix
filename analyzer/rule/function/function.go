@@ -169,7 +169,6 @@ func AnalyzeFunction(
 
 		// Special case: For loops (creates the block at the end)
 		forVarNames := make(map[*string]*variable.Variable)
-		countBefore := scope.Count
 		dontDeleteStack := false
 
 		for _, statement := range *block.Children {
@@ -237,7 +236,6 @@ func AnalyzeFunction(
 					&blockQueue,
 					scopeIds,
 				)
-				scope.Count++
 
 				// Push the error to the list if necessary
 				errors.AddError(err)
@@ -273,8 +271,6 @@ func AnalyzeFunction(
 
 		// Create the scope at the end in case of a for loop
 		if len(forVarNames) > 0 {
-			scope.Count = countBefore
-
 			for name, obj := range forVarNames {
 				scope.NewScope()
 				scope.Append(*name, *obj)
@@ -283,12 +279,12 @@ func AnalyzeFunction(
 
 		if !dontDeleteStack {
 			// Avoid destroying the main scope
-			//destroyScope(&scope, scopeIds, warnings, mainScopeId, false)
+			destroyScope(&scope, scopeIds, warnings, mainScopeId, false)
 		}
 	}
 
 	// Destroy the main scope at the end
-	//destroyScope(&scope, []int{mainScopeId}, warnings, mainScopeId, true)
+	destroyScope(&scope, []int{mainScopeId}, warnings, mainScopeId, true)
 
 	// Make sure that the function has returned a value
 	if !fun.IsStd && fun.Name != "heap_alloc" && fun.ReturnType.BaseType != "nothing" && !hasReturned {

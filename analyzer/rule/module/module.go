@@ -49,9 +49,7 @@ func AnalyzeModule(
 	globalWarnings := pool.NewErrorPool()
 
 	// Create a new scope for the module's functions
-	variables := stack.ScopedStack{
-		Scopes: make(map[int]stack.Stack),
-	}
+	variables := stack.NewScopedStack()
 
 	variables.NewScope()
 
@@ -89,7 +87,7 @@ func AnalyzeModule(
 			trace,
 			mod.Name,
 			&mod.Templates,
-			variables,
+			*variables,
 			isConstructor,
 		)
 
@@ -165,7 +163,7 @@ func AnalyzeModule(
 		_, err = expression.AnalyzeExpression(
 			declaration.Value,
 			trace,
-			&variables,
+			variables,
 			false,
 			&declaration.Type,
 			false,

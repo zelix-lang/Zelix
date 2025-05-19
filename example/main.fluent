@@ -18,7 +18,16 @@ fun main() {
     let e: num = *&d;
 
     if true {
-    let a:num = 2 + 3 + 5 + 7 + 10;
+        let a:num = 2 + 3 + 5 + 7 + 10;
         println("Hello, world!");
+    }
+
+    for 1 to 6 in a {
+        println("Hello, world!");
+    }
+
+    let i: num = 0;
+    while i < 6 {
+        i = i + 1;
     }
 }

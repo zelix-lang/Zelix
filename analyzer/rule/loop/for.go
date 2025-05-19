@@ -106,8 +106,8 @@ func AnalyzeFor(
 	}
 
 	// Append the block to the block queue
-	scopeIds = append(scopeIds, variables.Count)
-	variables.NewScope()
+	newId := variables.NewScope()
+	scopeIds = append(scopeIds, newId)
 	*blockQueue = append(*blockQueue, queue.BlockQueueElement{
 		Block: block,
 		// Predict the next ID

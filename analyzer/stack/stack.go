@@ -26,10 +26,17 @@ type Stack struct {
 
 // ScopedStack represents a stack with multiple scopes.
 type ScopedStack struct {
-	// Scopes is a slice of Stack, each representing a different scope.
-	Scopes map[int]Stack
+	// scopes is a slice of Stack, each representing a different scope.
+	scopes map[int]Stack
 	// Count is the count of stacks in the ScopedStack.
-	Count int
+	count int
+}
+
+func NewScopedStack() *ScopedStack {
+	return &ScopedStack{
+		scopes: make(map[int]Stack),
+		count:  0,
+	}
 }
 
 // NewScope creates a new scope in the ScopedStack and returns its id.
@@ -39,13 +46,13 @@ type ScopedStack struct {
 //	int: The id of the newly created scope.
 func (s *ScopedStack) NewScope() int {
 	// Get a new id
-	lastId := s.Count
+	lastId := s.count
 
-	s.Scopes[lastId] = Stack{
+	s.scopes[lastId] = Stack{
 		Variables:     make(map[string]variable.Variable),
 		UsedVariables: make(map[string]struct{}),
 	}
-	s.Count++
+	s.count++
 
 	return lastId
 }
@@ -61,10 +68,10 @@ func (s *ScopedStack) NewScope() int {
 //	A map of names and pointers to the variables that were not used in the destroyed scope.
 func (s *ScopedStack) DestroyScope(id int) map[string]*variable.Variable {
 	// Get the scope that holds the given id
-	scope := s.Scopes[id]
+	scope := s.scopes[id]
 
-	delete(s.Scopes, id)
-	s.Count--
+	delete(s.scopes, id)
+	s.count--
 
 	unusedVars := make(map[string]*variable.Variable)
 
@@ -97,8 +104,8 @@ func (s *ScopedStack) DestroyScope(id int) map[string]*variable.Variable {
 //	*variable.Variable: A pointer to the variable if found, or nil if not found.
 func (s *ScopedStack) Load(name *string) *variable.Variable {
 	// Iterate over the scopes in reverse order
-	for i := len(s.Scopes) - 1; i >= 0; i-- {
-		scope := s.Scopes[i]
+	for i := len(s.scopes) - 1; i >= 0; i-- {
+		scope := s.scopes[i]
 
 		if v, ok := scope.Variables[*name]; ok {
 			scope.UsedVariables[*name] = struct{}{}
@@ -117,6 +124,6 @@ func (s *ScopedStack) Load(name *string) *variable.Variable {
 //	variable2 (variable.Variable): The variable to add.
 func (s *ScopedStack) Append(name string, variable2 variable.Variable) {
 	// Get the last scope
-	lastScope := s.Scopes[s.Count-1]
+	lastScope := s.scopes[s.count-1]
 	lastScope.Variables[name] = variable2
 }
