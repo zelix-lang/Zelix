@@ -50,7 +50,6 @@ func AnalyzeModule(
 
 	// Create a new scope for the module's functions
 	variables := stack.NewScopedStack()
-
 	variables.NewScope()
 
 	// Add "this" to the variables
@@ -63,7 +62,7 @@ func AnalyzeModule(
 				Children: &[]*wrapper.TypeWrapper{},
 			},
 		},
-	})
+	}, 0)
 
 	// Analyze all functions in the module
 	for _, fun := range mod.Functions {
@@ -138,6 +137,7 @@ func AnalyzeModule(
 	initializedCaught := false
 
 	// Check if the module has incomplete declarations
+	globalScope := []int{0}
 	for _, declaration := range mod.Declarations {
 		// Check for undefined references
 		err := value.AnalyzeUndefinedReference(trace, declaration.Type, &mod.Templates)
@@ -168,6 +168,7 @@ func AnalyzeModule(
 			&declaration.Type,
 			false,
 			true,
+			globalScope,
 		)
 
 		if err != nil {

@@ -31,6 +31,7 @@ import (
 // - variables: the stack of scoped variables
 // - trace: the file code trace
 // - assignments: A map of all the assignments throughout the function
+// - allowedIds: A slice of allowed IDs that the current block chain holds.
 //
 // Returns:
 // - error3.Error: an error object indicating the result of the analysis
@@ -39,6 +40,7 @@ func AnalyzeReassignment(
 	variables *stack.ScopedStack,
 	trace *filecode.FileCode,
 	collectedAssignments *[]*ast.AST,
+	allowedIds []int,
 ) *error3.Error {
 	// Get the tree's children
 	children := *tree.Children
@@ -77,6 +79,7 @@ func AnalyzeReassignment(
 		},
 		true,
 		false,
+		allowedIds,
 	)
 
 	// Return the err if needed
@@ -96,6 +99,7 @@ func AnalyzeReassignment(
 		&expected,
 		false,
 		true,
+		allowedIds,
 	)
 
 	// Return the err if needed

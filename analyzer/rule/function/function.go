@@ -149,7 +149,7 @@ func AnalyzeFunction(
 			Constant: true,
 			Value:    val,
 			Trace:    param.Trace,
-		})
+		}, 0)
 	}
 
 	// Use a queue to analyze the function's block and nested blocks within it
@@ -168,7 +168,6 @@ func AnalyzeFunction(
 		blockQueue = blockQueue[1:]
 
 		// Special case: For loops (creates the block at the end)
-		forVarNames := make(map[*string]*variable.Variable)
 		dontDeleteStack := false
 
 		for _, statement := range *block.Children {
@@ -177,7 +176,7 @@ func AnalyzeFunction(
 			switch rule {
 			case ast.Return:
 				hasReturned = true
-				err := ret.AnalyzeReturn(statement, trace, &scope, &returnType)
+				err := ret.AnalyzeReturn(statement, trace, &scope, &returnType, element.ID)
 
 				// Push the error to the list if necessary
 				errors.AddError(err)
@@ -185,8 +184,8 @@ func AnalyzeFunction(
 				dontDeleteStack = true
 				// Create a new scope
 				newScopeId := scope.NewScope()
-
 				scopeIds = append(scopeIds, newScopeId)
+
 				// Add the block to the queue
 				blockQueue = append(blockQueue, queue.BlockQueueElement{
 					Block:  statement,
@@ -194,13 +193,14 @@ func AnalyzeFunction(
 					InLoop: inLoop,
 				})
 			case ast.Declaration:
-				err, warning := declaration.AnalyzeDeclaration(statement, &scope, trace, generics, parentName)
+				err, warning := declaration.AnalyzeDeclaration(statement, &scope, trace, generics, parentName, element.ID)
 
 				// Push the error to the list if necessary
 				errors.AddError(err)
 				warnings.AddError(warning)
 			case ast.Assignment:
-				err := reassignment.AnalyzeReassignment(statement, &scope, trace, collectedAssignments)
+
+				err := reassignment.AnalyzeReassignment(statement, &scope, trace, collectedAssignments, element.ID)
 				// Push the error to the list if necessary
 				errors.AddError(err)
 			case ast.If:
@@ -229,7 +229,7 @@ func AnalyzeFunction(
 				errors.AddError(err)
 			case ast.For:
 				dontDeleteStack = true
-				err, varName, varObj := loop.AnalyzeFor(
+				err := loop.AnalyzeFor(
 					statement,
 					trace,
 					&scope,
@@ -239,10 +239,6 @@ func AnalyzeFunction(
 
 				// Push the error to the list if necessary
 				errors.AddError(err)
-
-				if varName != nil {
-					forVarNames[varName] = varObj
-				}
 			case ast.Break, ast.Continue:
 				if !inLoop {
 					errors.AddError(&error3.Error{
@@ -262,6 +258,7 @@ func AnalyzeFunction(
 					},
 					false,
 					false,
+					element.ID,
 				)
 
 				// Push the error to the list if necessary
@@ -269,15 +266,7 @@ func AnalyzeFunction(
 			}
 		}
 
-		// Create the scope at the end in case of a for loop
-		if len(forVarNames) > 0 {
-			for name, obj := range forVarNames {
-				scope.NewScope()
-				scope.Append(*name, *obj)
-			}
-		}
-
-		if !dontDeleteStack {
+		if !dontDeleteStack && len(scopeIds) > 0 && scopeIds[0] != 0 {
 			// Avoid destroying the main scope
 			destroyScope(&scope, scopeIds, warnings, mainScopeId, false)
 		}

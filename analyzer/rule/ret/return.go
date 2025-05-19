@@ -32,6 +32,7 @@ import (
 // - trace: the file code trace
 // - variables: the scoped stack of variables
 // - expected: the expected return type
+// - allowedIds: A slice of allowed IDs that the current block chain holds.
 //
 // Returns:
 // - error3.Error: an error object indicating any issues found during analysis
@@ -40,6 +41,7 @@ func AnalyzeReturn(
 	trace *filecode.FileCode,
 	variables *stack.ScopedStack,
 	expected *wrapper.TypeWrapper,
+	allowedIds []int,
 ) *error3.Error {
 	// Check if the tree has children
 	if len(*tree.Children) == 0 {
@@ -65,6 +67,7 @@ func AnalyzeReturn(
 		expected,
 		false,
 		true,
+		allowedIds,
 	)
 
 	// Return the error if there is one

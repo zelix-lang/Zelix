@@ -97,19 +97,26 @@ func (s *ScopedStack) DestroyScope(id int) map[string]*variable.Variable {
 //
 // Parameters:
 //
-//	name (string): The name of the variable to retrieve.
+//		name (string): The name of the variable to retrieve.
+//	 allowedIds ([]int): A slice of allowed IDs that the current block chain holds.
 //
 // Returns:
 //
 //	*variable.Variable: A pointer to the variable if found, or nil if not found.
-func (s *ScopedStack) Load(name *string) *variable.Variable {
+func (s *ScopedStack) Load(name *string, allowedIds []int) *variable.Variable {
 	// Iterate over the scopes in reverse order
-	for i := len(s.scopes) - 1; i >= 0; i-- {
-		scope := s.scopes[i]
+	for _, id := range allowedIds {
+		scope, ok := s.scopes[id]
+		if !ok {
+			continue
+		}
 
-		if v, ok := scope.Variables[*name]; ok {
+		// Check if the variable exists in the current scope
+		variable2, ok := scope.Variables[*name]
+		if ok {
+			// Mark the variable as used
 			scope.UsedVariables[*name] = struct{}{}
-			return &v
+			return &variable2
 		}
 	}
 
@@ -120,10 +127,11 @@ func (s *ScopedStack) Load(name *string) *variable.Variable {
 //
 // Parameters:
 //
-//	name (string): The name of the variable to add.
-//	variable2 (variable.Variable): The variable to add.
-func (s *ScopedStack) Append(name string, variable2 variable.Variable) {
+//		name (string): The name of the variable to add.
+//		variable2 (variable.Variable): The variable to add.
+//	 id (int): The id of the scope to which the variable should be added.
+func (s *ScopedStack) Append(name string, variable2 variable.Variable, id int) {
 	// Get the last scope
-	lastScope := s.scopes[s.count-1]
+	lastScope := s.scopes[id]
 	lastScope.Variables[name] = variable2
 }

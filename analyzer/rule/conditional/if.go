@@ -63,6 +63,7 @@ func ProcessSingleConditional(
 		&globalBool,
 		false,
 		false,
+		scopeIds,
 	)
 
 	if err != nil {
@@ -71,8 +72,8 @@ func ProcessSingleConditional(
 
 	// Create a new scope for this conditional
 	newScopeId := variables.NewScope()
-
 	scopeIds = append(scopeIds, newScopeId)
+
 	// Schedule the block for analysis
 	*blockQueue = append(*blockQueue, queue.BlockQueueElement{
 		Block:  mainBlock,
