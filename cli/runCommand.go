@@ -23,13 +23,16 @@ import (
 // RunCommand represents the run command of the Fluent CLI
 // it runs a fluent file
 func RunCommand(context *cli.Command) {
-	finalPath := BuildCommand(context)
+	finalPath := BuildCommand(context, false)
 
-	// Directly execute the final executable
-	cmd := exec.Command(finalPath)
+	// Directly call the Fluent interpreter
+	cmd := exec.Command("fluenti", "--path", finalPath)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Stdin = os.Stdin
 
-	_ = cmd.Run()
+	err := cmd.Run()
+	if err != nil {
+		return
+	}
 }
