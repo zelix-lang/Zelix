@@ -47,7 +47,7 @@ func main() {
 			},
 			{
 				Name:    "build",
-				Usage:   "Compiles your project into an executable",
+				Usage:   "Compiles your project into an executable using the Fluent compiler",
 				Aliases: []string{"b"},
 				Flags: []cli.Flag{
 					&cli.IntFlag{
@@ -59,13 +59,13 @@ func main() {
 					},
 				},
 				Action: func(_ context.Context, cmd *cli.Command) error {
-					cli2.BuildCommand(cmd)
+					cli2.BuildCommand(cmd, true)
 					return nil
 				},
 			},
 			{
 				Name:    "run",
-				Usage:   "Runs a fluent file",
+				Usage:   "Runs a fluent file using the Fluent interpreter",
 				Aliases: []string{"r"},
 				Flags: []cli.Flag{
 					&cli.BoolFlag{
