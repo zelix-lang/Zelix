@@ -224,7 +224,7 @@ func AnalyzeFunction(
 					&scope,
 					&blockQueue,
 					scopeIds,
-					inLoop,
+					true,
 				)
 				// Push the error to the list if necessary
 				errors.AddError(err)
@@ -283,12 +283,12 @@ func AnalyzeFunction(
 
 		if !dontDeleteStack {
 			// Avoid destroying the main scope
-			destroyScope(&scope, scopeIds, warnings, mainScopeId, false)
+			//destroyScope(&scope, scopeIds, warnings, mainScopeId, false)
 		}
 	}
 
 	// Destroy the main scope at the end
-	destroyScope(&scope, []int{mainScopeId}, warnings, mainScopeId, true)
+	//destroyScope(&scope, []int{mainScopeId}, warnings, mainScopeId, true)
 
 	// Make sure that the function has returned a value
 	if !fun.IsStd && fun.Name != "heap_alloc" && fun.ReturnType.BaseType != "nothing" && !hasReturned {
