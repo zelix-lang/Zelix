@@ -33,27 +33,3 @@ type AST struct {
 	// InferredType is the TypeWrapper that this expression evaluates to.
 	InferredType *wrapper.TypeWrapper
 }
-
-func (a AST) Marshal(spaces int) string {
-	var result string
-	result += a.Rule.String() + " "
-	if a.Value != nil {
-		result += *a.Value
-	}
-	if a.Children != nil {
-		result += " {"
-		for _, child := range *a.Children {
-			result += "\n"
-			for i := 0; i < spaces; i++ {
-				result += " "
-			}
-			result += child.Marshal(spaces + 2)
-		}
-		result += "\n"
-		for i := 0; i < spaces-2; i++ {
-			result += " "
-		}
-		result += "}"
-	}
-	return result
-}
