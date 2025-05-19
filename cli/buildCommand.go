@@ -266,7 +266,7 @@ func BuildCommand(context *cli.Command) string {
 	for address, str := range traceStrings {
 		finalBuilder.WriteString("ref ")
 		finalBuilder.WriteString(address)
-		finalBuilder.WriteString(" &str \"")
+		finalBuilder.WriteString(" str \"")
 		finalBuilder.WriteString(*str)
 		finalBuilder.WriteString("\"\n")
 	}
@@ -274,7 +274,7 @@ func BuildCommand(context *cli.Command) string {
 	for str, address := range usedStrings.Storage {
 		finalBuilder.WriteString("ref ")
 		finalBuilder.WriteString(address)
-		finalBuilder.WriteString(" &str \"")
+		finalBuilder.WriteString(" str \"")
 		finalBuilder.WriteString(str)
 		finalBuilder.WriteString("\"\n")
 	}
@@ -282,7 +282,7 @@ func BuildCommand(context *cli.Command) string {
 	for num, address := range traceCounters.Storage {
 		finalBuilder.WriteString("ref ")
 		finalBuilder.WriteString(address)
-		finalBuilder.WriteString(" &num ")
+		finalBuilder.WriteString(" num ")
 		finalBuilder.WriteString(strconv.Itoa(num))
 		finalBuilder.WriteString("\n")
 	}
