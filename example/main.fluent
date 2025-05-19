@@ -1,33 +1,5 @@
 import "@std::io::print";
 
-mod Bbc {
-    let b: num = 20;
-
-    fun a() {
-
-    }
-}
-
-mod Abc {
-    let a: Bbc = new Bbc();
-}
-
 fun main() {
-    let c: Abc = new Abc();
-    let d: num = c.a.b + 26335;
-    let e: num = *&d;
-
-    if true {
-        let a:num = 2 + 3 + 5 + 7 + 10;
-        println("Hello, world!");
-    }
-
-    for 1 to 6 in a {
-        println("Hello, world!");
-    }
-
-    let i: num = 0;
-    while i < 6 {
-        i = i + 1;
-    }
+    println("Hello, world!");
 }
