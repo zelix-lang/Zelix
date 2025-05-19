@@ -43,7 +43,7 @@ func processSingleToken(unit *token.Token) (*ast.AST, *error.Error) {
 	case token.BoolLiteral:
 		return &ast.AST{
 			Rule:   ast.BooleanLiteral,
-			Value:  &unit.Value,
+			Value:  unit.Value,
 			Line:   unit.Line,
 			Column: unit.Column,
 			File:   &unit.File,
@@ -51,7 +51,7 @@ func processSingleToken(unit *token.Token) (*ast.AST, *error.Error) {
 	case token.NumLiteral:
 		return &ast.AST{
 			Rule:   ast.NumberLiteral,
-			Value:  &unit.Value,
+			Value:  unit.Value,
 			Line:   unit.Line,
 			Column: unit.Column,
 			File:   &unit.File,
@@ -59,7 +59,7 @@ func processSingleToken(unit *token.Token) (*ast.AST, *error.Error) {
 	case token.DecimalLiteral:
 		return &ast.AST{
 			Rule:   ast.DecimalLiteral,
-			Value:  &unit.Value,
+			Value:  unit.Value,
 			Line:   unit.Line,
 			Column: unit.Column,
 			File:   &unit.File,
@@ -67,7 +67,7 @@ func processSingleToken(unit *token.Token) (*ast.AST, *error.Error) {
 	case token.StringLiteral:
 		return &ast.AST{
 			Rule:   ast.StringLiteral,
-			Value:  &unit.Value,
+			Value:  unit.Value,
 			Line:   unit.Line,
 			Column: unit.Column,
 			File:   &unit.File,

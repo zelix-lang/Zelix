@@ -21,7 +21,11 @@ const (
 	Statement
 	Expression
 	Identifier
-	Primitive
+	String
+	Number
+	Decimal
+	Bool
+	Nothing
 	StringLiteral
 	NumberLiteral
 	BooleanLiteral
@@ -73,8 +77,14 @@ func (r Rule) String() string {
 		return "Expression"
 	case Identifier:
 		return "Identifier"
-	case Primitive:
-		return "Primitive"
+	case String:
+		return "String"
+	case Nothing:
+		return "Nothing"
+	case Bool:
+		return "Bool"
+	case Decimal:
+		return "Decimal"
 	case StringLiteral:
 		return "StringLiteral"
 	case NumberLiteral:

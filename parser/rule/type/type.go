@@ -296,13 +296,26 @@ func ProcessType(input []token.Token, trace token.Token) (*ast.AST, *error.Error
 						}
 					}
 
+					rule := ast.Nothing
+					switch unit.TokenType {
+					case token.String:
+						rule = ast.String
+					case token.Num:
+						rule = ast.Number
+					case token.Bool:
+						rule = ast.Bool
+					case token.Dec:
+						rule = ast.Decimal
+					default:
+					}
+
 					// Push as primitive
 					*result.Children = append(*result.Children, &ast.AST{
-						Rule:     ast.Primitive,
+						Rule:     rule,
 						Line:     unit.Line,
 						Column:   unit.Column,
 						File:     &unit.File,
-						Value:    &unit.Value,
+						Value:    unit.Value,
 						Children: &[]*ast.AST{},
 					})
 				}

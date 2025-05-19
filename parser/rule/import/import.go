@@ -62,7 +62,7 @@ func ProcessImport(tokens []token.Token) (*ast.AST, *error.Error) {
 		Children: &[]*ast.AST{
 			{
 				Rule:     ast.StringLiteral,
-				Value:    &tokens[1].Value,
+				Value:    tokens[1].Value,
 				Line:     tokens[1].Line,
 				Column:   tokens[1].Column,
 				File:     &tokens[1].File,

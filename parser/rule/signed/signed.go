@@ -125,7 +125,7 @@ func ProcessSignedOp(
 				Line:     unit.Line,
 				Column:   unit.Column,
 				File:     &unit.File,
-				Value:    &unit.Value,
+				Value:    unit.Value,
 				Children: &[]*ast.AST{},
 			})
 
@@ -149,7 +149,7 @@ func ProcessSignedOp(
 					Line:     unit.Line,
 					Column:   unit.Column,
 					File:     &unit.File,
-					Value:    &unit.Value,
+					Value:    unit.Value,
 					Children: &[]*ast.AST{},
 				})
 			}

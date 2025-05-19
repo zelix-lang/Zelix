@@ -68,9 +68,24 @@ func ConvertToTypeWrapper(tree ast.AST) wrapper.TypeWrapper {
 			case ast.ArrayType:
 				// Increment the array count
 				parent.ArrayCount++
-			case ast.Identifier, ast.Primitive:
+			case ast.Identifier:
 				parent.BaseType = *child.Value
-				parent.IsPrimitive = rule == ast.Primitive
+				parent.IsPrimitive = false
+			case ast.String:
+				parent.BaseType = "str"
+				parent.IsPrimitive = true
+			case ast.Number:
+				parent.BaseType = "num"
+				parent.IsPrimitive = true
+			case ast.Bool:
+				parent.BaseType = "bool"
+				parent.IsPrimitive = true
+			case ast.Decimal:
+				parent.BaseType = "dec"
+				parent.IsPrimitive = true
+			case ast.Nothing:
+				parent.BaseType = "nothing"
+				parent.IsPrimitive = true
 			case ast.Type:
 				// Create a new TypeWrapper for the child
 				newType := wrapper.TypeWrapper{

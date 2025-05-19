@@ -62,7 +62,7 @@ func ProcessIncompleteDeclaration(input []token.Token) (*ast.AST, *error.Error) 
 			Column:   input[0].Column,
 			File:     &input[0].File,
 			Children: &[]*ast.AST{},
-			Value:    &input[0].Value,
+			Value:    input[0].Value,
 		}
 
 		// Add the declaration type to the result
