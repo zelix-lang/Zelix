@@ -85,6 +85,8 @@ func (r Rule) String() string {
 		return "Bool"
 	case Decimal:
 		return "Decimal"
+	case Number:
+		return "Number"
 	case StringLiteral:
 		return "StringLiteral"
 	case NumberLiteral:
