@@ -1,5 +1,17 @@
+/*
+    The Fluent programming language
+*/
+
+import "@std::io::print";
 import "@std::io::panic";
 
-fun main() {
+fun abc() {
+    println("Hello, Fluent! (print)");
+    println("It works!");
     panic("Hello, Fluent!");
+    println("This does not execute"); // Panicked before, program exits
+}
+
+fun main() {
+    abc();
 }

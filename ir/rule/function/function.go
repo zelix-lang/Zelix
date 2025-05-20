@@ -157,7 +157,7 @@ func MarshalFunction(
 
 	// Write trace parameters
 	if !(isMain && name == nil) {
-		signature.WriteString("__file &str __line &str __col &str ")
+		signature.WriteString("__file str __line num __col num ")
 	}
 
 	// Write a newline to the signature
