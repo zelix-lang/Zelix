@@ -103,16 +103,20 @@ func AnalyzeFunctionCall(
 		}
 
 		function, found = lastPropValue.Functions[*functionName]
-		generics = function.Templates
-		returnType = function.ReturnType
+		if found {
+			generics = function.Templates
+			returnType = function.ReturnType
+		}
 
 		if !returnType.IsPrimitive {
 			*queueElement.LastPropValue = trace.Modules[returnType.BaseType]
 		}
 	} else {
 		function, found = trace.Functions[*functionName]
-		generics = function.Templates
-		returnType = function.ReturnType
+		if found {
+			generics = function.Templates
+			returnType = function.ReturnType
+		}
 	}
 
 	// Check if the function was found (and whether the current function has permission to call it)

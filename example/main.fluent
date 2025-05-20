@@ -1,5 +1,5 @@
-import "@std::io::print";
+import "@std::io::panic";
 
 fun main() {
-    println("Hello, world!");
+    panic("Hello, Fluent!");
 }
