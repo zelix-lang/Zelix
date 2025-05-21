@@ -61,7 +61,8 @@ const (
 	Generics
 	InferredType
 	Declaration
-	DeclarationType
+	Const
+	Let
 	IncompleteDeclaration
 	Block
 )
@@ -157,8 +158,10 @@ func (r Rule) String() string {
 		return "InferredType"
 	case Declaration:
 		return "Declaration"
-	case DeclarationType:
-		return "DeclarationType"
+	case Const:
+		return "Const"
+	case Let:
+		return "Let"
 	case IncompleteDeclaration:
 		return "IncompleteDeclaration"
 	case Block:

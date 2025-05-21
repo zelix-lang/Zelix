@@ -3,15 +3,24 @@
 */
 
 import "@std::io::print";
-import "@std::io::panic";
+
+fun bcd() {
+    println("Hello from bcd");
+    println("Hello from bcd again!");
+
+}
 
 fun abc() {
     println("Hello, Fluent! (print)");
     println("It works!");
-    panic("Hello, Fluent!");
-    println("This does not execute"); // Panicked before, program exits
+    bcd();
+    println("After bcd");
+    println("After bcd (again)");
 }
 
 fun main() {
+    let a: str = "abc";
     abc();
+    println("After abc");
+    println("After abc (again)");
 }

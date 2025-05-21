@@ -52,7 +52,7 @@ func AnalyzeDeclaration(
 ) (*error3.Error, *error3.Error) {
 	// Get the children of the statement
 	children := *statement.Children
-	isConst := *children[0].Value == "const"
+	isConst := children[0].Rule == ast.Const
 	nameNode := *children[1]
 	typeNode := *children[2]
 	expr := *children[3]

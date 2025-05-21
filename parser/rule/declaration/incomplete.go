@@ -54,10 +54,23 @@ func ProcessIncompleteDeclaration(input []token.Token) (*ast.AST, *error.Error) 
 
 	// Add the declaration type
 	switch input[0].TokenType {
-	case token.Let, token.Const:
+	case token.Let:
 		// Create a declaration type node
 		declarationType := ast.AST{
-			Rule:     ast.DeclarationType,
+			Rule:     ast.Let,
+			Line:     input[0].Line,
+			Column:   input[0].Column,
+			File:     &input[0].File,
+			Children: &[]*ast.AST{},
+			Value:    input[0].Value,
+		}
+
+		// Add the declaration type to the result
+		*result.Children = append(*result.Children, &declarationType)
+	case token.Const:
+		// Create a declaration type node
+		declarationType := ast.AST{
+			Rule:     ast.Const,
 			Line:     input[0].Line,
 			Column:   input[0].Column,
 			File:     &input[0].File,
