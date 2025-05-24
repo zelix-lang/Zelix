@@ -35,7 +35,7 @@ func ConvertDeclaration(node *ast.AST) (string, module.Declaration) {
 	children := *node.Children
 
 	name := *children[1].Value
-	constant := *children[0].Value == "const"
+	constant := children[0].Rule == ast.Const
 	varType := types.ConvertToTypeWrapper(*children[2])
 	var valueNode *ast.AST
 
