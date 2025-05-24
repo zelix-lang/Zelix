@@ -46,7 +46,7 @@ func BuildCommand(context *cli.Command, callCompiler bool) string {
 	// Check if the user is on Windows
 	if !isPOSIX && callCompiler {
 		logger.Warn("fluentc does not (and might never) support Windows.")
-		logger.Warn("Please use the fluent run to use the interpreter instead.")
+		logger.Warn("Please use fluent run to use the interpreter instead.")
 		logger.Warn("Or use MinGW or WSL to run fluentc.")
 	}
 
