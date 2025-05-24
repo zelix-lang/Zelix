@@ -7,7 +7,6 @@ import "@std::io::print";
 fun bcd() {
     println("Hello from bcd");
     println("Hello from bcd again!");
-
 }
 
 fun abc() {
@@ -19,7 +18,6 @@ fun abc() {
 }
 
 fun main() {
-    let a: str = "abc";
     abc();
     println("After abc");
     println("After abc (again)");
