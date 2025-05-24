@@ -4,21 +4,14 @@
 
 import "@std::io::print";
 
-fun bcd() {
-    println("Hello from bcd");
-    println("Hello from bcd again!");
+mod Abc {
+    let a: Bcd = new Bcd();
 }
 
-fun abc() {
-    println("Hello, Fluent! (print)");
-    println("It works!");
-    bcd();
-    println("After bcd");
-    println("After bcd (again)");
+mod Bcd {
+    let a: num = 2;
 }
 
 fun main() {
-    abc();
-    println("After abc");
-    println("After abc (again)");
+
 }
