@@ -37,6 +37,7 @@ import (
 // - trace: The file code trace for error reporting.
 // - generics: A map of generics used in the declaration.
 // - parentName: The name of the module that holds this function, empty if none.
+// - allowedIds: A slice of allowed IDs that the current block chain holds.
 //
 // Returns:
 // - An error if there is an issue with the declaration.
@@ -47,16 +48,17 @@ func AnalyzeDeclaration(
 	trace *filecode.FileCode,
 	generics *map[string]bool,
 	parentName string,
+	allowedIds []int,
 ) (*error3.Error, *error3.Error) {
 	// Get the children of the statement
 	children := *statement.Children
-	isConst := *children[0].Value == "const"
+	isConst := children[0].Rule == ast.Const
 	nameNode := *children[1]
 	typeNode := *children[2]
 	expr := *children[3]
 
 	// Check if the var name is already defined
-	if scope.Load(nameNode.Value) != nil {
+	if scope.Load(nameNode.Value, allowedIds) != nil {
 		return &error3.Error{
 			Code:       error3.Redefinition,
 			Line:       nameNode.Line,
@@ -99,7 +101,7 @@ func AnalyzeDeclaration(
 	}
 
 	// Pass the expression to the expression analyzer
-	obj, err := expression.AnalyzeExpression(&expr, trace, scope, false, &typeWrapper, false, true)
+	obj, err := expression.AnalyzeExpression(&expr, trace, scope, false, &typeWrapper, false, true, allowedIds)
 
 	if err != nil {
 		return err, nil
@@ -113,7 +115,7 @@ func AnalyzeDeclaration(
 			Line:   nameNode.Line,
 			Column: nameNode.Column,
 		},
-	})
+	}, allowedIds[len(allowedIds)-1])
 
 	return nil, warning
 }

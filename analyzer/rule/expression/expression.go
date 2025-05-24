@@ -62,6 +62,7 @@ func AnalyzeExpression(
 	firstExpected *wrapper.TypeWrapper,
 	isPropReassignment bool,
 	allowPointers bool,
+	allowedIds []int,
 ) (*object.Object, *error3.Error) {
 	// Set the inferred type of the tree if we hav ea first expected element
 	if firstExpected != nil {
@@ -178,7 +179,7 @@ func AnalyzeExpression(
 				}
 			} else {
 				// Check if the variable exists
-				value := variables.Load(child.Value)
+				value := variables.Load(child.Value, allowedIds)
 
 				if value == nil {
 					return nil, &error3.Error{

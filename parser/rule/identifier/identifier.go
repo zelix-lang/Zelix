@@ -43,7 +43,7 @@ func ProcessIdentifier(unit *token.Token) (*ast.AST, *error.Error) {
 	// Create the identifier AST
 	return &ast.AST{
 		Rule:     ast.Identifier,
-		Value:    &unit.Value,
+		Value:    unit.Value,
 		Line:     unit.Line,
 		Column:   unit.Column,
 		File:     &unit.File,

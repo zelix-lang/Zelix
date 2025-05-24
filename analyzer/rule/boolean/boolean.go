@@ -47,6 +47,12 @@ func AnalyzeBoolean(
 	// Get the input's children
 	children := *input.Children
 	childrenLen := len(children)
+	startAt := 0
+
+	// Handle negations
+	for children[startAt].Rule == ast.BooleanOperator {
+		startAt++
+	}
 
 	// Schedule the candidate for evaluation
 	candidateElement := queue.ExpectedPair{
@@ -58,13 +64,13 @@ func AnalyzeBoolean(
 				Children: &[]*wrapper.TypeWrapper{},
 			},
 		},
-		Tree:    children[0],
+		Tree:    children[startAt],
 		IsParam: true,
 	}
 
 	*exprQueue = append(*exprQueue, candidateElement)
 
-	for i := 1; i < childrenLen; i++ {
+	for i := startAt + 1; i < childrenLen; i++ {
 		el := children[i]
 
 		if el.Rule == ast.BooleanOperator {

@@ -21,9 +21,6 @@ import (
 	"fluent/filecode/types"
 )
 
-// A dummy nothing string
-var nothing = "nothing"
-
 // ConvertFunction converts an AST node to a function representation.
 // Parameters:
 //   - ast: A pointer to the AST node to be converted.
@@ -77,8 +74,8 @@ func ConvertFunction(ast *ast2.AST, isStd bool) function.Function {
 				{
 					Line:   ast.Line,
 					Column: ast.Column,
-					Rule:   ast2.Primitive,
-					Value:  &nothing,
+					Rule:   ast2.Nothing,
+					Value:  nil,
 				},
 			},
 		}

@@ -42,20 +42,32 @@ var isWindows = runtime.GOOS == "windows"
 var isPOSIX = !isWindows
 
 // BuildCommand compiles the given Fluent project into an executable
-func BuildCommand(context *cli.Command) string {
+func BuildCommand(context *cli.Command, callCompiler bool) string {
 	// Get the optimization level (validation handled by backend)
 	optimizationLevel := context.Int("optimization")
 
 	fmt.Print(ansi.Colorize(ansi.BoldBrightYellow, "⚠️ Checking if fluentc is installed....\r"))
 
-	// Invoke a system command to check if fluentc is installed
-	cmd := exec.Command("fluentc", "--help")
+	// Invoke a system command to check if fluentc/fluenti is installed
+	var cmdName string
+	if callCompiler {
+		cmdName = "fluentc"
+	} else {
+		cmdName = "fluenti"
+	}
+
+	cmd := exec.Command(cmdName, "--help")
 	err := cmd.Run()
 	if err != nil {
 		// Print the whole message
-		fmt.Print(ansi.Colorize(ansi.BoldBrightYellow, "⚠️ Checking if fluentc is installed....\n"))
+		fmt.Print(ansi.Colorize(ansi.BoldBrightYellow, "⚠️ Checking if "))
+		if callCompiler {
+			fmt.Print(ansi.Colorize(ansi.BoldBrightYellow, "fluentc is installed...."))
+		} else {
+			fmt.Print(ansi.Colorize(ansi.BoldBrightYellow, "fluenti is installed...."))
+		}
 
-		logger.Error("The Fluent Compiler is not installed.")
+		logger.Error("The Fluent Compiler/Interpreter is not installed.")
 		logger.Info(
 			"Please install it by downloading the necessary",
 			"binaries from the official repository.",
@@ -93,10 +105,6 @@ func BuildCommand(context *cli.Command) string {
 	// Save in a map the files that have an external
 	// implementation to avoid recompiling them
 	externalImpl := make(map[string]bool)
-
-	// Write __TRUE, __FALSE constants
-	globalBuilder.WriteString("ref __TRUE num 1\n")
-	globalBuilder.WriteString("ref __FALSE num 0\n")
 
 	// Precompute the counters for the names
 	for _, fileCode := range fileCodes {
@@ -137,9 +145,9 @@ func BuildCommand(context *cli.Command) string {
 				)
 
 				// Add the std instruction to the global builder
-				globalBuilder.WriteString("link ")
+				globalBuilder.WriteString("link \"")
 				globalBuilder.WriteString(relativePath)
-				globalBuilder.WriteString("\n")
+				globalBuilder.WriteString("\"\n")
 				continue
 			}
 		}
@@ -299,6 +307,11 @@ func BuildCommand(context *cli.Command) string {
 	if err != nil {
 		logger.Error("Could not write the Fluent IR to a file.")
 		os.Exit(1)
+	}
+
+	// If we are not supposed to call the compiler, return the IR path directly
+	if !callCompiler {
+		return globalIrPath
 	}
 
 	fmt.Println(ansi.Colorize(ansi.BoldBrightYellow, "⚠️ Invoking fluentc backend...."))

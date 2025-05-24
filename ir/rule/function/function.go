@@ -102,18 +102,19 @@ func MarshalFunction(
 	signature := strings.Builder{}
 	signature.WriteString("f ")
 
+	if isMain && fun.Name == "main" {
+		signature.WriteString("main")
+	} else {
+		signature.WriteString(*name)
+	}
+	signature.WriteString(" ")
+
 	if fun.ReturnType.IsPrimitive {
 		signature.WriteString(fun.ReturnType.Marshal())
 	} else {
 		signature.WriteString(*(*localCounters)[fun.ReturnType.BaseType])
 	}
 
-	signature.WriteString(" ")
-	if isMain && fun.Name == "main" {
-		signature.WriteString("main")
-	} else {
-		signature.WriteString(*name)
-	}
 	signature.WriteString(" ")
 
 	paramCounter := 0
@@ -156,11 +157,11 @@ func MarshalFunction(
 
 	// Write trace parameters
 	if !(isMain && name == nil) {
-		signature.WriteString("__file &str __line &str __col &str")
+		signature.WriteString("__file str __line num __col num ")
 	}
 
 	// Write a newline to the signature
-	signature.WriteString("\n")
+	signature.WriteString("end_params\n")
 
 	// Create a new InstructionTree for the function
 	body := make([]*tree.InstructionTree, 0)

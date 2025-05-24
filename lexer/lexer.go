@@ -16,14 +16,10 @@ package lexer
 
 import (
 	"fluent/token"
-	"regexp"
-	"runtime"
 	"strconv"
 	"strings"
+	"unicode"
 )
-
-// Determine if the user is on Windows
-var windows = runtime.GOOS == "windows"
 
 // Punctuation characters are meant to be separated tokens
 // i.e.: "my_var.create" => ["my_var", ".", "create"]
@@ -42,12 +38,6 @@ var chainableTokens = map[rune]int{
 	'!': 1, '>': 1, '<': 1, '=': 1,
 }
 
-// Regex to match identifiers
-var identifierRegex = regexp.MustCompile(`^[a-zA-Z_][a-zA-Z0-9_]*$`)
-
-// Regex to match numbers
-var numberRegex = regexp.MustCompile(`^[0-9]+$`)
-
 // pushToken pushes the current token to the tokens array
 // and clears the current token
 // in O(1) time
@@ -57,6 +47,8 @@ func pushToken(
 	line int,
 	column int,
 	file string,
+	isIdentifier bool,
+	isNumber bool,
 	decimalLiteral bool,
 ) {
 	value := currentToken.String()
@@ -67,30 +59,30 @@ func pushToken(
 
 	// See if the current token is a known token
 	knownToken, ok := getKnownToken(value)
-	tokenType := token.Unknown
+	newToken := token.NewToken(
+		token.Unknown,
+		nil,
+		file,
+		line,
+		column,
+	)
 
 	if ok {
-		tokenType = knownToken
+		newToken.TokenType = knownToken
 	} else if decimalLiteral {
-		tokenType = token.DecimalLiteral
-	} else if numberRegex.MatchString(value) {
-		tokenType = token.NumLiteral
-	} else {
-		// Check if the token is an identifier
-		if identifierRegex.MatchString(value) {
-			tokenType = token.Identifier
-		}
+		newToken.TokenType = token.DecimalLiteral
+		newToken.Value = &value
+	} else if isNumber {
+		newToken.TokenType = token.NumLiteral
+		newToken.Value = &value
+	} else if isIdentifier {
+		newToken.TokenType = token.Identifier
+		newToken.Value = &value
 	}
 
 	*tokens = append(
 		*tokens,
-		token.NewToken(
-			tokenType,
-			value,
-			file,
-			line,
-			column,
-		),
+		newToken,
 	)
 
 	// Clear the current token
@@ -112,6 +104,9 @@ func Lex(input string, file string) ([]token.Token, *Error) {
 	inBlockComment := false
 
 	// Used to know if the current token is a decimal literal
+	isIdentifier := true
+	tokenIdx := 0
+	isNumber := false
 	decimalLiteral := false
 
 	var result []token.Token
@@ -135,7 +130,7 @@ func Lex(input string, file string) ([]token.Token, *Error) {
 		column++
 
 		// Ignore carriage returns on Windows
-		if windows && char == '\r' {
+		if char == '\r' {
 			continue
 		}
 
@@ -159,19 +154,41 @@ func Lex(input string, file string) ([]token.Token, *Error) {
 		if !inString && !inComment && !inBlockComment && i+1 < inputLength {
 			if char == '/' && input[i+1] == '/' {
 				// Push any remaining token
-				pushToken(&currentToken, &result, line, column, file, decimalLiteral)
+				pushToken(
+					&currentToken,
+					&result,
+					line,
+					column,
+					file,
+					isIdentifier,
+					isNumber,
+					decimalLiteral,
+				)
 
 				decimalLiteral = false
 				inComment = true
+				isIdentifier = false
+				tokenIdx = 0
 				continue
 			}
 
 			if char == '/' && input[i+1] == '*' {
 				// Push any remaining token
-				pushToken(&currentToken, &result, line, column, file, decimalLiteral)
+				pushToken(
+					&currentToken,
+					&result,
+					line,
+					column,
+					file,
+					isIdentifier,
+					isNumber,
+					decimalLiteral,
+				)
 
 				decimalLiteral = false
 				inBlockComment = true
+				isIdentifier = false
+				tokenIdx = 0
 				continue
 			}
 		}
@@ -179,6 +196,8 @@ func Lex(input string, file string) ([]token.Token, *Error) {
 		// Handle exiting block comments
 		if char == '/' && i-1 >= 0 && input[i-1] == '*' {
 			inBlockComment = false
+			isIdentifier = true
+			tokenIdx = 0
 			continue
 		}
 
@@ -186,13 +205,25 @@ func Lex(input string, file string) ([]token.Token, *Error) {
 			continue
 		}
 
+		if tokenIdx == 0 && (char == '_' || unicode.IsLetter(char)) {
+			isIdentifier = true
+			isNumber = false
+			tokenIdx++
+		} else if tokenIdx == 0 && unicode.IsDigit(char) {
+			isIdentifier = false
+			isNumber = true
+			tokenIdx++
+		}
+
 		if char == '"' {
 			if inString {
+				value := currentToken.String()
+
 				result = append(
 					result,
 					token.NewToken(
 						token.StringLiteral,
-						currentToken.String(),
+						&value,
 						file,
 						line,
 						column,
@@ -200,6 +231,10 @@ func Lex(input string, file string) ([]token.Token, *Error) {
 				)
 
 				inString = false
+				isIdentifier = true
+				isNumber = false
+				decimalLiteral = false
+				tokenIdx = 0
 
 				// Clear the current token
 				currentToken.Reset()
@@ -207,9 +242,20 @@ func Lex(input string, file string) ([]token.Token, *Error) {
 			}
 
 			// Push any remaining token
-			pushToken(&currentToken, &result, line, column, file, decimalLiteral)
+			pushToken(
+				&currentToken,
+				&result,
+				line,
+				column,
+				file,
+				isIdentifier,
+				isNumber,
+				decimalLiteral,
+			)
 
 			decimalLiteral = false
+			isIdentifier = false
+			isNumber = false
 			inString = true
 			continue
 		}
@@ -248,8 +294,21 @@ func Lex(input string, file string) ([]token.Token, *Error) {
 		}
 
 		if char == ' ' {
-			pushToken(&currentToken, &result, line, column-1, file, decimalLiteral)
+			pushToken(
+				&currentToken,
+				&result,
+				line,
+				column-1,
+				file,
+				isIdentifier,
+				isNumber,
+				decimalLiteral,
+			)
+
 			decimalLiteral = false
+			isIdentifier = true
+			isNumber = false
+			tokenIdx = 0
 			continue
 		}
 
@@ -262,8 +321,20 @@ func Lex(input string, file string) ([]token.Token, *Error) {
 			var arrowBuilder strings.Builder
 			arrowBuilder.WriteString("->")
 
-			pushToken(&arrowBuilder, &result, line, column, file, decimalLiteral)
+			pushToken(
+				&arrowBuilder,
+				&result,
+				line,
+				column,
+				file,
+				isIdentifier,
+				isNumber,
+				decimalLiteral,
+			)
 			decimalLiteral = false
+			isIdentifier = false
+			isNumber = false
+			tokenIdx = 0
 			continue
 		}
 
@@ -278,19 +349,41 @@ func Lex(input string, file string) ([]token.Token, *Error) {
 			var incDecBuilder strings.Builder
 
 			incDecBuilder.WriteString(incDec)
-			pushToken(&incDecBuilder, &result, line, column, file, decimalLiteral)
+			pushToken(
+				&incDecBuilder,
+				&result,
+				line,
+				column,
+				file,
+				isIdentifier,
+				isNumber,
+				decimalLiteral,
+			)
+
 			decimalLiteral = false
+			isIdentifier = true
+			isNumber = false
+			tokenIdx = 0
 
 			continue
 		}
 
-		if char == '.' {
-			// Handle number literals
-			if currentToken.Len() > 0 && numberRegex.MatchString(currentToken.String()) {
-				decimalLiteral = true
-				currentToken.WriteRune(char)
-				continue
+		if char == '.' && isNumber {
+			if decimalLiteral {
+				// Make sure we don't have multiple decimal points
+				return make([]token.Token, 0), &Error{
+					Line:    line,
+					Column:  column,
+					File:    file,
+					Message: "Invalid decimal literal",
+				}
 			}
+
+			// Handle number literals
+			decimalLiteral = true
+			isIdentifier = false
+			currentToken.WriteRune(char)
+			continue
 		}
 
 		// Handle "==", "!=", ">=", "<=", "->"
@@ -303,21 +396,57 @@ func Lex(input string, file string) ([]token.Token, *Error) {
 
 			eqBuilder.WriteRune(char)
 			eqBuilder.WriteByte(input[i+1])
-			pushToken(&eqBuilder, &result, line, column, file, decimalLiteral)
+			pushToken(
+				&eqBuilder,
+				&result,
+				line,
+				column,
+				file,
+				isIdentifier,
+				isNumber,
+				decimalLiteral,
+			)
+
 			decimalLiteral = false
+			isIdentifier = true
+			isNumber = false
+			tokenIdx = 0
 			continue
 		}
 
 		// Check for punctuation characters
 		if _, exists := punctuation[char]; exists {
 			// Push any remaining token
-			pushToken(&currentToken, &result, line, column-1, file, decimalLiteral)
+			pushToken(
+				&currentToken,
+				&result,
+				line,
+				column-1,
+				file,
+				isIdentifier,
+				isNumber,
+				decimalLiteral,
+			)
+
 			decimalLiteral = false
+			isIdentifier = false
+			isNumber = false
 
 			// Add the punctuation character as a token
 			// currentToken is already cleared, just add the punctuation character
 			currentToken.WriteRune(char)
-			pushToken(&currentToken, &result, line, column, file, decimalLiteral)
+			pushToken(
+				&currentToken,
+				&result,
+				line,
+				column,
+				file,
+				isIdentifier,
+				isNumber,
+				decimalLiteral,
+			)
+			isIdentifier = true
+			tokenIdx = 0
 
 			continue
 		}
@@ -335,7 +464,16 @@ func Lex(input string, file string) ([]token.Token, *Error) {
 	}
 
 	// Push the last token
-	pushToken(&currentToken, &result, line, column, file, decimalLiteral)
+	pushToken(
+		&currentToken,
+		&result,
+		line,
+		column,
+		file,
+		isIdentifier,
+		isNumber,
+		decimalLiteral,
+	)
 
 	return result, nil
 }

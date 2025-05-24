@@ -45,7 +45,7 @@ func AnalyzeFor(
 	variables *stack.ScopedStack,
 	blockQueue *[]queue.BlockQueueElement,
 	scopeIds []int,
-) (*error3.Error, *string, *variable.Variable) {
+) *error3.Error {
 	children := *tree.Children
 
 	// Get the range expression
@@ -55,13 +55,13 @@ func AnalyzeFor(
 	block := children[3]
 
 	// Check if the var name is already defined
-	if variables.Load(varName.Value) != nil {
+	if variables.Load(varName.Value, scopeIds) != nil {
 		return &error3.Error{
 			Code:       error3.Redefinition,
 			Line:       varName.Line,
 			Column:     varName.Column,
 			Additional: []string{*varName.Value},
-		}, nil, nil
+		}
 	}
 
 	// Analyze the left expression
@@ -75,10 +75,11 @@ func AnalyzeFor(
 		},
 		false,
 		false,
+		scopeIds,
 	)
 
 	if err != nil {
-		return err, nil, nil
+		return err
 	}
 
 	if leftObj.Type.BaseType != "num" && leftObj.Type.BaseType != "dec" {
@@ -87,7 +88,7 @@ func AnalyzeFor(
 			Line:       varName.Line,
 			Column:     varName.Column,
 			Additional: []string{"num or dec", leftObj.Type.Marshal()},
-		}, nil, nil
+		}
 	}
 
 	// Also analyze the right expression
@@ -99,14 +100,25 @@ func AnalyzeFor(
 		&leftObj.Type,
 		false,
 		false,
+		scopeIds,
 	)
 
 	if err != nil {
-		return err, nil, nil
+		return err
 	}
 
 	// Append the block to the block queue
-	scopeIds = append(scopeIds, variables.Count)
+	newId := variables.NewScope()
+	scopeIds = append(scopeIds, newId)
+	variables.Append(*varName.Value, variable.Variable{
+		Constant: true,
+		Value: object.Object{
+			Type:   leftObj.Type,
+			Value:  nil,
+			IsHeap: leftObj.IsHeap,
+		},
+	}, scopeIds[len(scopeIds)-1])
+
 	*blockQueue = append(*blockQueue, queue.BlockQueueElement{
 		Block: block,
 		// Predict the next ID
@@ -114,12 +126,5 @@ func AnalyzeFor(
 		InLoop: true,
 	})
 
-	return nil, varName.Value, &variable.Variable{
-		Constant: true,
-		Value: object.Object{
-			Type:   leftObj.Type,
-			Value:  nil,
-			IsHeap: leftObj.IsHeap,
-		},
-	}
+	return nil
 }

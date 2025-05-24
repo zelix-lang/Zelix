@@ -154,7 +154,6 @@ func MarshalExpression(
 				suitable := *counter
 				pair.Parent.Representation.WriteString("x")
 				pair.Parent.Representation.WriteString(strconv.Itoa(suitable))
-				pair.Parent.Representation.WriteString("\n")
 
 				// Increment the counter
 				*counter++
@@ -239,7 +238,7 @@ func MarshalExpression(
 			stored := (*variables)[*child.Value]
 
 			if derefVariables {
-				pair.Parent.Representation.WriteString("load ")
+				pair.Parent.Representation.WriteString("take ")
 			}
 
 			pair.Parent.Representation.WriteString(stored.Addr)

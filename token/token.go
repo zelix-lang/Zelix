@@ -16,17 +16,17 @@ package token
 
 // Token represents a lexical token with its type, value, and position in the source file.
 type Token struct {
-	TokenType Type   // The type of the token.
-	Value     string // The literal value of the token.
-	File      string // The source file where the token was found.
-	Line      int    // The line number in the source file.
-	Column    int    // The column number in the source file.
+	TokenType Type    // The type of the token.
+	Value     *string // The literal value of the token.
+	File      string  // The source file where the token was found.
+	Line      int     // The line number in the source file.
+	Column    int     // The column number in the source file.
 }
 
 // NewToken creates a new Token with the given type, value, file, line, and column.
 func NewToken(
 	tokenType Type,
-	value string,
+	value *string,
 	file string,
 	line int,
 	column int,

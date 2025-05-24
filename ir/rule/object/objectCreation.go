@@ -258,6 +258,7 @@ func MarshalObjectCreation(
 					Counter:     suitable,
 					Expected:    prop.Type,
 					MoveToStack: true,
+					IsParam:     true,
 				})
 			}
 
@@ -270,7 +271,7 @@ func MarshalObjectCreation(
 			// representation to avoid the call to the constructor
 			// appearing before the instruction that constructs
 			// the module
-			element.Parent.Representation.WriteString("\n")
+			element.Parent.Representation.WriteString("end_co\n")
 
 			// Insert a call to the constructor
 			element.Parent.Representation.WriteString("c ")
@@ -322,6 +323,8 @@ func MarshalObjectCreation(
 				colAddress,
 				fileAddress,
 			)
+		} else {
+			element.Parent.Representation.WriteString("end_co")
 		}
 	}
 
