@@ -24,12 +24,9 @@ import (
 	"fluent/ir/relocate"
 	"fluent/ir/rule/expression"
 	"fluent/ir/tree"
-	"fluent/ir/value"
 	"fluent/ir/variable"
 	"fluent/util"
 	"fmt"
-	"strconv"
-	"strings"
 )
 
 var numWrapper = wrapper.TypeWrapper{
@@ -93,146 +90,110 @@ func MarshalFor(
 	// Relocate the rest of the code
 	remainingAddr := relocate.Remaining(appendedBlocks, blockQueue, queueElement)
 
-	// Get a backup variable to increment the loop counter
-	suitable := *counter
-	backupAddr := fmt.Sprintf("x%d", suitable)
-	*counter++
+	// Create a new block for the condition break
+	breakConditionAddr, breakConditionBuilder := appendedBlocks.RequestAddress()
 
-	// Get a suitable counter for the identifier
-	suitable = *counter
-	identifierAddr := fmt.Sprintf("x%d", suitable)
+	// Create a new block for the loop body
+	blockAddr, blockBuilder := appendedBlocks.RequestAddress()
+
+	// Create a new block for updating the loop counter
+	storeAddr, storeAddrBuilder := appendedBlocks.RequestAddress()
+
+	// Marshal the left and right expressions directly
+	identifierAddr := fmt.Sprintf("x%d", *counter)
 	(*variables)[*identifier.Value] = &variable.IRVariable{
 		Addr: identifierAddr,
 		Type: &numWrapper,
 	}
 
-	leftTempBuilder := strings.Builder{}
-	isBuilderStatic := true
-	leftBranchAddr := ""
-	// See if we can save memory on the left value
-	if value.RetrieveStaticVal(fileCodeId, leftExpr, &leftTempBuilder, usedStrings) {
-		*counter++
-	} else {
-		isBuilderStatic = false
-		*counter++
+	// Use the left expression as our loop variable
+	expression.MarshalExpression(
+		queueElement.Representation,
+		trace,
+		traceFn,
+		fileCodeId,
+		isMod,
+		traceFileName,
+		originalPath,
+		modulePropCounters,
+		counter,
+		leftExpr,
+		variables,
+		traceCounters,
+		usedStrings,
+		localCounters,
+		true,
+		false,
+		&numWrapper,
+	)
 
-		leftBranchAddr = fmt.Sprintf("x%d", *counter)
-		// Marshal the expression directly
-		expression.MarshalExpression(
-			&leftTempBuilder,
-			trace,
-			traceFn,
-			fileCodeId,
-			isMod,
-			traceFileName,
-			originalPath,
-			modulePropCounters,
-			counter,
-			leftExpr,
-			variables,
-			traceCounters,
-			usedStrings,
-			localCounters,
-			true,
-			false,
-			&numWrapper,
-		)
+	rightExprAddr := fmt.Sprintf("x%d", *counter)
+	expression.MarshalExpression(
+		queueElement.Representation,
+		trace,
+		traceFn,
+		fileCodeId,
+		isMod,
+		traceFileName,
+		originalPath,
+		modulePropCounters,
+		counter,
+		rightExpr,
+		variables,
+		traceCounters,
+		usedStrings,
+		localCounters,
+		true,
+		true,
+		&numWrapper,
+	)
 
-		queueElement.Representation.WriteString(leftTempBuilder.String())
-	}
-
-	tempBuilder := strings.Builder{}
-	var rightAddr string
-	if value.RetrieveStaticVal(fileCodeId, rightExpr, &tempBuilder, usedStrings) {
-		rightAddr = tempBuilder.String()
-	} else {
-		rightAddr = fmt.Sprintf("x%d", *counter)
-		// Marshal the expression directly
-		expression.MarshalExpression(
-			&tempBuilder,
-			trace,
-			traceFn,
-			fileCodeId,
-			isMod,
-			traceFileName,
-			originalPath,
-			modulePropCounters,
-			counter,
-			rightExpr,
-			variables,
-			traceCounters,
-			usedStrings,
-			localCounters,
-			true,
-			false,
-			&numWrapper,
-		)
-
-		queueElement.Representation.WriteString(tempBuilder.String())
-	}
-
-	// Get an address for the break conditional branch
-	breakConditionAddr, breakConditionBuilder := appendedBlocks.RequestAddress()
-
-	// Get an address for the loop's block
-	blockAddr, blockBuilder := appendedBlocks.RequestAddress()
-
-	// Get an address for the block that changes the value of the counter
-	storeAddr, storeBuilder := appendedBlocks.RequestAddress()
-
-	// Move the backup variable
-	storeBuilder.WriteString("mov ")
-	storeBuilder.WriteString(backupAddr)
-	storeBuilder.WriteString(" num add ")
-	storeBuilder.WriteString(identifierAddr)
-	storeBuilder.WriteString(" __fluentc_const_one ")
-	storeBuilder.WriteString("\njump ")
-	storeBuilder.WriteString(*breakConditionAddr)
-	storeBuilder.WriteString("\n")
-
-	// Decide the value of the identifier
-	breakConditionBuilder.WriteString("pick ")
-	breakConditionBuilder.WriteString(identifierAddr)
-
-	if queueElement.ParentAddr == nil {
-		breakConditionBuilder.WriteString(" entry ")
-	} else {
-		breakConditionBuilder.WriteString(" ")
-		breakConditionBuilder.WriteString(*queueElement.ParentAddr)
-		breakConditionBuilder.WriteString(" ")
-	}
-
-	if isBuilderStatic {
-		breakConditionBuilder.WriteString(leftTempBuilder.String())
-	} else {
-		breakConditionBuilder.WriteString(leftBranchAddr)
-		breakConditionBuilder.WriteString(" ")
-	}
-
-	breakConditionBuilder.WriteString(*storeAddr)
-	breakConditionBuilder.WriteString(" ")
+	// Create a backup variable to load the identifier
+	backupAddr := fmt.Sprintf("x%d", *counter)
+	breakConditionBuilder.WriteString("mov ")
 	breakConditionBuilder.WriteString(backupAddr)
-	breakConditionBuilder.WriteString("\n")
-
-	// Get a suitable counter for the break condition
-	suitable = *counter
-	*counter++
-	breakConditionBuilder.WriteString("mov x")
-	breakConditionBuilder.WriteString(strconv.Itoa(suitable))
-	breakConditionBuilder.WriteString(" bool eq ")
+	breakConditionBuilder.WriteString(" take ")
 	breakConditionBuilder.WriteString(identifierAddr)
-	breakConditionBuilder.WriteString(" ")
-	breakConditionBuilder.WriteString(rightAddr)
 	breakConditionBuilder.WriteString("\n")
+	*counter++
 
-	// Write the break condition
-	breakConditionBuilder.WriteString("if x")
-	breakConditionBuilder.WriteString(strconv.Itoa(suitable))
+	checkConditionAddr := fmt.Sprintf("x%d", *counter)
+	breakConditionBuilder.WriteString("mov ")
+	breakConditionBuilder.WriteString(checkConditionAddr)
+	breakConditionBuilder.WriteString(" bool eq ")
+	breakConditionBuilder.WriteString(backupAddr)
+	breakConditionBuilder.WriteString(" ")
+	breakConditionBuilder.WriteString(rightExprAddr)
+	breakConditionBuilder.WriteString("\n")
+	*counter++
+
+	// Write the break block
+	breakConditionBuilder.WriteString("if ")
+	breakConditionBuilder.WriteString(checkConditionAddr)
 	breakConditionBuilder.WriteString(" ")
 	breakConditionBuilder.WriteString(*remainingAddr)
 	breakConditionBuilder.WriteString(" ")
 	breakConditionBuilder.WriteString(*blockAddr)
 	breakConditionBuilder.WriteString("\n")
+
+	// Create another backup variable to load the identifier
+	backupAddr = fmt.Sprintf("x%d", *counter)
+	storeAddrBuilder.WriteString("mov ")
+	storeAddrBuilder.WriteString(backupAddr)
+	storeAddrBuilder.WriteString(" take ")
+	storeAddrBuilder.WriteString(identifierAddr)
+	storeAddrBuilder.WriteString("\n")
+	*counter++
+
+	// Write the store block
+	storeAddrBuilder.WriteString("store ")
+	storeAddrBuilder.WriteString(identifierAddr)
+	storeAddrBuilder.WriteString(" add ")
+	storeAddrBuilder.WriteString(backupAddr)
+	storeAddrBuilder.WriteString(" __fluentc_const_one\n")
+	storeAddrBuilder.WriteString("jump ")
+	storeAddrBuilder.WriteString(*breakConditionAddr)
+	storeAddrBuilder.WriteString("\n")
 
 	// Schedule the block for marshaling
 	*blockQueue = append(*blockQueue, &tree.BlockMarshalElement{
