@@ -275,10 +275,6 @@ func BuildCommand(context *cli.Command, callCompiler bool) string {
 	// Use a final builder to write the string references first
 	finalBuilder := strings.Builder{}
 
-	// Write __fluentc_const_one and __fluentc_const_zero
-	finalBuilder.WriteString("ref __fluentc_const_one num 1\n")
-	finalBuilder.WriteString("ref __fluentc_const_zero num 0\n")
-
 	for address, str := range traceStrings {
 		finalBuilder.WriteString("ref ")
 		finalBuilder.WriteString(address)
