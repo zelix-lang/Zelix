@@ -185,7 +185,7 @@ func MarshalFor(
 	storeBuilder.WriteString(backupAddr)
 	storeBuilder.WriteString(" num add ")
 	storeBuilder.WriteString(identifierAddr)
-	storeBuilder.WriteString(" 1 ")
+	storeBuilder.WriteString(" __fluentc_const_one ")
 	storeBuilder.WriteString("\njump ")
 	storeBuilder.WriteString(*breakConditionAddr)
 	storeBuilder.WriteString("\n")
