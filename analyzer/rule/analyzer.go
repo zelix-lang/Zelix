@@ -51,7 +51,7 @@ func AnalyzeFileCode(code *filecode.FileCode, isMain bool) (*pool.ErrorPool, *po
 		}
 
 		// Analyze the function
-		errors, warnings, _ := function2.AnalyzeFunction(*function, code, "", &function.Templates, *stack.NewScopedStack(), false)
+		errors, warnings, _ := function2.AnalyzeFunction(*function, code, "", &function.Templates, *stack.NewScopedStack(), false, false)
 		globalErrors.Extend(errors.Errors)
 		globalWarnings.Extend(warnings.Errors)
 	}

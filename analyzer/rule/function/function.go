@@ -87,6 +87,7 @@ func AnalyzeFunction(
 	generics *map[string]bool,
 	scope stack.ScopedStack,
 	collectAssignments bool,
+	isMod bool,
 ) (*pool.ErrorPool, *pool.ErrorPool, *[]*ast.AST) {
 	errors := pool.NewErrorPool()
 	warnings := pool.NewErrorPool()
@@ -158,6 +159,11 @@ func AnalyzeFunction(
 		Block: &fun.Body,
 		ID:    []int{mainScopeId},
 	})
+
+	// Add a main scope ID to the first element of the queue
+	if isMod {
+		blockQueue[0].ID = append(blockQueue[0].ID, 0) // Add the main scope ID for modules
+	}
 
 	for len(blockQueue) > 0 {
 		// Get the first element in the queue
