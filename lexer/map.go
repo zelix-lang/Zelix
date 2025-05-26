@@ -52,7 +52,6 @@ var knownTokens = map[string]token.Type{
 	"&&": token.And,
 	"||": token.Or,
 	"|":  token.Bar,
-	"^":  token.Xor,
 	"!":  token.Not,
 	",":  token.Comma,
 	";":  token.Semicolon,
@@ -65,7 +64,6 @@ var knownTokens = map[string]token.Type{
 	"[":  token.OpenBracket,
 	"]":  token.CloseBracket,
 	".":  token.Dot,
-	"%":  token.Percent,
 
 	// Data types
 	"str":     token.String,

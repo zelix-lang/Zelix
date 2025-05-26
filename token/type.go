@@ -59,8 +59,6 @@ const (
 	GreaterThanOrEqual
 	// LessThanOrEqual represents a less than or equal token.
 	LessThanOrEqual
-	// Percent represents a percent token.
-	Percent
 
 	// Arrow represents an arrow token.
 	Arrow
@@ -82,8 +80,6 @@ const (
 
 	// Colon represents a colon token.
 	Colon
-	// Xor represents an XOR token.
-	Xor
 	// Not represents a not token.
 	Not
 	// Or represents an OR token.

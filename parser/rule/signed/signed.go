@@ -120,12 +120,13 @@ func ProcessSignedOp(
 			expectingOperator = false
 
 			// Add the operator to the result
+			signValue := "!"
 			*result.Children = append(*result.Children, &ast.AST{
 				Rule:     operatorRule,
 				Line:     unit.Line,
 				Column:   unit.Column,
 				File:     &unit.File,
-				Value:    unit.Value,
+				Value:    &signValue,
 				Children: &[]*ast.AST{},
 			})
 
@@ -143,13 +144,42 @@ func ProcessSignedOp(
 			}
 
 			if includeSigns {
+				signValue := ""
+
+				// Determine the value to use for the operator
+				switch unit.TokenType {
+				case token.Plus:
+					signValue = "+"
+				case token.Minus:
+					signValue = "-"
+				case token.Asterisk:
+					signValue = "*"
+				case token.Slash:
+					signValue = "/"
+				case token.And:
+					signValue = "&&"
+				case token.Equal:
+					signValue = "=="
+				case token.NotEqual:
+					signValue = "!="
+				case token.GreaterThan:
+					signValue = ">"
+				case token.LessThan:
+					signValue = "<"
+				case token.GreaterThanOrEqual:
+					signValue = ">="
+				case token.LessThanOrEqual:
+					signValue = "<="
+				default:
+				}
+
 				// Add the operator to the result
 				*result.Children = append(*result.Children, &ast.AST{
 					Rule:     operatorRule,
 					Line:     unit.Line,
 					Column:   unit.Column,
 					File:     &unit.File,
-					Value:    unit.Value,
+					Value:    &signValue,
 					Children: &[]*ast.AST{},
 				})
 			}
