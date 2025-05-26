@@ -152,7 +152,7 @@ func MarshalFor(
 	backupAddr := fmt.Sprintf("x%d", *counter)
 	breakConditionBuilder.WriteString("mov ")
 	breakConditionBuilder.WriteString(backupAddr)
-	breakConditionBuilder.WriteString(" take ")
+	breakConditionBuilder.WriteString(" num take ")
 	breakConditionBuilder.WriteString(identifierAddr)
 	breakConditionBuilder.WriteString("\n")
 	*counter++
@@ -180,7 +180,7 @@ func MarshalFor(
 	backupAddr = fmt.Sprintf("x%d", *counter)
 	storeAddrBuilder.WriteString("mov ")
 	storeAddrBuilder.WriteString(backupAddr)
-	storeAddrBuilder.WriteString(" take ")
+	storeAddrBuilder.WriteString(" num take ")
 	storeAddrBuilder.WriteString(identifierAddr)
 	storeAddrBuilder.WriteString("\n")
 	*counter++
