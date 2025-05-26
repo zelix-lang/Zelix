@@ -14,4 +14,8 @@ mod Bcd {
 
 fun main() {
     new Abc();
+
+    for 5 to 10 in i {
+        println("asd");
+    }
 }
