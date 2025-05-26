@@ -234,10 +234,6 @@ func MarshalFor(
 	breakConditionBuilder.WriteString(*blockAddr)
 	breakConditionBuilder.WriteString("\n")
 
-	// Get a suitable counter for the condition
-	suitable = *counter
-	*counter++
-
 	// Schedule the block for marshaling
 	*blockQueue = append(*blockQueue, &tree.BlockMarshalElement{
 		Element:        block,
