@@ -190,7 +190,7 @@ func MarshalFor(
 	storeAddrBuilder.WriteString(identifierAddr)
 	storeAddrBuilder.WriteString(" add ")
 	storeAddrBuilder.WriteString(backupAddr)
-	storeAddrBuilder.WriteString(" __fluentc_const_one\n")
+	storeAddrBuilder.WriteString(" 1\n")
 	storeAddrBuilder.WriteString("jump ")
 	storeAddrBuilder.WriteString(*breakConditionAddr)
 	storeAddrBuilder.WriteString("\n")
