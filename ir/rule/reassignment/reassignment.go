@@ -186,7 +186,7 @@ func MarshalReassignment(
 	)
 
 	// Increment pointer count
-	rightExpr.InferredType.PointerCount += 2
+	rightExpr.InferredType.PointerCount += 1
 
 	// Store the new property in the pointer
 	leftAddr := marshalExpr(
