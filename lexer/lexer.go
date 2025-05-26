@@ -69,6 +69,11 @@ func pushToken(
 
 	if ok {
 		newToken.TokenType = knownToken
+
+		// Add the value for boolean literals
+		if knownToken == token.BoolLiteral {
+			newToken.Value = &value
+		}
 	} else if decimalLiteral {
 		newToken.TokenType = token.DecimalLiteral
 		newToken.Value = &value
