@@ -272,8 +272,9 @@ func BuildCommand(context *cli.Command, callCompiler bool) string {
 		outPath += ".exe"
 	}
 
-	// Write __fluentc_const_one
+	// Write __fluentc_const_one and __fluentc_const_zero
 	globalBuilder.WriteString("ref __fluentc_const_one num 1\n")
+	globalBuilder.WriteString("ref __fluentc_const_zero num 0\n")
 
 	// Use a final builder to write the string references first
 	finalBuilder := strings.Builder{}

@@ -13,5 +13,5 @@ mod Bcd {
 }
 
 fun main() {
-    new Bcd();
+    new Abc();
 }
