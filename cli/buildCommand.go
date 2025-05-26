@@ -272,13 +272,16 @@ func BuildCommand(context *cli.Command, callCompiler bool) string {
 		outPath += ".exe"
 	}
 
+	// Write __fluentc_const_one
+	globalBuilder.WriteString("ref __fluentc_const_one num 1\n")
+
 	// Use a final builder to write the string references first
 	finalBuilder := strings.Builder{}
 
 	for address, str := range traceStrings {
 		finalBuilder.WriteString("ref ")
 		finalBuilder.WriteString(address)
-		finalBuilder.WriteString(" &str \"")
+		finalBuilder.WriteString(" str \"")
 		finalBuilder.WriteString(*str)
 		finalBuilder.WriteString("\"\n")
 	}
@@ -286,7 +289,7 @@ func BuildCommand(context *cli.Command, callCompiler bool) string {
 	for str, address := range usedStrings.Storage {
 		finalBuilder.WriteString("ref ")
 		finalBuilder.WriteString(address)
-		finalBuilder.WriteString(" &str \"")
+		finalBuilder.WriteString(" str \"")
 		finalBuilder.WriteString(str)
 		finalBuilder.WriteString("\"\n")
 	}
@@ -294,7 +297,7 @@ func BuildCommand(context *cli.Command, callCompiler bool) string {
 	for num, address := range traceCounters.Storage {
 		finalBuilder.WriteString("ref ")
 		finalBuilder.WriteString(address)
-		finalBuilder.WriteString(" &num ")
+		finalBuilder.WriteString(" num ")
 		finalBuilder.WriteString(strconv.Itoa(num))
 		finalBuilder.WriteString("\n")
 	}
