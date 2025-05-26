@@ -10,12 +10,12 @@ mod Abc {
 
 mod Bcd {
     let a: num = 2;
+
+    pub fn Bcd() {
+        this.a = 2;
+    }
 }
 
 fun main() {
     new Abc();
-
-    if true != true {
-
-    }
 }

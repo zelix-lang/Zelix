@@ -88,6 +88,7 @@ func AnalyzeModule(
 			&mod.Templates,
 			*variables,
 			isConstructor,
+			true,
 		)
 
 		globalErrors.Extend(errors.Errors)
