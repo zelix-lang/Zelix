@@ -298,7 +298,7 @@ func MarshalObjectCreation(
 				element.Parent.Representation.WriteString(lineAddress)
 				element.Parent.Representation.WriteString(" ")
 				element.Parent.Representation.WriteString(colAddress)
-				element.Parent.Representation.WriteString(" ")
+				element.Parent.Representation.WriteString(" end_call ")
 				return
 			}
 
@@ -323,6 +323,8 @@ func MarshalObjectCreation(
 				colAddress,
 				fileAddress,
 			)
+
+			element.Parent.Representation.WriteString("end_call")
 		} else {
 			element.Parent.Representation.WriteString("end_co")
 		}
