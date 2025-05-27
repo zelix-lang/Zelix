@@ -185,9 +185,6 @@ func MarshalReassignment(
 		rightExpr.InferredType,
 	)
 
-	// Increment pointer count
-	rightExpr.InferredType.PointerCount += 1
-
 	// Store the new property in the pointer
 	leftAddr := marshalExpr(
 		queueElement,
@@ -204,7 +201,7 @@ func MarshalReassignment(
 		traceCounters,
 		usedStrings,
 		localCounters,
-		true,
+		false,
 		rightExpr.InferredType,
 	)
 
