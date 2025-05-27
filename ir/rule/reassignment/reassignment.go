@@ -45,7 +45,6 @@ func marshalExpr(
 	traceCounters *pool.NumPool,
 	usedStrings *pool.StringPool,
 	localCounters *map[string]*string,
-	isParam bool,
 	expectedType *wrapper.TypeWrapper,
 ) string {
 	// See if we can save memory if the expression is a static value
@@ -73,7 +72,7 @@ func marshalExpr(
 		usedStrings,
 		localCounters,
 		true,
-		isParam,
+		true,
 		expectedType,
 	)
 
@@ -151,7 +150,6 @@ func MarshalReassignment(
 			traceCounters,
 			usedStrings,
 			localCounters,
-			true,
 			storedVar.Type,
 		)
 
@@ -181,7 +179,6 @@ func MarshalReassignment(
 		traceCounters,
 		usedStrings,
 		localCounters,
-		true,
 		rightExpr.InferredType,
 	)
 
@@ -201,7 +198,6 @@ func MarshalReassignment(
 		traceCounters,
 		usedStrings,
 		localCounters,
-		false,
 		rightExpr.InferredType,
 	)
 
