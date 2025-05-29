@@ -47,7 +47,7 @@ int main(const int argc, const char **const argv)
     cli_value_t compile_cmd = cli_new_value("Builds Fluent source code and outputs an executable", CLI_TYPE_STRING, "b", FALSE);
     cli_value_t run_cmd = cli_new_value("Runs the Fluent source code", CLI_TYPE_STRING, "r", FALSE);
     cli_value_t check_cmd = cli_new_value("Performs static analyzer checks", CLI_TYPE_STRING, "c", FALSE);
-    cli_insert_command(&app, "compile", &compile_cmd);
+    cli_insert_command(&app, "build", &compile_cmd);
     cli_insert_command(&app, "run", &run_cmd);
     cli_insert_command(&app, "check", &check_cmd);
 
