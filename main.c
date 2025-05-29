@@ -40,8 +40,8 @@ int main(const int argc, const char **const argv)
     cli_value_t c_flags = cli_new_value("Specifies compiler flags", CLI_TYPE_STRING, "cf", FALSE);
     cli_value_t opt_level = cli_new_value("Sets the optimization level", CLI_TYPE_INTEGER, "O", FALSE);
     cli_insert_flag(&app, "help", &help_flag);
-    cli_insert_flag(&app, "help", &c_flags);
-    cli_insert_flag(&app, "help", &opt_level);
+    cli_insert_flag(&app, "c_flags", &c_flags);
+    cli_insert_flag(&app, "optimization", &opt_level);
 
     // Parse the command line arguments
     argv_t args = parse_argv(argc, argv, &app);
