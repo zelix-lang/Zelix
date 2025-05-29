@@ -37,7 +37,9 @@ int main(const int argc, const char **const argv)
 
     // Fill the CLI application with flags
     cli_value_t help_flag = cli_new_value("Displays this help message", CLI_TYPE_STATIC, "h", FALSE);
+    cli_value_t c_flags = cli_new_value("Specifies compiler flags", CLI_TYPE_STRING, "cf", FALSE);
     cli_insert_flag(&app, "help", &help_flag);
+    cli_insert_flag(&app, "help", &c_flags);
 
     // Parse the command line arguments
     argv_t args = parse_argv(argc, argv, &app);
