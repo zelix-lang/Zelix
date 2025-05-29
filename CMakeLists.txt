@@ -13,7 +13,8 @@ project(Fluent C)
 set(CMAKE_C_STANDARD 11)
 
 add_executable(Fluent
-    main.c)
+    main.c
+        command/check.h)
 
 target_include_directories(Fluent PRIVATE ${CMAKE_BINARY_DIR}/_deps/fluent_libc-src/include)
 target_link_libraries(Fluent PRIVATE fluent_libc)
