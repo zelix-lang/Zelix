@@ -41,7 +41,7 @@ int main(const int argc, const char **const argv)
     cli_value_t opt_level = cli_new_value("Sets the optimization level", CLI_TYPE_INTEGER, "O", FALSE);
     cli_insert_flag(&app, "help", &help_flag);
     cli_insert_flag(&app, "help", &c_flags);
-    cli_insert_flag(&app, "help", &cli_new_value);
+    cli_insert_flag(&app, "help", &opt_level);
 
     // Parse the command line arguments
     argv_t args = parse_argv(argc, argv, &app);
