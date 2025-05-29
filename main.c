@@ -60,5 +60,6 @@ int main(const int argc, const char **const argv)
 
     // Free the CLI application resources
     cli_destroy_app(&app, FALSE);
+    destroy_argv(&args);
     return 0;
 }
