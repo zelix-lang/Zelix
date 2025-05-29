@@ -24,6 +24,7 @@ int main()
         return 1; // Exit if app initialization fails
     }
 
-
+    // Free the CLI application resources
+    cli_destroy_app(&app, FALSE);
     return 0;
 }
