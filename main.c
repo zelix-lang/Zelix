@@ -12,7 +12,18 @@
     conditions; type `fluent l -f` for details.
 */
 
+#include <fluent/cli/cli.h> // fluent_libc
+
 int main()
 {
+    cli_app_t app;
+    if (!cli_new_app(&app)) // Initialize the CLI application
+    {
+        // Handle failure
+        puts("Error: Failed to initialize the CLI application.");
+        return 1; // Exit if app initialization fails
+    }
+
+
     return 0;
 }
