@@ -74,6 +74,19 @@ int main(const int argc, const char **const argv)
         return 1;
     }
 
+    // Handle the commands and flags
+    if (args.cmd_ptr == &compile_cmd)
+    {
+        puts("Build command executed.");
+    } else if (args.cmd_ptr == &run_cmd)
+    {
+        puts("Run command executed.");
+    }
+    else if (args.cmd_ptr == &check_cmd)
+    {
+        puts("Check command executed.");
+    }
+
     // Free the CLI application resources
     cli_destroy_app(&app, FALSE);
     destroy_argv(&args);
