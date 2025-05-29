@@ -35,6 +35,10 @@ int main(const int argc, const char **const argv)
         return 1; // Exit if app initialization fails
     }
 
+    // Fill the CLI application with flags
+    cli_value_t help_flag = cli_new_value("Displays this help message", CLI_TYPE_STATIC, "h", FALSE);
+    cli_insert_flag(&app, "help", &help_flag);
+
     // Parse the command line arguments
     argv_t args = parse_argv(argc, argv, &app);
 
