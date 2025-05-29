@@ -21,61 +21,61 @@
 
 typedef enum
 {
-	TOKEN_FUNCTION,
-	TOKEN_LET,
-	TOKEN_CONST,
-	TOKEN_IF,
-	TOKEN_ELSE,
-	TOKEN_ELSE_IF,
-	TOKEN_MOD,
-	TOKEN_RETURN,
-	TOKEN_ASSIGN,
-	TOKEN_PLUS,
-	TOKEN_MINUS,
-	TOKEN_ASTERISK,
-	TOKEN_SLASH,
-	TOKEN_LESS_THAN,
-	TOKEN_GREATER_THAN,
-	TOKEN_EQUAL,
-	TOKEN_NOT_EQUAL,
-	TOKEN_GREATER_THAN_OR_EQUAL,
-	TOKEN_LESS_THAN_OR_EQUAL,
-	TOKEN_ARROW,
-	TOKEN_COMMA,
-	TOKEN_SEMICOLON,
-	TOKEN_OPEN_PAREN,
-	TOKEN_CLOSE_PAREN,
-	TOKEN_OPEN_CURLY,
-	TOKEN_CLOSE_CURLY,
-	TOKEN_COLON,
-	TOKEN_NOT,
-	TOKEN_OR,
-	TOKEN_AND,
-	TOKEN_OPEN_BRACKET,
-	TOKEN_CLOSE_BRACKET,
-	TOKEN_DOT,
-	TOKEN_STRING,
-	TOKEN_NUM,
-	TOKEN_DEC,
-	TOKEN_NOTHING,
-	TOKEN_BOOL,
-	TOKEN_STRING_LITERAL,
-	TOKEN_NUM_LITERAL,
-	TOKEN_DECIMAL_LITERAL,
-	TOKEN_BOOL_LITERAL,
-	TOKEN_WHILE,
-	TOKEN_FOR,
-	TOKEN_NEW,
-	TOKEN_IN,
-	TOKEN_TO,
-	TOKEN_BREAK,
-	TOKEN_CONTINUE,
-	TOKEN_PUB,
-	TOKEN_AMPERSAND,
-	TOKEN_BAR,
-	TOKEN_IMPORT,
-	TOKEN_IDENTIFIER,
-	TOKEN_UNKNOWN
+	TOKEN_FUNCTION = 0,      // 0
+	TOKEN_LET,               // 1
+	TOKEN_CONST,             // 2
+	TOKEN_IF,                // 3
+	TOKEN_ELSE,              // 4
+	TOKEN_ELSE_IF,           // 5
+	TOKEN_MOD,               // 6
+	TOKEN_RETURN,            // 7
+	TOKEN_ASSIGN,            // 8
+	TOKEN_PLUS,              // 9
+	TOKEN_MINUS,             // 10
+	TOKEN_ASTERISK,          // 11
+	TOKEN_SLASH,             // 12
+	TOKEN_LESS_THAN,         // 13
+	TOKEN_GREATER_THAN,      // 14
+	TOKEN_EQUAL,             // 15
+	TOKEN_NOT_EQUAL,         // 16
+	TOKEN_GREATER_THAN_OR_EQUAL, // 17
+	TOKEN_LESS_THAN_OR_EQUAL,    // 18
+	TOKEN_ARROW,             // 19
+	TOKEN_COMMA,             // 20
+	TOKEN_SEMICOLON,         // 21
+	TOKEN_OPEN_PAREN,        // 22
+	TOKEN_CLOSE_PAREN,       // 23
+	TOKEN_OPEN_CURLY,        // 24
+	TOKEN_CLOSE_CURLY,       // 25
+	TOKEN_COLON,             // 26
+	TOKEN_NOT,               // 27
+	TOKEN_OR,                // 28
+	TOKEN_AND,               // 29
+	TOKEN_OPEN_BRACKET,      // 30
+	TOKEN_CLOSE_BRACKET,     // 31
+	TOKEN_DOT,               // 32
+	TOKEN_STRING,            // 33
+	TOKEN_NUM,               // 34
+	TOKEN_DEC,               // 35
+	TOKEN_NOTHING,           // 36
+	TOKEN_BOOL,              // 37
+	TOKEN_STRING_LITERAL,    // 38
+	TOKEN_NUM_LITERAL,       // 39
+	TOKEN_DECIMAL_LITERAL,   // 40
+	TOKEN_BOOL_LITERAL,      // 41
+	TOKEN_WHILE,             // 42
+	TOKEN_FOR,               // 43
+	TOKEN_NEW,               // 44
+	TOKEN_IN,                // 45
+	TOKEN_TO,                // 46
+	TOKEN_BREAK,             // 47
+	TOKEN_CONTINUE,          // 48
+	TOKEN_PUB,               // 49
+	TOKEN_AMPERSAND,         // 50
+	TOKEN_BAR,               // 51
+	TOKEN_IMPORT,            // 52
+	TOKEN_IDENTIFIER,        // 53
+	TOKEN_UNKNOWN            // 54
 } token_type_t;
 
 typedef struct
