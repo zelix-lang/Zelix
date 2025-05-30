@@ -16,6 +16,9 @@
 #include <fluent/cli/cli.h> // fluent_libc
 #include <fluent/cli/help/generator.h> // fluent_libc
 
+// ============= INCLUDES =============
+#include "token/token_map.h"
+
 // ============= MACROS =============
 #ifndef PROGRAM_NAME
 #   define PROGRAM_NAME "fluent"
@@ -73,6 +76,9 @@ int main(const int argc, const char **const argv)
         // Return failure
         return 1;
     }
+
+    // Initialize the token map for further processing
+    get_token_map();
 
     // Handle the commands and flags
     if (args.cmd_ptr == &compile_cmd)
