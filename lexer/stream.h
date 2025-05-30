@@ -34,6 +34,7 @@ typedef struct
 {
     vector_t *tokens; ///< Vector of tokens
     size_t current;  ///< Current index in the token stream
+    arena_allocator_t *allocator; ///< Arena allocator for token memory management
 } token_stream_t;
 
 /**
