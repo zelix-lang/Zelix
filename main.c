@@ -55,7 +55,7 @@ int main(const int argc, const char **const argv)
     argv_t args = parse_argv(argc, argv, &app);
 
     // Handle failure
-    if (args.success == FALSE || hashmap_get(args.statics, "help") != NULL)
+    if (args.success == FALSE || hashmap_cli_i_get(args.statics, "help") != NULL)
     {
         // Generate a help message
         char *help_message = cli_generate_help(&app, PROGRAM_NAME, PROGRAM_DESCRIPTION, 18);
