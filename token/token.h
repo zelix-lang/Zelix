@@ -19,65 +19,80 @@
 #ifndef FLUENT_TOKEN_H
 #define FLUENT_TOKEN_H
 
+/**
+ * @enum token_type_t
+ * @brief Enumerates all possible token types in the Fluent programming language.
+ *
+ * Each value represents a distinct kind of token that can be identified by the lexer,
+ * including keywords, operators, literals, punctuation, and special symbols.
+ * The integer values are assigned sequentially, starting from 0.
+ */
 typedef enum
 {
-	TOKEN_FUNCTION = 0,      // 0
-	TOKEN_LET,               // 1
-	TOKEN_CONST,             // 2
-	TOKEN_IF,                // 3
-	TOKEN_ELSE,              // 4
-	TOKEN_ELSE_IF,           // 5
-	TOKEN_MOD,               // 6
-	TOKEN_RETURN,            // 7
-	TOKEN_ASSIGN,            // 8
-	TOKEN_PLUS,              // 9
-	TOKEN_MINUS,             // 10
-	TOKEN_ASTERISK,          // 11
-	TOKEN_SLASH,             // 12
-	TOKEN_LESS_THAN,         // 13
-	TOKEN_GREATER_THAN,      // 14
-	TOKEN_EQUAL,             // 15
-	TOKEN_NOT_EQUAL,         // 16
-	TOKEN_GREATER_THAN_OR_EQUAL, // 17
-	TOKEN_LESS_THAN_OR_EQUAL,    // 18
-	TOKEN_ARROW,             // 19
-	TOKEN_COMMA,             // 20
-	TOKEN_SEMICOLON,         // 21
-	TOKEN_OPEN_PAREN,        // 22
-	TOKEN_CLOSE_PAREN,       // 23
-	TOKEN_OPEN_CURLY,        // 24
-	TOKEN_CLOSE_CURLY,       // 25
-	TOKEN_COLON,             // 26
-	TOKEN_NOT,               // 27
-	TOKEN_OR,                // 28
-	TOKEN_AND,               // 29
-	TOKEN_OPEN_BRACKET,      // 30
-	TOKEN_CLOSE_BRACKET,     // 31
-	TOKEN_DOT,               // 32
-	TOKEN_STRING,            // 33
-	TOKEN_NUM,               // 34
-	TOKEN_DEC,               // 35
-	TOKEN_NOTHING,           // 36
-	TOKEN_BOOL,              // 37
-	TOKEN_STRING_LITERAL,    // 38
-	TOKEN_NUM_LITERAL,       // 39
-	TOKEN_DECIMAL_LITERAL,   // 40
-	TOKEN_BOOL_LITERAL,      // 41
-	TOKEN_WHILE,             // 42
-	TOKEN_FOR,               // 43
-	TOKEN_NEW,               // 44
-	TOKEN_IN,                // 45
-	TOKEN_TO,                // 46
-	TOKEN_BREAK,             // 47
-	TOKEN_CONTINUE,          // 48
-	TOKEN_PUB,               // 49
-	TOKEN_AMPERSAND,         // 50
-	TOKEN_BAR,               // 51
-	TOKEN_IMPORT,            // 52
-	TOKEN_IDENTIFIER,        // 53
-	TOKEN_UNKNOWN            // 54
+    TOKEN_FUNCTION = 0,      ///< Function keyword
+    TOKEN_LET,               ///< Let keyword (variable declaration)
+    TOKEN_CONST,             ///< Const keyword (constant declaration)
+    TOKEN_IF,                ///< If keyword (conditional)
+    TOKEN_ELSE,              ///< Else keyword
+    TOKEN_ELSE_IF,           ///< Else if keyword
+    TOKEN_MOD,               ///< Modulo operator
+    TOKEN_RETURN,            ///< Return keyword
+    TOKEN_ASSIGN,            ///< Assignment operator (=)
+    TOKEN_PLUS,              ///< Addition operator (+)
+    TOKEN_MINUS,             ///< Subtraction operator (-)
+    TOKEN_ASTERISK,          ///< Multiplication operator (*)
+    TOKEN_SLASH,             ///< Division operator (/)
+    TOKEN_LESS_THAN,         ///< Less than operator (<)
+    TOKEN_GREATER_THAN,      ///< Greater than operator (>)
+    TOKEN_EQUAL,             ///< Equality operator (==)
+    TOKEN_NOT_EQUAL,         ///< Not equal operator (!=)
+    TOKEN_GREATER_THAN_OR_EQUAL, ///< Greater than or equal operator (>=)
+    TOKEN_LESS_THAN_OR_EQUAL,    ///< Less than or equal operator (<=)
+    TOKEN_ARROW,             ///< Arrow operator (->)
+    TOKEN_COMMA,             ///< Comma (,)
+    TOKEN_SEMICOLON,         ///< Semicolon (;)
+    TOKEN_OPEN_PAREN,        ///< Open parenthesis (()
+    TOKEN_CLOSE_PAREN,       ///< Close parenthesis ())
+    TOKEN_OPEN_CURLY,        ///< Open curly brace ({)
+    TOKEN_CLOSE_CURLY,       ///< Close curly brace (})
+    TOKEN_COLON,             ///< Colon (:)
+    TOKEN_NOT,               ///< Logical NOT operator (!)
+    TOKEN_OR,                ///< Logical OR operator (||)
+    TOKEN_AND,               ///< Logical AND operator (&&)
+    TOKEN_OPEN_BRACKET,      ///< Open square bracket ([)
+    TOKEN_CLOSE_BRACKET,     ///< Close square bracket (])
+    TOKEN_DOT,               ///< Dot (.)
+    TOKEN_STRING,            ///< String type keyword
+    TOKEN_NUM,               ///< Number type keyword
+    TOKEN_DEC,               ///< Decimal type keyword
+    TOKEN_NOTHING,           ///< Nothing/null type keyword
+    TOKEN_BOOL,              ///< Boolean type keyword
+    TOKEN_STRING_LITERAL,    ///< String literal
+    TOKEN_NUM_LITERAL,       ///< Integer literal
+    TOKEN_DECIMAL_LITERAL,   ///< Decimal literal
+    TOKEN_BOOL_LITERAL,      ///< Boolean literal
+    TOKEN_WHILE,             ///< While keyword (loop)
+    TOKEN_FOR,               ///< For keyword (loop)
+    TOKEN_NEW,               ///< New keyword (object/instance creation)
+    TOKEN_IN,                ///< In keyword (membership/iteration)
+    TOKEN_TO,                ///< To keyword (range/iteration)
+    TOKEN_BREAK,             ///< Break keyword (loop control)
+    TOKEN_CONTINUE,          ///< Continue keyword (loop control)
+    TOKEN_PUB,               ///< Public visibility keyword
+    TOKEN_AMPERSAND,         ///< Ampersand (&)
+    TOKEN_BAR,               ///< Bar/pipe (|)
+    TOKEN_IMPORT,            ///< Import keyword (module import)
+    TOKEN_IDENTIFIER,        ///< Identifier (variable/function name)
+    TOKEN_UNKNOWN            ///< Unknown or invalid token
 } token_type_t;
 
+/**
+ * @brief Represents a token in the Fluent programming language.
+ *
+ * This structure holds information about a single token, including its
+ * string value, type, and the position (line and column) where it was found
+ * in the source code.
+ */
 typedef struct
 {
     char *value;        // The value of the token
