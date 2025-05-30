@@ -29,7 +29,7 @@
 #include "token.h"
 
 #ifndef FLUENT_LIBC_CLI_HASHMAP_TOKEN_VALUE
-    DEFINE_HASHMAP(char *, token_type_t, token)
+    DEFINE_HASHMAP(char *, token_type_t, token);
 #   define FLUENT_LIBC_CLI_HASHMAP_TOKEN_VALUE 1
 #endif
 
