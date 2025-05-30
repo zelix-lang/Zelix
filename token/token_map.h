@@ -28,9 +28,9 @@
 // ============= INCLUDES =============
 #include "token.h"
 
-#ifndef FLUENT_LIBC_CLI_HASHMAP_I_VALUE
+#ifndef FLUENT_LIBC_CLI_HASHMAP_TOKEN_VALUE
     DEFINE_HASHMAP(char *, token_type_t, token)
-#   define FLUENT_LIBC_CLI_HASHMAP_I_VALUE 1
+#   define FLUENT_LIBC_CLI_HASHMAP_TOKEN_VALUE 1
 #endif
 
 // Holds the mapping of token names to their corresponding token types
