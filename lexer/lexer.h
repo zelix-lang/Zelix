@@ -96,6 +96,9 @@ static inline pair_lex_result_t lexer_tokenize(
             // Check if we are in a string
             if (in_string)
             {
+                // Destroy the string builder
+                destroy_string_builder(&current);
+
                 global_error_state.code = LEXER_ERROR_UNTERMINATED_STRING;
                 global_error_state.column = column;
                 global_error_state.line = line;
