@@ -210,7 +210,7 @@ static inline pair_lex_result_t lexer_tokenize(
         const char c = source[i];
 
         // Check for comments
-        if (c == '/' && source[i + 1] == '/' && !in_string)
+        if (!in_string && c == '/' && source[i + 1] == '/')
         {
             // Single-line comment
             in_comment = TRUE;
@@ -219,7 +219,7 @@ static inline pair_lex_result_t lexer_tokenize(
         }
 
         // Handle block comments
-        if (c == '/' && source[i + 1] == '*' && !in_string)
+        if (!in_string && c == '/' && source[i + 1] == '*')
         {
             // Block comment start
             in_block_comment = TRUE;
@@ -228,7 +228,7 @@ static inline pair_lex_result_t lexer_tokenize(
         }
 
         // Handle block comment end
-        if (c == '*' && source[i + 1] == '/' && !in_string)
+        if (!in_string && c == '*' && source[i + 1] == '/')
         {
             // Block comment end
             in_block_comment = FALSE;
