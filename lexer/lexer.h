@@ -208,6 +208,8 @@ static inline pair_lex_result_t lexer_tokenize(
     bool is_identifier = FALSE; // Whether the current token is an identifier
     bool is_number = FALSE; // Whether the current token is a number
     bool is_decimal = FALSE; // Whether the current token is a decimal number
+    bool in_unicode_escape = FALSE; // Whether we are inside a Unicode escape sequence
+    bool in_surrogate_pair = FALSE; // Whether we are inside a surrogate pair
     size_t token_idx = 0; // Index for the current token
 
     // Iterate over the source
