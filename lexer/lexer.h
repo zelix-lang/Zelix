@@ -368,6 +368,24 @@ static inline pair_lex_result_t lexer_tokenize(
         // Handle string literals
         if (c == '"' && !in_str_escape)
         {
+            // Push the current token if it exists
+            if (!push_token(
+                tokens,
+                allocator,
+                &current,
+                &in_string,
+                &is_identifier,
+                &is_number,
+                &is_decimal,
+                &token_idx,
+                line,
+                column
+            ))
+            {
+                // If pushing the token failed, return the error state
+                return pair_lex_result_new(stream, &global_error_state);
+            }
+
             // If we are not already in a string, start a new string
             if (!in_string)
             {
@@ -380,24 +398,6 @@ static inline pair_lex_result_t lexer_tokenize(
             {
                 // If we are already in a string, end the string
                 in_string = FALSE; // Exit string state
-
-                // Push the current token if it exists
-                if (!push_token(
-                    tokens,
-                    allocator,
-                    &current,
-                    &in_string,
-                    &is_identifier,
-                    &is_number,
-                    &is_decimal,
-                    &token_idx,
-                    line,
-                    column
-                ))
-                {
-                    // If pushing the token failed, return the error state
-                    return pair_lex_result_new(stream, &global_error_state);
-                }
             }
 
             column++; // Increment column for the string character
