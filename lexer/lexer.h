@@ -371,6 +371,15 @@ static inline pair_lex_result_t lexer_tokenize(
             continue;
         }
 
+        // Handle string escapes
+        if (in_string && c == '\\' && !in_str_escape)
+        {
+            // If we are in a string and encounter an escape character
+            in_str_escape = TRUE; // Enter escape state
+            column++; // Increment column for the escape character
+            continue;
+        }
+
         // Handle string literals
         if (c == '"' && !in_str_escape)
         {
