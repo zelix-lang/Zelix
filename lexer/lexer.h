@@ -466,6 +466,55 @@ static inline pair_lex_result_t lexer_tokenize(
             continue;
         }
 
+        // Handle chainable tokens
+        if (source[i + 1] == '=' && hashmap_btoken_get(&fluent_chainable_map, c))
+        {
+            // Write the current token if it exists
+            if (!push_token(
+                tokens,
+                allocator,
+                &current,
+                &in_string,
+                &is_identifier,
+                &is_number,
+                &is_decimal,
+                &token_idx,
+                line,
+                column
+            ))
+            {
+                // If pushing the token failed, return the error state
+                return pair_lex_result_new(stream, &global_error_state);
+            }
+
+            // Write the chainable token to the string builder
+            write_char_string_builder(&current, c);
+            write_char_string_builder(&current, '=');
+
+            // Write the chainable token to the tokens vector
+            if (!push_token(
+                tokens,
+                allocator,
+                &current,
+                &in_string,
+                &is_identifier,
+                &is_number,
+                &is_decimal,
+                &token_idx,
+                line,
+                column
+            ))
+            {
+                // If pushing the token failed, return the error state
+                return pair_lex_result_new(stream, &global_error_state);
+            }
+
+            // Increment the column for both characters
+            column += 2;
+            i++; // Skip the next character
+            continue;
+        }
+
         // Write the current character to the string builder
         write_char_string_builder(&current, c);
 
