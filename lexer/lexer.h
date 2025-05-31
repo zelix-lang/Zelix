@@ -56,6 +56,12 @@ static bool push_token(
     const size_t line,
     const size_t column
 ) {
+    // Ignore empty tokens
+    if (current->idx == 0)
+    {
+        return TRUE; // No token to push
+    }
+
     // Get the current token from the string builder
     char *curr = collect_string_builder_no_copy(current);
 
