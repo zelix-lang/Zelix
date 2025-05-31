@@ -80,6 +80,7 @@ int main(const int argc, const char **const argv)
     // Initialize the token map for further processing
     get_token_map();
     get_punctuation_map();
+    get_chainable_map();
 
     // Handle the commands and flags
     if (args.cmd_ptr == &compile_cmd)
