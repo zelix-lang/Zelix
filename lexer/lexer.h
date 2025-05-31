@@ -388,7 +388,7 @@ static inline pair_lex_result_t lexer_tokenize(
         }
 
         // Handle string literals
-        if (c == '"' && !in_str_escape)
+        if (c == '"')
         {
             // Push the current token if it exists
             if (!push_token(
