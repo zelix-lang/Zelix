@@ -236,6 +236,19 @@ static inline pair_lex_result_t lexer_tokenize(
             continue;
         }
 
+        // Ignore comments
+        if (in_comment || in_block_comment)
+        {
+            // Check for newlines to exit comment state
+            if (c == '\n')
+            {
+                in_comment = FALSE; // Exit comment state on newline
+                line++;
+                column = 1; // Reset column on new line
+            }
+            continue;
+        }
+
         // Check for newlines
         if (c == '\n')
         {
