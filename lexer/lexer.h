@@ -267,7 +267,51 @@ static inline pair_lex_result_t lexer_tokenize(
         // Check if we have a punctuation character
         if (hashmap_btoken_get(&fluent_punctuation_map, c))
         {
-            //
+            // Push the current token if it exists
+            if (!push_token(
+                tokens,
+                allocator,
+                &current,
+                &in_string,
+                &is_identifier,
+                &is_number,
+                &is_decimal,
+                &token_idx,
+                line,
+                column
+            ))
+            {
+                // If pushing the token failed, return the error state
+                return pair_lex_result_new(stream, &global_error_state);
+            }
+
+            // Increment the column for the punctuation character
+            column++;
+            is_identifier = FALSE; // Reset identifier state
+
+            // Write the punctuation character to the string builder
+            write_char_string_builder(&current, c);
+
+            // Push the punctuation token
+            // Push the current token if it exists
+            if (!push_token(
+                tokens,
+                allocator,
+                &current,
+                &in_string,
+                &is_identifier,
+                &is_number,
+                &is_decimal,
+                &token_idx,
+                line,
+                column
+            ))
+            {
+                // If pushing the token failed, return the error state
+                return pair_lex_result_new(stream, &global_error_state);
+            }
+
+            // Increment the column for the next character
             column++;
             continue;
         }
