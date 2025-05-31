@@ -32,6 +32,7 @@
 
 #include "error.h"
 #include "stream.h"
+#include "../token/token_map.h"
 
 // ============= MACROS =============
 #ifndef FLUENT_PAIR_LEXER
@@ -163,6 +164,14 @@ static inline pair_lex_result_t lexer_tokenize(
             // Block comment end
             in_block_comment = FALSE;
             i++; // Skip the next character
+            continue;
+        }
+
+        // Check if we have a punctuation character
+        if (hashmap_btoken_get(&fluent_punctuation_map, c))
+        {
+            //
+            column++;
             continue;
         }
 
