@@ -29,7 +29,8 @@
  */
 typedef enum
 {
-    TOKEN_FUNCTION = 0,      ///< Function keyword
+    TOKEN_UNKNOWN = 0,       ///< Unknown or invalid token
+    TOKEN_FUNCTION,          ///< Function keyword
     TOKEN_LET,               ///< Let keyword (variable declaration)
     TOKEN_CONST,             ///< Const keyword (constant declaration)
     TOKEN_IF,                ///< If keyword (conditional)
@@ -83,7 +84,6 @@ typedef enum
     TOKEN_BAR,               ///< Bar/pipe (|)
     TOKEN_IMPORT,            ///< Import keyword (module import)
     TOKEN_IDENTIFIER,        ///< Identifier (variable/function name)
-    TOKEN_UNKNOWN            ///< Unknown or invalid token
 } token_type_t;
 
 /**
