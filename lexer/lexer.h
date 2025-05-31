@@ -139,6 +139,15 @@ static inline pair_lex_result_t lexer_tokenize(
             continue;
         }
 
+        // Check for comments
+        if (c == '/' && source[i + 1] == '/')
+        {
+            // Single-line comment
+            in_comment = TRUE;
+            i++; // Skip the next character
+            continue;
+        }
+
         // Write the current character to the string builder
         write_char_string_builder(&current, c);
 
