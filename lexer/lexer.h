@@ -290,7 +290,6 @@ static inline pair_lex_result_t lexer_tokenize(
 
             line++;
             column = 1; // Reset column on new line
-            in_comment = FALSE; // Exit comment state on newline
 
             continue;
         }
