@@ -148,6 +148,7 @@ static inline pair_lex_result_t lexer_tokenize(
             continue;
         }
 
+        // Handle block comments
         if (c == '/' && source[i + 1] == '*')
         {
             // Block comment start
