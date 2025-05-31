@@ -462,6 +462,7 @@ static inline pair_lex_result_t lexer_tokenize(
             is_decimal = TRUE; // Start a decimal number
             token_idx++; // Increment token index
             column++; // Increment column for the dot character
+            write_char_string_builder(&current, c);
             continue;
         }
 
