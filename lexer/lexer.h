@@ -380,6 +380,13 @@ static inline pair_lex_result_t lexer_tokenize(
             continue;
         }
 
+        // Handle escape sequences
+        if (in_str_escape)
+        {
+            // TODO!
+            continue;
+        }
+
         // Handle string literals
         if (c == '"' && !in_str_escape)
         {
