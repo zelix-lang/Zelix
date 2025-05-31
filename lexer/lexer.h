@@ -126,20 +126,20 @@ static inline pair_lex_result_t lexer_tokenize(
             {
 
             }
-        }
-        else
-        {
-            column++; // Increment column for other characters
+
+            continue;
         }
 
         // Check for whitespace
-        if (c == ' ' || c == '\n')
+        if (c == ' ')
         {
             continue;
         }
 
         // Write the current character to the string builder
         write_char_string_builder(&current, c);
+
+        column++; // Increment column for other characters
     }
 
     // Destroy the string builder
