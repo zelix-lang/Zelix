@@ -209,6 +209,33 @@ static inline pair_lex_result_t lexer_tokenize(
         // Get the current character
         const char c = source[i];
 
+        // Check for comments
+        if (c == '/' && source[i + 1] == '/')
+        {
+            // Single-line comment
+            in_comment = TRUE;
+            i++; // Skip the next character
+            continue;
+        }
+
+        // Handle block comments
+        if (c == '/' && source[i + 1] == '*')
+        {
+            // Block comment start
+            in_block_comment = TRUE;
+            i++; // Skip the next character
+            continue;
+        }
+
+        // Handle block comment end
+        if (c == '*' && source[i + 1] == '/')
+        {
+            // Block comment end
+            in_block_comment = FALSE;
+            i++; // Skip the next character
+            continue;
+        }
+
         // Check for newlines
         if (c == '\n')
         {
@@ -234,33 +261,6 @@ static inline pair_lex_result_t lexer_tokenize(
         // Check for whitespace
         if (c == ' ')
         {
-            continue;
-        }
-
-        // Check for comments
-        if (c == '/' && source[i + 1] == '/')
-        {
-            // Single-line comment
-            in_comment = TRUE;
-            i++; // Skip the next character
-            continue;
-        }
-
-        // Handle block comments
-        if (c == '/' && source[i + 1] == '*')
-        {
-            // Block comment start
-            in_block_comment = TRUE;
-            i++; // Skip the next character
-            continue;
-        }
-
-        // Handle block comment end
-        if (c == '*' && source[i + 1] == '/')
-        {
-            // Block comment end
-            in_block_comment = FALSE;
-            i++; // Skip the next character
             continue;
         }
 
