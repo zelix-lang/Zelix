@@ -24,17 +24,78 @@
 #include <fluent/heap_guard/heap_guard.h> // fluent_libc
 #include <fluent/arena/arena.h> // fluent_libc
 #include <fluent/str_comp/str_comp.h> // fluent_libc
+#include <fluent/std_bool/std_bool.h> // fluent_libc
 
 // ============= INCLUDES =============
 #include "token.h"
 
 #ifndef FLUENT_LIBC_CLI_HASHMAP_TOKEN_VALUE
     DEFINE_HASHMAP(char *, token_type_t, token);
+    DEFINE_HASHMAP(char, bool, btoken);
 #   define FLUENT_LIBC_CLI_HASHMAP_TOKEN_VALUE 1
 #endif
 
 // Holds the mapping of token names to their corresponding token types
 hashmap_token_t fluent_token_map;
+hashmap_btoken_t fluent_punctuation_map;
+hashmap_btoken_t fluent_chainable_map;
+
+/**
+ * Compares two characters for equality.
+ *
+ * \param a The first character.
+ * \param b The second character.
+ * \return true if the characters are equal, false otherwise.
+ */
+static inline bool char_cmp(const char a, const char b)
+{
+    return a == b;
+}
+
+static inline hashmap_btoken_t *get_punctuation_map()
+{
+    // Check if the punctuation map is already initialized
+    if (fluent_punctuation_map.hash_fn)
+    {
+        // Return the existing punctuation map
+        return &fluent_punctuation_map;
+    }
+
+    // Initialize the heap guard for the punctuation map
+    hashmap_btoken_init(
+        &fluent_punctuation_map,
+        55,
+        1.5,
+        NULL,
+        (hash_btoken_function_t)hash_char_key,
+        (hash_btoken_cmp_t)char_cmp
+    );
+
+    hashmap_btoken_insert(&fluent_punctuation_map, ';', TRUE);
+    hashmap_btoken_insert(&fluent_punctuation_map, ',', TRUE);
+    hashmap_btoken_insert(&fluent_punctuation_map, '(', TRUE);
+    hashmap_btoken_insert(&fluent_punctuation_map, ')', TRUE);
+    hashmap_btoken_insert(&fluent_punctuation_map, '{', TRUE);
+    hashmap_btoken_insert(&fluent_punctuation_map, '}', TRUE);
+    hashmap_btoken_insert(&fluent_punctuation_map, ':', TRUE);
+    hashmap_btoken_insert(&fluent_punctuation_map, '+', TRUE);
+    hashmap_btoken_insert(&fluent_punctuation_map, '-', TRUE);
+    hashmap_btoken_insert(&fluent_punctuation_map, '>', TRUE);
+    hashmap_btoken_insert(&fluent_punctuation_map, '<', TRUE);
+    hashmap_btoken_insert(&fluent_punctuation_map, '%', TRUE);
+    hashmap_btoken_insert(&fluent_punctuation_map, '*', TRUE);
+    hashmap_btoken_insert(&fluent_punctuation_map, '.', TRUE);
+    hashmap_btoken_insert(&fluent_punctuation_map, '=', TRUE);
+    hashmap_btoken_insert(&fluent_punctuation_map, '!', TRUE);
+    hashmap_btoken_insert(&fluent_punctuation_map, '/', TRUE);
+    hashmap_btoken_insert(&fluent_punctuation_map, '&', TRUE);
+    hashmap_btoken_insert(&fluent_punctuation_map, '|', TRUE);
+    hashmap_btoken_insert(&fluent_punctuation_map, '^', TRUE);
+    hashmap_btoken_insert(&fluent_punctuation_map, '[', TRUE);
+    hashmap_btoken_insert(&fluent_punctuation_map, ']', TRUE);
+
+    return &fluent_punctuation_map;
+}
 
 static inline hashmap_token_t *get_token_map()
 {
