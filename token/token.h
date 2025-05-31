@@ -95,10 +95,10 @@ typedef enum
  */
 typedef struct
 {
-    char *value;        // The value of the token
-    token_type_t type;  // The type of the token (e.g., identifier, keyword, operator)
-    int line;           // The line number where the token was found
-    int column;         // The column number where the token was found
+    heap_guard_t *value; // The value of the token
+    token_type_t type;   // The type of the token (e.g., identifier, keyword, operator)
+    int line;            // The line number where the token was found
+    int column;          // The column number where the token was found
 } token_t;
 
 #endif //FLUENT_TOKEN_H
