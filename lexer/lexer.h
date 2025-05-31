@@ -24,7 +24,6 @@
 #include <fluent/string_builder/string_builder.h> // fluent_libc
 #include <fluent/std_bool/std_bool.h> // fluent_libc
 #include <fluent/pair/pair.h> // fluent_libc
-#include <fluent/optional/optional.h> // fluent_libc
 
 // ============= INCLUDES =============
 #include <fluent/arena/arena.h>
