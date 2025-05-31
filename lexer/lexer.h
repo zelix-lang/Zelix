@@ -181,7 +181,7 @@ static inline pair_lex_result_t lexer_tokenize(
     arena_allocator_t *allocator = arena_new(25, sizeof(token_t));
 
     // Initialize a vector to hold tokens
-    const heap_guard_t *tokens_guard = heap_alloc(sizeof(vector_t), FALSE, FALSE, NULL);
+    const heap_guard_t *tokens_guard = heap_alloc(sizeof(vector_t), FALSE, FALSE, NULL, NULL);
     vec_init(tokens_guard->ptr, 256, sizeof(token_t), 1.5);
     vector_t *tokens = (vector_t *)tokens_guard->ptr;
 
