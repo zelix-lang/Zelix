@@ -314,7 +314,7 @@ static inline pair_lex_result_t lexer_tokenize(
         }
 
         // Check if we have a punctuation character
-        if (hashmap_btoken_get(&fluent_punctuation_map, c))
+        if (!in_string && hashmap_btoken_get(&fluent_punctuation_map, c))
         {
             // Push the current token if it exists
             if (!push_token(
