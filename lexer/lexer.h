@@ -26,6 +26,7 @@
 #include <fluent/pair/pair.h> // fluent_libc
 
 // ============= INCLUDES =============
+#include <ctype.h>
 #include <fluent/arena/arena.h>
 #include <fluent/heap_guard/heap_guard.h>
 
@@ -423,6 +424,25 @@ static inline pair_lex_result_t lexer_tokenize(
 
             column++; // Increment column for the string character
             continue;
+        }
+
+        // Recognize identifiers without regex
+        if (token_idx == 0)
+        {
+            // Check if the character is a valid identifier start
+            if (isalpha(c) || c == '_')
+            {
+                is_identifier = TRUE; // Start an identifier
+                token_idx++; // Increment token index
+            }
+            else if (isdigit(c))
+            {
+                is_identifier = FALSE; // Reset identifier state
+                is_number = TRUE; // Start a number
+                token_idx++; // Increment token index
+            }
+
+            token_idx = 1; // Prevent processing in the next iteration
         }
 
         // Write the current character to the string builder
