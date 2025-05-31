@@ -42,6 +42,8 @@
 // ============= INCLUDES =============
 #include "../token/token.h"
 
+lexer_error_t global_error_state;
+
 /**
  * @brief Destroys a token stream and releases its resources.
  *
@@ -71,6 +73,9 @@ static inline pair_lex_result_t lexer_tokenize(
     const char *path
 )
 {
+    // Reset the global error state
+    global_error_state.code = LEXER_ERROR_UNKNOWN;
+
     // Initialize an arena allocator for token allocation
     arena_allocator_t *allocator = arena_new(25, sizeof(token_t));
 
@@ -112,15 +117,15 @@ static inline pair_lex_result_t lexer_tokenize(
         // Check for newlines
         if (c == '\n')
         {
-            line++;
-            column = 1; // Reset column on new line
-            in_comment = FALSE; // Exit comment state on newline
-
             // Check if we are in a string
             if (in_string)
             {
-
+                return pair_lex_result_new(stream, NULL);
             }
+
+            line++;
+            column = 1; // Reset column on new line
+            in_comment = FALSE; // Exit comment state on newline
 
             continue;
         }
