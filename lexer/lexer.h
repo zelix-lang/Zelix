@@ -365,6 +365,45 @@ static inline pair_lex_result_t lexer_tokenize(
             continue;
         }
 
+        // Handle string literals
+        if (c == '"' && !in_str_escape)
+        {
+            // If we are not already in a string, start a new string
+            if (!in_string)
+            {
+                in_string = TRUE; // Enter string state
+                is_identifier = FALSE; // Reset identifier state
+                is_number = FALSE; // Reset number state
+                is_decimal = FALSE; // Reset decimal state
+            }
+            else
+            {
+                // If we are already in a string, end the string
+                in_string = FALSE; // Exit string state
+
+                // Push the current token if it exists
+                if (!push_token(
+                    tokens,
+                    allocator,
+                    &current,
+                    &in_string,
+                    &is_identifier,
+                    &is_number,
+                    &is_decimal,
+                    &token_idx,
+                    line,
+                    column
+                ))
+                {
+                    // If pushing the token failed, return the error state
+                    return pair_lex_result_new(stream, &global_error_state);
+                }
+            }
+
+            column++; // Increment column for the string character
+            continue;
+        }
+
         // Write the current character to the string builder
         write_char_string_builder(&current, c);
 
