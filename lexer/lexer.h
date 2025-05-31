@@ -44,6 +44,125 @@
 
 lexer_error_t global_error_state;
 
+static bool push_token(
+    vector_t *tokens,
+    arena_allocator_t *allocator,
+    string_builder_t *current,
+    bool *in_string_ptr,
+    bool *is_identifier_ptr,
+    bool *is_number_ptr,
+    bool *is_decimal_ptr,
+    size_t *token_idx_ptr,
+    const size_t line,
+    const size_t column
+) {
+    // Get the current token from the string builder
+    char *curr = collect_string_builder_no_copy(current);
+
+    // Dereference the pointers for easier access
+    const bool is_identifier = *is_identifier_ptr;
+    const token_type_t *type_ptr = hashmap_token_get(&fluent_token_map, curr);
+
+    // Check if we have a valid token in the string builder
+    if (
+        !is_identifier &&
+        type_ptr == NULL
+    )
+    {
+        // Destroy the string builder
+        destroy_string_builder(current);
+
+        // Set the global error state
+        global_error_state.code = LEXER_ERROR_UNKNOWN_TOKEN;
+        global_error_state.column = column;
+        global_error_state.line = line;
+        return FALSE;
+    }
+
+    // Create a new token
+    token_t *token = arena_malloc(allocator);
+    if (!token)
+    {
+        destroy_string_builder(current);
+        global_error_state.code = LEXER_ERROR_UNKNOWN;
+        return FALSE; // Memory allocation failed
+    }
+
+    // Dereference the flags
+    const bool is_number = *is_number_ptr;
+    const bool is_decimal = *is_decimal_ptr;
+    const bool in_string = *in_string_ptr;
+    bool copy_value = FALSE;
+
+    // Set the token properties
+    token->line = line;
+    token->column = column;
+
+    // Add the token depending on the flags
+    if (is_identifier)
+    {
+        // Initialize the token
+        copy_value = TRUE; // We need to copy the value for identifiers
+        token->type = TOKEN_IDENTIFIER;
+    }
+    else if (is_decimal)
+    {
+        // Initialize the token for a decimal number
+        copy_value = TRUE; // We need to copy the value for decimal numbers
+        token->type = TOKEN_DECIMAL_LITERAL;
+    }
+    else if (is_number)
+    {
+        // Initialize the token for a number
+        copy_value = TRUE; // We need to copy the value for numbers
+        token->type = TOKEN_NUM_LITERAL;
+    }
+    else if (in_string)
+    {
+        // Initialize the token for a string literal
+        copy_value = TRUE; // We need to copy the value for string literals
+        token->type = TOKEN_STRING_LITERAL;
+    }
+    else
+    {
+        // Initialize the token for a known type
+        token->type = *type_ptr;
+    }
+
+    // Check if we need to copy the value
+    if (copy_value)
+    {
+        char *value = collect_string_builder(current); // Copy the builder value
+        // Move the value to a heap_guard to take advantage of
+        // automatic freeing
+        token->value = heap_alloc(
+            0, // We are not allocating new memory, no need to specify size
+            FALSE, // Value does not need to be concurrent
+            FALSE, // Internal insertion does not need to be concurrent
+            NULL, // No destructor
+            value // The value to guard
+        );
+    }
+    else
+    {
+        token->value = NULL; // No value for known types
+    }
+
+    // Push the token to the vector
+    vec_push(tokens, token);
+
+    // Reset the string builder for the next token
+    reset_string_builder(current);
+
+    // Reset the flags
+    *in_string_ptr = FALSE;
+    *is_identifier_ptr = TRUE;
+    *is_number_ptr = FALSE;
+    *is_decimal_ptr = FALSE;
+    *token_idx_ptr = 0; // Reset the token index
+    return TRUE;
+}
+
 static inline pair_lex_result_t lexer_tokenize(
     const char *source,
     const char *path
