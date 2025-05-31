@@ -76,7 +76,6 @@ static inline pair_lex_result_t lexer_tokenize(
     const char *path
 )
 {
-    // TODO!
     // Initialize an arena allocator for token allocation
     arena_allocator_t *allocator = arena_new(25, sizeof(token_t));
 
@@ -104,10 +103,14 @@ static inline pair_lex_result_t lexer_tokenize(
     bool in_comment = FALSE; // Whether we are inside a comment
     bool in_block_comment = FALSE; // Whether we are inside a block comment
     bool in_str_escape = FALSE; // Whether we are inside a string escape sequence
+    bool is_identifier = FALSE; // Whether the current token is an identifier
+    bool is_number = FALSE; // Whether the current token is a number
+    bool is_decimal = FALSE; // Whether the current token is a decimal number
+    size_t token_idx = 0; // Index for the current token
 
     // Iterate over the source
     for (size_t i = 0; source[i] != '\0'; i++)
-    { 
+    {
         // Get the current character
         const char c = source[i];
 
