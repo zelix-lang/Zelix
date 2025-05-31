@@ -34,14 +34,9 @@
 #include "stream.h"
 
 // ============= MACROS =============
-#ifndef FLUENT_OPTIONAL_LEXER_ERROR
-#   define FLUENT_OPTIONAL_LEXER_ERROR 1
-    DEFINE_OPTIONAL_T(lexer_error_t *, lex_error);
-#endif
-
 #ifndef FLUENT_PAIR_LEXER
 #   define FLUENT_PAIR_LEXER 1
-    DEFINE_PAIR_T(token_stream_t, optional_lex_error_t *, lex_result);
+    DEFINE_PAIR_T(token_stream_t, lexer_error_t *, lex_result);
 #endif // FLUENT_PAIR_LEXER
 
 // ============= INCLUDES =============
