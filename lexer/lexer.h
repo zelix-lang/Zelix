@@ -290,7 +290,7 @@ static inline pair_lex_result_t lexer_tokenize(
         }
 
         // Check for whitespace
-        if (c == ' ')
+        if (c == ' ' && !in_string)
         {
             // Push the current token if it exists
             if (!push_token(
