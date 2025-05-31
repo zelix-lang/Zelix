@@ -97,6 +97,43 @@ static inline hashmap_btoken_t *get_punctuation_map()
     return &fluent_punctuation_map;
 }
 
+/**
+ * Returns a pointer to the chainable operator map.
+ *
+ * The chainable map is a hashmap that tracks which single-character operators
+ * can be chained (e.g., '==', '>=', '<=', '!=') in the Fluent language.
+ * If the map is not already initialized, it will be created and populated
+ * with the appropriate chainable operator characters.
+ *
+ * \return Pointer to the initialized hashmap_btoken_t containing chainable operators.
+ */
+static inline hashmap_btoken_t *get_chainable_map()
+{
+    // Check if the chainable map is already initialized
+    if (fluent_chainable_map.hash_fn)
+    {
+        // Return the existing chainable map
+        return &fluent_chainable_map;
+    }
+
+    // Initialize the heap guard for the chainable map
+    hashmap_btoken_init(
+        &fluent_chainable_map,
+        55,
+        1.5,
+        NULL,
+        (hash_btoken_function_t)hash_char_key,
+        (hash_btoken_cmp_t)char_cmp
+    );
+
+    hashmap_btoken_insert(&fluent_chainable_map, '!', TRUE);
+    hashmap_btoken_insert(&fluent_chainable_map, '>', TRUE);
+    hashmap_btoken_insert(&fluent_chainable_map, '<', TRUE);
+    hashmap_btoken_insert(&fluent_chainable_map, '=', TRUE);
+
+    return &fluent_chainable_map;
+}
+
 static inline hashmap_token_t *get_token_map()
 {
     // Check if the token map is already initialized
