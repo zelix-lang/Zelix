@@ -42,6 +42,8 @@ static inline char *read_file(const char *const path)
     FILE *file = fopen(normalized_path, "r");
     if (!file)
     {
+        // Free the normalized path if the file cannot be opened
+        free(normalized_path);
         return NULL; // Failed to open the file
     }
 
