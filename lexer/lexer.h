@@ -171,6 +171,26 @@ static bool push_token(
     return TRUE;
 }
 
+/**
+ * @brief Tokenizes the given source code into a stream of tokens.
+ *
+ * This function performs lexical analysis on the provided source code,
+ * splitting it into tokens for further parsing. It handles identifiers,
+ * numbers, string literals (including escape and Unicode sequences),
+ * comments (single-line and block), punctuation, and chainable tokens.
+ * It also manages line and column tracking for error reporting.
+ *
+ * @param source The source code to tokenize (null-terminated string).
+ * @param path   The file path of the source code (for error reporting).
+ * @return pair_lex_result_t
+ *         On success: a pair containing the token stream and NULL error.
+ *         On failure: a pair containing the token stream and a pointer to a lexer_error_t.
+ *
+ * Error codes set in global_error_state:
+ *   - LEXER_ERROR_UNKNOWN_TOKEN: Unrecognized token encountered.
+ *   - LEXER_ERROR_UNTERMINATED_STRING: String literal not closed.
+ *   - LEXER_ERROR_UNKNOWN: General or memory allocation error.
+ */
 static inline pair_lex_result_t lexer_tokenize(
     const char *source,
     const char *path
