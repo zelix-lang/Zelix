@@ -18,6 +18,7 @@
 
 // ============= INCLUDES =============
 #include "token/token_map.h"
+#include "command/check.h"
 
 // ============= MACROS =============
 #ifndef PROGRAM_NAME
@@ -92,7 +93,7 @@ int main(const int argc, const char **const argv)
     }
     else if (args.cmd_ptr == &check_cmd)
     {
-        puts("Check command executed.");
+        check_command(args.command.value);
     }
 
     // Free the CLI application resources
