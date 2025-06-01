@@ -19,7 +19,8 @@ add_executable(Fluent
         token/token.h
         token/token_map.h
         lexer/stream.h
-        lexer/error.h)
+        lexer/error.h
+        file/file_reader.h)
 
 target_include_directories(Fluent PRIVATE ${CMAKE_BINARY_DIR}/_deps/fluent_libc-src/include)
 target_link_libraries(Fluent PRIVATE fluent_libc)
