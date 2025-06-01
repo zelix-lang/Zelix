@@ -20,6 +20,7 @@
 #define FLUENT_FILE_READER_H
 #include <stdio.h>
 #include <stdlib.h>
+#include <fluent/path/path.h>
 
 /**
  * Reads the entire contents of a file into a dynamically allocated buffer.
@@ -31,7 +32,14 @@
  */
 static inline char *read_file(const char *const path)
 {
-    FILE *file = fopen(path, "r");
+    // Normalize the path
+    char *normalized_path = get_real_path(path);
+    if (!normalized_path)
+    {
+        return NULL; // Failed to normalize the path
+    }
+
+    FILE *file = fopen(normalized_path, "r");
     if (!file)
     {
         return NULL; // Failed to open the file
@@ -44,6 +52,9 @@ static inline char *read_file(const char *const path)
     char *buffer = (char *)malloc(length + 1);
     if (!buffer)
     {
+        // Free the normalized path if memory allocation fails
+        free(normalized_path);
+
         fclose(file);
         return NULL; // Failed to allocate memory
     }
@@ -51,6 +62,8 @@ static inline char *read_file(const char *const path)
     fread(buffer, 1, length, file);
     buffer[length] = '\0'; // Null-terminate the string
 
+    // Free the normalized path as it's no longer needed
+    free(normalized_path);
     fclose(file);
     return buffer;
 }
