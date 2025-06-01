@@ -591,6 +591,24 @@ static inline pair_lex_result_t lexer_tokenize(
         column++; // Increment column for other characters
     }
 
+    // Push any remaining token at the end of the source
+    if (!push_token(
+        tokens,
+        allocator,
+        &current,
+        &in_string,
+        &is_identifier,
+        &is_number,
+        &is_decimal,
+        &token_idx,
+        line,
+        column
+    ))
+    {
+        // If pushing the token failed, return the error state
+        return pair_lex_result_new(stream, &global_error_state);
+    }
+
     // Destroy the string builders
     destroy_string_builder(&current);
     if (unicode_escape_initialized)
