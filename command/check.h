@@ -19,4 +19,9 @@
 #ifndef FLUENT_COMMAND_CHECK_H
 #define FLUENT_COMMAND_CHECK_H
 
+static inline void check_command(const char *const path)
+{
+
+}
+
 #endif //FLUENT_COMMAND_CHECK_H
