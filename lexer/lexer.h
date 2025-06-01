@@ -24,6 +24,7 @@
 #include <fluent/string_builder/string_builder.h> // fluent_libc
 #include <fluent/std_bool/std_bool.h> // fluent_libc
 #include <fluent/pair/pair.h> // fluent_libc
+#include <fluent/str_conv/str_conv.h> // fluent_libc
 
 // ============= INCLUDES =============
 #include <ctype.h>
@@ -210,6 +211,8 @@ static inline pair_lex_result_t lexer_tokenize(
     bool is_decimal = FALSE; // Whether the current token is a decimal number
     bool in_unicode_escape = FALSE; // Whether we are inside a Unicode escape sequence
     bool in_surrogate_pair = FALSE; // Whether we are inside a surrogate pair
+    bool unicode_escape_initialized = FALSE; // Whether the Unicode escape sequence has been initialized
+    string_builder_t unicode_escape_sequence; // String builder for Unicode escape sequences
     size_t token_idx = 0; // Index for the current token
 
     // Iterate over the source
@@ -379,13 +382,77 @@ static inline pair_lex_result_t lexer_tokenize(
             // If we are in a string and encounter an escape character
             in_str_escape = TRUE; // Enter escape state
             column++; // Increment column for the escape character
+            write_char_string_builder(&unicode_escape_sequence, c); // Write the escape character to the string builder
             continue;
         }
 
         // Handle escape sequences
         if (in_str_escape)
         {
-            // TODO!
+            // Initialize Unicode escape sequence builder
+            if (!unicode_escape_initialized)
+            {
+                // Initialize the Unicode escape sequence string builder
+                init_string_builder(&unicode_escape_sequence, 8, 1.5);
+                unicode_escape_initialized = TRUE; // Set the flag to true
+                write_char_string_builder(&unicode_escape_sequence, '\\'); // Write the escape character
+            }
+
+            // Handle Unicode escape sequences
+            if (c == 'u' && !in_unicode_escape)
+            {
+                in_unicode_escape = TRUE; // Enter Unicode escape state
+                column++; // Increment column for the 'u'
+                write_char_string_builder(&unicode_escape_sequence, c); // Write the 'u' character to the string builder
+                continue;
+            }
+
+            // Handle Unicode surrogate pairs
+            if (c == 'U' && !in_surrogate_pair)
+            {
+                in_surrogate_pair = TRUE; // Enter surrogate pair state
+                column++; // Increment column for the 'U'
+                continue;
+            }
+
+            // Check if we have ended a Unicode escape sequence
+            if (
+                (
+                    !in_unicode_escape &&
+                    !in_surrogate_pair
+                ) ||
+                (
+                    (in_unicode_escape && unicode_escape_sequence.idx + 1 == 4) ||
+                    in_surrogate_pair && unicode_escape_sequence.idx + 1 == 8
+                )
+            )
+            {
+                // Write the character to the string builder
+                write_char_string_builder(&unicode_escape_sequence, c);
+
+                // Convert the Unicode escape sequence to a character
+                const char *unicode_char = convert_escapes_to_utf8_sb(collect_string_builder_no_copy(&unicode_escape_sequence));
+
+                // Reset the Unicode escape sequence string builder
+                reset_string_builder(&unicode_escape_sequence);
+
+                // Write the Unicode character to the current token
+                write_string_builder(&current, unicode_char);
+
+                // Reset flags
+                in_unicode_escape = FALSE; // Reset Unicode escape state
+                in_surrogate_pair = FALSE; // Reset surrogate pair state
+                continue;
+            }
+
+            // Write the escape character to the string builder
+            if (in_unicode_escape || in_surrogate_pair)
+            {
+                // If we are in a Unicode escape or surrogate pair, write the character
+                write_char_string_builder(&unicode_escape_sequence, c);
+                column++; // Increment column for the escape character
+            }
+
             continue;
         }
 
