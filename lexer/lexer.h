@@ -623,6 +623,39 @@ static inline pair_lex_result_t lexer_tokenize(
         column++; // Increment column for other characters
     }
 
+    // Edge cases: We end at a block comment
+    if (in_block_comment)
+    {
+        // If we end in a comment, we should not push the token
+        destroy_string_builder(&current);
+        global_error_state.code = LEXER_ERROR_UNTERMINATED_COMMENT;
+        global_error_state.column = column;
+        global_error_state.line = line;
+        return pair_lex_result_new(stream, &global_error_state);
+    }
+
+    // Edge cases: We end in a string
+    if (in_string)
+    {
+        // If we end in a string, we should not push the token
+        destroy_string_builder(&current);
+        global_error_state.code = LEXER_ERROR_UNTERMINATED_STRING;
+        global_error_state.column = column;
+        global_error_state.line = line;
+        return pair_lex_result_new(stream, &global_error_state);
+    }
+
+    // Edge cases: We end in a decimal
+    if (is_decimal)
+    {
+        // If we end in a decimal, we should not push the token
+        destroy_string_builder(&current);
+        global_error_state.code = LEXER_ERROR_UNTERMINATED_DEC;
+        global_error_state.column = column;
+        global_error_state.line = line;
+        return pair_lex_result_new(stream, &global_error_state);
+    }
+
     // Push any remaining token at the end of the source
     if (!push_token(
         tokens,
