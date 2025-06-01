@@ -482,7 +482,7 @@ static inline pair_lex_result_t lexer_tokenize(
         // Handle string literals
         if (c == '"')
         {
-            bool was_in_str = in_string; // Store the previous string state
+            const bool was_in_str = in_string; // Store the previous string state
             // Push the current token if it exists
             if (!push_token(
                 tokens,
