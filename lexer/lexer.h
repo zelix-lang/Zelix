@@ -481,6 +481,7 @@ static inline pair_lex_result_t lexer_tokenize(
         // Handle string literals
         if (c == '"')
         {
+            bool was_in_str = in_string; // Store the previous string state
             // Push the current token if it exists
             if (!push_token(
                 tokens,
@@ -500,17 +501,12 @@ static inline pair_lex_result_t lexer_tokenize(
             }
 
             // If we are not already in a string, start a new string
-            if (!in_string)
+            if (!was_in_str)
             {
                 in_string = TRUE; // Enter string state
                 is_identifier = FALSE; // Reset identifier state
                 is_number = FALSE; // Reset number state
                 is_decimal = FALSE; // Reset decimal state
-            }
-            else
-            {
-                // If we are already in a string, end the string
-                in_string = FALSE; // Exit string state
             }
 
             column++; // Increment column for the string character
