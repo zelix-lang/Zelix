@@ -591,8 +591,12 @@ static inline pair_lex_result_t lexer_tokenize(
         column++; // Increment column for other characters
     }
 
-    // Destroy the string builder
+    // Destroy the string builders
     destroy_string_builder(&current);
+    if (unicode_escape_initialized)
+    {
+        destroy_string_builder(&unicode_escape_sequence);
+    }
 
     return pair_lex_result_new(stream, NULL);
 }
