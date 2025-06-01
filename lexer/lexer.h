@@ -70,12 +70,16 @@ static bool push_token(
     // Dereference the pointers for easier access
     const bool is_identifier = *is_identifier_ptr;
     const bool in_string = *in_string_ptr;
+    const bool is_number = *is_number_ptr;
+    const bool is_decimal = *is_decimal_ptr;
     const token_type_t *type_ptr = hashmap_token_get(&fluent_token_map, curr);
 
     // Check if we have a valid token in the string builder
     if (
         !is_identifier &&
         !in_string &&
+        !is_number &&
+        !is_decimal &&
         type_ptr == NULL
     )
     {
@@ -98,9 +102,6 @@ static bool push_token(
         return FALSE; // Memory allocation failed
     }
 
-    // Dereference the flags
-    const bool is_number = *is_number_ptr;
-    const bool is_decimal = *is_decimal_ptr;
     bool copy_value = FALSE;
 
     // Set the token properties
