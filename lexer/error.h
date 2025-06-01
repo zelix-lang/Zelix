@@ -36,6 +36,7 @@ typedef enum
     LEXER_ERROR_UNKNOWN_ESCAPE,           ///< An unknown escape sequence was encountered
     LEXER_ERROR_UNTERMINATED_STRING,      ///< A string literal was not properly terminated
     LEXER_ERROR_UNTERMINATED_COMMENT,     ///< A comment was not properly terminated
+    LEXER_ERROR_UNTERMINATED_DEC,         ///< A decimal number was not properly terminated
 } lexer_error_code_t;
 
 /**
