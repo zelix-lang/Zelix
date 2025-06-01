@@ -442,6 +442,7 @@ static inline pair_lex_result_t lexer_tokenize(
                 // Reset flags
                 in_unicode_escape = FALSE; // Reset Unicode escape state
                 in_surrogate_pair = FALSE; // Reset surrogate pair state
+                in_str_escape = FALSE; // Reset escape state
                 continue;
             }
 
