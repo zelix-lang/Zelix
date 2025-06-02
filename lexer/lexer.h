@@ -72,26 +72,6 @@ static bool push_token(
     const bool in_string = *in_string_ptr;
     const bool is_number = *is_number_ptr;
     const bool is_decimal = *is_decimal_ptr;
-    const token_type_t *type_ptr = hashmap_token_get(&fluent_token_map, curr);
-
-    // Check if we have a valid token in the string builder
-    if (
-        !is_identifier &&
-        !in_string &&
-        !is_number &&
-        !is_decimal &&
-        type_ptr == NULL
-    )
-    {
-        // Destroy the string builder
-        destroy_string_builder(current);
-
-        // Set the global error state
-        global_error_state.code = LEXER_ERROR_UNKNOWN_TOKEN;
-        global_error_state.column = column;
-        global_error_state.line = line;
-        return FALSE;
-    }
 
     // Create a new token
     token_t *token = arena_malloc(allocator);
@@ -135,6 +115,22 @@ static bool push_token(
     }
     else
     {
+        // Get the token type from the fluent token map
+        const token_type_t *type_ptr = hashmap_token_get(&fluent_token_map, curr);
+
+        // Check if the token type is NULL
+        if (type_ptr == NULL)
+        {
+            // Destroy the string builder
+            destroy_string_builder(current);
+
+            // Set the global error state
+            global_error_state.code = LEXER_ERROR_UNKNOWN_TOKEN;
+            global_error_state.column = column;
+            global_error_state.line = line;
+            return FALSE;
+        }
+
         // Initialize the token for a known type
         token->type = *type_ptr;
     }
