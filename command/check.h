@@ -33,7 +33,7 @@ static inline void check_command(const char *const path)
     }
 
     // Lex the source code
-    const pair_lex_result_t result = lexer_tokenize(source, path);
+    const pair_lex_result_t result = lexer_tokenize(source);
     const token_stream_t stream = result.first; // Get the token stream from the result
     const lexer_error_t *error = result.second; // Get the error if any
 
