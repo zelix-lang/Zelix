@@ -91,9 +91,20 @@ static bool push_token(
     // Add the token depending on the flags
     if (is_identifier)
     {
-        // Initialize the token
-        copy_value = TRUE; // We need to copy the value for identifiers
-        token->type = TOKEN_IDENTIFIER;
+        // There's still a chance the token is an identifier
+        const token_type_t *type_ptr = hashmap_token_get(&fluent_token_map, curr);
+
+        // Check if the token type is NULL
+        if (type_ptr == NULL) {
+            // Not an identifier, initialize the token
+            copy_value = TRUE; // We need to copy the value for identifiers
+            token->type = TOKEN_IDENTIFIER;
+        }
+        else
+        {
+            // Initialize the token for a known identifier type
+            token->type = *type_ptr; // Use the type from the fluent token map
+        }
     }
     else if (is_decimal)
     {
