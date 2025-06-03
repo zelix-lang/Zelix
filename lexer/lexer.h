@@ -25,11 +25,8 @@
 #include <fluent/std_bool/std_bool.h> // fluent_libc
 #include <fluent/pair/pair.h> // fluent_libc
 #include <fluent/str_conv/str_conv.h> // fluent_libc
-
-// ============= INCLUDES =============
-#include <ctype.h>
-#include <fluent/arena/arena.h>
-#include <fluent/heap_guard/heap_guard.h>
+#include <fluent/arena/arena.h> // fluent_libc
+#include <fluent/heap_guard/heap_guard.h> // fluent_libc
 
 #include "error.h"
 #include "stream.h"
