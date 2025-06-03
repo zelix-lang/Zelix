@@ -19,7 +19,6 @@
 #ifndef FLUENT_COMMAND_CHECK_H
 #define FLUENT_COMMAND_CHECK_H
 
-#include <fluent/clock/clock.h>
 #include "../file/file_reader.h"
 #include "../lexer/lexer.h"
 
@@ -33,14 +32,9 @@ static inline void check_command(const char *const path)
         return;
     }
 
-    hr_clock_t clock;
-    hr_clock_tick(&clock); // Start the clock to measure performance
     // Lex the source code
     const pair_lex_result_t result = lexer_tokenize(source);
 
-    // Stop the clock and print the elapsed time
-    long long elapsed_time = hr_clock_distance_from_now(&clock, CLOCK_MICROSECONDS);
-    printf("%lld microseconds parsing time\n", elapsed_time);
     const token_stream_t stream = result.first; // Get the token stream from the result
     const lexer_error_t *error = result.second; // Get the error if any
 
