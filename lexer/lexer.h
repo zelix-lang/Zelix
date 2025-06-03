@@ -179,7 +179,6 @@ static bool push_token(
  * It also manages line and column tracking for error reporting.
  *
  * @param source The source code to tokenize (null-terminated string).
- * @param path   The file path of the source code (for error reporting).
  * @return pair_lex_result_t
  *         On success: a pair containing the token stream and NULL error.
  *         On failure: a pair containing the token stream and a pointer to a lexer_error_t.
@@ -189,10 +188,7 @@ static bool push_token(
  *   - LEXER_ERROR_UNTERMINATED_STRING: String literal not closed.
  *   - LEXER_ERROR_UNKNOWN: General or memory allocation error.
  */
-static inline pair_lex_result_t lexer_tokenize(
-    const char *source,
-    const char *path
-)
+static inline pair_lex_result_t lexer_tokenize(const char *source)
 {
     // Reset the global error state
     global_error_state.code = LEXER_ERROR_UNKNOWN;
