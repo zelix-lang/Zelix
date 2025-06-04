@@ -93,7 +93,7 @@ static inline void new_timer(const char *message) {
 
     // Print the start message
     printf(
-        "%s(%s%s%c%s%s) %s%s\n",
+        "%s(%s%s%c%s%s) %s%s\r",
         ANSI_BRIGHT_BLACK,
         ANSI_RESET,
         ANSI_BOLD_BRIGHT_GREEN,
