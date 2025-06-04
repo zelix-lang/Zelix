@@ -19,6 +19,7 @@
 // ============= INCLUDES =============
 #include "token/token_map.h"
 #include "command/check.h"
+#include "fluent/ansi/ansi.h"
 
 // ============= MACROS =============
 #ifndef PROGRAM_NAME
@@ -77,6 +78,10 @@ int main(const int argc, const char **const argv)
         // Return failure
         return 1;
     }
+
+    // Print the header message
+    printf("%sThe Fluent Programming Language%s\n", ANSI_BOLD_BRIGHT_BLUE, ANSI_RESET);
+    printf("%sA blazingly fast programming language%s\n\n", ANSI_BRIGHT_BLACK, ANSI_RESET);
 
     // Initialize the token map for further processing
     get_token_map();
