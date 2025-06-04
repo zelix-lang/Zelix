@@ -69,6 +69,30 @@ typedef struct
 state_timer_t current;
 bool timer_running = FALSE; // Flag to indicate if a timer is currently running
 
+static void print_event_type(const state_event_t event)
+{
+    switch (event)
+    {
+        case STATE_LEXING:
+            printf("%sLexing", ANSI_BOLD_BRIGHT_PURPLE);
+            break;
+        case STATE_PARSING:
+            printf("%sParsing", ANSI_BOLD_BRIGHT_BLUE);
+            break;
+        case STATE_PROCESSING:
+            printf("%sProcessing", ANSI_BOLD_BRIGHT_YELLOW);
+            break;
+        case STATE_ANALYZING:
+            printf("%sAnalyzing", ANSI_CYAN);
+            break;
+        case STATE_BUILDING:
+            printf("%sBuilding", ANSI_BOLD_BRIGHT_GREEN);
+            break;
+        default:
+            printf("Unknown Event");
+    }
+}
+
 static void timer_finalized(const char *status, const char *color)
 {
     // Skip if no timer is running
@@ -85,14 +109,22 @@ static void timer_finalized(const char *status, const char *color)
 
     // Print the timer message with elapsed time
     printf(
-        "%s(%s%s%s%s%s) %s - %lldμs%s\n",
+        "%s(%s%s%s%s%s)%s",
         ANSI_BRIGHT_BLACK,
         ANSI_RESET,
         color,
         status,
         ANSI_RESET,
         ANSI_BRIGHT_BLACK,
+        ANSI_RESET
+    );
+
+    print_event_type(current.event);
+    printf(
+        "%s %s%s- %lldμs%s\n",
         current.message,
+        ANSI_RESET,
+        ANSI_BRIGHT_BLACK,
         elapsed,
         ANSI_RESET
     );
