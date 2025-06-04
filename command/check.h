@@ -32,8 +32,11 @@ static inline void check_command(const char *const path)
         return;
     }
 
+    // Get the file name from the path
+    char *file_name = get_file_name(path);
+
     // Lex the source code
-    const pair_lex_result_t result = lexer_tokenize(source, path);
+    const pair_lex_result_t result = lexer_tokenize(source, file_name);
 
     const token_stream_t stream = result.first; // Get the token stream from the result
     const lexer_error_t *error = result.second; // Get the error if any
@@ -55,6 +58,7 @@ static inline void check_command(const char *const path)
 
     // Free the allocated memory
     free(source);
+    free(file_name);
 }
 
 #endif //FLUENT_COMMAND_CHECK_H
