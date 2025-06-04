@@ -35,6 +35,22 @@ typedef struct
     const char *message;    /**< The message of the timer */
 } state_timer_t;
 
+/**
+ * \enum state_event_t
+ * \brief Enumerates the possible states/events in the Fluent system.
+ *
+ * This enum represents the various processing stages that the Fluent system
+ * can be in, such as lexing, parsing, processing, analyzing, and building.
+ */
+typedef enum
+{
+    STATE_LEXING = 0, /**< The state when the lexer is processing input */
+    STATE_PARSING,    /**< The state when the parser is processing input */
+    STATE_PROCESSING, /**< The state when the program's internal code is processing */
+    STATE_ANALYZING,  /**< The state when the static analyzer is checking code */
+    STATE_BUILDING,   /**< The state when the IR builder is building the code */
+} state_event_t;
+
 // ============= MACROS =============
 #ifndef FLUENT_TIMER_SUCCESS_STR
 #   define FLUENT_TIMER_SUCCESS_STR "DONE"
