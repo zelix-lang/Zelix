@@ -201,7 +201,7 @@ static bool push_token(
 static inline pair_lex_result_t lexer_tokenize(const char *source)
 {
     // Emit lexing state
-    new_timer("Lexing source code");
+    new_timer("Lexing source code", STATE_LEXING);
 
     // Reset the global error state
     global_error_state.code = LEXER_ERROR_UNKNOWN;
