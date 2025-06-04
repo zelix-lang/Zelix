@@ -24,18 +24,6 @@
 #include <fluent/std_bool/std_bool.h> // fluent_libc
 
 /**
- * \brief Represents a timer state in the Fluent system.
- *
- * This structure holds information about a timer, including its start time
- * and an associated message.
- */
-typedef struct
-{
-    hr_clock_t start_time;  /**< Start time of the timer */
-    const char *message;    /**< The message of the timer */
-} state_timer_t;
-
-/**
  * \enum state_event_t
  * \brief Enumerates the possible states/events in the Fluent system.
  *
@@ -50,6 +38,18 @@ typedef enum
     STATE_ANALYZING,  /**< The state when the static analyzer is checking code */
     STATE_BUILDING,   /**< The state when the IR builder is building the code */
 } state_event_t;
+
+/**
+ * \brief Represents a timer state in the Fluent system.
+ *
+ * This structure holds information about a timer, including its start time
+ * and an associated message.
+ */
+typedef struct
+{
+    hr_clock_t start_time;  /**< Start time of the timer */
+    const char *message;    /**< The message of the timer */
+} state_timer_t;
 
 // ============= MACROS =============
 #ifndef FLUENT_TIMER_SUCCESS_STR
