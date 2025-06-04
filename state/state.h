@@ -52,6 +52,35 @@ typedef struct
 state_timer_t current;
 bool timer_running = FALSE; // Flag to indicate if a timer is currently running
 
+static inline void timer_failed()
+{
+    // Skip if no timer is running
+    if (!timer_running)
+    {
+        return; // No timer to complete
+    }
+
+    // Set the timer running flag to FALSE
+    timer_running = FALSE;
+
+    // Calculate the elapsed time
+    const long long elapsed = hr_clock_distance_from_now(&current.start_time, CLOCK_MICROSECONDS);
+
+    // Print the timer message with elapsed time
+    printf(
+        "%s(%s%s%s%s%s) %s - %lldμs%s\n",
+        ANSI_BRIGHT_BLACK,
+        ANSI_RESET,
+        ANSI_BOLD_BRIGHT_RED,
+        FLUENT_TIMER_FAILURE_STR,
+        ANSI_RESET,
+        ANSI_BRIGHT_BLACK,
+        current.message,
+        elapsed,
+        ANSI_RESET
+    );
+}
+
 static inline void timer_done()
 {
     // Skip if no timer is running
