@@ -49,6 +49,7 @@ typedef struct
 {
     hr_clock_t start_time;  /**< Start time of the timer */
     const char *message;    /**< The message of the timer */
+    state_event_t event;    /**< The event associated with the timer */
 } state_timer_t;
 
 // ============= MACROS =============
