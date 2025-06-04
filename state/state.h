@@ -74,19 +74,19 @@ static void print_event_type(const state_event_t event)
     switch (event)
     {
         case STATE_LEXING:
-            printf("%sLexing", ANSI_BOLD_BRIGHT_PURPLE);
+            printf("%sLexing ", ANSI_BOLD_BRIGHT_PURPLE);
             break;
         case STATE_PARSING:
-            printf("%sParsing", ANSI_BOLD_BRIGHT_BLUE);
+            printf("%sParsing ", ANSI_BOLD_BRIGHT_BLUE);
             break;
         case STATE_PROCESSING:
-            printf("%sProcessing", ANSI_BOLD_BRIGHT_YELLOW);
+            printf("%sProcessing ", ANSI_BOLD_BRIGHT_YELLOW);
             break;
         case STATE_ANALYZING:
-            printf("%sAnalyzing", ANSI_CYAN);
+            printf("%sAnalyzing ", ANSI_CYAN);
             break;
         case STATE_BUILDING:
-            printf("%sBuilding", ANSI_BOLD_BRIGHT_GREEN);
+            printf("%sBuilding ", ANSI_BOLD_BRIGHT_GREEN);
             break;
         default:
             printf("Unknown Event");
