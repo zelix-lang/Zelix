@@ -151,14 +151,21 @@ static inline void new_timer(const char *message, const state_event_t event) {
     timer_running = TRUE;
 
     // Print the start message
+    // Print the timer message with elapsed time
     printf(
-        "%s(%s%s%s%s%s) %s%s\r",
+        "%s(%s%s%s%s%s)%s ",
         ANSI_BRIGHT_BLACK,
         ANSI_RESET,
-        ANSI_BOLD_BRIGHT_GREEN,
+        ANSI_BRIGHT_YELLOW,
         FLUENT_TIMER_CLOCK_STR,
         ANSI_RESET,
         ANSI_BRIGHT_BLACK,
+        ANSI_RESET
+    );
+
+    print_event_type(current.event);
+    printf(
+        "%s%s\r",
         current.message,
         ANSI_RESET
     );
