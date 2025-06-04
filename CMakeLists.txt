@@ -21,7 +21,8 @@ add_executable(Fluent
         lexer/stream.h
         lexer/error.h
         file/file_reader.h
-        logger/logger.h)
+        logger/logger.h
+        state/state.h)
 
 target_include_directories(Fluent PRIVATE ${CMAKE_BINARY_DIR}/_deps/fluent_libc-src/include)
 target_link_libraries(Fluent PRIVATE fluent_libc)
