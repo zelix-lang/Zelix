@@ -36,16 +36,16 @@ typedef struct
 } state_timer_t;
 
 // ============= MACROS =============
-#ifndef FLUENT_TIMER_SUCCESS_CHAR
-#   define FLUENT_TIMER_SUCCESS_CHAR '✔' // Character to indicate successful timer completion
+#ifndef FLUENT_TIMER_SUCCESS_STR
+#   define FLUENT_TIMER_SUCCESS_STR "DONE"
 #endif
 
-#ifndef FLUENT_TIMER_FAILURE_CHAR
-#   define FLUENT_TIMER_FAILURE_CHAR '✘' // Character to indicate failed timer completion
+#ifndef FLUENT_TIMER_FAILURE_STR
+#   define FLUENT_TIMER_FAILURE_STR "FAILED"
 #endif
 
-#ifndef FLUENT_TIMER_CLOCK_CHAR
-#   define FLUENT_TIMER_CLOCK_CHAR '⏱' // Character to indicate a timer is running
+#ifndef FLUENT_TIMER_CLOCK_STR
+#   define FLUENT_TIMER_CLOCK_STR "..."
 #endif
 
 // ============= GLOBAL VARIABLES =============
@@ -68,11 +68,11 @@ static inline void timer_done()
 
     // Print the timer message with elapsed time
     printf(
-        "%s(%s%s%c%s%s) %s - %lldμs%s\n",
+        "%s(%s%s%s%s%s) %s - %lldμs%s\n",
         ANSI_BRIGHT_BLACK,
         ANSI_RESET,
         ANSI_BOLD_BRIGHT_GREEN,
-        FLUENT_TIMER_SUCCESS_CHAR,
+        FLUENT_TIMER_SUCCESS_STR,
         ANSI_RESET,
         ANSI_BRIGHT_BLACK,
         current.message,
@@ -93,11 +93,11 @@ static inline void new_timer(const char *message) {
 
     // Print the start message
     printf(
-        "%s(%s%s%c%s%s) %s%s\r",
+        "%s(%s%s%s%s%s) %s%s\r",
         ANSI_BRIGHT_BLACK,
         ANSI_RESET,
         ANSI_BOLD_BRIGHT_GREEN,
-        FLUENT_TIMER_CLOCK_CHAR,
+        FLUENT_TIMER_CLOCK_STR,
         ANSI_RESET,
         ANSI_BRIGHT_BLACK,
         current.message,
