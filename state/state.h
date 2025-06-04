@@ -68,7 +68,7 @@ static inline void timer_done()
 
     // Print the timer message with elapsed time
     printf(
-        "%s(%s%s%c%s%s)%s - %lldμs%s\n",
+        "%s(%s%s%c%s%s) %s - %lldμs%s\n",
         ANSI_BRIGHT_BLACK,
         ANSI_RESET,
         ANSI_BOLD_BRIGHT_GREEN,
@@ -93,7 +93,7 @@ static inline void new_timer(const char *message) {
 
     // Print the start message
     printf(
-        "%s(%s%s%c%s%s)%s%s\n",
+        "%s(%s%s%c%s%s) %s%s\n",
         ANSI_BRIGHT_BLACK,
         ANSI_RESET,
         ANSI_BOLD_BRIGHT_GREEN,
