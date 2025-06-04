@@ -109,7 +109,7 @@ static void timer_finalized(const char *status, const char *color)
 
     // Print the timer message with elapsed time
     printf(
-        "%s(%s%s%s%s%s)%s",
+        "%s(%s%s%s%s%s)%s ",
         ANSI_BRIGHT_BLACK,
         ANSI_RESET,
         color,
