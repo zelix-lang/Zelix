@@ -108,7 +108,7 @@ static inline void timer_done()
     timer_finalized(FLUENT_TIMER_SUCCESS_STR, ANSI_BOLD_BRIGHT_GREEN);
 }
 
-static inline void new_timer(const char *message) {
+static inline void new_timer(const char *message, const state_event_t event) {
     // Check if we have a timer running
     if (timer_running)
     {
@@ -135,6 +135,7 @@ static inline void new_timer(const char *message) {
     state_timer_t timer;
     hr_clock_tick(&timer.start_time); // Initialize the start time of the timer
     timer.message = message;
+    timer.event = event;
 
     current = timer; // Set the current timer state to the new timer
 }
