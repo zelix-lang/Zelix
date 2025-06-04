@@ -32,6 +32,7 @@
 #include "error.h"
 #include "stream.h"
 #include "../token/token_map.h"
+#include "../state/state.h"
 
 // ============= MACROS =============
 #ifndef FLUENT_PAIR_LEXER
@@ -199,6 +200,8 @@ static bool push_token(
  */
 static inline pair_lex_result_t lexer_tokenize(const char *source)
 {
+    // Emit lexing state
+    new_timer("Lexing source code");
 
     // Reset the global error state
     global_error_state.code = LEXER_ERROR_UNKNOWN;
