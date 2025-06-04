@@ -27,6 +27,7 @@
 #include <fluent/str_conv/str_conv.h> // fluent_libc
 #include <fluent/arena/arena.h> // fluent_libc
 #include <fluent/heap_guard/heap_guard.h> // fluent_libc
+#include <fluent/path/path.h> // fluent_libc
 
 // ============= INCLUDES =============
 #include "error.h"
@@ -204,8 +205,11 @@ static inline pair_lex_result_t lexer_tokenize(
     const char *const path
 )
 {
+    // Get the file name from the path
+    char *file_name = get_file_name(path);
+
     // Emit lexing state
-    new_timer(path, STATE_LEXING);
+    new_timer(file_name, STATE_LEXING);
 
     // Reset the global error state
     global_error_state.code = LEXER_ERROR_UNKNOWN;
@@ -736,6 +740,12 @@ static inline pair_lex_result_t lexer_tokenize(
     {
         destroy_string_builder(&unicode_escape_sequence);
     }
+
+    // Emit done state
+    timer_done();
+
+    // Free the file name after use
+    free(file_name);
 
     return pair_lex_result_new(stream, NULL);
 }
