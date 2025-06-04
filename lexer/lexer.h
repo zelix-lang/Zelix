@@ -28,6 +28,7 @@
 #include <fluent/arena/arena.h> // fluent_libc
 #include <fluent/heap_guard/heap_guard.h> // fluent_libc
 
+// ============= INCLUDES =============
 #include "error.h"
 #include "stream.h"
 #include "../token/token_map.h"
@@ -198,6 +199,7 @@ static bool push_token(
  */
 static inline pair_lex_result_t lexer_tokenize(const char *source)
 {
+
     // Reset the global error state
     global_error_state.code = LEXER_ERROR_UNKNOWN;
 
