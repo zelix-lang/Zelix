@@ -15,11 +15,12 @@
 // ============= FLUENT LIB C =============
 #include <fluent/cli/cli.h> // fluent_libc
 #include <fluent/cli/help/generator.h> // fluent_libc
+#include <fluent/ansi/ansi.h> // fluent_libc
 
 // ============= INCLUDES =============
 #include "token/token_map.h"
 #include "command/check.h"
-#include "fluent/ansi/ansi.h"
+#include "state/state.h"
 
 // ============= MACROS =============
 #ifndef PROGRAM_NAME
@@ -32,6 +33,8 @@
 
 int main(const int argc, const char **const argv)
 {
+    atexit(timer_done); // Ensure all timers are stopped on exit
+
     cli_app_t app;
     if (!cli_new_app(&app)) // Initialize the CLI application
     {
