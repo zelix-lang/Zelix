@@ -134,7 +134,6 @@ static void write_pinpoint(
 
 static inline char *build_error_message(
     const char *const code,
-    const char *const file,
     const char *const real_path,
     const char *const highlight_color,
     const size_t line,
