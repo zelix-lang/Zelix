@@ -27,7 +27,6 @@
 #include <fluent/str_conv/str_conv.h> // fluent_libc
 #include <fluent/arena/arena.h> // fluent_libc
 #include <fluent/heap_guard/heap_guard.h> // fluent_libc
-#include <fluent/path/path.h> // fluent_libc
 
 // ============= INCLUDES =============
 #include "error.h"
