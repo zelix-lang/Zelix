@@ -335,6 +335,14 @@ static inline pair_lex_result_t lexer_tokenize(
         // Check for whitespace
         if (c == ' ' && !in_string)
         {
+            // Check if the token is empty
+            if (current.idx == 0)
+            {
+                // If the current token is empty, just skip the whitespace
+                column++; // Increment column for the whitespace
+                continue;
+            }
+
             // Push the current token if it exists
             if (!push_token(
                 tokens,
