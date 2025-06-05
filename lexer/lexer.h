@@ -212,7 +212,7 @@ static inline pair_lex_result_t lexer_tokenize(
     global_error_state.code = LEXER_ERROR_UNKNOWN;
 
     // Initialize an arena allocator for token allocation
-    arena_allocator_t *allocator = arena_new(25, sizeof(token_t));
+    arena_allocator_t *allocator = arena_new(50, sizeof(token_t));
 
     // Initialize a vector to hold tokens
     const heap_guard_t *tokens_guard = heap_alloc(sizeof(vector_t), FALSE, FALSE, NULL, NULL);
