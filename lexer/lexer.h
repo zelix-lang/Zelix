@@ -737,9 +737,6 @@ static inline pair_lex_result_t lexer_tokenize(
         destroy_string_builder(&unicode_escape_sequence);
     }
 
-    // Emit done state
-    timer_done();
-
     return pair_lex_result_new(stream, NULL);
 }
 
