@@ -26,7 +26,7 @@ add_executable(Fluent
         message/generator.h)
 
 target_include_directories(Fluent PRIVATE ${CMAKE_BINARY_DIR}/_deps/fluent_libc-src/include)
-target_link_libraries(Fluent PRIVATE fluent_libc)
+target_link_libraries(Fluent PRIVATE fluent_libc m)
 add_definitions(-DDEBUG -DFLUENT_LIBC_RELEASE=1)
 
 # Add aggressive optimization flags for C++ and C compilers
