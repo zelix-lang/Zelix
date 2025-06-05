@@ -693,6 +693,17 @@ static inline pair_lex_result_t lexer_tokenize(
             continue;
         }
 
+        // Detect invalid identifiers
+        if (is_identifier && !isalnum(c) && c != '_')
+        {
+            destroy_string_builder(&current);
+            global_error_state.code = LEXER_ERROR_UNKNOWN_TOKEN;
+            global_error_state.column = column;
+            global_error_state.col_start = start_column;
+            global_error_state.line = line;
+            return pair_lex_result_new(stream, &global_error_state);
+        }
+
         // Write the current character to the string builder
         write_char_string_builder(&current, c);
 
