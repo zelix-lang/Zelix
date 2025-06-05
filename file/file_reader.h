@@ -26,19 +26,25 @@
  * Reads the entire contents of a file into a dynamically allocated buffer.
  *
  * @param path The path to the file to be read.
+ * @param normalize_path If true, the path will be normalized to its real path
  * @return A pointer to a null-terminated string containing the file contents,
  *         or NULL if the file could not be opened or memory allocation failed.
  *         The caller is responsible for freeing the returned buffer.
  */
-static inline char *read_file(const char *const path)
+static inline char *read_file(char *const path, const bool normalize_path)
 {
     // Normalize the path
-    char *normalized_path = get_real_path(path);
-    if (!normalized_path)
+    char *normalized_path = path;
+    if (normalize_path)
     {
-        return NULL; // Failed to normalize the path
-    }
+        normalized_path = get_real_path(path);
 
+        if (!normalized_path)
+        {
+            return NULL; // Failed to normalize the path
+        }
+
+    }
     FILE *file = fopen(normalized_path, "r");
     if (!file)
     {
