@@ -34,7 +34,7 @@
 typedef struct ast_t
 {
     ast_rule_t rule;      /**< The grammar rule associated with this node. */
-    vector_t *children;   /**< Vector of child AST nodes. */
+    vector_generic_t *children;   /**< Vector of child AST nodes. */
     char *value;          /**< Optional value for the node, e.g., identifier name, string literal, etc. */
     size_t line;          /**< Line number in the source file. */
     size_t column;        /**< Column number in the source file. */
