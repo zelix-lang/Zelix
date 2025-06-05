@@ -55,7 +55,8 @@ static bool push_token(
     bool *is_decimal_ptr,
     size_t *token_idx_ptr,
     const size_t line,
-    const size_t *column
+    const size_t *column,
+    size_t *start_column
 ) {
     // Ignore empty tokens
     if (current->idx == 0)
@@ -86,6 +87,7 @@ static bool push_token(
     // Set the token properties
     token->line = line;
     token->column = *column;
+    token->col_start = *start_column;
 
     // Add the token depending on the flags
     if (is_identifier)
@@ -177,6 +179,7 @@ static bool push_token(
     *is_decimal_ptr = FALSE;
     *token_idx_ptr = 0; // Reset the token index
     *column++; // Increment the column for the next token
+    *start_column = *column; // Reset the start column for the next token
     return TRUE;
 }
 
@@ -232,6 +235,7 @@ static inline pair_lex_result_t lexer_tokenize(
     // Track the current position in the source code
     size_t line = 1;
     size_t column = 1;
+    size_t start_column = 1; // Column where the current token started
 
     // Track lexing state
     bool in_string = FALSE; // Whether we are inside a string literal
@@ -289,6 +293,7 @@ static inline pair_lex_result_t lexer_tokenize(
                 in_comment = FALSE; // Exit comment state on newline
                 line++;
                 column = 1; // Reset column on new line
+                start_column = 1; // Reset start column on new line
             }
             continue;
         }
@@ -319,7 +324,8 @@ static inline pair_lex_result_t lexer_tokenize(
                 &is_decimal,
                 &token_idx,
                 line,
-                &column
+                &column,
+                &start_column
             ))
             {
                 // If pushing the token failed, return the error state
@@ -328,6 +334,7 @@ static inline pair_lex_result_t lexer_tokenize(
 
             line++;
             column = 1; // Reset column on new line
+            start_column = 1; // Reset start column on new line
 
             continue;
         }
@@ -354,7 +361,8 @@ static inline pair_lex_result_t lexer_tokenize(
                 &is_decimal,
                 &token_idx,
                 line,
-                &column
+                &column,
+                &start_column
             ))
             {
                 // If pushing the token failed, return the error state
@@ -378,7 +386,8 @@ static inline pair_lex_result_t lexer_tokenize(
                 &is_decimal,
                 &token_idx,
                 line,
-                &column
+                &column,
+                &start_column
             ))
             {
                 // If pushing the token failed, return the error state
@@ -402,7 +411,8 @@ static inline pair_lex_result_t lexer_tokenize(
                 &is_decimal,
                 &token_idx,
                 line,
-                &column
+                &column,
+                &start_column
             ))
             {
                 // If pushing the token failed, return the error state
@@ -508,7 +518,8 @@ static inline pair_lex_result_t lexer_tokenize(
                 &is_decimal,
                 &token_idx,
                 line,
-                &column
+                &column,
+                &start_column
             ))
             {
                 // If pushing the token failed, return the error state
@@ -593,7 +604,8 @@ static inline pair_lex_result_t lexer_tokenize(
                 &is_decimal,
                 &token_idx,
                 line,
-                &column
+                &column,
+                &start_column
             ))
             {
                 // If pushing the token failed, return the error state
@@ -615,7 +627,8 @@ static inline pair_lex_result_t lexer_tokenize(
                 &is_decimal,
                 &token_idx,
                 line,
-                &column
+                &column,
+                &start_column
             ))
             {
                 // If pushing the token failed, return the error state
@@ -642,7 +655,8 @@ static inline pair_lex_result_t lexer_tokenize(
                 &is_decimal,
                 &token_idx,
                 line,
-                &column
+                &column,
+                &start_column
             ))
             {
                 // If pushing the token failed, return the error state
@@ -664,7 +678,8 @@ static inline pair_lex_result_t lexer_tokenize(
                 &is_decimal,
                 &token_idx,
                 line,
-                &column
+                &column,
+                &start_column
             ))
             {
                 // If pushing the token failed, return the error state
@@ -727,7 +742,8 @@ static inline pair_lex_result_t lexer_tokenize(
         &is_decimal,
         &token_idx,
         line,
-        &column
+        &column,
+        &start_column
     ))
     {
         // If pushing the token failed, return the error state
