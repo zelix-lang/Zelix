@@ -333,7 +333,7 @@ static inline pair_lex_result_t lexer_tokenize(
         }
 
         // Check for whitespace
-        if (c == ' ' && !in_string)
+        if (c == ' ' && !in_string && !in_comment && !in_block_comment)
         {
             // Push the current token if it exists
             if (!push_token(
