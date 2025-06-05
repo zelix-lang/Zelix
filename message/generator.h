@@ -24,6 +24,7 @@
 #include <fluent/std_bool/std_bool.h> // fluent_libc
 #include <fluent/ansi/ansi.h> // fluent_libc
 #include <fluent/itoa/itoa.h> // fluent_libc
+#include <fluent/str_has_prefix/str_has_prefix.h> // fluent_libc
 
 // ============= INCLUDES =============
 #include <math.h>
@@ -134,6 +135,7 @@ static void write_pinpoint(
 static inline char *build_error_message(
     const char *const code,
     const char *const file,
+    const char *const real_path,
     const char *const highlight_color,
     const size_t line,
     const size_t column
@@ -301,6 +303,46 @@ static inline char *build_error_message(
             char_count
         );
     }
+
+    // Write the file location
+    write_string_builder(&builder, ANSI_BOLD_BRIGHT_PURPLE);
+    write_string_builder(&builder, "           => ");
+
+    // Check if the path starts with the current working directory
+    if (str_has_prefix(real_path, get_cwd()))
+    {
+        // Calculate the path without the CWD
+        const char *write_path = real_path + cwd_len;
+
+        // Make sure the path doesn't start with the path separator
+        if (*write_path == PATH_SEPARATOR)
+        {
+            write_path++; // Skip the path separator
+        }
+
+        // Write the file path without the current working directory
+        write_string_builder(&builder, write_path);
+    }
+    else
+    {
+        // Write the full file path
+        write_string_builder(&builder, real_path);
+    }
+
+    // Write the file location line
+    write_string_builder(&builder, ":");
+    char *line_str = itoa(line);
+    write_string_builder(&builder, line_str);
+    free(line_str); // Free the line number string
+
+    char *column_str = itoa(column);
+    write_string_builder(&builder, ":");
+    write_string_builder(&builder, column_str);
+    free(column_str); // Free the column number string
+
+    // Write an ANSI reset code
+    write_string_builder(&builder, ANSI_RESET);
+    write_string_builder(&builder, "\n");
 
     // Return the built error message
     return collect_string_builder_no_copy(&builder);
