@@ -27,8 +27,11 @@
 
 static inline void check_command(const char *const path)
 {
+    // Normalize the path
+    char *normalized_path = get_real_path(path);
+
     // Read the file contents
-    char *source = read_file(path);
+    char *source = read_file(normalized_path, FALSE);
     if (!source)
     {
         fprintf(stderr, "Error: Could not read file '%s'.\n", path);
@@ -55,7 +58,13 @@ static inline void check_command(const char *const path)
         log_info("Full details:");
 
         // Build the error message
-        char *msg = build_error_message(source, file_name, ANSI_BOLD_BRIGHT_RED, error->line, error->column);
+        char *msg = build_error_message(
+            source,
+            normalized_path,
+            ANSI_BOLD_BRIGHT_RED,
+            error->line,
+            error->column
+        );
         printf("%s", msg);
 
         // Free the error message
@@ -73,6 +82,7 @@ static inline void check_command(const char *const path)
     // Free the allocated memory
     free(source);
     free(file_name);
+    free(normalized_path);
 }
 
 #endif //FLUENT_COMMAND_CHECK_H
