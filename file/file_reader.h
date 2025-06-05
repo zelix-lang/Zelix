@@ -71,7 +71,10 @@ static inline char *read_file(char *const path, const bool normalize_path)
     buffer[length] = '\0'; // Null-terminate the string
 
     // Free the normalized path as it's no longer needed
-    free(normalized_path);
+    if (normalize_path)
+    {
+        free(normalized_path);
+    }
     fclose(file);
     return buffer;
 }
