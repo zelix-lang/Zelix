@@ -63,7 +63,8 @@ static inline void check_command(const char *const path)
             normalized_path,
             ANSI_BOLD_BRIGHT_RED,
             error->line,
-            error->column
+            error->column,
+            error->col_start
         );
         printf("%s", msg);
 
