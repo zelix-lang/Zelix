@@ -43,7 +43,7 @@
 // ============= INCLUDES =============
 #include "../token/token.h"
 
-lexer_error_t global_error_state;
+static lexer_error_t global_error_state;
 
 static bool push_token(
     vector_t *tokens,
