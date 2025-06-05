@@ -28,6 +28,9 @@
 // ============= INCLUDES =============
 #include <math.h>
 
+// ============= GLOBAL VARS =============
+static size_t cwd_len = 0; // Length of the current working directory
+
 static bool have_same_digits(size_t a, size_t b)
 {
     // Fast path: Quick-n-dirty O(log n) for small numbers
@@ -69,6 +72,65 @@ static bool have_same_digits(size_t a, size_t b)
     return a == b || (a == 0 ? 1 : (int)log10(a) + 1) == (b == 0 ? 1 : (int)log10(b) + 1);
 }
 
+static void write_line(
+    string_builder_t *builder,
+    const size_t line_count
+)
+{
+    // Convert the line number to a string
+    char *line_number = itoa(line_count);
+    write_string_builder(builder, line_number);
+    // line_number is now copied, it is safe to free it
+    free(line_number); // Free the line number string
+
+    // Write format
+    write_string_builder(builder, " | ");
+}
+
+static void write_pinpoint(
+    string_builder_t *builder,
+    const size_t line,
+    const size_t column,
+    const char *const highlight_color,
+    const size_t space_count,
+    const size_t char_count
+)
+{
+    write_string_builder(builder, "     ");
+    write_string_builder(builder, highlight_color);
+    write_string_builder(builder, "> ");
+
+    // Write the line
+    write_line(builder, line);
+
+    // Write spaces before the error
+    for (size_t i = 0; i < space_count; i++)
+    {
+        write_char_string_builder(builder, ' ');
+    }
+
+    // Get the real column
+    const size_t real_column = column - 1;
+
+    // Write the caret to highlight the error
+    for (size_t i = 0; i < char_count; i++)
+    {
+        // Write the caret character at the column
+        if (i == real_column)
+        {
+            write_char_string_builder(builder, '^');
+        }
+        else
+        {
+            write_char_string_builder(builder, '-');
+        }
+    }
+
+    // Write an ANSI reset code
+    write_string_builder(builder, ANSI_RESET);
+    write_string_builder(builder, "\n");
+}
+
 static inline char *build_error_message(
     const char *const code,
     const char *const file,
@@ -77,6 +139,12 @@ static inline char *build_error_message(
     const size_t column
 )
 {
+    // See if we have to request the CWD
+    if (cwd_len == 0)
+    {
+        cwd_len = strlen(get_cwd());
+    }
+
     // Create a new string builder for the error message
     string_builder_t builder; // Don't initialize it just yet
     size_t line_count = 1; // Initialize line count
@@ -84,6 +152,8 @@ static inline char *build_error_message(
     const size_t end_line = line + 1; // The line where we should stop counting
     const size_t end_counting_at = line + 2; // End counting lines at the line after the error
     bool allowed_to_write = FALSE; // Flag to control writing to the builder
+    size_t space_count = 0; // Count the spaces before the first character in the error message
+    size_t char_count = 0; // Count the characters in the error message
 
     // Iterate over the code and file to build the error message
     for (size_t i = 0; code[i] != '\0'; i++)
@@ -94,6 +164,30 @@ static inline char *build_error_message(
         // Check if we are allowed to write to the builder
         if (allowed_to_write)
         {
+            if (line_count == line)
+            {
+                // Check if we have a space character
+                if (c == ' ')
+                {
+                    // Check if we have already written a character
+                    if (char_count > 0)
+                    {
+                        // Increment the character count
+                        char_count++;
+                    }
+                    else
+                    {
+                        // Increment the space count
+                        space_count++;
+                    }
+                }
+                else
+                {
+                    // Increment the character count
+                    char_count++;
+                }
+            }
+
             // Write the character to the builder
             write_char_string_builder(&builder, c);
         }
@@ -101,6 +195,20 @@ static inline char *build_error_message(
         // Check if we have a newline character
         if (c == '\n')
         {
+            // Check if we have to write the pinpoint
+            if (line_count == line)
+            {
+                // Write the pinpoint for the error
+                write_pinpoint(
+                    &builder,
+                    line,
+                    column,
+                    highlight_color,
+                    space_count,
+                    char_count
+                );
+            }
+
             // Increment the line count
             line_count++;
 
@@ -113,10 +221,11 @@ static inline char *build_error_message(
             }
 
             // Bail out if we have reached the end of the counting range
-            if (end_counting_at == line_count)
+            else if (end_counting_at == line_count)
             {
                 // Write an ANSI reset code
                 write_string_builder(&builder, ANSI_RESET);
+                write_string_builder(&builder, "\n"); // Write a newline
 
                 break; // Stop counting lines
             }
@@ -162,16 +271,35 @@ static inline char *build_error_message(
                     write_string_builder(&builder, spaces);
                 }
 
-                // Convert the line number to a string
-                char *line_number = itoa(line_count);
-                write_string_builder(&builder, line_number);
-                // line_number is now copied, it is safe to free it
-                free(line_number); // Free the line number string
-
-                // Write format
-                write_string_builder(&builder, " | ");
+                // Write the line
+                write_line(&builder, line_count);
             }
         }
+    }
+
+    // Handle cases where (EOF == end_line)
+    if (line_count == end_line && allowed_to_write)
+    {
+        // Write an ANSI reset code
+        write_string_builder(&builder, ANSI_RESET);
+        write_string_builder(&builder, "\n"); // Write a newline
+    }
+
+    // Check if ended writing at the line (EOF)
+    if (line_count == line && allowed_to_write)
+    {
+        write_string_builder(&builder, ANSI_RESET); // Reset the ANSI color
+        write_string_builder(&builder, "\n"); // Write a newline
+
+        // Write the pinpoint for the error
+        write_pinpoint(
+            &builder,
+            line,
+            column,
+            highlight_color,
+            space_count,
+            char_count
+        );
     }
 
     // Return the built error message
