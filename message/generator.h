@@ -94,7 +94,8 @@ static void write_pinpoint(
     const size_t column,
     const char *const highlight_color,
     const size_t space_count,
-    const size_t char_count
+    const size_t char_count,
+    const size_t col_start
 )
 {
     write_string_builder(builder, "     ");
@@ -112,12 +113,13 @@ static void write_pinpoint(
 
     // Get the real column
     const size_t real_column = column - 1;
+    const size_t real_col_start = col_start - 1;
 
     // Write the caret to highlight the error
     for (size_t i = 0; i < char_count; i++)
     {
         // Write the caret character at the column
-        if (i == real_column)
+        if (i >= real_col_start && i <= real_column)
         {
             write_char_string_builder(builder, '^');
         }
@@ -137,7 +139,8 @@ static inline char *build_error_message(
     const char *const real_path,
     const char *const highlight_color,
     const size_t line,
-    const size_t column
+    const size_t column,
+    const size_t col_start
 )
 {
     // See if we have to request the CWD
@@ -206,7 +209,8 @@ static inline char *build_error_message(
                     column,
                     highlight_color,
                     space_count,
-                    char_count
+                    char_count,
+                    col_start
                 );
             }
 
@@ -299,7 +303,8 @@ static inline char *build_error_message(
             column,
             highlight_color,
             space_count,
-            char_count
+            char_count,
+            col_start
         );
     }
 
