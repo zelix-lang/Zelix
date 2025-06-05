@@ -99,6 +99,7 @@ typedef struct
     token_type_t type;   // The type of the token (e.g., identifier, keyword, operator)
     size_t line;         // The line number where the token was found
     size_t column;       // The column number where the token was found
+    size_t col_start;    // The column number where the token starts
 } token_t;
 
 #endif //FLUENT_TOKEN_H
