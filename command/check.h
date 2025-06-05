@@ -20,7 +20,10 @@
 #define FLUENT_COMMAND_CHECK_H
 
 #include "../file/file_reader.h"
+#include "../message/lexer_error_converter.h"
+#include "../message/generator.h"
 #include "../lexer/lexer.h"
+#include "../logger/logger.h"
 
 static inline void check_command(const char *const path)
 {
@@ -44,8 +47,19 @@ static inline void check_command(const char *const path)
     // Check for lexer errors
     if (error)
     {
-        fprintf(stderr, "Lexer error at line %zu, column %zu: %d\n",
-                error->line, error->column, error->code);
+        // Emit failed state
+        timer_failed();
+
+        // Log the error
+        log_error(lexer_error_to_string(error));
+        log_info("Full details:");
+
+        // Build the error message
+        char *msg = build_error_message(source, file_name, ANSI_BOLD_BRIGHT_RED, error->line, error->column);
+        printf("%s", msg);
+
+        // Free the error message
+        free(msg);
     }
 
     // Free the resources used by the lexer
