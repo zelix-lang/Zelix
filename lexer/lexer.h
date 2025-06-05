@@ -140,6 +140,7 @@ static bool push_token(
             global_error_state.code = LEXER_ERROR_UNKNOWN_TOKEN;
             global_error_state.column = *column;
             global_error_state.line = line;
+            global_error_state.col_start = *start_column;
             return FALSE;
         }
 
