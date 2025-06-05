@@ -76,7 +76,7 @@ static inline void check_command(const char *const path)
     if (stream.allocator)
     {
         // Destroy the vector of tokens
-        vec_destroy(stream.tokens, NULL);
+        vec_token_destroy(stream.tokens, NULL);
         destroy_arena(stream.allocator);
     }
 

@@ -22,6 +22,12 @@
 // ============= FLUENT LIB C =============
 #include <fluent/vector/vector.h> // fluent_libc
 
+// ============= VECTOR DEFINITION =============
+#ifndef FLUENT_VECTOR_TOKEN_DEFINED
+    DEFINE_VECTOR(token_t *, token); // Define a vector for token_t
+#   define FLUENT_VECTOR_TOKEN_DEFINED 1
+#endif
+
 #include "../token/token.h"
 
 /**
@@ -32,7 +38,7 @@
  */
 typedef struct
 {
-    vector_t *tokens; ///< Vector of tokens
+    vector_token_t *tokens; ///< Vector of tokens
     size_t current;  ///< Current index in the token stream
     arena_allocator_t *allocator; ///< Arena allocator for token memory management
 } token_stream_t;
@@ -48,7 +54,7 @@ static inline token_t *token_stream_nth(const token_stream_t *const stream, cons
 {
     if (n < stream->tokens->length)
     {
-        return (token_t *)vec_get(stream->tokens, n);
+        return vec_token_get(stream->tokens, n);
     }
 
     return NULL;

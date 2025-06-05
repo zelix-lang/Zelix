@@ -46,7 +46,7 @@
 static lexer_error_t global_error_state;
 
 static bool push_token(
-    vector_t *tokens,
+    vector_token_t *tokens,
     arena_allocator_t *allocator,
     string_builder_t *current,
     bool *in_string_ptr,
@@ -168,7 +168,7 @@ static bool push_token(
     }
 
     // Push the token to the vector
-    vec_push(tokens, token);
+    vec_token_push(tokens, token);
 
     // Reset the string builder for the next token
     reset_string_builder(current);
@@ -219,13 +219,13 @@ static inline pair_lex_result_t lexer_tokenize(
     arena_allocator_t *allocator = arena_new(50, sizeof(token_t));
 
     // Initialize a vector to hold tokens
-    const heap_guard_t *tokens_guard = heap_alloc(sizeof(vector_t), FALSE, FALSE, NULL, NULL);
-    vec_init(tokens_guard->ptr, 256, sizeof(token_t), 1.5);
-    vector_t *tokens = (vector_t *)tokens_guard->ptr;
+    const heap_guard_t *tokens_guard = heap_alloc(sizeof(vector_token_t), FALSE, FALSE, NULL, NULL);
+    vec_token_init(tokens_guard->ptr, 256, 1.5);
+    vector_token_t *tokens = (vector_token_t *)tokens_guard->ptr;
 
     // Initialize the token stream
     token_stream_t stream;
-    stream.tokens = (vector_t *)tokens_guard->ptr;
+    stream.tokens = (vector_token_t *)tokens_guard->ptr;
     stream.current = 0;
     stream.allocator = allocator;
 
