@@ -49,6 +49,7 @@ typedef struct
 {
     size_t line;             ///< The line number where the error occurred
     size_t column;           ///< The column number where the error occurred
+    size_t col_start;        ///< The starting column of the error
     lexer_error_code_t code; ///< The error code representing the type of error
 } lexer_error_t;
 
