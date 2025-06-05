@@ -55,7 +55,7 @@ static bool push_token(
     bool *is_decimal_ptr,
     size_t *token_idx_ptr,
     const size_t line,
-    const size_t column
+    const size_t *column
 ) {
     // Ignore empty tokens
     if (current->idx == 0)
@@ -85,7 +85,7 @@ static bool push_token(
 
     // Set the token properties
     token->line = line;
-    token->column = column;
+    token->column = *column;
 
     // Add the token depending on the flags
     if (is_identifier)
@@ -136,7 +136,7 @@ static bool push_token(
 
             // Set the global error state
             global_error_state.code = LEXER_ERROR_UNKNOWN_TOKEN;
-            global_error_state.column = column;
+            global_error_state.column = *column;
             global_error_state.line = line;
             return FALSE;
         }
@@ -176,6 +176,7 @@ static bool push_token(
     *is_number_ptr = FALSE;
     *is_decimal_ptr = FALSE;
     *token_idx_ptr = 0; // Reset the token index
+    *column++; // Increment the column for the next token
     return TRUE;
 }
 
@@ -318,7 +319,7 @@ static inline pair_lex_result_t lexer_tokenize(
                 &is_decimal,
                 &token_idx,
                 line,
-                column
+                &column
             ))
             {
                 // If pushing the token failed, return the error state
@@ -345,7 +346,7 @@ static inline pair_lex_result_t lexer_tokenize(
                 &is_decimal,
                 &token_idx,
                 line,
-                column
+                &column
             ))
             {
                 // If pushing the token failed, return the error state
@@ -369,15 +370,13 @@ static inline pair_lex_result_t lexer_tokenize(
                 &is_decimal,
                 &token_idx,
                 line,
-                column
+                &column
             ))
             {
                 // If pushing the token failed, return the error state
                 return pair_lex_result_new(stream, &global_error_state);
             }
 
-            // Increment the column for the punctuation character
-            column++;
             is_identifier = FALSE; // Reset identifier state
 
             // Write the punctuation character to the string builder
@@ -395,15 +394,13 @@ static inline pair_lex_result_t lexer_tokenize(
                 &is_decimal,
                 &token_idx,
                 line,
-                column
+                &column
             ))
             {
                 // If pushing the token failed, return the error state
                 return pair_lex_result_new(stream, &global_error_state);
             }
 
-            // Increment the column for the next character
-            column++;
             continue;
         }
 
@@ -503,7 +500,7 @@ static inline pair_lex_result_t lexer_tokenize(
                 &is_decimal,
                 &token_idx,
                 line,
-                column
+                &column
             ))
             {
                 // If pushing the token failed, return the error state
@@ -519,7 +516,6 @@ static inline pair_lex_result_t lexer_tokenize(
                 is_decimal = FALSE; // Reset decimal state
             }
 
-            column++; // Increment column for the string character
             continue;
         }
 
@@ -589,7 +585,7 @@ static inline pair_lex_result_t lexer_tokenize(
                 &is_decimal,
                 &token_idx,
                 line,
-                column
+                &column
             ))
             {
                 // If pushing the token failed, return the error state
@@ -611,7 +607,7 @@ static inline pair_lex_result_t lexer_tokenize(
                 &is_decimal,
                 &token_idx,
                 line,
-                column
+                &column
             ))
             {
                 // If pushing the token failed, return the error state
@@ -619,7 +615,7 @@ static inline pair_lex_result_t lexer_tokenize(
             }
 
             // Increment the column for both characters
-            column += 2;
+            column++;
             i++; // Skip the next character
             continue;
         }
@@ -638,7 +634,7 @@ static inline pair_lex_result_t lexer_tokenize(
                 &is_decimal,
                 &token_idx,
                 line,
-                column
+                &column
             ))
             {
                 // If pushing the token failed, return the error state
@@ -660,7 +656,7 @@ static inline pair_lex_result_t lexer_tokenize(
                 &is_decimal,
                 &token_idx,
                 line,
-                column
+                &column
             ))
             {
                 // If pushing the token failed, return the error state
@@ -668,7 +664,7 @@ static inline pair_lex_result_t lexer_tokenize(
             }
 
             // Increment the column for both characters
-            column += 2;
+            column++;
             i++; // Skip the next character
             continue;
         }
@@ -723,7 +719,7 @@ static inline pair_lex_result_t lexer_tokenize(
         &is_decimal,
         &token_idx,
         line,
-        column
+        &column
     ))
     {
         // If pushing the token failed, return the error state
