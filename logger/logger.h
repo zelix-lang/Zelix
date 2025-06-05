@@ -43,8 +43,7 @@ static inline void log_info(const char *message)
 
 static inline void log_error(const char *message)
 {
-    fprintf(
-        stderr,
+    printf(
         "%s%s%s%s\n",
         ANSI_BOLD_BRIGHT_RED,
         error_log_prefix,
@@ -55,8 +54,7 @@ static inline void log_error(const char *message)
 
 static inline void log_warning(const char *message)
 {
-    fprintf(
-        stderr,
+    printf(
         "%s%s%s%s\n",
         ANSI_BOLD_BRIGHT_YELLOW,
         warn_log_prefix,
