@@ -19,11 +19,13 @@
 #ifndef FLUENT_COMMAND_CHECK_H
 #define FLUENT_COMMAND_CHECK_H
 
+// ============= INCLUDES =============
 #include "../file/file_reader.h"
 #include "../message/lexer_error_converter.h"
 #include "../message/generator.h"
 #include "../lexer/lexer.h"
 #include "../logger/logger.h"
+#include "../parser/parser.h"
 
 static inline void check_command(const char *const path)
 {
@@ -44,7 +46,7 @@ static inline void check_command(const char *const path)
     // Lex the source code
     const pair_lex_result_t result = lexer_tokenize(source, file_name);
 
-    const token_stream_t stream = result.first; // Get the token stream from the result
+    token_stream_t stream = result.first; // Get the token stream from the result
     const lexer_error_t *error = result.second; // Get the error if any
 
     // Check for lexer errors
@@ -70,6 +72,22 @@ static inline void check_command(const char *const path)
 
         // Free the error message
         free(msg);
+    }
+
+    // Emit done state
+    timer_done();
+
+    // Parse the code
+    const pair_parser_result_t parser_result = parser_parse(&stream, file_name);
+    const ast_stream_t ast_stream = parser_result.first; // Get the AST stream from the result
+    ast_error_t *parser_error = parser_result.second; // Get the parser error if any
+
+    // Free the memory used by the parser
+    if (ast_stream.allocator)
+    {
+        // Destroy the AST stream
+        destroy_arena(ast_stream.allocator);
+        destroy_arena(ast_stream.vec_allocator);
     }
 
     // Free the resources used by the lexer
