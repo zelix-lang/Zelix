@@ -230,7 +230,6 @@ static inline char *build_error_message(
             {
                 // Write an ANSI reset code
                 write_string_builder(&builder, ANSI_RESET);
-                write_string_builder(&builder, "\n"); // Write a newline
 
                 break; // Stop counting lines
             }
