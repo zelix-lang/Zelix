@@ -42,4 +42,52 @@ typedef struct ast_t
     char *file;           /**< File where the node was defined. */
 } ast_t;
 
+/**
+ * @brief Allocates and initializes a new AST node.
+ *
+ * This function creates a new AST node using the provided memory allocator.
+ * If `children_required` is true, it also allocates and initializes a vector
+ * for the node's children using the specified vector allocator.
+ *
+ * @param allocator         Arena allocator for the AST node itself.
+ * @param vec_allocator     Arena allocator for the children vector (if required).
+ * @param children_required Whether to allocate and initialize the children vector.
+ * @return Pointer to the newly created ast_t node, or NULL on allocation failure.
+ */
+static inline ast_t *ast_new(
+    arena_allocator_t *const allocator,
+    arena_allocator_t *const vec_allocator,
+    const bool children_required
+)
+{
+    // Allocate memory for a new AST node
+    ast_t *node = (ast_t *)arena_malloc(allocator);
+    if (!node)
+    {
+        return NULL; // Allocation failed
+    }
+
+    // Initialize the children vector
+    if (children_required)
+    {
+        node->children = arena_malloc(vec_allocator);
+        if (!node->children)
+        {
+            return NULL;
+        }
+
+        // Initialize the vector
+        vec_generic_init(node->children, 15, 1.5);
+    }
+
+    // Initialize other fields
+    node->value = NULL;
+    node->line = 0;
+    node->column = 0;
+    node->col_start = 0;
+    node->file = NULL;
+
+    return node; // Return the newly created AST node
+}
+
 #endif //FLUENT_AST_H
