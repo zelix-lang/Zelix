@@ -309,7 +309,7 @@ static inline char *build_error_message(
 
     // Write the file location
     write_string_builder(&builder, ANSI_BOLD_BRIGHT_PURPLE);
-    write_string_builder(&builder, "           => ");
+    write_string_builder(&builder, "         => ");
 
     // Check if the path starts with the current working directory
     if (str_has_prefix(real_path, get_cwd()))
