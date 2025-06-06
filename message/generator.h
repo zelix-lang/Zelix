@@ -79,7 +79,7 @@ static void write_line(
 )
 {
     // Convert the line number to a string
-    char *line_number = itoa(line_count);
+    char *line_number = itoa_convert(line_count);
     write_string_builder(builder, line_number);
     // line_number is now copied, it is safe to free it
     free(line_number); // Free the line number string
@@ -335,11 +335,11 @@ static inline char *build_error_message(
 
     // Write the file location line
     write_string_builder(&builder, ":");
-    char *line_str = itoa(line);
+    char *line_str = itoa_convert(line);
     write_string_builder(&builder, line_str);
     free(line_str); // Free the line number string
 
-    char *column_str = itoa(column);
+    char *column_str = itoa_convert(column);
     write_string_builder(&builder, ":");
     write_string_builder(&builder, column_str);
     free(column_str); // Free the column number string
