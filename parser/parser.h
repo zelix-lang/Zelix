@@ -28,28 +28,6 @@
 #include "../lexer/stream.h"
 #include "stream.h"
 
-// ============= GLOBAL VARIABLE =============
-static ast_error_t global_parser_error;
-
-static ast_error_t *create_error(
-    const size_t line,
-    const size_t column,
-    const size_t col_start,
-    const ast_rule_t *const expected,
-    const size_t expected_len
-)
-{
-    // Set the global parser error
-    global_parser_error.line = line;
-    global_parser_error.column = column;
-    global_parser_error.col_start = col_start;
-
-    // Copy the expected rules into the global parser error
-    memcpy(global_parser_error.expected, expected, sizeof(ast_rule_t) * expected_len);
-
-    return &global_parser_error;
-}
-
 DEFINE_PAIR_T(ast_stream_t, ast_error_t *, parser_result);
 
 static inline pair_parser_result_t parser_parse(
