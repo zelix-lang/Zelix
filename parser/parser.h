@@ -57,6 +57,8 @@ static inline pair_parser_result_t parser_parse(
     const char *const file_name
 )
 {
+    // Emit parsing state
+    new_timer(file_name, STATE_PARSING);
     // Create a new AST stream
     ast_stream_t ast_stream;
 
