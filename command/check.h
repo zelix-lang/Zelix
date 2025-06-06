@@ -80,7 +80,37 @@ static inline void check_command(const char *const path)
     // Parse the code
     const pair_parser_result_t parser_result = parser_parse(&stream, file_name);
     const ast_stream_t ast_stream = parser_result.first; // Get the AST stream from the result
-    ast_error_t *parser_error = parser_result.second; // Get the parser error if any
+    const ast_error_t *parser_error = parser_result.second; // Get the parser error if any
+
+    // Handle parser errors
+    if (parser_error)
+    {
+        // Emit failed state
+        timer_failed();
+
+        // Log the error
+        log_error("Invalid syntax in the source code");
+        log_info("Full details:");
+
+        // Build the error message
+        char *msg = build_error_message(
+            source,
+            normalized_path,
+            ANSI_BOLD_BRIGHT_RED,
+            parser_error->line,
+            parser_error->column,
+            parser_error->col_start
+        );
+        printf("%s", msg);
+
+        // Free the error message
+        free(msg);
+    }
+    else
+    {
+        // Emit success state
+        timer_done();
+    }
 
     // Free the memory used by the parser
     if (ast_stream.allocator)
