@@ -45,7 +45,7 @@ static ast_error_t *create_error(
     global_parser_error.col_start = col_start;
 
     // Copy the expected rules into the global parser error
-    memcpy(global_parser_error.expected, expected, expected_len);
+    memcpy(global_parser_error.expected, expected, sizeof(ast_rule_t) * expected_len);
 
     return &global_parser_error;
 }
