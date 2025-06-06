@@ -27,6 +27,7 @@
 #include "error.h"
 #include "../lexer/stream.h"
 #include "stream.h"
+#include "rule/import.h"
 
 DEFINE_PAIR_T(ast_stream_t, ast_error_t *, parser_result);
 
@@ -81,6 +82,14 @@ static inline pair_parser_result_t parser_parse(
         {
             case TOKEN_IMPORT:
             {
+                parse_import(
+                    ast_stream.ast,
+                    stream,
+                    ast_stream.allocator,
+                    ast_stream.vec_allocator,
+                    current
+                );
+
                 break;
             }
 
