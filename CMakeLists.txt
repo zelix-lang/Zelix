@@ -29,7 +29,8 @@ add_executable(Fluent
         ast/rule.h
         parser/parser.h
         parser/error.h
-        parser/stream.h)
+        parser/stream.h
+        parser/rule/import.h)
 
 target_include_directories(Fluent PRIVATE ${CMAKE_BINARY_DIR}/_deps/fluent_libc-src/include)
 target_link_libraries(Fluent PRIVATE fluent_libc m)
