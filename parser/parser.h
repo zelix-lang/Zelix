@@ -82,13 +82,26 @@ static inline pair_parser_result_t parser_parse(
         {
             case TOKEN_IMPORT:
             {
-                parse_import(
+                if (!parse_import(
                     ast_stream.ast,
                     stream,
                     ast_stream.allocator,
                     ast_stream.vec_allocator,
                     current
-                );
+                ))
+                {
+                    // Failed to parse the import statement
+                    return (pair_parser_result_t){
+                        ast_stream,
+                        create_error(
+                            current->line,
+                            current->column,
+                            current->col_start,
+                            (ast_rule_t[]){AST_IMPORT},
+                            1
+                        )
+                    };
+                }
 
                 break;
             }
