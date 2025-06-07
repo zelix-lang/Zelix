@@ -54,15 +54,15 @@ typedef struct
 
 // ============= MACROS =============
 #ifndef FLUENT_TIMER_SUCCESS_STR
-#   define FLUENT_TIMER_SUCCESS_STR "DONE"
+#   define FLUENT_TIMER_SUCCESS_STR "✔"
 #endif
 
 #ifndef FLUENT_TIMER_FAILURE_STR
-#   define FLUENT_TIMER_FAILURE_STR "FAILED"
+#   define FLUENT_TIMER_FAILURE_STR "✖"
 #endif
 
 #ifndef FLUENT_TIMER_CLOCK_STR
-#   define FLUENT_TIMER_CLOCK_STR "..."
+#   define FLUENT_TIMER_CLOCK_STR "⏱"
 #endif
 
 // ============= GLOBAL VARIABLES =============
