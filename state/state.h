@@ -140,7 +140,8 @@ static inline void timer_done()
     timer_finalized(FLUENT_TIMER_SUCCESS_STR, ANSI_BOLD_BRIGHT_GREEN);
 }
 
-static inline void new_timer(const char *message, const state_event_t event) {
+static inline void new_timer(const char *message, const state_event_t event)
+{
     // Check if we have a timer running
     if (timer_running)
     {
