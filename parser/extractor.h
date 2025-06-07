@@ -71,7 +71,11 @@ static inline pair_extract_t extract_tokens(
     // Iterate over the buffer
     for (size_t i = start; i < stream->tokens->length; i++)
     {
-        token_t *token = vec_token_get(stream->tokens, i);
+        // vec_token_get has bounds checking, but since
+        // we checked stream->tokens->length < start before,
+        // it is not really necessary here, so we can
+        // access the buffer directly
+        token_t *token = stream->tokens->data[i];
         if (token->type == delim)
         {
             counter++;
