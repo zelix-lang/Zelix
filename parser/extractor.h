@@ -21,6 +21,7 @@
 
 // ============= FLUENT LIB C =============
 #include <fluent/pair/pair.h> // fluent_libc
+#include <fluent/std_bool/std_bool.h> // fluent_libc
 
 // ============= INCLUDES =============
 #include "../lexer/stream.h"
@@ -64,6 +65,9 @@ static inline pair_extract_t extract_tokens(
     // Counter to know where the counting stopped at
     size_t end = 0;
 
+    // Boolean to know if we have met an end delimiter
+    bool has_met_delim = FALSE;
+
     // Iterate over the buffer
     for (size_t i = start; i < stream->tokens->length; i++)
     {
@@ -86,11 +90,19 @@ static inline pair_extract_t extract_tokens(
             // Check if we have reached a 0 counter
             if (counter == 0)
             {
+                has_met_delim = TRUE; // We have met the end delimiter
                 // We have reached the end of the extraction
                 end = i;
                 break;
             }
         }
+    }
+
+    // Check if we have met the end delimiter
+    if (!has_met_delim)
+    {
+        // We have not met the end delimiter, return NULL
+        return pair_extract_new(NULL, 0);
     }
 
     // Return the pair
