@@ -39,8 +39,11 @@ static inline bool parse_import(
     // Get the next token
     const token_t *token = token_stream_next(stream);
 
+    // Get the next token to validate semantics
+    const token_t *semicolon = token_stream_next(stream);
+
     // Make sure we didn't get NULL and the token is a string literal
-    if (!token || token->type != TOKEN_STRING_LITERAL)
+    if (!token || token->type != TOKEN_STRING_LITERAL || !semicolon || semicolon->type != TOKEN_SEMICOLON)
     {
         // Create an error for unexpected end of stream
         create_error(
