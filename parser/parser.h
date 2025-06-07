@@ -31,6 +31,15 @@
 
 DEFINE_PAIR_T(ast_stream_t, ast_error_t *, parser_result);
 
+static pair_parser_result_t create_failed_result(const ast_stream_t ast_stream)
+{
+    // Create a pair with the AST stream and the error
+    return (pair_parser_result_t){
+        .first = ast_stream,
+        .second = &global_parser_error
+    };
+}
+
 static inline pair_parser_result_t parser_parse(
     token_stream_t *const stream,
     const char *const file_name
@@ -91,16 +100,7 @@ static inline pair_parser_result_t parser_parse(
                 ))
                 {
                     // Failed to parse the import statement
-                    return (pair_parser_result_t){
-                        ast_stream,
-                        create_error(
-                            current->line,
-                            current->column,
-                            current->col_start,
-                            (ast_rule_t[]){AST_IMPORT},
-                            1
-                        )
-                    };
+                    return create_failed_result(ast_stream);
                 }
 
                 break;
@@ -115,16 +115,15 @@ static inline pair_parser_result_t parser_parse(
 
             default:
             {
-                return (pair_parser_result_t){
-                    ast_stream,
-                     create_error(
-                        current->line,
-                        current->column,
-                        current->col_start,
-                        (ast_rule_t[]){AST_IMPORT, AST_FUNCTION, AST_MODULE},
-                        3
-                     )
-                };
+                create_error(
+                    current->line,
+                    current->column,
+                    current->col_start,
+                    (ast_rule_t[]){AST_IMPORT, AST_FUNCTION, AST_MODULE},
+                    3
+                );
+
+                return create_failed_result(ast_stream);
             }
         }
 
