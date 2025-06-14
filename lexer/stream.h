@@ -88,4 +88,15 @@ static inline token_t *token_stream_next(token_stream_t *const stream)
     return NULL;
 }
 
+static inline bool token_stream_skip(token_stream_t *const stream, const size_t n)
+{
+    if (stream->current + n < stream->tokens->length)
+    {
+        stream->current += n;
+        return TRUE; // Successfully skipped
+    }
+
+    return FALSE; // Not enough tokens to skip
+}
+
 #endif //FLUENT_TOKEN_STREAM_H
