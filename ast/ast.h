@@ -38,7 +38,7 @@ struct ast_t
 {
     ast_rule_t rule;      /**< The grammar rule associated with this node. */
     vector_ast_t *children;   /**< Vector of child AST nodes. */
-    heap_guard_t *value;  /**< Optional value for the node, e.g., identifier name, string literal, etc. */
+    heap_guard_str_t *value;  /**< Optional value for the node, e.g., identifier name, string literal, etc. */
     size_t line;          /**< Line number in the source file. */
     size_t column;        /**< Column number in the source file. */
     size_t col_start;     /**< Column where the node starts. */
