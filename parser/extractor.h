@@ -26,7 +26,7 @@
 // ============= INCLUDES =============
 #include "../lexer/stream.h"
 
-DEFINE_PAIR_T(token_t *, size_t, extract);
+DEFINE_PAIR_T(token_t **, size_t, extract);
 
 /**
  * Extracts a sequence of tokens from a token stream, delimited by specified start and end token types.
@@ -57,7 +57,7 @@ static inline pair_extract_t extract_tokens(
     }
 
     // Get the new buffer without copying
-    token_t *new_buffer = stream->tokens->data + start;
+    token_t **new_buffer = stream->tokens->data + start;
 
     // Define a nested counter
     size_t counter = 0;
@@ -71,11 +71,14 @@ static inline pair_extract_t extract_tokens(
     // Iterate over the buffer
     for (size_t i = start; i < stream->tokens->length; i++)
     {
+        // Increment the end index
+        end++;
+
         // vec_token_get has bounds checking, but since
         // we checked stream->tokens->length < start before,
         // it is not really necessary here, so we can
         // access the buffer directly
-        token_t *token = stream->tokens->data[i];
+        const token_t *token = stream->tokens->data[i];
         if (token->type == delim)
         {
             counter++;
@@ -95,8 +98,6 @@ static inline pair_extract_t extract_tokens(
             if (counter == 0)
             {
                 has_met_delim = TRUE; // We have met the end delimiter
-                // We have reached the end of the extraction
-                end = i;
                 break;
             }
         }
