@@ -29,62 +29,64 @@
  */
 typedef enum
 {
-    TOKEN_UNKNOWN = 0,       ///< Unknown or invalid token
-    TOKEN_FUNCTION,          ///< Function keyword
-    TOKEN_LET,               ///< Let keyword (variable declaration)
-    TOKEN_CONST,             ///< Const keyword (constant declaration)
-    TOKEN_IF,                ///< If keyword (conditional)
-    TOKEN_ELSE,              ///< Else keyword
-    TOKEN_ELSE_IF,           ///< Else if keyword
-    TOKEN_MOD,               ///< Modulo operator
-    TOKEN_RETURN,            ///< Return keyword
-    TOKEN_ASSIGN,            ///< Assignment operator (=)
-    TOKEN_PLUS,              ///< Addition operator (+)
-    TOKEN_MINUS,             ///< Subtraction operator (-)
-    TOKEN_ASTERISK,          ///< Multiplication operator (*)
-    TOKEN_SLASH,             ///< Division operator (/)
-    TOKEN_LESS_THAN,         ///< Less than operator (<)
-    TOKEN_GREATER_THAN,      ///< Greater than operator (>)
-    TOKEN_EQUAL,             ///< Equality operator (==)
-    TOKEN_NOT_EQUAL,         ///< Not equal operator (!=)
-    TOKEN_GREATER_THAN_OR_EQUAL, ///< Greater than or equal operator (>=)
-    TOKEN_LESS_THAN_OR_EQUAL,    ///< Less than or equal operator (<=)
-    TOKEN_ARROW,             ///< Arrow operator (->)
-    TOKEN_COMMA,             ///< Comma (,)
-    TOKEN_SEMICOLON,         ///< Semicolon (;)
-    TOKEN_OPEN_PAREN,        ///< Open parenthesis (()
-    TOKEN_CLOSE_PAREN,       ///< Close parenthesis ())
-    TOKEN_OPEN_CURLY,        ///< Open curly brace ({)
-    TOKEN_CLOSE_CURLY,       ///< Close curly brace (})
-    TOKEN_COLON,             ///< Colon (:)
-    TOKEN_NOT,               ///< Logical NOT operator (!)
-    TOKEN_OR,                ///< Logical OR operator (||)
-    TOKEN_AND,               ///< Logical AND operator (&&)
-    TOKEN_OPEN_BRACKET,      ///< Open square bracket ([)
-    TOKEN_CLOSE_BRACKET,     ///< Close square bracket (])
-    TOKEN_DOT,               ///< Dot (.)
-    TOKEN_STRING,            ///< String type keyword
-    TOKEN_NUM,               ///< Number type keyword
-    TOKEN_DEC,               ///< Decimal type keyword
-    TOKEN_NOTHING,           ///< Nothing/null type keyword
-    TOKEN_BOOL,              ///< Boolean type keyword
-    TOKEN_STRING_LITERAL,    ///< String literal
-    TOKEN_NUM_LITERAL,       ///< Integer literal
-    TOKEN_DECIMAL_LITERAL,   ///< Decimal literal
-    TOKEN_BOOL_LITERAL,      ///< Boolean literal
-    TOKEN_WHILE,             ///< While keyword (loop)
-    TOKEN_FOR,               ///< For keyword (loop)
-    TOKEN_NEW,               ///< New keyword (object/instance creation)
-    TOKEN_IN,                ///< In keyword (membership/iteration)
-    TOKEN_TO,                ///< To keyword (range/iteration)
-    TOKEN_BREAK,             ///< Break keyword (loop control)
-    TOKEN_CONTINUE,          ///< Continue keyword (loop control)
-    TOKEN_PUB,               ///< Public visibility keyword
-    TOKEN_AMPERSAND,         ///< Ampersand (&)
-    TOKEN_BAR,               ///< Bar/pipe (|)
-    TOKEN_IMPORT,            ///< Import keyword (module import)
-    TOKEN_IDENTIFIER,        ///< Identifier (variable/function name)
+    TOKEN_UNKNOWN = 0,       ///< Unknown or invalid token - 0
+    TOKEN_FUNCTION,          ///< Function keyword - 1
+    TOKEN_LET,               ///< Let keyword (variable declaration) - 2
+    TOKEN_CONST,             ///< Const keyword (constant declaration) - 3
+    TOKEN_IF,                ///< If keyword (conditional) - 4
+    TOKEN_ELSE,              ///< Else keyword - 5
+    TOKEN_ELSE_IF,           ///< Else if keyword - 6
+    TOKEN_MOD,               ///< Module keyword - 7
+    TOKEN_RETURN,            ///< Return keyword - 8
+    TOKEN_ASSIGN,            ///< Assignment operator (=) - 9
+    TOKEN_PLUS,              ///< Addition operator (+) - 10
+    TOKEN_MINUS,             ///< Subtraction operator (-) - 11
+    TOKEN_ASTERISK,          ///< Multiplication operator (*) - 12
+    TOKEN_SLASH,             ///< Division operator (/) - 13
+    TOKEN_LESS_THAN,         ///< Less than operator (<) - 14
+    TOKEN_GREATER_THAN,      ///< Greater than operator (>) - 15
+    TOKEN_EQUAL,             ///< Equality operator (==) - 16
+    TOKEN_NOT_EQUAL,         ///< Not equal operator (!=) - 17
+    TOKEN_GREATER_THAN_OR_EQUAL, ///< Greater than or equal operator (>=) - 18
+    TOKEN_LESS_THAN_OR_EQUAL,    ///< Less than or equal operator (<=) - 19
+    TOKEN_ARROW,             ///< Arrow operator (->) - 20
+    TOKEN_COMMA,             ///< Comma (,) - 21
+    TOKEN_SEMICOLON,         ///< Semicolon (;) - 22
+    TOKEN_OPEN_PAREN,        ///< Open parenthesis (() - 23
+    TOKEN_CLOSE_PAREN,       ///< Close parenthesis ()) - 24
+    TOKEN_OPEN_CURLY,        ///< Open curly brace ({) - 25
+    TOKEN_CLOSE_CURLY,       ///< Close curly brace (}) - 26
+    TOKEN_COLON,             ///< Colon (:) - 27
+    TOKEN_NOT,               ///< Logical NOT operator (!) - 28
+    TOKEN_OR,                ///< Logical OR operator (||) - 29
+    TOKEN_AND,               ///< Logical AND operator (&&) - 30
+    TOKEN_OPEN_BRACKET,      ///< Open square bracket ([) - 31
+    TOKEN_CLOSE_BRACKET,     ///< Close square bracket (]) - 32
+    TOKEN_DOT,               ///< Dot (.) - 33
+    TOKEN_STRING,            ///< String type keyword - 34
+    TOKEN_NUM,               ///< Number type keyword - 35
+    TOKEN_DEC,               ///< Decimal type keyword - 36
+    TOKEN_NOTHING,           ///< Nothing/null type keyword - 37
+    TOKEN_BOOL,              ///< Boolean type keyword - 38
+    TOKEN_STRING_LITERAL,    ///< String literal - 39
+    TOKEN_NUM_LITERAL,       ///< Integer literal - 40
+    TOKEN_DECIMAL_LITERAL,   ///< Decimal literal - 41
+    TOKEN_BOOL_LITERAL,      ///< Boolean literal - 42
+    TOKEN_WHILE,             ///< While keyword (loop) - 43
+    TOKEN_FOR,               ///< For keyword (loop) - 44
+    TOKEN_NEW,               ///< New keyword (object/instance creation) - 45
+    TOKEN_IN,                ///< In keyword (membership/iteration) - 46
+    TOKEN_TO,                ///< To keyword (range/iteration) - 47
+    TOKEN_BREAK,             ///< Break keyword (loop control) - 48
+    TOKEN_CONTINUE,          ///< Continue keyword (loop control) - 49
+    TOKEN_PUB,               ///< Public visibility keyword - 50
+    TOKEN_AMPERSAND,         ///< Ampersand (&) - 51
+    TOKEN_BAR,               ///< Bar/pipe (|) - 52
+    TOKEN_IMPORT,            ///< Import keyword (module import) - 53
+    TOKEN_IDENTIFIER,        ///< Identifier (variable/function name) - 54
 } token_type_t;
+
+DEFINE_HEAP_GUARD(char, str, 512);
 
 /**
  * @brief Represents a token in the Fluent programming language.
@@ -95,7 +97,7 @@ typedef enum
  */
 typedef struct
 {
-    heap_guard_t *value; // The value of the token
+    heap_guard_str_t *value; // The value of the token
     token_type_t type;   // The type of the token (e.g., identifier, keyword, operator)
     size_t line;         // The line number where the token was found
     size_t column;       // The column number where the token was found
