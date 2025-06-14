@@ -20,7 +20,6 @@
 #define FLUENT_LEXER_H
 
 // ============= FLUENT LIB C =============
-#include <fluent/vector/vector.h> // fluent_libc
 #include <fluent/string_builder/string_builder.h> // fluent_libc
 #include <fluent/std_bool/std_bool.h> // fluent_libc
 #include <fluent/pair/pair.h> // fluent_libc
@@ -154,8 +153,7 @@ static bool push_token(
         char *value = collect_string_builder(current); // Copy the builder value
         // Move the value to a heap_guard to take advantage of
         // automatic freeing
-        token->value = heap_alloc(
-            0, // We are not allocating new memory, no need to specify size
+        token->value = heap_str_alloc(
             FALSE, // Value does not need to be concurrent
             FALSE, // Internal insertion does not need to be concurrent
             NULL, // No destructor
@@ -219,13 +217,12 @@ static inline pair_lex_result_t lexer_tokenize(
     arena_allocator_t *allocator = arena_new(50, sizeof(token_t));
 
     // Initialize a vector to hold tokens
-    const heap_guard_t *tokens_guard = heap_alloc(sizeof(vector_token_t), FALSE, FALSE, NULL, NULL);
-    vec_token_init(tokens_guard->ptr, 256, 1.5);
-    vector_token_t *tokens = (vector_token_t *)tokens_guard->ptr;
+    vector_token_t *tokens = malloc(sizeof(vector_token_t));
+    vec_token_init(tokens, 256, 1.5);
 
     // Initialize the token stream
     token_stream_t stream;
-    stream.tokens = (vector_token_t *)tokens_guard->ptr;
+    stream.tokens = tokens;
     stream.current = 0;
     stream.allocator = allocator;
 
