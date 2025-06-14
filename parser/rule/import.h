@@ -80,10 +80,10 @@ static inline bool parse_import(
     string_literal_node->value = token->value;
 
     // Append the string literal node to the import node's children
-    vec_generic_push(import_node->children, string_literal_node);
+    vec_ast_push(import_node->children, string_literal_node);
 
     // Append the import node to the root's children
-    vec_generic_push(root->children, import_node);
+    vec_ast_push(root->children, import_node);
 
     return TRUE;
 }
