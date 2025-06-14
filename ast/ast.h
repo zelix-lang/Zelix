@@ -25,22 +25,24 @@
 // ============= INCLUDES =============
 #include "rule.h"
 
+typedef struct ast_t ast_t;
+DEFINE_VECTOR(ast_t *, ast); // Define a vector for ast_t
+
 /**
  * @brief Abstract Syntax Tree (AST) node structure for the Fluent language.
  *
  * Represents a node in the AST, containing rule information, child nodes,
  * optional value, and source location metadata.
  */
-typedef struct ast_t
+struct ast_t
 {
     ast_rule_t rule;      /**< The grammar rule associated with this node. */
-    vector_generic_t *children;   /**< Vector of child AST nodes. */
+    vector_ast_t *children;   /**< Vector of child AST nodes. */
     heap_guard_t *value;  /**< Optional value for the node, e.g., identifier name, string literal, etc. */
     size_t line;          /**< Line number in the source file. */
     size_t column;        /**< Column number in the source file. */
     size_t col_start;     /**< Column where the node starts. */
-    char *file;           /**< File where the node was defined. */
-} ast_t;
+};
 
 /**
  * @brief Allocates and initializes a new AST node.
@@ -77,7 +79,7 @@ static inline ast_t *ast_new(
         }
 
         // Initialize the vector
-        vec_generic_init(node->children, 15, 1.5);
+        vec_ast_init(node->children, 15, 1.5);
     }
 
     // Initialize other fields
@@ -85,7 +87,6 @@ static inline ast_t *ast_new(
     node->line = 0;
     node->column = 0;
     node->col_start = 0;
-    node->file = NULL;
 
     return node; // Return the newly created AST node
 }
