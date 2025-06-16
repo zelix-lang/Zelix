@@ -370,6 +370,57 @@ static inline pair_lex_result_t lexer_tokenize(
             continue;
         }
 
+        // Handle arrow operators
+        if (!in_string && c == '-' && source[i + 1] == '>')
+        {
+            // Push the current token if it exists
+            if (!push_token(
+                tokens,
+                allocator,
+                &current,
+                &in_string,
+                &is_identifier,
+                &is_number,
+                &is_decimal,
+                &token_idx,
+                line,
+                &column,
+                &start_column
+            ))
+            {
+                // If pushing the token failed, return the error state
+                return pair_lex_result_new(stream, &global_error_state);
+            }
+
+            // Write the arrow operator to the string builder
+            write_char_string_builder(&current, c);
+            write_char_string_builder(&current, '>');
+
+            // Write the arrow operator to the tokens vector
+            if (!push_token(
+                tokens,
+                allocator,
+                &current,
+                &in_string,
+                &is_identifier,
+                &is_number,
+                &is_decimal,
+                &token_idx,
+                line,
+                &column,
+                &start_column
+            ))
+            {
+                // If pushing the token failed, return the error state
+                return pair_lex_result_new(stream, &global_error_state);
+            }
+
+            // Increment the column for both characters
+            column++;
+            i++; // Skip the next character
+            continue;
+        }
+
         // Check if we have a punctuation character
         if (!in_string && hashmap_btoken_get(&fluent_punctuation_map, c))
         {
@@ -585,57 +636,6 @@ static inline pair_lex_result_t lexer_tokenize(
             token_idx++; // Increment token index
             column++; // Increment column for the dot character
             write_char_string_builder(&current, c);
-            continue;
-        }
-
-        // Handle arrow operators
-        if (c == '-' && source[i + 1] == '>')
-        {
-            // Push the current token if it exists
-            if (!push_token(
-                tokens,
-                allocator,
-                &current,
-                &in_string,
-                &is_identifier,
-                &is_number,
-                &is_decimal,
-                &token_idx,
-                line,
-                &column,
-                &start_column
-            ))
-            {
-                // If pushing the token failed, return the error state
-                return pair_lex_result_new(stream, &global_error_state);
-            }
-
-            // Write the arrow operator to the string builder
-            write_char_string_builder(&current, c);
-            write_char_string_builder(&current, '>');
-
-            // Write the arrow operator to the tokens vector
-            if (!push_token(
-                tokens,
-                allocator,
-                &current,
-                &in_string,
-                &is_identifier,
-                &is_number,
-                &is_decimal,
-                &token_idx,
-                line,
-                &column,
-                &start_column
-            ))
-            {
-                // If pushing the token failed, return the error state
-                return pair_lex_result_new(stream, &global_error_state);
-            }
-
-            // Increment the column for both characters
-            column++;
-            i++; // Skip the next character
             continue;
         }
 
