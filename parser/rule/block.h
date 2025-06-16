@@ -25,6 +25,7 @@
 
 // ============= INCLUDES =============
 #include "../../ast/ast.h"
+#include "expression.h"
 
 static inline bool parse_block(
     ast_t *const root,
@@ -91,7 +92,14 @@ static inline bool parse_block(
 
             default:
             {
-                // TODO: Expr parser
+                parse_expression(
+                    block,
+                    body,
+                    i,
+                    body_len,
+                    arena,
+                    vec_arena
+                );
                 break;
             }
         }
