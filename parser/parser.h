@@ -107,9 +107,7 @@ static inline pair_parser_result_t parser_parse(
                 break;
             }
 
-            case TOKEN_PUB:
             case TOKEN_FUNCTION:
-            case TOKEN_MOD:
             {
                 parse_function(
                     ast_stream.ast,
