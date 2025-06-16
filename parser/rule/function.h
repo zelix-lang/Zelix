@@ -387,6 +387,9 @@ static inline bool parse_function(
     // Make sure that we have an open curly brace
     if (!token || token->type != TOKEN_OPEN_CURLY)
     {
+        // Get the current token
+        token = token_stream_nth(stream, stream->current);
+
         // Create an error for unexpected token
         create_error(
             token->line,
