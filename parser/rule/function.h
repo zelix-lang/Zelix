@@ -99,6 +99,7 @@ static inline bool parse_function(
     ast_t *current_param = NULL;
     size_t args_end = 0; // To track the end of the arguments
     ast_t *return_type_node = &nothing_type; // To store the return type of the function
+    ast_t *block_node = ast_new(arena, vec_arena, TRUE); // To store the function block
 
     // Iterate over the extracted tokens
     for (size_t i = 0; i <= count; i++)
@@ -437,6 +438,7 @@ static inline bool parse_function(
     vec_ast_push(function_node->children, name_node);
     vec_ast_push(function_node->children, params_node); // Add the parameters node
     vec_ast_push(function_node->children, return_type_node); // Add the return type node
+    vec_ast_push(function_node->children, block_node); // Add the block node
 
     // Add the function node to the root's children
     vec_ast_push(root->children, function_node);
