@@ -411,16 +411,21 @@ static inline bool parse_function(
 
     // Extract the function's body
     token_t **body = tokens + args_end;
-    const size_t body_len = count - args_end;
+    const size_t body_len = count - args_end - 1;
 
     // Parse the block
-    parse_block(
-        block_node,
-        body,
-        body_len,
-        arena,
-        vec_arena
-    );
+    if (
+        !parse_block(
+            block_node,
+            body,
+            body_len,
+            arena,
+            vec_arena
+        )
+    )
+    {
+        return FALSE; // Failed to parse the function block
+    }
 
     // Skip the token count
     // Avoid positioning exactly the token next to the closing curly brace
