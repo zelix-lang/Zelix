@@ -273,7 +273,7 @@ static inline bool parse_function(
                 const pair_type_parser_t type_parser = parse_type(
                     tokens,
                     i, // Start after the colon
-                    count + 1, // Remaining tokens
+                    count, // Remaining tokens
                     arena,
                     vec_arena
                 );
