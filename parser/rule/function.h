@@ -384,6 +384,20 @@ static inline bool parse_function(
         token = token_stream_peek(stream);
     }
 
+    // Make sure that we have an open curly brace
+    if (!token || token->type != TOKEN_OPEN_CURLY)
+    {
+        // Create an error for unexpected token
+        create_error(
+            token->line,
+            token->column,
+            token->col_start,
+            (ast_rule_t[]){AST_FUNCTION},
+            1
+        );
+        return FALSE; // Invalid function body start
+    }
+
     // Skip the count of the tokens
     // Avoid positioning exactly the token next to the closing curly brace
     // since the main loop will increment the current position
