@@ -331,8 +331,8 @@ static inline bool parse_function(
     // Skip the argument count in the token stream
     stream->current += args_end;
 
-    // Peek the next token
-    token_t *token = token_stream_peek(stream);
+    // Get the next token
+    token_t *token = token_stream_next(stream);
 
     // Make sure we have a token
     if (!token)
@@ -343,9 +343,6 @@ static inline bool parse_function(
     // Check if we have a return type
     if (token->type == TOKEN_ARROW)
     {
-        // Consume the arrow token
-        token_stream_next(stream);
-
         // Position the type parser at the token
         // after the arrow token
         token_stream_next(stream);
@@ -378,10 +375,16 @@ static inline bool parse_function(
         }
 
         // Skip the parsed range
+        args_end = skipped_range - 1;
         stream->current = skipped_range;
 
         // Peek the next token
         token = token_stream_peek(stream);
+    }
+    else
+    {
+        // Skip 2 tokens for the close parenthesis and open curly
+        args_end += 2;
     }
 
     // Make sure that we have an open curly brace
@@ -401,10 +404,18 @@ static inline bool parse_function(
         return FALSE; // Invalid function body start
     }
 
-    // Skip the count of the tokens
+    // Consume the opening curly brace
+    token_stream_next(stream);
+
+    // Extract the function's body
+    token_t **body = tokens + args_end;
+    const size_t body_len = count - args_end;
+    // TODO: Block parser
+
+    // Skip the token count
     // Avoid positioning exactly the token next to the closing curly brace
     // since the main loop will increment the current position
-    stream->current += count - args_end - 1;
+    stream->current += count;
 
     // Set the function node metadata
     function_node->rule = AST_FUNCTION; // Set the rule for the function node
