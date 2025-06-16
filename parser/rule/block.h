@@ -11,17 +11,91 @@
 
 // ============= INCLUDES =============
 #include "../../ast/ast.h"
-#include "../../lexer/stream.h"
 
 static inline bool parse_block(
-    const ast_t *const root,
-    token_stream_t *const stream,
+    ast_t *const root,
+    token_t **body,
+    const size_t body_len,
     arena_allocator_t *const arena,
     arena_allocator_t *const vec_arena
-)
-{
-    token_t *token = token_stream_next(stream);
-    printf("%d\n", token->type);
+) {
+    // Track the nesting level
+    size_t nest_level = 0;
+
+    // Create a new queue for nested blocks
+    alinked_queue_ast_t queue;
+    alinked_queue_ast_init(&queue, 10);
+    alinked_queue_ast_append(&queue, root);
+
+    // Iterate over the block
+    for (size_t i = 0; i < body_len; ++i)
+    {
+        // Get the current block
+        ast_t *block = queue.head->data;
+
+        // Get the current token
+        const token_t *token = body[i];
+
+        // Determine what to do based on the token type
+        switch (token->type)
+        {
+            case TOKEN_OPEN_CURLY:
+            {
+                // Increment the nesting level
+                nest_level++;
+                break;
+            }
+
+            case TOKEN_CLOSE_CURLY:
+            {
+                // Check if we have a matching opening curly brace
+                if (nest_level == 0)
+                {
+                    // Create an error for unmatched closing brace
+                    create_error(
+                        token->line,
+                        token->column,
+                        token->col_start,
+                        (ast_rule_t[]){AST_BLOCK},
+                        1
+                    );
+                    return FALSE; // Invalid block
+                }
+
+                // Decrement the nesting level
+                nest_level--;
+                break;
+            }
+
+            case TOKEN_LET:
+            case TOKEN_CONST:
+            {
+                // TODO: Variable declaration parser
+                break;
+            }
+
+            default:
+            {
+                // TODO: Expr parser
+                break;
+            }
+        }
+    }
+
+    // Make sure we don't end up with a nested level
+    if (nest_level != 0)
+    {
+        // Create an error for unmatched block
+        create_error(
+            body[0]->line,
+            body[0]->column,
+            body[0]->col_start,
+            (ast_rule_t[]){AST_BLOCK},
+            1
+        );
+        return FALSE; // Invalid block
+    }
+
     return TRUE;
 }
 
