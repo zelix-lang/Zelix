@@ -31,7 +31,10 @@ add_executable(Fluent
         parser/error.h
         parser/stream.h
         parser/rule/import.h
-        parser/extractor.h)
+        parser/extractor.h
+        parser/rule/function.h
+        type/type.h
+        parser/rule/type.h)
 
 target_include_directories(Fluent PRIVATE ${CMAKE_BINARY_DIR}/_deps/fluent_libc-src/include)
 target_link_libraries(Fluent PRIVATE fluent_libc m)
@@ -39,8 +42,8 @@ add_definitions(-DDEBUG -DFLUENT_LIBC_RELEASE=1)
 
 # Add aggressive optimization flags for C++ and C compilers
 if (NOT WIN32)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -march=native -funroll-loops -flto")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -march=native -funroll-loops -flto")
+#    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -march=native -funroll-loops -flto")
+#    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -march=native -funroll-loops -flto")
 endif ()
 
 # Jemalloc (fluent_libc-defined)
