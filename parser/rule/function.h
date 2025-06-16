@@ -29,6 +29,7 @@
 #include "../../lexer/stream.h"
 #include "../extractor.h"
 #include "type.h"
+#include "block.h"
 
 // ============ GLOBAL =============
 static ast_t nothing_type = {
@@ -376,16 +377,10 @@ static inline bool parse_function(
         }
 
         // Skip the parsed range
-        args_end = skipped_range - 1;
         stream->current = skipped_range;
 
         // Peek the next token
-        token = token_stream_peek(stream);
-    }
-    else
-    {
-        // Skip 2 tokens for the close parenthesis and open curly
-        args_end += 2;
+        token = token_stream_next(stream);
     }
 
     // Make sure that we have an open curly brace
@@ -405,13 +400,13 @@ static inline bool parse_function(
         return FALSE; // Invalid function body start
     }
 
-    // Consume the opening curly brace
-    token_stream_next(stream);
-
-    // Extract the function's body
-    token_t **body = tokens + args_end;
-    const size_t body_len = count - args_end;
-    // TODO: Block parser
+    // Parse the block
+    parse_block(
+        block_node,
+        stream,
+        arena,
+        vec_arena
+    );
 
     // Skip the token count
     // Avoid positioning exactly the token next to the closing curly brace
