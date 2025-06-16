@@ -401,6 +401,7 @@ static inline bool parse_function(
     // Append the parsed nodes to the function node's children
     vec_ast_push(function_node->children, name_node);
     vec_ast_push(function_node->children, params_node); // Add the parameters node
+    vec_ast_push(function_node->children, return_type_node); // Add the return type node
 
     // Add the function node to the root's children
     vec_ast_push(root->children, function_node);
