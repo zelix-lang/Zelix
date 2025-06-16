@@ -346,6 +346,10 @@ static inline bool parse_function(
         // Consume the arrow token
         token_stream_next(stream);
 
+        // Position the type parser at the token
+        // after the arrow token
+        token_stream_next(stream);
+
         // Parse the return type
         const pair_type_parser_t return_type_parser = parse_type(
             tokens,
@@ -375,6 +379,9 @@ static inline bool parse_function(
 
         // Skip the parsed range
         stream->current = skipped_range;
+
+        // Peek the next token
+        token = token_stream_peek(stream);
     }
 
     // Skip the count of the tokens
