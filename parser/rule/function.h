@@ -30,6 +30,16 @@
 #include "../extractor.h"
 #include "type.h"
 
+// ============ GLOBAL =============
+static ast_t nothing_type = {
+    .rule = AST_NOTHING,
+    .children = NULL,
+    .value = NULL,
+    .line = 0,
+    .column = 0,
+    .col_start = 0
+};
+
 typedef enum
 {
     FN_P_WAKEUP = 0, // Ready to expect the first token
@@ -88,6 +98,7 @@ static inline bool parse_function(
     // Store the parameter that we are currently parsing
     ast_t *current_param = NULL;
     size_t args_end = 0; // To track the end of the arguments
+    ast_t *return_type_node = &nothing_type; // To store the return type of the function
 
     // Iterate over the extracted tokens
     for (size_t i = 0; i <= count; i++)
@@ -334,6 +345,36 @@ static inline bool parse_function(
     {
         // Consume the arrow token
         token_stream_next(stream);
+
+        // Parse the return type
+        const pair_type_parser_t return_type_parser = parse_type(
+            tokens,
+            stream->current, // Start after the arrow
+            count, // Remaining tokens
+            arena,
+            vec_arena
+        );
+
+        // Get the extracted range and tokens
+        return_type_node = return_type_parser.first;
+        const size_t skipped_range = return_type_parser.second;
+
+        // Handle parsing failure
+        if (return_type_node == NULL)
+        {
+            // Create an error for invalid return type
+            create_error(
+                token->line,
+                token->column,
+                token->col_start,
+                (ast_rule_t[]){AST_FUNCTION},
+                1
+            );
+            return FALSE; // Invalid return type
+        }
+
+        // Skip the parsed range
+        stream->current = skipped_range;
     }
 
     // Skip the count of the tokens
