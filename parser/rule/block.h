@@ -32,7 +32,8 @@ static inline bool parse_block(
     const size_t body_len,
     arena_allocator_t *const arena,
     arena_allocator_t *const vec_arena
-) {
+)
+{
     // Track the nesting level
     size_t nest_level = 0;
 
