@@ -200,7 +200,7 @@ static inline pair_type_parser_t parse_type(
             // Make sure the AST has children and nesting level is valid
             if (current->children->length == 0)
             {
-                return pair_type_parser_new(NULL, len - i + 2); // Invalid type definition
+                return pair_type_parser_new(NULL, i); // Invalid type definition
             }
 
             // Decrease the nest level
@@ -210,7 +210,7 @@ static inline pair_type_parser_t parse_type(
             if (nest_level == 0)
             {
                 // Return the root node
-                return pair_type_parser_new(root, len - i + 2);
+                return pair_type_parser_new(root, i);
             }
 
             continue;
@@ -222,7 +222,7 @@ static inline pair_type_parser_t parse_type(
             // Make sure that generics are allowed
             if (!generics_allowed)
             {
-                return pair_type_parser_new(NULL, len - i + 2);
+                return pair_type_parser_new(NULL, i);
             }
 
             // Increment the nesting level
@@ -247,7 +247,7 @@ static inline pair_type_parser_t parse_type(
             // Check if we are expecting a comma
             if (!expecting_comma)
             {
-                return pair_type_parser_new(NULL, len - i + 2); // Invalid type definition
+                return pair_type_parser_new(NULL, i); // Invalid type definition
             }
 
             // Flip the flag
@@ -277,10 +277,10 @@ static inline pair_type_parser_t parse_type(
     // Make sure we don't end up with a nested level
     if (nest_level != 0)
     {
-        return pair_type_parser_new(NULL, len - i + 2); // Invalid type definition
+        return pair_type_parser_new(NULL, i); // Invalid type definition
     }
 
-    return pair_type_parser_new(root, len - i + 2);
+    return pair_type_parser_new(root, i);
 }
 
 #endif //FLUENT_PARSER_TYPE_H
