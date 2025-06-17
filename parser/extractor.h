@@ -79,8 +79,9 @@ static inline pair_extract_t extract_tokens(
         if (token->type == end_delim)
         {
             // Bail out if nesting is not allowed
-            if (!allow_nested && counter > 0)
+            if (!allow_nested)
             {
+                has_met_delim = TRUE; // We have met the end delimiter
                 break;
             }
 
