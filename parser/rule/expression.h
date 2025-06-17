@@ -29,7 +29,7 @@
 #include "../queue/expression.h"
 
 static inline bool parse_expression(
-    ast_t *const root,
+    const ast_t *const root,
     token_t **body,
     const size_t start,
     const size_t body_len,
