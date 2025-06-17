@@ -421,6 +421,55 @@ static inline pair_lex_result_t lexer_tokenize(
             continue;
         }
 
+        // Handle OR and AND operators
+        if (!in_string && (c == '&' || c == '|') && source[i + 1] == c)
+        {
+            // Push the current token if it exists
+            if (!push_token(
+                tokens,
+                allocator,
+                &current,
+                &in_string,
+                &is_identifier,
+                &is_number,
+                &is_decimal,
+                &token_idx,
+                line,
+                &column,
+                &start_column
+            ))
+            {
+                // If pushing the token failed, return the error state
+                return pair_lex_result_new(stream, &global_error_state);
+            }
+
+            is_identifier = FALSE; // Reset identifier state
+
+            // Write the punctuation character to the string builder
+            write_char_string_builder(&current, c);
+            write_char_string_builder(&current, c);
+
+            // Push the punctuation token
+            // Push the current token if it exists
+            if (!push_token(
+                tokens,
+                allocator,
+                &current,
+                &in_string,
+                &is_identifier,
+                &is_number,
+                &is_decimal,
+                &token_idx,
+                line,
+                &column,
+                &start_column
+            ))
+            {
+                // If pushing the token failed, return the error state
+                return pair_lex_result_new(stream, &global_error_state);
+            }
+        }
+
         // Check if we have a punctuation character
         if (!in_string && hashmap_btoken_get(&fluent_punctuation_map, c))
         {
