@@ -43,7 +43,7 @@ DEFINE_PAIR_T(token_t **, size_t, extract);
  * @return            A pair containing a pointer to the extracted tokens and the count, or (NULL, 0) on error.
  */
 static inline pair_extract_t extract_tokens(
-    const token_t **const tokens,
+    token_t **tokens,
     const size_t length,
     const token_type_t delim,
     const token_type_t end_delim,
