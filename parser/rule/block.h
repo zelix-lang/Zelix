@@ -44,7 +44,7 @@ static inline bool parse_block(
     alinked_queue_ast_append(&queue, root);
 
     // Iterate over the block
-    for (size_t i = 0; i < body_len; ++i)
+    for (size_t i = 0; i < body_len; i++)
     {
         // Get the current block
         ast_t *block = queue.head->data;
@@ -92,11 +92,31 @@ static inline bool parse_block(
 
             default:
             {
+                // Extract all tokens before the next semicolon
+                pair_extract_t extracted = extract_tokens(
+                    body,
+                    body_len,
+                    TOKEN_SEMICOLON,
+                    TOKEN_SEMICOLON,
+                    i,
+                    FALSE
+                );
+
+                // Retrieve the information
+                const token_t **expression = extracted.first;
+                const size_t extracted_len = extracted.second;
+
+                // Handle failure
+                if (!expression)
+                {
+                    return FALSE; // Invalid expression
+                }
+
                 parse_expression(
                     block,
-                    body,
-                    i,
-                    body_len,
+                    expression,
+                    0,
+                    extracted_len,
                     arena,
                     vec_arena
                 );
