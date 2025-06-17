@@ -103,7 +103,7 @@ static inline bool parse_block(
                 );
 
                 // Retrieve the information
-                const token_t **expression = extracted.first;
+                token_t **expression = extracted.first;
                 const size_t extracted_len = extracted.second;
 
                 // Handle failure
