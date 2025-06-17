@@ -112,6 +112,9 @@ static inline bool parse_block(
                     return FALSE; // Invalid expression
                 }
 
+                // Skip the extracted tokens
+                i += extracted_len;
+
                 parse_expression(
                     block,
                     expression,
