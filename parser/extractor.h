@@ -41,13 +41,15 @@ DEFINE_PAIR_T(token_t **, size_t, extract);
  * @param delim       The token type that marks the start of a delimited section.
  * @param end_delim   The token type that marks the end of a delimited section.
  * @param start       The index in the token stream to start extraction.
+ * @param allow_nested Whether to allow nested delimiters (if TRUE, nested delimiters are counted).
  * @return            A pair containing a pointer to the extracted tokens and the count, or (NULL, 0) on error.
  */
 static inline pair_extract_t extract_tokens(
     const token_stream_t *const stream,
     const token_type_t delim,
     const token_type_t end_delim,
-    const size_t start
+    const size_t start,
+    const bool allow_nested
 )
 {
     // Make sure the stream has enough space to extract tokens
@@ -81,6 +83,12 @@ static inline pair_extract_t extract_tokens(
         const token_t *token = stream->tokens->data[i];
         if (token->type == end_delim)
         {
+            // Bail out if nesting is not allowed
+            if (!allow_nested && counter > 0)
+            {
+                break;
+            }
+
             // Check if we have a 0 counter
             if (counter == 0)
             {
