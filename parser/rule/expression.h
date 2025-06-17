@@ -79,11 +79,12 @@ static inline bool parse_expression(
         {
             // Get the current token
             const token_t *token = input[i];
+            ast_rule_t rule = AST_PROGRAM_RULE;
 
             // Check if we have a dereference operation
             if (token->type == TOKEN_ASTERISK)
             {
-
+                rule = AST_DEREFERENCE; // Set the rule to dereference
             }
             // Check for pointers
             else if (
@@ -91,7 +92,39 @@ static inline bool parse_expression(
                 token->type == TOKEN_AND
             )
             {
+                rule = AST_POINTER; // Set the rule to pointer
+            }
+            else
+            {
+                break;
+            }
 
+            // Increment the start counter
+            start++;
+
+            // Allocate a new AST node for the pointer or dereference
+            ast_t *ptr_node = ast_new(arena, vec_arena, FALSE);
+            if (!ptr_node)
+            {
+                // Failed to allocate memory for the pointer node
+                return FALSE;
+            }
+
+            // Set the metadata for the pointer node
+            ptr_node->rule = rule;
+            ptr_node->line = token->line;
+            ptr_node->column = token->column;
+            ptr_node->col_start = token->col_start;
+
+            // Append the pointer node to the expression
+            vec_ast_push(expression->children, ptr_node);
+
+            // Check for double pointers
+            if (token->type == TOKEN_AND)
+            {
+                // Append the same node for a double pointer
+                // without allocating a new one
+                vec_ast_push(expression->children, ptr_node);
             }
         }
     }
