@@ -68,7 +68,8 @@ static inline bool parse_function(
         stream,
         TOKEN_OPEN_CURLY,
         TOKEN_CLOSE_CURLY,
-        stream->current
+        stream->current,
+        TRUE // Allow nested delimiters
     );
 
     // Get the extracted tokens and their count
