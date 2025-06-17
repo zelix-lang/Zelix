@@ -79,11 +79,7 @@ static inline pair_extract_t extract_tokens(
         // it is not really necessary here, so we can
         // access the buffer directly
         const token_t *token = stream->tokens->data[i];
-        if (token->type == delim)
-        {
-            counter++;
-        }
-        else if (token->type == end_delim)
+        if (token->type == end_delim)
         {
             // Check if we have a 0 counter
             if (counter == 0)
@@ -100,6 +96,10 @@ static inline pair_extract_t extract_tokens(
                 has_met_delim = TRUE; // We have met the end delimiter
                 break;
             }
+        }
+        else if (token->type == delim)
+        {
+            counter++;
         }
     }
 
