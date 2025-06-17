@@ -23,9 +23,6 @@
 #include <fluent/pair/pair.h> // fluent_libc
 #include <fluent/std_bool/std_bool.h> // fluent_libc
 
-// ============= INCLUDES =============
-#include "../lexer/stream.h"
-
 DEFINE_PAIR_T(token_t **, size_t, extract);
 
 /**
@@ -37,7 +34,8 @@ DEFINE_PAIR_T(token_t **, size_t, extract);
  * start of the extracted tokens and the number of tokens extracted is returned.
  * If delimiters are mismatched or not found, a pair with NULL and 0 is returned.
  *
- * @param stream      Pointer to the token stream to extract from.
+ * @param tokens      Pointer to the token stream (array of token_t pointers).
+ * @param length      The total number of tokens in the stream.
  * @param delim       The token type that marks the start of a delimited section.
  * @param end_delim   The token type that marks the end of a delimited section.
  * @param start       The index in the token stream to start extraction.
@@ -45,7 +43,8 @@ DEFINE_PAIR_T(token_t **, size_t, extract);
  * @return            A pair containing a pointer to the extracted tokens and the count, or (NULL, 0) on error.
  */
 static inline pair_extract_t extract_tokens(
-    const token_stream_t *const stream,
+    const token_t **const tokens,
+    const size_t length,
     const token_type_t delim,
     const token_type_t end_delim,
     const size_t start,
@@ -53,13 +52,13 @@ static inline pair_extract_t extract_tokens(
 )
 {
     // Make sure the stream has enough space to extract tokens
-    if (stream->tokens->length < start)
+    if (length < start)
     {
         return pair_extract_new(NULL, 0); // Not enough tokens to extract
     }
 
     // Get the new buffer without copying
-    token_t **new_buffer = stream->tokens->data + start;
+    token_t **new_buffer = tokens + start;
 
     // Define a nested counter
     size_t counter = 0;
@@ -71,16 +70,12 @@ static inline pair_extract_t extract_tokens(
     bool has_met_delim = FALSE;
 
     // Iterate over the buffer
-    for (size_t i = start; i < stream->tokens->length; i++)
+    for (size_t i = start; i < length; i++)
     {
         // Increment the end index
         end++;
 
-        // vec_token_get has bounds checking, but since
-        // we checked stream->tokens->length < start before,
-        // it is not really necessary here, so we can
-        // access the buffer directly
-        const token_t *token = stream->tokens->data[i];
+        const token_t *token = tokens[i];
         if (token->type == end_delim)
         {
             // Bail out if nesting is not allowed
