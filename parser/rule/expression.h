@@ -75,7 +75,7 @@ static inline bool parse_expression(
         }
 
         // Parse pointers
-        for (size_t i = 0; i < len; i++)
+        for (size_t i = 0; i <= len; i++)
         {
             // Get the current token
             const token_t *token = input[i];
@@ -126,6 +126,12 @@ static inline bool parse_expression(
                 // without allocating a new one
                 vec_ast_push(expression->children, ptr_node);
             }
+        }
+
+        // Handle invalid expressions
+        if (start == len)
+        {
+            return FALSE; // Invalid expression, no valid tokens found
         }
     }
 
