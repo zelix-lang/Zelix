@@ -65,7 +65,8 @@ static inline bool parse_function(
 
     // Extract the tokens from the stream
     const pair_extract_t extract = extract_tokens(
-        stream,
+        stream->tokens->data,
+        stream->tokens->length,
         TOKEN_OPEN_CURLY,
         TOKEN_CLOSE_CURLY,
         stream->current,
