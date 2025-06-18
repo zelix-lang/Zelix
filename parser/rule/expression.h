@@ -24,9 +24,10 @@
 #include <fluent/std_bool/std_bool.h> // fluent_libc
 
 // ============= INCLUDES =============
-#include "../../ast/ast.h"
-#include "../../token/token.h"
-#include "../queue/expression.h"
+#include <ast/ast.h>
+#include <token/token.h>
+#include <parser/queue/expression.h>
+#include "new.h"
 
 static ast_t *parse_single_token(
     const token_t *token,
@@ -241,7 +242,6 @@ static inline bool parse_expression(
             // Parse object creation tokens
             if (token->type == TOKEN_NEW)
             {
-                // TODO: Object creation parser
                 is_arithmetic = FALSE;
                 is_prop_access = TRUE;
             }
