@@ -72,15 +72,13 @@ static inline pair_extract_t extract_tokens(
     // Iterate over the buffer
     for (size_t i = start; i < length; i++)
     {
-        // Increment the end index
-        end++;
-
         const token_t *token = tokens[i];
         if (token->type == end_delim)
         {
             // Bail out if nesting is not allowed
             if (!allow_nested)
             {
+                end = i; // Set the end index
                 has_met_delim = TRUE; // We have met the end delimiter
                 break;
             }
@@ -97,6 +95,7 @@ static inline pair_extract_t extract_tokens(
             // Check if we have reached a 0 counter
             if (counter == 0)
             {
+                end = i; // Set the end index
                 has_met_delim = TRUE; // We have met the end delimiter
                 break;
             }
