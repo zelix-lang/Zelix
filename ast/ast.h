@@ -23,7 +23,7 @@
 #include <fluent/vector/vector.h> // fluent_libc
 
 // ============= INCLUDES =============
-#include "rule.h"
+#include <ast/rule.h>
 
 typedef struct ast_t ast_t;
 DEFINE_VECTOR(ast_t *, ast); // Define a vector for ast_t
