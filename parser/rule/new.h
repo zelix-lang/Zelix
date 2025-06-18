@@ -21,6 +21,8 @@
 
 // ============= FLUENT LIB C =============
 #include <fluent/pair/pair.h> // fluent_libc
+
+#include "parser/error.h"
 DEFINE_PAIR_T(ast_t *, size_t, obj_creation);
 
 static inline pair_obj_creation_t parse_new(
@@ -57,7 +59,7 @@ static inline pair_obj_creation_t parse_new(
     if (identifier_token->type != TOKEN_IDENTIFIER || open_paren->type != TOKEN_OPEN_PAREN)
     {
         // Create an error for unexpected tokens
-        create_error(
+        create_error_ranged(
             identifier_token->line,
             identifier_token->column,
             identifier_token->col_start,
@@ -173,7 +175,7 @@ static inline pair_obj_creation_t parse_new(
             if (body[start + arg_len]->type != TOKEN_CLOSE_PAREN)
             {
                 // Create an error for unexpected end of stream
-                create_error(
+                create_error_ranged(
                     body[start + arg_len]->line,
                     body[start + arg_len]->column,
                     body[start + arg_len]->col_start,
