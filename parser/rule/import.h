@@ -32,8 +32,7 @@ static inline bool parse_import(
     const ast_t *const root,
     token_stream_t *const stream,
     arena_allocator_t *const arena,
-    arena_allocator_t *const vec_arena,
-    const token_t *trace
+    arena_allocator_t *const vec_arena
 )
 {
     // Get the next token
@@ -47,9 +46,7 @@ static inline bool parse_import(
     {
         // Create an error for unexpected end of stream
         create_error(
-            trace->line,
-            trace->column,
-            trace->col_start,
+            stream,
             (ast_rule_t[]){AST_STRING_LITERAL},
             1
         );
