@@ -258,7 +258,7 @@ static inline bool parse_expression(
 
                 if (!candidate)
                 {
-                    create_error(
+                    create_error_ranged(
                         token->line,
                         token->column,
                         token->col_start,
@@ -313,7 +313,7 @@ static inline bool parse_expression(
             if (!is_prop_access)
             {
                 // Create an error for unexpected prop access
-                create_error(
+                create_error_ranged(
                     token->line,
                     token->column,
                     token->col_start,
@@ -338,7 +338,7 @@ static inline bool parse_expression(
             if (!is_arithmetic)
             {
                 // Create an error for unexpected arithmetic operation
-                create_error(
+                create_error_ranged(
                     token->line,
                     token->column,
                     token->col_start,
@@ -373,7 +373,7 @@ static inline bool parse_expression(
         }
 
         // No more tokens to process, expression is invalid
-        create_error(
+        create_error_ranged(
             token->line,
             token->column,
             token->col_start,
