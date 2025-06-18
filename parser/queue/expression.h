@@ -27,6 +27,7 @@ typedef struct
     token_t **body;
     size_t start;
     size_t len;
+    ast_t *parent;
 } queue_expression_t;
 
 DEFINE_ALINKED_NODE(queue_expression_t, expr);
