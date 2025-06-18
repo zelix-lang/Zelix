@@ -24,8 +24,8 @@
 #include <fluent/std_bool/std_bool.h> // fluent_libc
 
 // ============= INCLUDES =============
-#include "../../ast/ast.h"
-#include "expression.h"
+#include <ast/ast.h>
+#include <parser/rule/expression.h>
 
 static inline bool parse_block(
     ast_t *const root,
