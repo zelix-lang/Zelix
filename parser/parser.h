@@ -215,7 +215,7 @@ static inline pair_parser_result_t parser_parse(
                 // Extract all tokens before the next semicolon
                 const pair_extract_t extract = extract_tokens(
                     stream->tokens->data + stream->current,
-                    stream->tokens->length,
+                    stream->tokens->length - 1,
                     TOKEN_SEMICOLON,
                     TOKEN_SEMICOLON,
                     0,
@@ -247,7 +247,7 @@ static inline pair_parser_result_t parser_parse(
                         block,
                         range,
                         0,
-                        len - 1, // -1 to exclude the semicolon
+                        len,
                         ast_stream.allocator,
                         ast_stream.vec_allocator
                     )
