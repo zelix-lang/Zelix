@@ -48,25 +48,24 @@ static ast_error_t global_parser_error;
  * error location. It copies up to `expected_len` rules from the `expected`
  * array into the global error structure.
  *
- * @param line         The line number where the error occurred.
- * @param column       The column number where the error occurred.
- * @param col_start    The starting column of the error.
+ * @param stream       The token stream being parsed.
  * @param expected     Pointer to an array of expected AST rules.
  * @param expected_len The number of expected rules to copy (up to 5).
  * @return Pointer to the global parser error structure.
  */
 static ast_error_t *create_error(
-    const size_t line,
-    const size_t column,
-    const size_t col_start,
+    const token_stream_t *stream,
     const ast_rule_t *const expected,
     const size_t expected_len
 )
 {
+    // Get the current token from the stream
+    const token_t *current_token = token_stream_nth(stream, stream->current);
+
     // Set the global parser error
-    global_parser_error.line = line;
-    global_parser_error.column = column;
-    global_parser_error.col_start = col_start;
+    global_parser_error.line = current_token->line;
+    global_parser_error.column = current_token->column;
+    global_parser_error.col_start = current_token->col_start;
 
     // Copy the expected rules into the global parser error
     memcpy(global_parser_error.expected, expected, sizeof(ast_rule_t) * expected_len);
