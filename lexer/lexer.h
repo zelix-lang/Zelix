@@ -54,7 +54,7 @@ static bool push_token(
     bool *is_decimal_ptr,
     size_t *token_idx_ptr,
     const size_t line,
-    const size_t *column,
+    size_t *column,
     size_t *start_column
 ) {
     // Ignore empty tokens
@@ -177,7 +177,7 @@ static bool push_token(
     *is_number_ptr = FALSE;
     *is_decimal_ptr = FALSE;
     *token_idx_ptr = 0; // Reset the token index
-    *column++; // Increment the column for the next token
+    *column = *column + 1; // Increment the column for the next token
     *start_column = *column; // Reset the start column for the next token
     return TRUE;
 }
