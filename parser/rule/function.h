@@ -27,9 +27,7 @@
 #include <parser/error.h>
 #include <ast/ast.h>
 #include <lexer/stream.h>
-#include <parser/extractor.h>
 #include <parser/rule/type.h>
-#include <parser/rule/block.h>
 
 // ============ GLOBAL =============
 static ast_t nothing_type = {
@@ -43,219 +41,150 @@ static ast_t nothing_type = {
 
 typedef enum
 {
-    FN_P_WAKEUP = 0, // Ready to expect the first token
-    FN_P_NAME, // Expecting the function name
-    FN_P_ARGS_START, // Expecting the opening parenthesis for arguments
-    FN_P_ARG_NAME, // Expecting an argument name
+    FN_P_ARG_NAME = 0, // Expecting an argument name
     FN_P_COLON, // Expecting a colon after the argument name
     FN_P_ARG_TYPE, // Expecting the type of the argument
-    FN_P_TOMBSTONE // Parsing of arguments is complete
+    FN_P_TOMBSTONE // Parsing commas or closing parenthesis
 } fn_parser_state_t;
 
-static inline bool parse_function(
+static inline ast_t *parse_function(
     const ast_t *const root,
     token_stream_t *const stream,
     arena_allocator_t *const arena,
-    arena_allocator_t *const vec_arena,
-    const token_t *trace
+    arena_allocator_t *const vec_arena
 )
 {
-    // Define the initial state of the parser
-    fn_parser_state_t state = FN_P_WAKEUP;
-
-    // Extract the tokens from the stream
-    const pair_extract_t extract = extract_tokens(
-        stream->tokens->data,
-        stream->tokens->length,
-        TOKEN_OPEN_CURLY,
-        TOKEN_CLOSE_CURLY,
-        stream->current,
-        TRUE // Allow nested delimiters
-    );
-
-    // Get the extracted tokens and their count
-    token_t **tokens = extract.first;
-    const size_t count = extract.second;
-
-    // Check if the extracted chunk is NULL or empty
-    if (!tokens || count == 0)
+    // Create a new AST node for the function
+    ast_t *function_node = ast_new(arena, vec_arena, TRUE);
+    if (!function_node)
     {
-        // Create an error for unexpected end of stream
+        // Failed to allocate memory for the function node
+        return NULL;
+    }
+
+    // Get the next token
+    const token_t *token = token_stream_next(stream);
+    if (!token)
+    {
         create_error(
-            trace->line,
-            trace->column,
-            trace->col_start,
+            stream,
             (ast_rule_t[]){AST_FUNCTION},
             1
         );
-        return FALSE;
+
+        return NULL; // Failed to get the next token
     }
 
-    // Whether to allow a comma after the last argument
-    bool allow_comma = FALSE;
-    char *name = NULL; // Function name
-    // Allocate a new AST node for the function
-    ast_t *function_node = ast_new(arena, vec_arena, TRUE);
-    // Have a pointer ready for the params in case we need to allocate any
-    ast_t *params_node = NULL;
-    // Store the parameter that we are currently parsing
-    ast_t *current_param = NULL;
-    size_t args_end = 0; // To track the end of the arguments
-    ast_t *return_type_node = &nothing_type; // To store the return type of the function
-    ast_t *block_node = ast_new(arena, vec_arena, TRUE); // To store the function block
-
-    // Iterate over the extracted tokens
-    for (size_t i = 0; i <= count; i++)
+    // Make sure the token is an identifier
+    if (token->type != TOKEN_IDENTIFIER)
     {
-        // Get the current token
-        const token_t *token = tokens[i];
+        // Create an error for unexpected token
+        create_error(
+            stream,
+            (ast_rule_t[]){AST_IDENTIFIER},
+            1
+        );
+        return NULL; // Invalid function name
+    }
 
-        // Check the current state of the parser
+    // Create a new identifier node
+    ast_t *name_node = ast_new(arena, vec_arena, FALSE);
+    if (!name_node)
+    {
+        // Failed to allocate memory for the identifier node
+        return NULL;
+    }
+
+    name_node->rule = AST_IDENTIFIER; // Set the rule to identifier
+    name_node->value = token->value; // Set the value to the identifier
+    vec_ast_push(function_node->children, name_node); // Add the identifier to the function node
+
+    // Get the next token
+    token = token_stream_next(stream);
+    if (!token)
+    {
+        create_error(
+            stream,
+            (ast_rule_t[]){AST_FUNCTION},
+            1
+        );
+
+        return NULL; // Failed to get the next token
+    }
+
+    // Check if the next token is an opening parenthesis
+    if (token->type != TOKEN_OPEN_PAREN)
+    {
+        // Create an error for unexpected token
+        create_error(
+            stream,
+            (ast_rule_t[]){AST_FUNCTION},
+            1
+        );
+        return NULL; // Invalid function signature
+    }
+
+    // Move to the next token
+    token = token_stream_next(stream);
+
+    // Check if we have a closing parenthesis
+    if (token->type == TOKEN_CLOSE_PAREN)
+    {
+        // Return the function node without parameters
+        return function_node;
+    }
+
+    // Create a new parameters node
+    ast_t *params_node = ast_new(arena, vec_arena, TRUE);
+    if (!params_node)
+    {
+        // Failed to allocate memory for the identifier node
+        return NULL;
+    }
+
+    // Set the metadata for the node
+    params_node->rule = AST_PARAMETERS;
+    vec_ast_push(function_node->children, params_node);
+
+    // Set the parser state to expect arguments
+    fn_parser_state_t state = FN_P_ARG_NAME;
+    ast_t *param_name = NULL;
+
+    // Parse all arguments
+    while (token != NULL)
+    {
+        bool has_to_break = FALSE;
+
+        // Switch on the state to determine what to do
         switch (state)
         {
-            case FN_P_WAKEUP:
-            {
-                // Expecting the function keyword
-                if (token->type != TOKEN_FUNCTION)
-                {
-                    // Create an error for unexpected token
-                    create_error(
-                        token->line,
-                        token->column,
-                        token->col_start,
-                        (ast_rule_t[]){AST_FUNCTION},
-                        1
-                    );
-                    return FALSE; // Invalid function declaration
-                }
-
-                state = FN_P_NAME; // Move to the next state
-                break;
-            }
-
-            case FN_P_NAME:
-            {
-                // Make sure we have a valid identifier
-                if (token->type != TOKEN_IDENTIFIER)
-                {
-                    // Create an error for unexpected token
-                    create_error(
-                        token->line,
-                        token->column,
-                        token->col_start,
-                        (ast_rule_t[]){AST_FUNCTION},
-                        1
-                    );
-                    return FALSE; // Invalid function name
-                }
-
-                // Set the function name
-                name = token->value->ptr;
-
-                // Move to the next state
-                state = FN_P_ARGS_START;
-                break;
-            }
-
-            case FN_P_ARGS_START:
-            {
-                // Make sure we have an opening parenthesis
-                if (token->type != TOKEN_OPEN_PAREN)
-                {
-                    // Create an error for unexpected token
-                    create_error(
-                        token->line,
-                        token->column,
-                        token->col_start,
-                        (ast_rule_t[]){AST_FUNCTION},
-                        1
-                    );
-                    return FALSE; // Invalid function arguments start
-                }
-
-                // Move to the next state
-                state = FN_P_ARG_NAME;
-                break;
-            }
-
             case FN_P_ARG_NAME:
             {
-                // Check for commas
-                if (allow_comma && token->type == TOKEN_COMMA)
-                {
-                    allow_comma = FALSE; // Reset the comma allowance
-                    // If we are allowing a comma, skip it and continue
-                    continue;
-                }
-
-                // Check if we have a closing parenthesis right away
-                if (token->type == TOKEN_CLOSE_PAREN)
-                {
-                    args_end = i; // Mark the end of arguments
-                    // No arguments, just return to the next state
-                    state = FN_P_TOMBSTONE;
-                    break;
-                }
-
-                // Make sure we have a valid identifier for the argument name
+                // Make sure the token is an identifier
                 if (token->type != TOKEN_IDENTIFIER)
                 {
-                    // Create an error for unexpected token
                     create_error(
-                        token->line,
-                        token->column,
-                        token->col_start,
+                        stream,
                         (ast_rule_t[]){AST_FUNCTION},
                         1
                     );
-                    return FALSE; // Invalid argument name
+                    return NULL;
                 }
 
-                // Check if we have a params node
-                if (params_node == NULL)
+                // Create a new node for the identifier
+                param_name = ast_new(arena, vec_arena, FALSE);
+                if (!param_name)
                 {
-                    // Allocate a new AST node for the parameters
-                    params_node = ast_new(arena, vec_arena, TRUE);
-                    if (!params_node)
-                    {
-                        // Failed to allocate memory for the parameters node
-                        return FALSE;
-                    }
-
-                    // Set the rule for the parameters node
-                    params_node->rule = AST_PARAMETERS;
+                    create_error(
+                        stream,
+                        (ast_rule_t[]){AST_FUNCTION},
+                        1
+                    );
+                    return NULL;
                 }
 
-                // Allocate a new AST node for the current parameter
-                current_param = ast_new(arena, vec_arena, TRUE);
-                if (!current_param)
-                {
-                    // Failed to allocate memory for the current parameter node
-                    return FALSE;
-                }
-
-                current_param->rule = AST_PARAMETER;
-
-                // Allocate a new AST node for the argument name
-                ast_t *arg_name_node = ast_new(arena, vec_arena, FALSE);
-                if (!arg_name_node)
-                {
-                    // Failed to allocate memory for the argument name node
-                    return FALSE;
-                }
-
-                // Set the rule for the argument name node
-                arg_name_node->rule = AST_IDENTIFIER;
-                // Set the value for the argument name node
-                arg_name_node->value = token->value;
-                // Set other metadata
-                arg_name_node->line = token->line;
-                arg_name_node->column = token->column;
-                arg_name_node->col_start = token->col_start;
-
-                // Append the argument name node to the current parameter
-                vec_ast_push(current_param->children, arg_name_node);
-
+                // Update the param name
+                param_name->value = token->value;
                 // Move to the next state
                 state = FN_P_COLON;
                 break;
@@ -263,18 +192,15 @@ static inline bool parse_function(
 
             case FN_P_COLON:
             {
-                // Make sure we have a colon after the argument name
+                // Make sure the token is a colon
                 if (token->type != TOKEN_COLON)
                 {
-                    // Create an error for unexpected token
                     create_error(
-                        token->line,
-                        token->column,
-                        token->col_start,
-                        (ast_rule_t[]){AST_FUNCTION},
+                        stream,
+                        (ast_rule_t[]){AST_PARAMETER},
                         1
                     );
-                    return FALSE; // Invalid argument type declaration
+                    return NULL;
                 }
 
                 // Move to the next state
@@ -284,180 +210,161 @@ static inline bool parse_function(
 
             case FN_P_ARG_TYPE:
             {
-                // Parse the type
-                const pair_type_parser_t type_parser = parse_type(
-                    tokens,
-                    i, // Start after the colon
-                    count, // Remaining tokens
-                    arena,
-                    vec_arena
-                );
+                // Parse the argument type
+                ast_t *type = parse_type(stream, arena, vec_arena);
 
-                // Get the extracted range and tokens
-                const ast_t *type_node = type_parser.first;
-                const size_t skipped_range = type_parser.second;
-
-                // Check if the type node is NULL
-                if (!type_node)
+                // Handle failure
+                if (!type)
                 {
-                    // Create an error for invalid type
                     create_error(
-                        token->line,
-                        token->column,
-                        token->col_start,
+                        stream,
+                        (ast_rule_t[]){AST_PARAMETER},
+                        1
+                    );
+                    return NULL;
+                }
+
+                // Create a new param node
+                ast_t *param = ast_new(arena, vec_arena, TRUE);
+                if (!param)
+                {
+                    create_error(
+                        stream,
                         (ast_rule_t[]){AST_FUNCTION},
                         1
                     );
-                    return FALSE; // Invalid argument type
+                    return NULL;
                 }
 
-                // Append the current parameter to the parameters node
-                vec_ast_push(params_node->children, current_param);
+                // Append the name and the type to the param
+                vec_ast_push(param->children, param_name);
+                vec_ast_push(param->children, type);
+                vec_ast_push(params_node->children, param);
 
-                // Reset the current parameter
-                current_param = NULL;
-
-                // Skip the tokens that were parsed as type
-                i = skipped_range;
-
-                // Change the state to the next one
-                state = FN_P_ARG_NAME;
-                allow_comma = TRUE; // Allow a comma after the argument type
+                // Move to the next state
+                state = FN_P_TOMBSTONE;
+                break;
             }
 
-            default:
+            case FN_P_TOMBSTONE:
             {
-                // Impossible case
+                // Check if we have reached the end of the parameters
+                if (token->type == TOKEN_CLOSE_PAREN)
+                {
+                    has_to_break = TRUE;
+                    break;
+                }
+
+                // Make sure we have a comma
+                if (token->type != TOKEN_COMMA)
+                {
+                    create_error(
+                        stream,
+                        (ast_rule_t[]){AST_FUNCTION},
+                        1
+                    );
+                    return NULL;
+                }
+
+                // Move to the name state again
+                state = FN_P_ARG_NAME;
+                break;
             }
         }
-    }
 
-    // Skip the argument count in the token stream
-    stream->current += args_end;
-
-    // Get the next token
-    token_t *token = token_stream_next(stream);
-
-    // Make sure we have a token
-    if (!token)
-    {
-        return FALSE; // Failed to parse the function
-    }
-
-    // Check if we have a return type
-    if (token->type == TOKEN_ARROW)
-    {
-        // Position the type parser at the token
-        // after the arrow token
-        token_stream_next(stream);
-
-        // Parse the return type
-        const pair_type_parser_t return_type_parser = parse_type(
-            tokens,
-            stream->current, // Start after the arrow
-            count, // Remaining tokens
-            arena,
-            vec_arena
-        );
-
-        // Get the extracted range and tokens
-        return_type_node = return_type_parser.first;
-        const size_t skipped_range = return_type_parser.second;
-
-        // Handle parsing failure
-        if (return_type_node == NULL)
+        // Check if we have to break
+        if (has_to_break)
         {
-            // Create an error for invalid return type
-            create_error(
-                token->line,
-                token->column,
-                token->col_start,
-                (ast_rule_t[]){AST_FUNCTION},
-                1
-            );
-            return FALSE; // Invalid return type
+            break;
         }
 
-        // Skip the parsed range
-        args_end = skipped_range - 1;
-        stream->current = skipped_range;
-
-        // Peek the next token
-        token = token_stream_peek(stream);
-    }
-    else
-    {
-        // Skip 2 tokens for the close parenthesis and open curly
-        args_end += 2;
+        // Move to the next token
+        token = token_stream_next(stream);
     }
 
-    // Make sure that we have an open curly brace
-    if (!token || token->type != TOKEN_OPEN_CURLY)
+    // Make sure we end parsing a name
+    if (state != FN_P_ARG_NAME)
     {
-        // Get the current token
-        token = token_stream_nth(stream, stream->current);
-
-        // Create an error for unexpected token
         create_error(
-            token->line,
-            token->column,
-            token->col_start,
+            stream,
             (ast_rule_t[]){AST_FUNCTION},
             1
         );
-        return FALSE; // Invalid function body start
+        return NULL;
     }
 
-    // Extract the function's body
-    token_t **body = tokens + args_end;
-    const size_t body_len = count - args_end - 1;
+    // Get the next token
+    token = token_stream_next(stream);
 
-    // Parse the block
-    if (
-        !parse_block(
-            block_node,
-            body,
-            body_len,
-            arena,
-            vec_arena
-        )
-    )
+    // Check if we have an arrow
+    if (!token)
     {
-        return FALSE; // Failed to parse the function block
+        create_error(
+            stream,
+            (ast_rule_t[]){AST_FUNCTION},
+            1
+        );
+        return NULL;
     }
 
-    // Skip the token count
-    // Avoid positioning exactly the token next to the closing curly brace
-    // since the main loop will increment the current position
-    stream->current += count;
-
-    // Set the function node metadata
-    function_node->rule = AST_FUNCTION; // Set the rule for the function node
-
-    // Create a new AST node for the function name
-    ast_t *name_node = ast_new(arena, vec_arena, FALSE);
-    if (!name_node)
+    // Check if we have to parse a return type
+    if (token->type == TOKEN_ARROW)
     {
-        // Failed to allocate memory for the function name node
-        return FALSE;
+        // Consume the arrow token
+        token_stream_next(stream);
+
+        // Parse the return type
+        ast_t *type = parse_type(stream, arena, vec_arena);
+
+        // Handle failure
+        if (!type)
+        {
+            create_error(
+                stream,
+                (ast_rule_t[]){AST_PARAMETER},
+                1
+            );
+            return NULL;
+        }
+
+        // Append the return type
+        vec_ast_push(function_node->children, type);
+
+        // Move to the next token
+        token = token_stream_next(stream);
+    }
+    else
+    {
+        // Append the nothing return type
+        vec_ast_push(function_node->children, &nothing_type);
     }
 
-    // Set the rule for the function name node
-    name_node->rule = AST_IDENTIFIER;
-    // Set the value for the function name node
-    name_node->value = heap_str_alloc(FALSE, FALSE, NULL, name);
+    // Make sure the token type is an open curly
+    if (token->type != TOKEN_OPEN_CURLY)
+    {
+        create_error(
+            stream,
+            (ast_rule_t[]){AST_FUNCTION},
+            1
+        );
+        return NULL;
+    }
 
-    // Append the parsed nodes to the function node's children
-    vec_ast_push(function_node->children, name_node);
-    vec_ast_push(function_node->children, params_node); // Add the parameters node
-    vec_ast_push(function_node->children, return_type_node); // Add the return type node
-    vec_ast_push(function_node->children, block_node); // Add the block node
+    // Create a new block AST node
+    ast_t *block = ast_new(arena, vec_arena, TRUE);
+    if (!block)
+    {
+        return NULL;
+    }
 
-    // Add the function node to the root's children
+    // Append the block node to the function
+    vec_ast_push(function_node->children, block);
+
+    // Append the function node to the root
     vec_ast_push(root->children, function_node);
 
-    // Return success
-    return TRUE;
+    // Return the node
+    return block;
 }
 
 #endif //FLUENT_PARSER_RULE_FUNCTION_H
