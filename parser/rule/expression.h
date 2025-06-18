@@ -271,7 +271,7 @@ static inline bool parse_expression(
                 }
 
                 // Update the start counter
-                start += obj_creation_len;
+                start += obj_creation_len + 1; // +1 to skip the 'new' token
                 is_arithmetic = FALSE;
                 is_prop_access = TRUE;
             }
