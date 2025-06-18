@@ -24,12 +24,12 @@
 #include <fluent/arena/arena.h> // fluent_libc
 
 // ============= INCLUDES =============
-#include "../error.h"
-#include "../../ast/ast.h"
-#include "../../lexer/stream.h"
-#include "../extractor.h"
-#include "type.h"
-#include "block.h"
+#include <parser/error.h>
+#include <ast/ast.h>
+#include <lexer/stream.h>
+#include <parser/extractor.h>
+#include <parser/rule/type.h>
+#include <parser/rule/block.h>
 
 // ============ GLOBAL =============
 static ast_t nothing_type = {
