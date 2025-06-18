@@ -27,7 +27,7 @@
 #include <fluent/std_bool/std_bool.h> // fluent_libc
 
 // ============= INCLUDES =============
-#include "token.h"
+#include <token/token.h>
 
 #ifndef FLUENT_LIBC_CLI_HASHMAP_TOKEN_VALUE
     DEFINE_HASHMAP(char *, token_type_t, token);
