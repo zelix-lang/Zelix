@@ -95,7 +95,7 @@ static inline bool parse_block(
                 // Extract all tokens before the next semicolon
                 const pair_extract_t extracted = extract_tokens(
                     body,
-                    body_len,
+                    body_len - 1, // -1 to exclude the semicolon
                     TOKEN_SEMICOLON,
                     TOKEN_SEMICOLON,
                     i,
