@@ -24,11 +24,11 @@
 #include <fluent/std_bool/std_bool.h> // fluent_libc
 
 // ============= INCLUDES =============
-#include "error.h"
-#include "../lexer/stream.h"
-#include "stream.h"
-#include "rule/import.h"
-#include "rule/function.h"
+#include <parser/error.h>
+#include <lexer/stream.h>
+#include <parser/stream.h>
+#include <parser/rule/import.h>
+#include <parser/rule/function.h>
 
 DEFINE_PAIR_T(ast_stream_t, ast_error_t *, parser_result);
 
