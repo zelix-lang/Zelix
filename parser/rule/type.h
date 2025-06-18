@@ -23,7 +23,6 @@
 #include <fluent/std_bool/std_bool.h> // fluent_libc
 #include <fluent/alinked_queue/alinked_queue.h> // fluent_libc
 #include <fluent/arena/arena.h> // fluent_libc
-#include <fluent/pair/pair.h> // fluent_libc
 
 // ============= INCLUDES =============
 #include <ast/ast.h>
@@ -31,7 +30,6 @@
 #include <token/token.h>
 
 DEFINE_ALINKED_NODE(ast_t *, ast);
-DEFINE_PAIR_T(ast_t *, size_t, type_parser);
 
 static ast_rule_t parse_base_type(
     const token_t *token,
@@ -124,30 +122,22 @@ static ast_rule_t parse_base_type(
     return AST_PROGRAM_RULE;
 }
 
-static inline pair_type_parser_t parse_type(
-    token_t **const tokens,
-    const size_t start,
-    const size_t len,
+static inline ast_t * parse_type(
+    token_stream_t *stream,
     arena_allocator_t *const arena,
     arena_allocator_t *const vec_arena
 )
 {
-    // Ignore if len == start
-    if (len == start)
-    {
-        return pair_type_parser_new(NULL, 0);
-    }
-
     // Allocate the root node
     ast_t *root = ast_new(arena, vec_arena, TRUE);
     if (!root)
     {
         // Failed to allocate the root node
-        return pair_type_parser_new(NULL, 0);
+        return NULL;
     }
 
     // Get the first token
-    const token_t *token = tokens[start];
+    const token_t *token = token_stream_nth(stream, stream->current);
 
     // Parse the base type
     const token_type_t primitive_type = parse_base_type(
@@ -161,20 +151,26 @@ static inline pair_type_parser_t parse_type(
     if (primitive_type == AST_PROGRAM_RULE)
     {
         // Invalid type definition
-        return pair_type_parser_new(NULL, 0);
+        return NULL;
     }
 
     if (primitive_type != AST_IDENTIFIER)
     {
-        return pair_type_parser_new(root, start); // Return the root node if it's a primitive type
+        return root; // Return the root node if it's a primitive type
     }
 
     // Peek to see if we have generic types
-    if (start + 1 > len || tokens[start + 1]->type != TOKEN_LESS_THAN)
+    const token_t *peek = token_stream_peek(stream);
+    if (!peek || peek->type != TOKEN_LESS_THAN)
     {
         // Return the root node if we don't have a generic type
-        return pair_type_parser_new(root, start);
+        return root;
     }
+
+    // Skip the less than token and position at the
+    // token after it
+    token_stream_next(stream);
+    token = token_stream_next(stream);
 
     // Define flags to track nested types
     size_t nest_level = 1;
@@ -185,12 +181,8 @@ static inline pair_type_parser_t parse_type(
     alinked_queue_ast_append(&queue, root);
 
     // Iterate over the tokens to parse the type
-    size_t i;
-    for (i = start + 2; i < len; i++)
+    while (token != NULL)
     {
-        // Get the current token
-        token = tokens[i];
-
         // Check for end of the type definitions
         if (token->type == TOKEN_GREATER_THAN)
         {
@@ -200,7 +192,7 @@ static inline pair_type_parser_t parse_type(
             // Make sure the AST has children and nesting level is valid
             if (current->children->length == 0)
             {
-                return pair_type_parser_new(NULL, i); // Invalid type definition
+                return NULL; // Invalid type definition
             }
 
             // Decrease the nest level
@@ -210,7 +202,7 @@ static inline pair_type_parser_t parse_type(
             if (nest_level == 0)
             {
                 // Return the root node
-                return pair_type_parser_new(root, i);
+                return root;
             }
 
             continue;
@@ -222,7 +214,7 @@ static inline pair_type_parser_t parse_type(
             // Make sure that generics are allowed
             if (!generics_allowed)
             {
-                return pair_type_parser_new(NULL, i);
+                return NULL;
             }
 
             // Increment the nesting level
@@ -247,7 +239,7 @@ static inline pair_type_parser_t parse_type(
             // Check if we are expecting a comma
             if (!expecting_comma)
             {
-                return pair_type_parser_new(NULL, i); // Invalid type definition
+                return NULL; // Invalid type definition
             }
 
             // Flip the flag
@@ -269,6 +261,9 @@ static inline pair_type_parser_t parse_type(
         // Set the generics allowed flag
         generics_allowed = type_rule == AST_IDENTIFIER;
         expecting_comma = TRUE;
+
+        // Move to the next token
+        token = token_stream_next(stream);
     }
 
     // Destroy the queue when done
@@ -277,10 +272,10 @@ static inline pair_type_parser_t parse_type(
     // Make sure we don't end up with a nested level
     if (nest_level != 0)
     {
-        return pair_type_parser_new(NULL, i); // Invalid type definition
+        return NULL; // Invalid type definition
     }
 
-    return pair_type_parser_new(root, i);
+    return root;
 }
 
 #endif //FLUENT_PARSER_TYPE_H
