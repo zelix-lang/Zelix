@@ -214,11 +214,11 @@ static inline pair_parser_result_t parser_parse(
 
                 // Extract all tokens before the next semicolon
                 const pair_extract_t extract = extract_tokens(
-                    stream->tokens->data,
+                    stream->tokens->data + stream->current,
                     stream->tokens->length,
                     TOKEN_SEMICOLON,
                     TOKEN_SEMICOLON,
-                    stream->current,
+                    0,
                     FALSE
                 );
 
@@ -244,7 +244,6 @@ static inline pair_parser_result_t parser_parse(
                 // Pass the range to the expression parser
                 if (!
                     parse_expression(
-                        stream,
                         block,
                         range,
                         0,
