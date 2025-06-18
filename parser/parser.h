@@ -92,13 +92,15 @@ static inline pair_parser_result_t parser_parse(
         {
             case TOKEN_IMPORT:
             {
-                if (!parse_import(
-                    ast_stream.ast,
-                    stream,
-                    ast_stream.allocator,
-                    ast_stream.vec_allocator,
-                    current
-                ))
+                if (
+                    !parse_import(
+                        ast_stream.ast,
+                        stream,
+                        ast_stream.allocator,
+                        ast_stream.vec_allocator,
+                        current
+                    )
+                )
                 {
                     // Failed to parse the import statement
                     return create_failed_result(ast_stream);
@@ -109,13 +111,18 @@ static inline pair_parser_result_t parser_parse(
 
             case TOKEN_FUNCTION:
             {
-                parse_function(
-                    ast_stream.ast,
-                    stream,
-                    ast_stream.allocator,
-                    ast_stream.vec_allocator,
-                    current
-                );
+                if (!
+                    parse_function(
+                        ast_stream.ast,
+                        stream,
+                        ast_stream.allocator,
+                        ast_stream.vec_allocator,
+                        current
+                    )
+                )
+                {
+                    return create_failed_result(ast_stream);
+                }
                 break;
             }
 
