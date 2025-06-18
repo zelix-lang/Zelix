@@ -35,9 +35,9 @@ add_executable(Fluent
         parser/rule/function.h
         type/type.h
         parser/rule/type.h
-        parser/rule/block.h
         parser/rule/expression.h
         parser/queue/expression.h
+        parser/rule/new.h
         parser/rule/new.h)
 
 target_include_directories(Fluent PRIVATE ${CMAKE_BINARY_DIR}/_deps/fluent_libc-src/include)
