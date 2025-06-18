@@ -115,14 +115,20 @@ static inline bool parse_block(
                 // Skip the extracted tokens
                 i += extracted_len;
 
-                parse_expression(
-                    block,
-                    expression,
-                    0,
-                    extracted_len - 1, // -1 to exclude the semicolon
-                    arena,
-                    vec_arena
-                );
+                if (!
+                    parse_expression(
+                        block,
+                        expression,
+                        0,
+                        extracted_len - 1, // -1 to exclude the semicolon
+                        arena,
+                        vec_arena
+                    )
+                )
+                {
+                    return FALSE; // Failed to parse the expression
+                }
+
                 break;
             }
         }
