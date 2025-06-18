@@ -408,9 +408,6 @@ static inline bool parse_function(
         return FALSE; // Invalid function body start
     }
 
-    // Consume the opening curly brace
-    token_stream_next(stream);
-
     // Extract the function's body
     token_t **body = tokens + args_end;
     const size_t body_len = count - args_end - 1;
