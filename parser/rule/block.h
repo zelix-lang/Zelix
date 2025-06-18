@@ -119,7 +119,7 @@ static inline bool parse_block(
                     block,
                     expression,
                     0,
-                    extracted_len,
+                    extracted_len - 1, // -1 to exclude the semicolon
                     arena,
                     vec_arena
                 );
