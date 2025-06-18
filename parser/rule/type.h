@@ -26,9 +26,9 @@
 #include <fluent/pair/pair.h> // fluent_libc
 
 // ============= INCLUDES =============
-#include "../../ast/ast.h"
-#include "../../type/type.h"
-#include "../../token/token.h"
+#include <ast/ast.h>
+#include <type/type.h>
+#include <token/token.h>
 
 DEFINE_ALINKED_NODE(ast_t *, ast);
 DEFINE_PAIR_T(ast_t *, size_t, type_parser);
