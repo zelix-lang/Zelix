@@ -242,6 +242,36 @@ static inline bool parse_expression(
             // Parse object creation tokens
             if (token->type == TOKEN_NEW)
             {
+                // Parse the object creation expression
+                const pair_obj_creation_t obj_creation_result = parse_new(
+                    &queue,
+                    input,
+                    start,
+                    len,
+                    arena,
+                    vec_arena
+                );
+
+                // Get the extracted object creation node and its length
+                candidate = obj_creation_result.first;
+                const size_t obj_creation_len = obj_creation_result.second;
+
+                if (!candidate)
+                {
+                    create_error(
+                        token->line,
+                        token->column,
+                        token->col_start,
+                        (ast_rule_t[]){AST_FUNCTION_CALL},
+                        1
+                    );
+
+                    // Failed to parse the object creation expression
+                    return FALSE;
+                }
+
+                // Update the start counter
+                start += obj_creation_len;
                 is_arithmetic = FALSE;
                 is_prop_access = TRUE;
             }
