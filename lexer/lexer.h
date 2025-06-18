@@ -30,8 +30,8 @@
 // ============= INCLUDES =============
 #include "error.h"
 #include "stream.h"
-#include "../token/token_map.h"
-#include "../state/state.h"
+#include <token/token_map.h>
+#include <state/state.h>
 
 // ============= MACROS =============
 #ifndef FLUENT_PAIR_LEXER
