@@ -40,7 +40,7 @@
 #endif // FLUENT_PAIR_LEXER
 
 // ============= INCLUDES =============
-#include "../token/token.h"
+#include <token/token.h>
 
 static lexer_error_t global_error_state;
 
