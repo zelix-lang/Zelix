@@ -27,7 +27,7 @@
 #include <ast/ast.h>
 #include <token/token.h>
 #include <parser/queue/expression.h>
-#include "new.h"
+#include <parser/rule/new.h>
 
 static ast_t *parse_single_token(
     const token_t *token,
