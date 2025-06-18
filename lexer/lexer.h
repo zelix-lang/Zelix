@@ -28,8 +28,8 @@
 #include <fluent/heap_guard/heap_guard.h> // fluent_libc
 
 // ============= INCLUDES =============
-#include "error.h"
-#include "stream.h"
+#include <lexer/error.h>
+#include <lexer/stream.h>
 #include <token/token_map.h>
 #include <state/state.h>
 
