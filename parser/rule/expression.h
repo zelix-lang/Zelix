@@ -246,7 +246,7 @@ static inline bool parse_expression(
                 const pair_obj_creation_t obj_creation_result = parse_new(
                     &queue,
                     input,
-                    start,
+                    start + 1, // +1 to start after the 'new' token
                     len,
                     arena,
                     vec_arena
