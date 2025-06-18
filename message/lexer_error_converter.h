@@ -19,7 +19,7 @@
 #ifndef FLUENT_LEXER_ERROR_CONVERTER_H
 #define FLUENT_LEXER_ERROR_CONVERTER_H
 
-#include "../lexer/error.h"
+#include <lexer/error.h>
 
 static inline char *lexer_error_to_string(const lexer_error_t *error)
 {
