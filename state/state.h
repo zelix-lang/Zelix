@@ -164,10 +164,10 @@ static inline void new_timer(const char *message, const state_event_t event)
         ANSI_RESET
     );
 
-    print_event_type(current.event);
+    print_event_type(event);
     printf(
         "%s%s\r",
-        current.message,
+        message,
         ANSI_RESET
     );
 
