@@ -84,7 +84,7 @@ static inline pair_obj_creation_t parse_new(
     if (close_paren->type == TOKEN_CLOSE_PAREN)
     {
         // No arguments have to be parsed, just return the object creation node
-        return pair_obj_creation_new(object_creation_node, 2);
+        return pair_obj_creation_new(object_creation_node, 3);
     }
 
     // Create a new parameters node
