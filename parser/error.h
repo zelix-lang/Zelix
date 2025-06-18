@@ -20,7 +20,7 @@
 #define FLUENT_ERROR_H
 
 // ============= INCLUDES =============
-#include "../ast/rule.h"
+#include <ast/ast.h>
 
 /**
  * @brief Represents a syntax error encountered during parsing.
