@@ -112,14 +112,14 @@ static void write_pinpoint(
     }
 
     // Get the real column
-    const size_t real_column = column - 1;
-    const size_t real_col_start = col_start - 1;
+    const size_t real_column = column - space_count - 1;
+    const size_t real_col_start = col_start - space_count - 1;
 
     // Write the caret to highlight the error
     for (size_t i = 0; i < char_count; i++)
     {
         // Write the caret character at the column
-        if (i >= real_col_start && i <= real_column)
+        if (i >= real_col_start && i < real_column)
         {
             write_char_string_builder(builder, '^');
         }
