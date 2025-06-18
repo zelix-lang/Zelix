@@ -29,6 +29,8 @@
 #include <parser/stream.h>
 #include <parser/rule/import.h>
 #include <parser/rule/function.h>
+#include <parser/extractor.h>
+#include <parser/rule/expression.h>
 
 DEFINE_PAIR_T(ast_stream_t, ast_error_t *, parser_result);
 
@@ -85,6 +87,12 @@ static inline pair_parser_result_t parser_parse(
 
     // Iterate over the token stream
     const token_t *current = token_stream_nth(stream, 0);
+
+    // Track the blocks being parsed
+    alinked_queue_ast_t blocks;
+    alinked_queue_ast_init(&blocks, 10);
+    bool in_mod = FALSE;
+
     while (current != NULL)
     {
         // Determine what we have to parse
@@ -97,8 +105,7 @@ static inline pair_parser_result_t parser_parse(
                         ast_stream.ast,
                         stream,
                         ast_stream.allocator,
-                        ast_stream.vec_allocator,
-                        current
+                        ast_stream.vec_allocator
                     )
                 )
                 {
@@ -111,32 +118,148 @@ static inline pair_parser_result_t parser_parse(
 
             case TOKEN_FUNCTION:
             {
-                if (!
-                    parse_function(
-                        ast_stream.ast,
+                // Make sure the declaration is valid
+                if (!in_mod && blocks.len != 0)
+                {
+                    create_error(
                         stream,
-                        ast_stream.allocator,
-                        ast_stream.vec_allocator,
-                        current
-                    )
-                )
+                        (ast_rule_t[]){AST_IMPORT, AST_FUNCTION, AST_MODULE},
+                        3
+                    );
+
+                    return create_failed_result(ast_stream);
+                }
+
+                // Parse the function
+                ast_t *new_block = parse_function(
+                    ast_stream.ast,
+                    stream,
+                    ast_stream.allocator,
+                    ast_stream.vec_allocator
+                );
+
+                if (!new_block)
                 {
                     return create_failed_result(ast_stream);
                 }
+
+                // Append the new block to the queue
+                alinked_queue_ast_prepend(&blocks, new_block);
+                break;
+            }
+
+            case TOKEN_OPEN_CURLY:
+            {
+                // Make sure we are in a block
+                if (blocks.len == 0)
+                {
+                    create_error(
+                        stream,
+                        (ast_rule_t[]){AST_IMPORT, AST_FUNCTION, AST_MODULE},
+                        3
+                    );
+
+                    return create_failed_result(ast_stream);
+                }
+
+                // Create a new block
+                ast_t *block = ast_new(ast_stream.allocator, ast_stream.vec_allocator, TRUE);
+                if (!block)
+                {
+                    create_error(
+                        stream,
+                        (ast_rule_t[]){AST_IMPORT, AST_FUNCTION, AST_MODULE},
+                        3
+                    );
+
+                    return create_failed_result(ast_stream);
+                }
+
+                // Append the new block to the queue
+                alinked_queue_ast_prepend(&blocks, block);
+            }
+
+            case TOKEN_CLOSE_CURLY:
+            {
+                // Make sure we are in a block
+                if (blocks.len == 0)
+                {
+                    create_error(
+                        stream,
+                        (ast_rule_t[]){AST_IMPORT, AST_FUNCTION, AST_MODULE},
+                        3
+                    );
+
+                    return create_failed_result(ast_stream);
+                }
+
+                // Delete the first element from the queue
+                alinked_queue_ast_shift(&blocks);
                 break;
             }
 
             default:
             {
-                create_error(
-                    current->line,
-                    current->column,
-                    current->col_start,
-                    (ast_rule_t[]){AST_IMPORT, AST_FUNCTION, AST_MODULE},
-                    3
+                // Make sure we are in a block
+                if (blocks.len == 0)
+                {
+                    create_error(
+                        stream,
+                        (ast_rule_t[]){AST_IMPORT, AST_FUNCTION, AST_MODULE},
+                        3
+                    );
+
+                    return create_failed_result(ast_stream);
+                }
+
+                // Extract all tokens before the next semicolon
+                const pair_extract_t extract = extract_tokens(
+                    stream->tokens->data,
+                    stream->tokens->length,
+                    TOKEN_SEMICOLON,
+                    TOKEN_SEMICOLON,
+                    stream->current,
+                    FALSE
                 );
 
-                return create_failed_result(ast_stream);
+                // Get the extracted range
+                token_t **range = extract.first;
+                const size_t len = extract.second;
+
+                // Handle failure
+                if (!range)
+                {
+                    create_error(
+                        stream,
+                        (ast_rule_t[]){AST_IMPORT, AST_FUNCTION, AST_MODULE},
+                        3
+                    );
+
+                    return create_failed_result(ast_stream);
+                }
+
+                // Get the first block in the queue
+                const ast_t *block = blocks.head->data;
+
+                // Pass the range to the expression parser
+                if (!
+                    parse_expression(
+                        stream,
+                        block,
+                        range,
+                        0,
+                        len - 1, // -1 to exclude the semicolon
+                        ast_stream.allocator,
+                        ast_stream.vec_allocator
+                    )
+                )
+                {
+                    return create_failed_result(ast_stream);
+                }
+
+                // Skip the extracted range
+                stream->current += len;
+                break;
             }
         }
 
