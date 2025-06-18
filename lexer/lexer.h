@@ -270,6 +270,7 @@ static inline pair_lex_result_t lexer_tokenize(
             // Block comment start
             in_block_comment = TRUE;
             i++; // Skip the next character
+            column++; // Increment column for the comment start
             continue;
         }
 
@@ -279,6 +280,7 @@ static inline pair_lex_result_t lexer_tokenize(
             // Block comment end
             in_block_comment = FALSE;
             i++; // Skip the next character
+            column += 2; // Increment column for the comment start
             continue;
         }
 
