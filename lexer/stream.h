@@ -28,7 +28,7 @@
 #   define FLUENT_VECTOR_TOKEN_DEFINED 1
 #endif
 
-#include "../token/token.h"
+#include <token/token.h>
 
 /**
  * @brief Represents a stream of tokens for the lexer.
