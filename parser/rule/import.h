@@ -24,9 +24,9 @@
 #include <fluent/arena/arena.h> // fluent_lib
 
 // ============= INCLUDES =============
-#include "../error.h"
-#include "../../ast/ast.h"
-#include "../../lexer/stream.h"
+#include <parser/error.h>
+#include <ast/ast.h>
+#include <lexer/stream.h>
 
 static inline bool parse_import(
     const ast_t *const root,
