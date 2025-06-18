@@ -70,7 +70,7 @@ static inline pair_extract_t extract_tokens(
     bool has_met_delim = FALSE;
 
     // Iterate over the buffer
-    for (size_t i = start; i < length; i++)
+    for (size_t i = start; i <= length; i++)
     {
         const token_t *token = tokens[i];
         if (token->type == end_delim)
