@@ -18,9 +18,9 @@
 #include <fluent/ansi/ansi.h> // fluent_libc
 
 // ============= INCLUDES =============
-#include "token/token_map.h"
-#include "command/check.h"
-#include "state/state.h"
+#include <token/token_map.h>
+#include <command/check.h>
+#include <state/state.h>
 
 // ============= MACROS =============
 #ifndef PROGRAM_NAME
