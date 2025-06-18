@@ -25,7 +25,7 @@
 #include "parser/error.h"
 DEFINE_PAIR_T(ast_t *, size_t, obj_creation);
 
-static inline pair_obj_creation_t parse_new(
+static inline pair_obj_creation_t parse_args(
     alinked_queue_expr_t *queue,
     token_t **body,
     size_t start,
@@ -34,59 +34,20 @@ static inline pair_obj_creation_t parse_new(
     arena_allocator_t *const vec_arena
 )
 {
-    // Perform bounds checking
-    if (start + 2 > len)
-    {
-        // Create an error for unexpected end of stream
-        return pair_obj_creation_new(NULL, 0);
-    }
+    const token_t *open_paren = body[start];
 
-    // Allocate a new AST node for the object creation
-    ast_t *object_creation_node = ast_new(arena, vec_arena, TRUE);
-
-    // Handle allocation failure
-    if (!object_creation_node)
-    {
-        // Failed to allocate memory for the node
-        return pair_obj_creation_new(NULL, 0);
-    }
-
-    // Get the identifier
-    const token_t *identifier_token = body[start];
-    const token_t *open_paren = body[start + 1];
-
-    // Validate the tokens
-    if (identifier_token->type != TOKEN_IDENTIFIER || open_paren->type != TOKEN_OPEN_PAREN)
+    // Validate the token
+    if (open_paren->type != TOKEN_OPEN_PAREN)
     {
         // Create an error for unexpected tokens
         create_error_ranged(
-            identifier_token->line,
-            identifier_token->column,
-            identifier_token->col_start,
+            open_paren->line,
+            open_paren->column,
+            open_paren->col_start,
             (ast_rule_t[]){AST_IDENTIFIER, AST_FUNCTION_CALL},
             2
         );
         return pair_obj_creation_new(NULL, 0);
-    }
-
-    // Create a new node for the identifier
-    ast_t *identifier_node = ast_new(arena, vec_arena, FALSE);
-    if (!identifier_node)
-    {
-        // Failed to allocate memory for the identifier node
-        return pair_obj_creation_new(NULL, 0);
-    }
-
-    identifier_node->rule = AST_IDENTIFIER; // Set the rule to identifier
-    identifier_node->value = identifier_token->value; // Set the value to the identifier
-    vec_ast_push(object_creation_node->children, identifier_node);
-
-    // Get the 3rd token to determine if we have to parse arguments
-    const token_t *close_paren = body[start + 2];
-    if (close_paren->type == TOKEN_CLOSE_PAREN)
-    {
-        // No arguments have to be parsed, just return the object creation node
-        return pair_obj_creation_new(object_creation_node, 3);
     }
 
     // Create a new parameters node
@@ -97,11 +58,16 @@ static inline pair_obj_creation_t parse_new(
         return pair_obj_creation_new(NULL, 0);
     }
 
-    // Add the parameters node to the object creation node
-    vec_ast_push(object_creation_node->children, params_node);
+    // Get the 2rd token to determine if we have to parse arguments
+    const token_t *close_paren = body[start + 1];
+    if (close_paren->type == TOKEN_CLOSE_PAREN)
+    {
+        // No arguments have to be parsed, just return the object creation node
+        return pair_obj_creation_new(NULL, 3);
+    }
 
-    // Skip 2 tokens for the identifier and the open parenthesis
-    start += 3; // + 1 to start at the first argument
+    // Skip 1 token for the open parenthesis
+    start += 2; // + 1 to start at the first argument
 
     // Parse all arguments by extracting tokens
     // until we reach the closing parenthesis
@@ -187,6 +153,90 @@ static inline pair_obj_creation_t parse_new(
             break; // Break the loop since we have reached the closing parenthesis
         }
     }
+
+    return pair_obj_creation_new(params_node, start + 1); // +1 to include the closing parenthesis
+}
+
+static inline pair_obj_creation_t parse_new(
+    alinked_queue_expr_t *queue,
+    token_t **body,
+    const size_t start,
+    const size_t len,
+    arena_allocator_t *const arena,
+    arena_allocator_t *const vec_arena
+)
+{
+    // Perform bounds checking
+    if (start + 2 > len)
+    {
+        // Create an error for unexpected end of stream
+        return pair_obj_creation_new(NULL, 0);
+    }
+
+    // Allocate a new AST node for the object creation
+    ast_t *object_creation_node = ast_new(arena, vec_arena, TRUE);
+
+    // Handle allocation failure
+    if (!object_creation_node)
+    {
+        // Failed to allocate memory for the node
+        return pair_obj_creation_new(NULL, 0);
+    }
+
+    // Get the identifier
+    const token_t *identifier_token = body[start];
+
+    // Validate the tokens
+    if (identifier_token->type != TOKEN_IDENTIFIER)
+    {
+        // Create an error for unexpected tokens
+        create_error_ranged(
+            identifier_token->line,
+            identifier_token->column,
+            identifier_token->col_start,
+            (ast_rule_t[]){AST_IDENTIFIER, AST_FUNCTION_CALL},
+            2
+        );
+        return pair_obj_creation_new(NULL, 0);
+    }
+
+    // Create a new node for the identifier
+    ast_t *identifier_node = ast_new(arena, vec_arena, FALSE);
+    if (!identifier_node)
+    {
+        // Failed to allocate memory for the identifier node
+        return pair_obj_creation_new(NULL, 0);
+    }
+
+    identifier_node->rule = AST_IDENTIFIER; // Set the rule to identifier
+    identifier_node->value = identifier_token->value; // Set the value to the identifier
+    vec_ast_push(object_creation_node->children, identifier_node);
+
+    // Parse the parameters
+    const pair_obj_creation_t params_result = parse_args(
+        queue,
+        body,
+        start + 1, // +1 to skip the 'new' token
+        len,
+        arena,
+        vec_arena
+    );
+
+    // Get the parameters node and its length
+    ast_t *params_node = params_result.first;
+    const size_t params_len = params_result.second;
+
+    // Handle failure
+    if (!params_node && params_len == 0)
+    {
+        return pair_obj_creation_new(NULL, 0);
+    } else if (!params_node)
+    {
+        return pair_obj_creation_new(object_creation_node, 3);
+    }
+
+    // Add the parameters node to the object creation node
+    vec_ast_push(object_creation_node->children, params_node);
 
     return pair_obj_creation_new(object_creation_node, len);
 }
