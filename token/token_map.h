@@ -165,6 +165,7 @@ static inline hashmap_token_t *get_token_map()
     hashmap_token_insert(&fluent_token_map, "elseif", TOKEN_ELSE_IF);
     hashmap_token_insert(&fluent_token_map, "return", TOKEN_RETURN);
     hashmap_token_insert(&fluent_token_map, "mod", TOKEN_MOD);
+    hashmap_token_insert(&fluent_token_map, "step", TOKEN_STEP);
     hashmap_token_insert(&fluent_token_map, "in", TOKEN_IN);
     hashmap_token_insert(&fluent_token_map, "to", TOKEN_TO);
 
