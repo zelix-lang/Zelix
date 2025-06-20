@@ -27,7 +27,6 @@
 #include <ast/ast.h>
 #include <token/token.h>
 #include <parser/queue/expression.h>
-#include <parser/rule/new.h>
 
 static ast_t *parse_single_token(
     const token_t *token,
@@ -104,50 +103,38 @@ static inline bool parse_expression(
     });
 
     // Iterate over the queue until it's empty
-    while (queue.len > 0)
-    {
-        // Get the first element
-        const queue_expression_t expr = alinked_queue_expr_shift(&queue);
-        token_t **input = expr.body + expr.start;
-        const size_t len = expr.len - expr.start;
-        const ast_t *parent = expr.parent;
-        size_t start = 0;
+    while (queue.len > 0) {
+        // Get the first element of the queue
+        const queue_expression_t current = alinked_queue_expr_shift(&queue);
+
+        // Get the body and its length
+        token_t **input = current.body + current.start;
+        size_t input_len = current.len - current.start;
+        const ast_t *parent = current.parent;
 
         // Handle empty input
-        if (len == 0)
+        if (input_len == 1) // Consider len is inclusive (includes the semicolon)
         {
+            create_error_ranged(
+                input[0]->line,
+                input[0]->column,
+                input[0]->col_start,
+                (ast_rule_t[]){AST_EXPRESSION},
+                1
+            );
+
             return FALSE;
         }
 
-        // Parse pointers
-        for (size_t i = 0; i <= len; i++)
+        // Parse pointers and dereferences
+        const token_t *token = input[0];
+        while (
+            token->type == TOKEN_ASTERISK
+            || token->type == TOKEN_AMPERSAND // Single pointer (&)
+            || token->type == TOKEN_AND // Double pointer (&&)
+        )
         {
-            // Get the current token
-            const token_t *token = input[i];
-            ast_rule_t rule = AST_PROGRAM_RULE;
-
-            // Check if we have a dereference operation
-            if (token->type == TOKEN_ASTERISK)
-            {
-                rule = AST_DEREFERENCE; // Set the rule to dereference
-            }
-            // Check for pointers
-            else if (
-                token->type == TOKEN_AMPERSAND ||
-                token->type == TOKEN_AND
-            )
-            {
-                rule = AST_POINTER; // Set the rule to pointer
-            }
-            else
-            {
-                break;
-            }
-
-            // Increment the start counter
-            start++;
-
-            // Allocate a new AST node for the pointer or dereference
+            // Create a new AST node for the pointer or dereference
             ast_t *ptr_node = ast_new(arena, vec_arena, FALSE);
             if (!ptr_node)
             {
@@ -155,164 +142,149 @@ static inline bool parse_expression(
                 return FALSE;
             }
 
-            // Set the metadata for the pointer node
-            ptr_node->rule = rule;
-            ptr_node->line = token->line;
-            ptr_node->column = token->column;
-            ptr_node->col_start = token->col_start;
+            // Set the rule based on the token type
+            switch (token->type)
+            {
+                case TOKEN_ASTERISK:
+                    ptr_node->rule = AST_DEREFERENCE;
+                    break;
+                case TOKEN_AMPERSAND:
+                    ptr_node->rule = AST_POINTER;
+                    break;
+                case TOKEN_AND:
+                    // Case managed later
+                    ptr_node->rule = AST_POINTER;
+                    break;
+                default:
+                    // Invalid token type for pointer or dereference
+                    return FALSE;
+            }
 
-            // Append the pointer node to the expression
+            // Set the value of the pointer node
+            ptr_node->value = token->value;
+
+            // Add the pointer node to the expression's children
             vec_ast_push(parent->children, ptr_node);
 
-            // Check for double pointers
+            // Handle double pointers
             if (token->type == TOKEN_AND)
             {
-                // Append the same node for a double pointer
-                // without allocating a new one
+                // Push the same node without allocating more memory
                 vec_ast_push(parent->children, ptr_node);
             }
+
+            // Move to the next token
+            input++;
+
+            // Decrement the input length
+            input_len--;
+
+            // Update the token
+            token = input[0];
         }
 
         // Handle invalid expressions
-        if (start == len)
+        if (input_len == 1)
         {
-            return FALSE; // Invalid expression, no valid tokens found
+            return FALSE; // Invalid expression with only one token
         }
 
-        // Get the current token
-        token_t *token = input[start];
+        // Define the candidate
+        size_t start_at = 0;
         ast_t *candidate = NULL;
-        // Whether the expression is likely to be arithmetic
-        bool is_arithmetic = FALSE;
-        // Whether the expression is likely to be a prop access
-        bool is_prop_access = FALSE;
 
-        // Look for nested expressions
+        // Parse the candidate
+        // Check for nested expressions
         if (token->type == TOKEN_OPEN_PAREN)
         {
-            // Extract all tokens before the next close paren
-            const pair_extract_t nested_expr_result = extract_tokens(
+            // Extract all tokens until the closing parenthesis
+            const pair_extract_t extract = extract_tokens(
                 input,
-                len,
+                input_len,
                 TOKEN_OPEN_PAREN,
                 TOKEN_CLOSE_PAREN,
-                start,
+                0,
                 TRUE
             );
 
-            // Obtain the extracted range and len
-            token_t **nested_expr = nested_expr_result.first;
-            const size_t skipped = nested_expr_result.second;
+            // Get the extracted range
+            token_t **range = extract.first;
+            const size_t len = extract.second;
 
             // Handle failure
-            if (!nested_expr)
+            if (!range)
             {
-                return FALSE;
+                create_error_ranged(
+                    token->line,
+                    token->column,
+                    token->col_start,
+                    (ast_rule_t[]){AST_EXPRESSION},
+                    1
+                );
+                return FALSE; // Failed to extract tokens
             }
 
             // Create a new AST node for the nested expression
-            ast_t *nested_expr_node = ast_new(arena, vec_arena, TRUE);
-            if (!nested_expr_node)
+            ast_t *nested_expression = ast_new(arena, vec_arena, TRUE);
+            if (!nested_expression)
             {
                 // Failed to allocate memory for the nested expression
                 return FALSE;
             }
 
             // Set the rule for the nested expression
-            nested_expr_node->rule = AST_EXPRESSION;
+            nested_expression->rule = AST_EXPRESSION;
 
-            // Create a new queue element and add it to the queue
+            // Update the candidate to the nested expression
+            candidate = nested_expression;
+
+            // Enqueue the nested expression
             alinked_queue_expr_append(&queue, (queue_expression_t){
-                .body = nested_expr,
+                .body = range + 1, // Skip the opening parenthesis
                 .start = 0,
-                .len = skipped,
-                .parent = nested_expr_node
+                .len = len - 1, // Skip the closing parenthesis
+                .parent = nested_expression
             });
 
-            // Skip the nested expression
-            start += skipped;
-
-            // Update the candidate to the nested expression node
-            candidate = nested_expr_node;
+            start_at += len; // Move the start index forward
         }
 
-        // Handle literals and identifiers
-        if (candidate == NULL)
+        // Check if we have more tokens to process
+        if (start_at == input_len)
         {
-            // Parse object creation tokens
-            if (token->type == TOKEN_NEW)
+            // Make sure we have a valid candidate
+            if (!candidate)
             {
-                // Parse the object creation expression
-                const pair_obj_creation_t obj_creation_result = parse_new(
-                    &queue,
-                    input,
-                    start + 1, // +1 to start after the 'new' token
-                    len,
-                    arena,
-                    vec_arena
-                );
-
-                // Get the extracted object creation node and its length
-                candidate = obj_creation_result.first;
-                const size_t obj_creation_len = obj_creation_result.second;
-
+                // Create a new candidate from the single token
+                candidate = parse_single_token(input[0], arena, vec_arena);
                 if (!candidate)
                 {
                     create_error_ranged(
-                        token->line,
-                        token->column,
-                        token->col_start,
-                        (ast_rule_t[]){AST_FUNCTION_CALL},
+                        input[0]->line,
+                        input[0]->column,
+                        input[0]->col_start,
+                        (ast_rule_t[]){AST_EXPRESSION},
                         1
                     );
-
-                    // Failed to parse the object creation expression
-                    return FALSE;
+                    return FALSE; // Failed to parse the single token
                 }
-
-                // Update the start counter
-                start += obj_creation_len;
-                is_arithmetic = FALSE;
-                is_prop_access = TRUE;
             }
-            else
-            {
-                // Update the start counter
-                start++;
 
-                // Parse a single token
-                ast_t *single = parse_single_token(token, arena, vec_arena);
-                if (!single)
-                {
-                    return FALSE;
-                }
-
-                // Update the candidate
-                candidate = single;
-                is_arithmetic = single->rule != AST_BOOLEAN_LITERAL
-                    && single->rule != AST_STRING_LITERAL;
-                is_prop_access = single->rule == AST_IDENTIFIER;
-            }
-        }
-
-        // Handle end of the expression
-        if (start == len)
-        {
-            // Append the nested expression node to the parent
+            // Append the candidate to the parent
             vec_ast_push(parent->children, candidate);
             continue; // No more tokens to process
         }
 
-        // Update the token to the next one
-        token = input[start];
+        // Move the buffer using pointer arithmetic
+        input += start_at;
+        input_len -= start_at; // Decrement the input length
 
-        // Check for prop access
-        if (token->type == TOKEN_DOT)
+        // Check if we have a valid candidate
+        if (!candidate)
         {
-            // Check if we are allowed to parse prop access
-            if (!is_prop_access)
+            // Make sure we have enough tokens to parse
+            if (input_len < 1)
             {
-                // Create an error for unexpected prop access
                 create_error_ranged(
                     token->line,
                     token->column,
@@ -320,68 +292,85 @@ static inline bool parse_expression(
                     (ast_rule_t[]){AST_EXPRESSION},
                     1
                 );
-                return FALSE; // Invalid prop access expression
+                return FALSE; // Not enough tokens to parse
             }
 
-            // TODO: Prop access parser
+            // Parse the single token as a candidate
+            candidate = parse_single_token(input[0], arena, vec_arena);
+            if (!candidate)
+            {
+                return FALSE; // Irrecoverable state
+            }
+        }
+
+        // Move the pointer forward and decrement the input length
+        input++;
+        input_len--;
+
+        // Check if we have any tokens left
+        if (input_len == 0)
+        {
+            // Append the candidate to the parent
+            vec_ast_push(parent->children, candidate);
+            continue; // No more tokens to process
+        }
+
+        // Update the first token
+        token = input[0];
+
+        // Check for function calls
+        if (token->type == TOKEN_OPEN_PAREN)
+        {
+            // TODO: Args parser
         }
 
         // Check for arithmetic operations
         if (
-            token->type == TOKEN_PLUS
-            || token->type == TOKEN_MINUS
-            || token->type == TOKEN_ASTERISK
-            || token->type == TOKEN_SLASH
+            token->type == TOKEN_PLUS ||
+            token->type == TOKEN_MINUS ||
+            token->type == TOKEN_ASTERISK ||
+            token->type == TOKEN_SLASH
         )
         {
-            // Check if we are allowed to parse arithmetic expressions
-            if (!is_arithmetic)
-            {
-                // Create an error for unexpected arithmetic operation
-                create_error_ranged(
-                    token->line,
-                    token->column,
-                    token->col_start,
-                    (ast_rule_t[]){AST_EXPRESSION},
-                    1
-                );
-                return FALSE; // Invalid arithmetic expression
-            }
-
             // TODO: Arithmetic parser
         }
 
-        // Check for comparison operations
+        // Check for prop access
+        if (token->type == TOKEN_DOT)
+        {
+            // TODO: Prop access parser
+        }
+
+        // Check for boolean operations
         if (
-            token->type == TOKEN_EQUAL
-            || token->type == TOKEN_NOT_EQUAL
-            || token->type == TOKEN_LESS_THAN
-            || token->type == TOKEN_GREATER_THAN
-            || token->type == TOKEN_LESS_THAN_OR_EQUAL
-            || token->type == TOKEN_GREATER_THAN_OR_EQUAL
+            token->type == TOKEN_EQUAL ||
+            token->type == TOKEN_NOT_EQUAL ||
+            token->type == TOKEN_GREATER_THAN ||
+            token->type == TOKEN_LESS_THAN ||
+            token->type == TOKEN_LESS_THAN_OR_EQUAL ||
+            token->type == TOKEN_GREATER_THAN_OR_EQUAL
         )
         {
-            // TODO: boolean parser
+            // TODO: Boolean parser
         }
 
-        // Handle end of the expression
-        if (start == len)
+        // Check if we have tokens left
+        if (start_at != input_len)
         {
-            // Append the nested expression node to the parent
-            vec_ast_push(parent->children, candidate);
-            continue; // No more tokens to process
+            token = input[start_at];
+            // Invalid expression
+            create_error_ranged(
+                token->line,
+                token->column,
+                token->col_start,
+                (ast_rule_t[]){AST_EXPRESSION},
+                1
+            );
+            return FALSE;
         }
 
-        // No more tokens to process, expression is invalid
-        create_error_ranged(
-            token->line,
-            token->column,
-            token->col_start,
-            (ast_rule_t[]){AST_EXPRESSION},
-            1
-        );
-
-        return FALSE; // Invalid expression
+        // Add the final candidate to the parent
+        vec_ast_push(parent->children, candidate);
     }
 
     // Add the child to the root
