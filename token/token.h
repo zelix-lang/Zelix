@@ -74,6 +74,7 @@ typedef enum
     TOKEN_BOOL_LITERAL,      ///< Boolean literal - 42
     TOKEN_WHILE,             ///< While keyword (loop) - 43
     TOKEN_FOR,               ///< For keyword (loop) - 44
+    TOKEN_STEP,              ///< Step keyword (loop control) - 45
     TOKEN_IN,                ///< In keyword (membership/iteration) - 46
     TOKEN_TO,                ///< To keyword (range/iteration) - 47
     TOKEN_BREAK,             ///< Break keyword (loop control) - 48
