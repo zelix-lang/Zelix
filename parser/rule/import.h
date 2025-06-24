@@ -25,7 +25,7 @@
 
 // ============= INCLUDES =============
 #include <parser/error.h>
-#include <ast/ast.h>
+#include "ast/ast.h"
 #include <lexer/stream.h>
 
 static inline bool parse_import(

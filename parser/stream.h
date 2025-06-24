@@ -23,7 +23,7 @@
 #include <fluent/arena/arena.h>
 
 // ============= INCLUDES =============
-#include <ast/ast.h>
+#include "ast/ast.h"
 
 typedef struct
 {

@@ -25,7 +25,7 @@
 #include <fluent/arena/arena.h> // fluent_libc
 
 // ============= INCLUDES =============
-#include <ast/ast.h>
+#include "ast/ast.h"
 #include <type/type.h>
 #include <token/token.h>
 
