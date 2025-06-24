@@ -20,9 +20,9 @@
 #define FLUENT_COMMAND_CHECK_H
 
 // ============= INCLUDES =============
-#include <file/file_reader.h>
-#include <message/lexer_error_converter.h>
-#include <message/generator.h>
+#include "file/file_reader.h"
+#include "message/lexer_error_converter.h"
+#include "message/generator.h"
 #include <lexer/lexer.h>
 #include <logger/logger.h>
 #include <parser/parser.h>
