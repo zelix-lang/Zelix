@@ -4,18 +4,6 @@
 
 import "@std::io::print";
 
-mod Abc {
-    let a: Bcd = new Bcd();
-}
-
-mod Bcd {
-    let a: num = 2;
-
-    pub fun Bcd() {
-        this.a = 2;
-    }
-}
-
 fun main() {
-    new Abc();
+    Abc.new(asd, 1224);
 }
