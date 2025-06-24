@@ -25,7 +25,7 @@
 
 // ============= INCLUDES =============
 #include <parser/error.h>
-#include <lexer/stream.h>
+#include "lexer/stream.h"
 #include <parser/stream.h>
 #include <parser/rule/import.h>
 #include <parser/rule/function.h>
