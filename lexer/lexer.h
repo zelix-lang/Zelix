@@ -30,7 +30,7 @@
 // ============= INCLUDES =============
 #include "lexer/error.h"
 #include <lexer/stream.h>
-#include <token/token_map.h>
+#include "token/token_map.h"
 #include <state/state.h>
 
 // ============= MACROS =============
