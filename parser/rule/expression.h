@@ -25,7 +25,7 @@
 
 // ============= INCLUDES =============
 #include "ast/ast.h"
-#include <token/token.h>
+#include "token/token.h"
 #include <parser/queue/expression.h>
 
 static ast_t *parse_single_token(

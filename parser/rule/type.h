@@ -27,7 +27,7 @@
 // ============= INCLUDES =============
 #include "ast/ast.h"
 #include <type/type.h>
-#include <token/token.h>
+#include "token/token.h"
 
 DEFINE_ALINKED_NODE(ast_t *, ast);
 
