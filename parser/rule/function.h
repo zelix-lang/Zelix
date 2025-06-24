@@ -26,7 +26,7 @@
 // ============= INCLUDES =============
 #include <parser/error.h>
 #include "ast/ast.h"
-#include "lexer/stream.h"
+#include <lexer/stream.h>
 #include <parser/rule/type.h>
 
 // ============ GLOBAL =============
