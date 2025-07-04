@@ -345,8 +345,18 @@ static inline bool parse_expression(
                 return FALSE; // Failed to parse the function call
             }
 
-            // Decrease the length and update the input pointer
+            // Decrease the length
             input_len -= call.second;
+
+            // Check if we have any tokens left
+            if (input_len == 0)
+            {
+                // Append the candidate to the parent
+                vec_ast_push(parent->children, candidate);
+                continue; // No more tokens to process
+            }
+
+            // Move the input pointer forward
             input += call.second;
 
             // Update the token to the next one
