@@ -26,7 +26,8 @@
 // ============= INCLUDES =============
 #include "ast/ast.h"
 #include "token/token.h"
-#include <parser/queue/expression.h>
+#include "parser/queue/expression.h"
+#include "parser/rule/call.h"
 
 static ast_t *parse_single_token(
     const token_t *token,
@@ -321,7 +322,38 @@ static inline bool parse_expression(
         // Check for function calls
         if (token->type == TOKEN_OPEN_PAREN)
         {
+            // Parse the function call
+            const pair_parse_t call = parse_call(
+                input,
+                input_len,
+                arena,
+                vec_arena,
+                &queue,
+                candidate
+            );
 
+            // Handle failure in parsing the function call
+            if (!call)
+            {
+                create_error_ranged(
+                    token->line,
+                    token->column,
+                    token->col_start,
+                    (ast_rule_t[]){AST_EXPRESSION},
+                    1
+                );
+                return FALSE; // Failed to parse the function call
+            }
+
+            // Decrease the length and update the input pointer
+            input_len -= call.second;
+            input += call.second;
+
+            // Update the token to the next one
+            token = input[0];
+
+            // Update the candidate to the call node
+            candidate = call.first;
         }
 
         // Check for arithmetic operations
