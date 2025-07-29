@@ -147,17 +147,20 @@ namespace fluent::container
                 }
             }
 
-            // Check if we need to grow the heap memory
-            auto new_capacity = static_cast<size_t>(capacity * growth_factor);
-            const size_t count_to = len + required;
-
-            while (new_capacity < count_to)
+            if (!stack_mem && len + required > max_capacity)
             {
-                new_capacity += static_cast<size_t>(capacity * growth_factor); // Increase capacity by growth factor
-            }
+                // Check if we need to grow the heap memory
+                auto new_capacity = static_cast<size_t>(capacity * growth_factor);
+                const size_t count_to = len + required;
 
-            max_capacity = new_capacity;
-            reallocate();
+                while (new_capacity < count_to)
+                {
+                    new_capacity *= growth_factor; // Increase capacity by growth factor
+                }
+
+                max_capacity = new_capacity;
+                reallocate();
+            }
         }
 
         /**
