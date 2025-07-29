@@ -191,6 +191,15 @@ namespace fluent::container
         }
 
         /**
+         * @brief Returns the current length of the string.
+         * @return The number of characters in the string.
+         */
+        [[nodiscard]] size_t size()
+        const {
+            return len;
+        }
+
+        /**
          * @brief Destructor. Releases heap memory if allocated.
          */
         ~string()
