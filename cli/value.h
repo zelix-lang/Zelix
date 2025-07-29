@@ -118,7 +118,7 @@ namespace fluent::cli
 
         template <typename T>
         T get()
-        {
+        const {
             if constexpr (std::is_same_v<T, container::external_string>)
             {
                 return default_str;
