@@ -49,6 +49,16 @@ namespace fluent::container
             }
         }
 
+        bool operator==(const external_string &other) const
+        {
+            if (len != other.len)
+            {
+                return false; // Different lengths, cannot be equal
+            }
+
+            return memcmp(buffer, other.buffer, len) == 0;
+        }
+
         [[nodiscard]] const char *ptr()
         const {
             return buffer;
