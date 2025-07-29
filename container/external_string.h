@@ -40,7 +40,13 @@ namespace fluent::container
         size_t len = 0;
 
     public:
-        external_string(const char *buffer, const size_t len)
+        external_string(const external_string &other)
+        {
+            buffer = other.buffer;
+            len = other.len;
+        }
+
+        explicit external_string(const char *buffer, const size_t len)
             : buffer(buffer), len(len)
         {
             if (buffer == nullptr || len == 0)
@@ -48,6 +54,10 @@ namespace fluent::container
                 throw except::exception("Buffer cannot be null or length zero");
             }
         }
+
+        explicit external_string(const char* str)
+            : buffer(str), len(strlen(str))
+        {}
 
         bool operator==(const external_string &other) const
         {
