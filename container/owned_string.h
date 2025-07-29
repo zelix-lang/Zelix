@@ -32,16 +32,27 @@
 
 namespace fluent::container
 {
+    /**
+     * @brief A small-string-optimized, owned string class.
+     *
+     * Uses stack allocation for small strings and switches to heap allocation for larger strings.
+     * Provides basic push and reserve operations, and exposes a C-style string interface.
+     */
     class string
     {
-        char stack[256]{}; // Stack-allocated buffer for small strings
-        char* heap = nullptr; // Pointer to heap-allocated string for larger strings
-        size_t len = 0; // Length of the string
-        size_t max_capacity = sizeof(stack) - 1; // Maximum capacity of the stack buffer, -1 for null terminator
-        size_t capacity = max_capacity + 1; // Capacity of the string
-        bool stack_mem = true; // Flag to indicate if the string is using stack memory
-        double growth_factor = 1.8; // Growth factor for heap allocation
+        char stack[256]{}; ///< Stack-allocated buffer for small strings
+        char* heap = nullptr; ///< Pointer to heap-allocated string for larger strings
+        size_t len = 0; ///< Length of the string
+        size_t max_capacity = sizeof(stack) - 1; ///< Maximum capacity of the stack buffer, -1 for null terminator
+        size_t capacity = max_capacity + 1; ///< Capacity of the string
+        bool stack_mem = true; ///< Flag to indicate if the string is using stack memory
+        double growth_factor = 1.8; ///< Growth factor for heap allocation
 
+        /**
+         * @brief Initializes the heap-allocated buffer and copies stack data.
+         *
+         * Called when the string grows beyond the stack buffer.
+         */
         void heap_init()
         {
             // Initialize the heap-allocated string if needed
@@ -52,6 +63,11 @@ namespace fluent::container
             memcpy(heap, stack, sizeof(stack));
         }
 
+        /**
+         * @brief Reallocates the heap buffer to a larger size.
+         *
+         * Copies existing heap data to the new buffer and updates capacity.
+         */
         void reallocate()
         {
             // Initialize the heap-allocated string if needed
@@ -64,8 +80,17 @@ namespace fluent::container
         }
 
     public:
+        /**
+         * @brief Default constructor. Initializes an empty string using stack memory.
+         */
         explicit string() = default;
 
+        /**
+         * @brief Constructs a string with a specified capacity.
+         * @param capacity The initial capacity to reserve.
+         *
+         * Uses stack memory if capacity is small, otherwise allocates on the heap.
+         */
         explicit string(const size_t capacity)
         {
             // Determine if we have to use the stack or heap
@@ -81,6 +106,12 @@ namespace fluent::container
             }
         }
 
+        /**
+         * @brief Returns a pointer to a null-terminated C-style string.
+         * @return Pointer to the string data.
+         *
+         * Ensures the string is null-terminated before returning.
+         */
         char *c_str()
         {
             if (stack_mem)
@@ -100,6 +131,12 @@ namespace fluent::container
             }
         }
 
+        /**
+         * @brief Ensures the string has enough capacity for additional data.
+         * @param capacity The additional capacity to reserve.
+         *
+         * Switches to heap memory or grows the heap buffer if needed.
+         */
         void reserve(const size_t capacity)
         {
             if (stack_mem)
@@ -118,6 +155,10 @@ namespace fluent::container
             }
         }
 
+        /**
+         * @brief Appends a single character to the string.
+         * @param c The character to append.
+         */
         void push(const char c)
         {
             reserve(1); // Reserve space for one character
@@ -131,6 +172,10 @@ namespace fluent::container
             }
         }
 
+        /**
+         * @brief Appends a C-style string to the string.
+         * @param c The null-terminated string to append.
+         */
         void push(const char *c)
         {
             const size_t c_len = strlen(c); // Get the length of the input string
@@ -145,6 +190,9 @@ namespace fluent::container
             }
         }
 
+        /**
+         * @brief Destructor. Releases heap memory if allocated.
+         */
         ~string()
         {
             if (!stack_mem && heap)
