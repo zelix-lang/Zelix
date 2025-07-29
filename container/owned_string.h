@@ -177,7 +177,7 @@ namespace fluent::container
          * @param c The null-terminated string to append.
          * @param c_len The length of the string to append. Defaults to strlen(c).
          */
-        void push(const char *c, const size_t c_len = strlen(c))
+        void push(const char *c, const size_t c_len)
         {
             reserve(c_len); // Reserve space for one character
             if (stack_mem)
@@ -188,6 +188,11 @@ namespace fluent::container
             {
                 memcpy(heap + len, c, c_len);
             }
+        }
+
+        void push(const char *c)
+        {
+            push(c, strlen(c)); // Push with length
         }
 
         /**
