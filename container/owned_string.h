@@ -188,6 +188,8 @@ namespace fluent::container
             {
                 memcpy(heap + len, c, c_len);
             }
+
+            len += c_len; // Update the length of the string
         }
 
         void push(const char *c)
