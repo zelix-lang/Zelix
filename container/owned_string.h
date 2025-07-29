@@ -71,7 +71,6 @@ namespace fluent::container
         void reallocate()
         {
             // Initialize the heap-allocated string if needed
-            max_capacity = static_cast<size_t>(sizeof(stack) * growth_factor - 1); // Adjust max capacity based on growth factor
             capacity = max_capacity + 1;
             const auto new_heap = new char[capacity];
             memcpy(new_heap, heap, len); // Copy existing data to new heap
@@ -133,26 +132,32 @@ namespace fluent::container
 
         /**
          * @brief Ensures the string has enough capacity for additional data.
-         * @param capacity The additional capacity to reserve.
+         * @param required The additional capacity to reserve.
          *
          * Switches to heap memory or grows the heap buffer if needed.
          */
-        void reserve(const size_t capacity)
+        void reserve(const size_t required)
         {
             if (stack_mem)
             {
                 // Check if we need to switch to heap memory
-                if (len + capacity > max_capacity)
+                if (len + required > max_capacity)
                 {
                     heap_init(); // Switch to heap memory
                 }
             }
 
             // Check if we need to grow the heap memory
-            if (len + capacity > max_capacity)
+            auto new_capacity = static_cast<size_t>(capacity * growth_factor);
+            const size_t count_to = len + required;
+
+            while (new_capacity < count_to)
             {
-                reallocate();
+                new_capacity += static_cast<size_t>(capacity * growth_factor); // Increase capacity by growth factor
             }
+
+            max_capacity = new_capacity;
+            reallocate();
         }
 
         /**
