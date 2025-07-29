@@ -175,10 +175,10 @@ namespace fluent::container
         /**
          * @brief Appends a C-style string to the string.
          * @param c The null-terminated string to append.
+         * @param c_len The length of the string to append. Defaults to strlen(c).
          */
-        void push(const char *c)
+        void push(const char *c, const size_t c_len = strlen(c))
         {
-            const size_t c_len = strlen(c); // Get the length of the input string
             reserve(c_len); // Reserve space for one character
             if (stack_mem)
             {
