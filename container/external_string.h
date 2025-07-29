@@ -36,11 +36,11 @@ namespace fluent::container
 {
     class external_string
     {
-        char *buffer;
+        const char *buffer;
         size_t len = 0;
 
     public:
-        external_string(char *buffer, const size_t len)
+        external_string(const char *buffer, const size_t len)
             : buffer(buffer), len(len)
         {
             if (buffer == nullptr || len == 0)
@@ -49,7 +49,7 @@ namespace fluent::container
             }
         }
 
-        [[nodiscard]] char *ptr()
+        [[nodiscard]] const char *ptr()
         const {
             return buffer;
         }
