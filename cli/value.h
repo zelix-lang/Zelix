@@ -139,7 +139,7 @@ namespace fluent::cli
         }
 
         [[nodiscard]] container::external_string get_alias()
-        {
+        const {
             return alias_str;
         }
 
