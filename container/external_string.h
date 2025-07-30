@@ -82,6 +82,20 @@ namespace fluent::container
         const {
             return len;
         }
+
+        void set_size(const size_t new_size)
+        {
+            if (new_size > len)
+            {
+                throw except::exception("Cannot set size larger than current size");
+            }
+            len = new_size;
+        }
+
+        [[nodiscard]] bool empty() const
+        {
+            return len == 0;
+        }
     };
 
     struct external_string_hash
