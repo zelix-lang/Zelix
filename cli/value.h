@@ -124,6 +124,16 @@ namespace fluent::cli
             return description;
         }
 
+        [[nodiscard]] bool is_alias() const
+        {
+            return alias;
+        }
+
+        [[nodiscard]] const std::optional<container::external_string> &get_original_name()
+        const {
+            return original_name;
+        }
+
         template <typename T>
         T get()
         const {
