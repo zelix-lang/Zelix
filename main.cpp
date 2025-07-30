@@ -49,7 +49,11 @@ int main(const int argc, const char **argv)
         false
     );
 
-    auto help = app.help();
-    printf("%s", help.c_str());
+    if (!app.parse())
+    {
+        auto help = app.help();
+        printf("%s", help.c_str());
+    }
+
     return 0;
 }
