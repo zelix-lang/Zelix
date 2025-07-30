@@ -4,6 +4,12 @@ cmake_minimum_required(VERSION 3.31)
 project(Fluent)
 
 FetchContent_Declare(
+        fluent_stl
+        GIT_REPOSITORY https://github.com/fluent-lang/STL.git
+        GIT_TAG        master
+)
+
+FetchContent_Declare(
         fluent_libc
         GIT_REPOSITORY https://github.com/rodrigoo-r/fluent_libc
         GIT_TAG        master
@@ -24,14 +30,11 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(xxhash)
 FetchContent_MakeAvailable(fluent_libc)
 FetchContent_MakeAvailable(unordered_dense)
+FetchContent_MakeAvailable(fluent_stl)
 set(CMAKE_CXX_STANDARD 20)
 
 add_executable(Fluent
         main.cpp
-        container/owned_string.h
-        container/vector.h
-        container/external_string.h
-        except/exception.h
         cli/args.h
         cli/app.h
         cli/value.h
@@ -40,6 +43,7 @@ add_executable(Fluent
 target_include_directories(Fluent PRIVATE ${CMAKE_BINARY_DIR}/_deps/fluent_libc-src/include)
 target_include_directories(Fluent PRIVATE .)
 target_link_libraries(Fluent PRIVATE fluent_libc)
+target_link_libraries(Fluent PRIVATE FluentSTL)
 target_link_libraries(Fluent PRIVATE unordered_dense::unordered_dense)
 target_link_libraries(Fluent PRIVATE xxhash)
 add_definitions(-DDEBUG -DFLUENT_LIBC_RELEASE=1)
