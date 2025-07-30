@@ -48,6 +48,7 @@ namespace fluent::cli
 
         // Default values
         container::external_string default_str;
+        container::external_string alias_str;
         std::optional<container::external_string> original_name;
         bool alias = false;
         int default_int = 0;
@@ -57,13 +58,14 @@ namespace fluent::cli
     public:
         explicit value() :
             description("", 1), default_str("", 1),
-            original_name(std::nullopt)
+            alias_str("", 1), original_name(std::nullopt)
         {}
 
         /**
          * @brief Constructs a value with a given type and description.
          * @param default_value The default value of the value.
          * @param description The description of the value.
+         * @param alias_str The alias string for the value.
          * @param original_name The original name of the value, if it is an alias.
          * @param alias Whether this value is an alias for another value.
          */
@@ -71,10 +73,12 @@ namespace fluent::cli
         explicit value(
             const T default_value,
             const container::external_string &description,
+            const container::external_string &alias_str,
             const std::optional<container::external_string> &original_name,
             const bool alias
         ) :
             description(description), default_str("", 1),
+            alias_str(alias_str),
             original_name(original_name), alias(alias)
         {
             if (description.size() == 0)
@@ -132,6 +136,11 @@ namespace fluent::cli
         [[nodiscard]] const std::optional<container::external_string> &get_original_name()
         const {
             return original_name;
+        }
+
+        [[nodiscard]] container::external_string get_alias()
+        {
+            return alias_str;
         }
 
         template <typename T>
