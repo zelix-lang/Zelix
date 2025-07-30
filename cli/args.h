@@ -872,5 +872,11 @@ namespace fluent::cli
         {
             return this->cmd;
         }
+
+        [[nodiscard]] static bool is_err()
+
+        {
+            return global_error.error_type != error::UNKNOWN;
+        }
     };
 }
