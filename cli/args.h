@@ -142,6 +142,8 @@ namespace fluent::cli
             container::external_string_hash
         > bool_flags; ///< Boolean flags map
 
+        container::external_string cmd;
+
         bool parse_flag(
             container::external_string &flag,
             bool &waiting_value,
@@ -291,6 +293,133 @@ namespace fluent::cli
                 return false; // Should never reach here
             }
         }
+
+        template <typename T, typename Flag>
+        T val(const container::external_string &name)
+        {
+            if constexpr (
+                std::is_same_v<T, container::external_string>
+                || std::is_same_v<T, const char *>
+            )
+            {
+                if constexpr (std::is_same_v<Flag, bool>)
+                {
+                    // Get from the flags
+                    if (!str_flags.contains(name))
+                    {
+                        // Return default value
+                        const auto &def = flags.at(name);
+                        return def.get<T>();
+                    }
+
+                    return str_flags.at(name);
+                }
+                else
+                {
+                    // Get from the commands
+                    if (!str_args.contains(name))
+                    {
+                        // Return default value
+                        const auto &def = commands.at(name);
+                        return def.get<T>();
+                    }
+
+                    return str_flags.at(name);
+                }
+            }
+            else if constexpr (std::is_same_v<T, int>)
+            {
+                if constexpr (std::is_same_v<Flag, bool>)
+                {
+                    // Get from the flags
+                    if (!int_flags.contains(name))
+                    {
+                        // Return default value
+                        const auto &def = flags.at(name);
+                        return def.get<T>();
+                    }
+
+                    return int_flags.at(name);
+                }
+                else
+                {
+                    // Get from the commands
+                    if (!int_args.contains(name))
+                    {
+                        // Return default value
+                        const auto &def = commands.at(name);
+                        return def.get<T>();
+                    }
+
+                    return int_flags.at(name);
+                }
+            }
+            else if constexpr (std::is_same_v<T, float>)
+            {
+                if constexpr (std::is_same_v<Flag, bool>)
+                {
+                    // Get from the flags
+                    if (!float_flags.contains(name))
+                    {
+                        // Return default value
+                        const auto &def = flags.at(name);
+                        return def.get<T>();
+                    }
+
+                    return float_flags.at(name);
+                }
+                else
+                {
+                    // Get from the commands
+                    if (!float_args.contains(name))
+                    {
+                        // Return default value
+                        const auto &def = commands.at(name);
+                        return def.get<T>();
+                    }
+
+                    return float_args.at(name);
+                }
+            }
+            else if constexpr (std::is_same_v<T, bool>)
+            {
+                if constexpr (std::is_same_v<Flag, float>)
+                {
+                    // Get from the flags
+                    if (!bool_flags.contains(name))
+                    {
+                        // Return default value
+                        const auto &def = flags.at(name);
+                        return def.get<T>();
+                    }
+
+                    return bool_flags.at(name);
+                }
+                else
+                {
+                    // Get from the commands
+                    if (!bool_args.contains(name))
+                    {
+                        // Return default value
+                        const auto &def = commands.at(name);
+                        return def.get<T>();
+                    }
+
+                    return bool_args.at(name);
+                }
+            }
+            else
+            {
+                static_assert(
+                    false,
+                    "Invalid type"
+                );
+
+                // Unreachable code
+                return (T){0};
+            }
+        }
+
     public:
         explicit args(
             ankerl::unordered_dense::map<
@@ -357,7 +486,6 @@ namespace fluent::cli
             bool value_command = false; ///< Whether the expected value is for a command
             bool has_command = false;
             value::type expected;
-            container::external_string command;
             container::external_string flag;
             for (int i = 1; i < argc; ++i)
             {
@@ -365,6 +493,7 @@ namespace fluent::cli
                 if (waiting_value)
                 {
                     auto val = container::external_string(arg);
+                    bool parsing_success = false;
 
                     if (value_command)
                     {
@@ -372,7 +501,7 @@ namespace fluent::cli
                         {
                             case value::BOOL:
                             {
-                                parse_value<bool, int>(
+                                parsing_success = parse_value<bool, int>(
                                     val,
                                     flag
                                 );
@@ -382,7 +511,7 @@ namespace fluent::cli
 
                             case value::FLOAT:
                             {
-                                parse_value<float, int>(
+                                parsing_success = parse_value<float, int>(
                                     val,
                                     flag
                                 );
@@ -392,7 +521,7 @@ namespace fluent::cli
 
                             case value::INTEGER:
                             {
-                                parse_value<int, int>(
+                                parsing_success = parse_value<int, int>(
                                     val,
                                     flag
                                 );
@@ -402,7 +531,7 @@ namespace fluent::cli
 
                             case value::STRING:
                             {
-                                parse_value<container::external_string, int>(
+                                parsing_success = parse_value<container::external_string, int>(
                                     val,
                                     flag
                                 );
@@ -417,7 +546,7 @@ namespace fluent::cli
                         {
                             case value::BOOL:
                             {
-                                parse_value<bool, bool>(
+                                parsing_success = parse_value<bool, bool>(
                                     val,
                                     flag
                                 );
@@ -427,7 +556,7 @@ namespace fluent::cli
 
                             case value::FLOAT:
                             {
-                                parse_value<float, bool>(
+                                parsing_success = parse_value<float, bool>(
                                     val,
                                     flag
                                 );
@@ -437,7 +566,7 @@ namespace fluent::cli
 
                             case value::INTEGER:
                             {
-                                parse_value<int, bool>(
+                                parsing_success = parse_value<int, bool>(
                                     val,
                                     flag
                                 );
@@ -447,7 +576,7 @@ namespace fluent::cli
 
                             case value::STRING:
                             {
-                                parse_value<container::external_string, bool>(
+                                parsing_success = parse_value<container::external_string, bool>(
                                     val,
                                     flag
                                 );
@@ -455,6 +584,13 @@ namespace fluent::cli
                                 break;
                             }
                         }
+                    }
+
+                    if (!parsing_success)
+                    {
+                        global_error.error_type = error::TYPE_MISMATCH;
+                        global_error.argv_pos = i;
+                        return false;
                     }
 
                     waiting_value = false;
@@ -526,13 +662,14 @@ namespace fluent::cli
 
                         auto val = container::external_string(value);
                         waiting_value = false; // We are no longer waiting for a value
+                        bool parsing_success = false;
 
                         // Parse the value
                         switch (expected)
                         {
                             case value::BOOL:
                             {
-                                parse_value<bool, bool>(
+                                parsing_success = parse_value<bool, bool>(
                                     val,
                                     flag
                                 );
@@ -542,7 +679,7 @@ namespace fluent::cli
 
                             case value::FLOAT:
                             {
-                                parse_value<float, bool>(
+                                parsing_success = parse_value<float, bool>(
                                     val,
                                     flag
                                 );
@@ -552,7 +689,7 @@ namespace fluent::cli
 
                             case value::INTEGER:
                             {
-                                parse_value<int, bool>(
+                                parsing_success = parse_value<int, bool>(
                                     val,
                                     flag
                                 );
@@ -562,13 +699,20 @@ namespace fluent::cli
 
                             case value::STRING:
                             {
-                                parse_value<container::external_string, bool>(
+                                parsing_success = parse_value<container::external_string, bool>(
                                     val,
                                     flag
                                 );
 
                                 break;
                             }
+                        }
+
+                        if (!parsing_success)
+                        {
+                            global_error.error_type = error::TYPE_MISMATCH;
+                            global_error.argv_pos = i;
+                            return false;
                         }
 
                         continue;
@@ -586,26 +730,26 @@ namespace fluent::cli
                 // Parse commands
                 if (!has_command)
                 {
-                    command = container::external_string(arg);
+                    cmd = container::external_string(arg);
                     has_command = true;
 
                     // Handle aliases
-                    if (cmd_aliases_reverse.contains(command))
+                    if (cmd_aliases_reverse.contains(cmd))
                     {
-                        const auto &alias = cmd_aliases_reverse.at(command);
-                        command = alias;
+                        const auto &alias = cmd_aliases_reverse.at(cmd);
+                        cmd = alias;
                     }
 
                     // Check if the command is valid
-                    if (commands.contains(command))
+                    if (commands.contains(cmd))
                     {
-                        const auto &cmd_val = commands.at(command);
+                        const auto &cmd_val = commands.at(cmd);
                         waiting_value = cmd_val.get_type() != value::BOOL;
                         expected = cmd_val.get_type();
 
                         if (!waiting_value)
                         {
-                            str_args[command] = cmd_val.get<container::external_string>();
+                            str_args[cmd] = cmd_val.get<container::external_string>();
                         }
                         else
                         {
@@ -641,7 +785,7 @@ namespace fluent::cli
             {
                 // Retrieve the value
                 const value &val = value_command
-                    ? commands.at(command)
+                    ? commands.at(cmd)
                     : flags.at(flag);
 
 
@@ -651,7 +795,7 @@ namespace fluent::cli
                     {
                         if (value_command)
                         {
-                            str_args[command] = val.get<container::external_string>();
+                            str_args[cmd] = val.get<container::external_string>();
                         }
                         else
                         {
@@ -663,7 +807,7 @@ namespace fluent::cli
                     {
                         if (value_command)
                         {
-                            bool_args[command] = val.get<bool>();
+                            bool_args[cmd] = val.get<bool>();
                         }
                         else
                         {
@@ -675,7 +819,7 @@ namespace fluent::cli
                     {
                         if (value_command)
                         {
-                            float_args[command] = val.get<float>();
+                            float_args[cmd] = val.get<float>();
                         }
                         else
                         {
@@ -687,7 +831,7 @@ namespace fluent::cli
                     {
                         if (value_command)
                         {
-                            int_args[command] = val.get<int>();
+                            int_args[cmd] = val.get<int>();
                         }
                         else
                         {
@@ -698,6 +842,35 @@ namespace fluent::cli
             }
 
             return true;
+        }
+
+        template <typename T>
+        T flag(const container::external_string &name)
+        {
+            return val<T, bool>(name);
+        }
+
+        template <typename T>
+        T flag(const char *name)
+        {
+            return val<T, bool>(container::external_string(name));
+        }
+
+        template <typename T>
+        T command(const container::external_string &name)
+        {
+            return val<T, int>(name);
+        }
+
+        template <typename T>
+        T command(const char *name)
+        {
+            return val<T, int>(container::external_string(name));
+        }
+
+        container::external_string &get_cmd()
+        {
+            return this->cmd;
         }
     };
 }
