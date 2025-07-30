@@ -249,15 +249,18 @@ namespace fluent::cli
         }
 
         std::optional<args> parse()
-        const {
-            args parsed_args;
+        {
+            args parsed_args(
+                commands,
+                flags,
+                cmd_aliases,
+                flag_aliases,
+                cmd_aliases_reverse,
+                flag_aliases_reverse
+            );
+
             if (
-                !parsed_args.parse(
-                    commands, flags,
-                    cmd_aliases, flag_aliases,
-                    cmd_aliases_reverse, flag_aliases_reverse,
-                    argc, argv
-                )
+                !parsed_args.parse(argc, argv)
             )
             {
                 return std::nullopt;
