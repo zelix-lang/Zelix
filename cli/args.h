@@ -383,7 +383,7 @@ namespace fluent::cli
             }
             else if constexpr (std::is_same_v<T, bool>)
             {
-                if constexpr (std::is_same_v<Flag, float>)
+                if constexpr (std::is_same_v<Flag, bool>)
                 {
                     // Get from the flags
                     if (!bool_flags.contains(name))
