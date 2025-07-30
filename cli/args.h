@@ -28,6 +28,7 @@
 //
 
 #pragma once
+#include <charconv>
 #include "ankerl/unordered_dense.h"
 #include "container/external_string.h"
 #include "value.h"
@@ -57,6 +58,44 @@ namespace fluent::cli
     {
         ankerl::unordered_dense::map<
             container::external_string,
+            value,
+            container::external_string_hash
+        > &commands;
+
+        ankerl::unordered_dense::map<
+            container::external_string,
+            value,
+            container::external_string_hash
+        > &flags;
+
+        // Aliases (cmd name -> alias)
+        ankerl::unordered_dense::map<
+            container::external_string,
+            container::external_string,
+            container::external_string_hash
+        > &cmd_aliases;
+
+        ankerl::unordered_dense::map<
+            container::external_string,
+            container::external_string,
+            container::external_string_hash
+        > &flag_aliases;
+
+        // Aliases (alias -> cmd name)
+        ankerl::unordered_dense::map<
+            container::external_string,
+            container::external_string,
+            container::external_string_hash
+        > &cmd_aliases_reverse;
+
+        ankerl::unordered_dense::map<
+            container::external_string,
+            container::external_string,
+            container::external_string_hash
+        > &flag_aliases_reverse;
+
+        ankerl::unordered_dense::map<
+            container::external_string,
             container::external_string,
             container::external_string_hash
         > str_args; ///< String arguments map
@@ -79,46 +118,229 @@ namespace fluent::cli
             container::external_string_hash
         > bool_args; ///< Boolean arguments map
 
+        ankerl::unordered_dense::map<
+            container::external_string,
+            container::external_string,
+            container::external_string_hash
+        > str_flags; ///< String flags map
+
+        ankerl::unordered_dense::map<
+            container::external_string,
+            int,
+            container::external_string_hash
+        > int_flags; ///< Integer flags map
+
+        ankerl::unordered_dense::map<
+            container::external_string,
+            float,
+            container::external_string_hash
+        > float_flags; ///< Float flags map
+
+        ankerl::unordered_dense::map<
+            container::external_string,
+            bool,
+            container::external_string_hash
+        > bool_flags; ///< Boolean flags map
+
+        bool parse_flag(
+            container::external_string &flag,
+            bool &waiting_value,
+            value::type &expected,
+            const int i
+        )
+        {
+            // Handle aliases
+            if (flag_aliases_reverse.contains(flag))
+            {
+                const auto &alias = flag_aliases_reverse.at(flag);
+                flag = alias;
+            }
+
+            // Get the flag from the map
+            if (flags.contains(flag))
+            {
+                const auto &flag_val = flags.at(flag);
+                waiting_value = flag_val.get_type() != value::BOOL;
+                expected = flag_val.get_type();
+
+                if (!waiting_value)
+                {
+                    bool_flags[flag] = true;
+                }
+            }
+            else
+            {
+                global_error.error_type = error::UNKNOWN_FLAG;
+                global_error.argv_pos = i;
+                return false;
+            }
+
+            return true;
+        }
+
+        template <typename T, typename Flag>
+        bool parse_value(
+            const container::external_string &value,
+            container::external_string &name
+        )
+        {
+            if constexpr (std::is_same_v<T, container::external_string>)
+            {
+                if constexpr (std::is_same_v<Flag, bool>)
+                {
+                    str_flags[name] = value;
+                }
+                else
+                {
+                    str_args[name] = value;
+                }
+
+                return true;
+            }
+            else if constexpr (std::is_same_v<T, bool>)
+            {
+                if constexpr (std::is_same_v<Flag, bool>)
+                {
+                    if (memcmp(value.ptr(), "true", value.size()) == 0)
+                    {
+                        bool_flags[name] = true;
+                        return true;
+                    }
+
+                    if (memcmp(value.ptr(), "false", value.size()) == 0)
+                    {
+                        bool_flags[name] = false;
+                        return true;
+                    }
+                }
+                else
+                {
+                    if (memcmp(value.ptr(), "true", value.size()) == 0)
+                    {
+                        bool_args[name] = true;
+                        return true;
+                    }
+
+                    if (memcmp(value.ptr(), "false", value.size()) == 0)
+                    {
+                        bool_args[name] = false;
+                        return true;
+                    }
+                }
+
+                return false; // Invalid boolean value
+            }
+            else if constexpr (std::is_same_v<T, int>)
+            {
+                int result = 0;
+                const auto value_ptr = value.ptr();
+
+                // Iterate over the ptr
+                for (size_t i = 0; i < value.size(); ++i)
+                {
+                    const char c = value_ptr[i];
+                    if (c < '0' || c > '9')
+                    {
+                        return false; // Invalid integer value
+                    }
+
+                    result = result * 10 + (c - '0');
+                }
+
+                if constexpr (std::is_same_v<Flag, bool>)
+                {
+                    int_flags[name] = result;
+                }
+                else
+                {
+                    int_args[name] = result;
+                }
+
+                return true;
+            }
+            else if constexpr (std::is_same_v<T, float>)
+            {
+                float result = 0.0f;
+                const auto value_ptr = value.ptr();
+
+                if (
+                    auto [ptr, ec] = std::from_chars(value_ptr, value_ptr + value.size(), result);
+                    ec != std::errc()
+                ) {
+                    return false; // Invalid float value
+                }
+
+                if constexpr (std::is_same_v<Flag, bool>)
+                {
+                    float_flags[name] = result;
+                }
+                else
+                {
+                    float_args[name] = result;
+                }
+
+                return true;
+            }
+            else
+            {
+                static_assert(
+                    false,
+                    "Unsupported type for value parsing"
+                );
+
+                return false; // Should never reach here
+            }
+        }
     public:
-        bool parse(
-            const ankerl::unordered_dense::map<
+        explicit args(
+            ankerl::unordered_dense::map<
                 container::external_string,
                 value,
                 container::external_string_hash
             > &commands,
 
-            const ankerl::unordered_dense::map<
+            ankerl::unordered_dense::map<
                 container::external_string,
                 value,
                 container::external_string_hash
             > &flags,
 
             // Aliases (cmd name -> alias)
-            const ankerl::unordered_dense::map<
+            ankerl::unordered_dense::map<
                 container::external_string,
                 container::external_string,
                 container::external_string_hash
             > &cmd_aliases,
 
-            const ankerl::unordered_dense::map<
+
+            ankerl::unordered_dense::map<
                 container::external_string,
                 container::external_string,
                 container::external_string_hash
             > &flag_aliases,
 
             // Aliases (alias -> cmd name)
-            const ankerl::unordered_dense::map<
+            ankerl::unordered_dense::map<
                 container::external_string,
                 container::external_string,
                 container::external_string_hash
             > &cmd_aliases_reverse,
 
-            const ankerl::unordered_dense::map<
+            ankerl::unordered_dense::map<
                 container::external_string,
                 container::external_string,
                 container::external_string_hash
-            > &flag_aliases_reverse,
+            > &flag_aliases_reverse
+        ) :
+            commands(commands),
+            flags(flags),
+            cmd_aliases(cmd_aliases),
+            flag_aliases(flag_aliases),
+            cmd_aliases_reverse(cmd_aliases_reverse),
+            flag_aliases_reverse(flag_aliases_reverse)
+        {}
 
+        bool parse(
             const int argc,
             const char **argv
         )
@@ -130,9 +352,352 @@ namespace fluent::cli
                 return false;
             }
 
-            global_error.argv_pos = argc - 1;
-            global_error.error_type = error::UNKNOWN_COMMAND;
-            return false;
+            // Whether we are waiting for a value
+            bool waiting_value = false;
+            bool value_command = false; ///< Whether the expected value is for a command
+            bool has_command = false;
+            value::type expected;
+            container::external_string command;
+            container::external_string flag;
+            for (int i = 1; i < argc; ++i)
+            {
+                const auto arg = argv[i];
+                if (waiting_value)
+                {
+                    auto val = container::external_string(arg);
+
+                    if (value_command)
+                    {
+                        switch (expected)
+                        {
+                            case value::BOOL:
+                            {
+                                parse_value<bool, int>(
+                                    val,
+                                    flag
+                                );
+
+                                break;
+                            }
+
+                            case value::FLOAT:
+                            {
+                                parse_value<float, int>(
+                                    val,
+                                    flag
+                                );
+
+                                break;
+                            }
+
+                            case value::INTEGER:
+                            {
+                                parse_value<int, int>(
+                                    val,
+                                    flag
+                                );
+
+                                break;
+                            }
+
+                            case value::STRING:
+                            {
+                                parse_value<container::external_string, int>(
+                                    val,
+                                    flag
+                                );
+
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        switch (expected)
+                        {
+                            case value::BOOL:
+                            {
+                                parse_value<bool, bool>(
+                                    val,
+                                    flag
+                                );
+
+                                break;
+                            }
+
+                            case value::FLOAT:
+                            {
+                                parse_value<float, bool>(
+                                    val,
+                                    flag
+                                );
+
+                                break;
+                            }
+
+                            case value::INTEGER:
+                            {
+                                parse_value<int, bool>(
+                                    val,
+                                    flag
+                                );
+
+                                break;
+                            }
+
+                            case value::STRING:
+                            {
+                                parse_value<container::external_string, bool>(
+                                    val,
+                                    flag
+                                );
+
+                                break;
+                            }
+                        }
+                    }
+
+                    waiting_value = false;
+                    value_command = false; // Reset the command value expectation
+                    continue;
+                }
+
+                // Check if we have a flag
+                if (arg[0] == '-')
+                {
+                    // Check if the flag is valid
+                    if (arg[1] == '\0')
+                    {
+                        global_error.error_type = error::UNKNOWN_FLAG;
+                        global_error.argv_pos = i;
+                        return false;
+                    }
+
+                    // Check if we have a long flag
+                    if (arg[1] == '-')
+                    {
+                        // Make sure we have a name
+                        if (arg[2] == '\0')
+                        {
+                            global_error.error_type = error::EXPECTED_VALUE;
+                            global_error.argv_pos = i;
+                        }
+
+                        flag = container::external_string(arg + 2);
+                    }
+                    else
+                    {
+                        flag = container::external_string(arg + 1);
+                    }
+
+                    // Check if we have a value
+                    const auto flag_ptr = flag.ptr();
+                    if (
+                        const auto equals = strchr(flag_ptr, '=');
+                        equals != nullptr
+                    )
+                    {
+                        // Find the position of the equals sign
+                        const size_t equals_pos = equals - flag.ptr();
+                        const auto value = flag_ptr + equals_pos + 1; // Skip the equals sign
+
+                        flag.set_size(equals_pos); // Exclude the equals sign
+
+                        if (!parse_flag(flag, waiting_value, expected, i))
+                        {
+                            return false;
+                        }
+
+                        // Check if we are expecting a value
+                        if (!waiting_value)
+                        {
+                            global_error.error_type = error::NOT_EXPECTED_VALUE;
+                            global_error.argv_pos = i;
+                            return false;
+                        }
+
+                        // Validate the value
+                        if (value[0] == '\0')
+                        {
+                            global_error.error_type = error::EXPECTED_VALUE;
+                            global_error.argv_pos = i;
+                            return false;
+                        }
+
+                        auto val = container::external_string(value);
+                        waiting_value = false; // We are no longer waiting for a value
+
+                        // Parse the value
+                        switch (expected)
+                        {
+                            case value::BOOL:
+                            {
+                                parse_value<bool, bool>(
+                                    val,
+                                    flag
+                                );
+
+                                break;
+                            }
+
+                            case value::FLOAT:
+                            {
+                                parse_value<float, bool>(
+                                    val,
+                                    flag
+                                );
+
+                                break;
+                            }
+
+                            case value::INTEGER:
+                            {
+                                parse_value<int, bool>(
+                                    val,
+                                    flag
+                                );
+
+                                break;
+                            }
+
+                            case value::STRING:
+                            {
+                                parse_value<container::external_string, bool>(
+                                    val,
+                                    flag
+                                );
+
+                                break;
+                            }
+                        }
+
+                        continue;
+                    }
+
+                    // Parse the flag
+                    if (!parse_flag(flag, waiting_value, expected, i))
+                    {
+                        return false;
+                    }
+
+                    continue;
+                }
+
+                // Parse commands
+                if (!has_command)
+                {
+                    command = container::external_string(arg);
+                    has_command = true;
+
+                    // Handle aliases
+                    if (cmd_aliases_reverse.contains(command))
+                    {
+                        const auto &alias = cmd_aliases_reverse.at(command);
+                        command = alias;
+                    }
+
+                    // Check if the command is valid
+                    if (commands.contains(command))
+                    {
+                        const auto &cmd_val = commands.at(command);
+                        waiting_value = cmd_val.get_type() != value::BOOL;
+                        expected = cmd_val.get_type();
+
+                        if (!waiting_value)
+                        {
+                            str_args[command] = cmd_val.get<container::external_string>();
+                        }
+                        else
+                        {
+                            value_command = true; // We are expecting a value for the command
+                        }
+                    }
+                    else
+                    {
+                        global_error.error_type = error::UNKNOWN_COMMAND;
+                        global_error.argv_pos = i;
+                        return false;
+                    }
+
+                    continue;
+                }
+
+                // Invalid argument
+                global_error.error_type = error::NOT_EXPECTED_VALUE;
+                global_error.argv_pos = i;
+                return false;
+            }
+
+            // Make sure we are not waiting for a value
+            if (!has_command)
+            {
+                global_error.error_type = error::EXPECTED_VALUE;
+                global_error.argv_pos = argc - 1;
+                return false;
+            }
+
+            // Default values if we are still expecting a value
+            if (waiting_value)
+            {
+                // Retrieve the value
+                const value &val = value_command
+                    ? commands.at(command)
+                    : flags.at(flag);
+
+
+                switch (val.get_type())
+                {
+                    case value::STRING:
+                    {
+                        if (value_command)
+                        {
+                            str_args[command] = val.get<container::external_string>();
+                        }
+                        else
+                        {
+                            str_flags[flag] = val.get<container::external_string>();
+                        }
+                    }
+
+                    case value::BOOL:
+                    {
+                        if (value_command)
+                        {
+                            bool_args[command] = val.get<bool>();
+                        }
+                        else
+                        {
+                            bool_flags[flag] = val.get<bool>();
+                        }
+                    }
+
+                    case value::FLOAT:
+                    {
+                        if (value_command)
+                        {
+                            float_args[command] = val.get<float>();
+                        }
+                        else
+                        {
+                            float_flags[flag] = val.get<float>();
+                        }
+                    }
+
+                    case value::INTEGER:
+                    {
+                        if (value_command)
+                        {
+                            int_args[command] = val.get<int>();
+                        }
+                        else
+                        {
+                            int_flags[flag] = val.get<int>();
+                        }
+                    }
+                }
+            }
+
+            return true;
         }
     };
 }
