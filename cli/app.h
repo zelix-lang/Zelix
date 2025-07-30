@@ -29,8 +29,10 @@
 
 #pragma once
 
-#include <fluent/ansi/ansi.h>
 #include <ankerl/unordered_dense.h>
+#include <fluent/ansi/ansi.h>
+
+#include "args.h"
 #include "container/external_string.h"
 #include "container/owned_string.h"
 #include "except/exception.h"
@@ -246,6 +248,24 @@ namespace fluent::cli
             );
         }
 
+        std::optional<args> parse()
+        const {
+            args parsed_args;
+            if (
+                !parsed_args.parse(
+                    commands, flags,
+                    cmd_aliases, flag_aliases,
+                    cmd_aliases_reverse, flag_aliases_reverse,
+                    argc, argv
+                )
+            )
+            {
+                return std::nullopt;
+            }
+
+            return std::make_optional<args>(std::move(parsed_args));
+        }
+
         [[nodiscard]] container::string help()
         {
             container::string msg;
@@ -256,16 +276,129 @@ namespace fluent::cli
             msg.push(ANSI_BRIGHT_BLACK, 5);
             msg.push(desc_);
             msg.push(ANSI_RESET, 4);
+            msg.push("\n\n", 2);
+
+            const size_t bin_len = strlen(argv[0]) - 1;
+            if (global_error.error_type != error::UNKNOWN)
+            {
+                msg.push(ANSI_BOLD_BRIGHT_RED, 7);
+                msg.push("Error: ", 7);
+                msg.push(ANSI_RESET, 4);
+                msg.push(ANSI_BRIGHT_RED, 5);
+
+                switch (global_error.error_type)
+                {
+                    case error::EXPECTED_VALUE:
+                        msg.push("Expected a value", 16);
+                        break;
+
+                    case error::NOT_EXPECTED_VALUE:
+                        msg.push("Unexpected value", 16);
+                        break;
+
+                    case error::TYPE_MISMATCH:
+                        msg.push("Type mismatch", 13);
+                        break;
+
+                    case error::UNKNOWN_COMMAND:
+                        msg.push("Unknown command", 15);
+                        break;
+
+                    case error::UNKNOWN_FLAG:
+                        msg.push("Unknown flag", 12);
+                        break;
+
+                    default:
+                        break;
+                }
+
+                msg.push("\n  ", 3);
+                msg.push(ANSI_RESET, 4);
+                msg.push(ANSI_BRIGHT_BLACK, 5);
+                msg.push("➤ ");
+                msg.push(ANSI_RESET, 4);
+
+                const bool error_first = global_error.argv_pos == 0;
+                if (error_first)
+                {
+                    msg.push(ANSI_BRIGHT_RED, 5);
+                    msg.push(ANSI_UNDERLINE, 4);
+                }
+                else
+                {
+                    msg.push(ANSI_BOLD_BRIGHT_BLUE, 7);
+                }
+
+                msg.push(argv[0], bin_len + 1);
+
+                if (!error_first || argc > 1)
+                {
+                    msg.push(ANSI_RESET, 4);
+                    msg.push(ANSI_BRIGHT_BLACK, 5);
+                    msg.push(" ... ");
+                    msg.push(ANSI_RESET, 4);
+                }
+
+                if (!error_first)
+                {
+                    msg.push(ANSI_BRIGHT_RED, 5);
+                    msg.push(ANSI_UNDERLINE, 4);
+                    msg.push(argv[global_error.argv_pos]);
+                    msg.push(ANSI_RESET "\n         ", 14);
+
+                    for (size_t i = 0; i < bin_len + 1; ++i)
+                    {
+                        msg.push(' ');
+                    }
+                }
+                else
+                {
+                    msg.push(ANSI_RESET "\n    ", 9);
+                }
+
+                msg.push(ANSI_GREEN, 5);
+                msg.push("⤷");
+                msg.push(" help: ", 7);
+
+                switch (global_error.error_type)
+                {
+                    case error::EXPECTED_VALUE:
+                        msg.push("add a value after this", 22);
+                        break;
+
+                    case error::NOT_EXPECTED_VALUE:
+                        msg.push("remove this", 11);
+                        break;
+
+                    case error::TYPE_MISMATCH:
+                        msg.push("change the value to match the expected type", 43);
+                        break;
+
+                    case error::UNKNOWN_COMMAND:
+                        msg.push("use --help to see a list of commands", 36);
+                        break;
+
+                    case error::UNKNOWN_FLAG:
+                        msg.push("use --help to see a list of flags", 33);
+                        break;
+
+                    default:
+                        break;
+                }
+
+                msg.push(ANSI_RESET, 4);
+                msg.push(ANSI_RESET, 4);
+                msg.push("\n\n", 2);
+            }
+
             msg.push(
-                "\n\n"
                 ANSI_BRIGHT_YELLOW
                 "Usage:\n"
                 ANSI_RESET
                 ANSI_BOLD_BRIGHT_BLUE,
-                25
+                23
             );
 
-            const size_t bin_len = strlen(argv[0]) - 1;
             msg.push(argv[0], bin_len + 1);
 
             msg.push(
