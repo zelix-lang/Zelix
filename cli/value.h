@@ -138,8 +138,8 @@ namespace fluent::cli
             return original_name;
         }
 
-        [[nodiscard]] container::external_string get_alias()
-        const {
+        [[nodiscard]] container::external_string &get_alias()
+        {
             return alias_str;
         }
 
