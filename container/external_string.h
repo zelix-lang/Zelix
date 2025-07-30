@@ -40,6 +40,10 @@ namespace fluent::container
         size_t len = 0;
 
     public:
+        external_string()
+            : buffer(nullptr)
+        {}
+
         external_string(const external_string &other)
         {
             buffer = other.buffer;
