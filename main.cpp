@@ -23,7 +23,7 @@
     <https://www.gnu.org/licenses/>.
 */
 
-#include "cli/app.h"
+#include "fluent/cli/app.h"
 using namespace fluent;
 
 int main(const int argc, const char **argv)
@@ -49,7 +49,8 @@ int main(const int argc, const char **argv)
         false
     );
 
-    if (!app.parse())
+    const auto args = app.parse();
+    if (cli::args::is_err())
     {
         auto help = app.help();
         printf("%s", help.c_str());
