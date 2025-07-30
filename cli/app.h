@@ -248,7 +248,7 @@ namespace fluent::cli
             );
         }
 
-        std::optional<args> parse()
+        args parse()
         {
             args parsed_args(
                 commands,
@@ -259,14 +259,8 @@ namespace fluent::cli
                 flag_aliases_reverse
             );
 
-            if (
-                !parsed_args.parse(argc, argv)
-            )
-            {
-                return std::nullopt;
-            }
-
-            return std::make_optional<args>(std::move(parsed_args));
+            parsed_args.parse(argc, argv);
+            return parsed_args;
         }
 
         [[nodiscard]] container::string help()
