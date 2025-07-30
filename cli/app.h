@@ -58,18 +58,45 @@ namespace fluent::cli
             container::external_string_hash
         > flags;
 
+        // Aliases (cmd name -> alias)
+        ankerl::unordered_dense::map<
+            container::external_string,
+            container::external_string,
+            container::external_string_hash
+        > cmd_aliases;
+
+        ankerl::unordered_dense::map<
+            container::external_string,
+            container::external_string,
+            container::external_string_hash
+        > flag_aliases;
+
+        // Aliases (alias -> cmd name)
+        ankerl::unordered_dense::map<
+            container::external_string,
+            container::external_string,
+            container::external_string_hash
+        > cmd_aliases_reverse;
+
+        ankerl::unordered_dense::map<
+            container::external_string,
+            container::external_string,
+            container::external_string_hash
+        > flag_aliases_reverse;
+
         const int argc;
         const char **argv;
 
-        static void write_val_info(
+        void write_val_info(
             container::string &msg,
             const container::external_string &name,
             const value &val,
+            const bool flag,
             const int alias_padding = 0
         )
         {
             const auto &desc = val.get_description();
-            const auto &alias = val.get_alias();
+            const auto &alias = flag ? flag_aliases[name] : cmd_aliases[name];
 
             msg.push(ANSI_RESET, 4);
             msg.push(ANSI_BRIGHT_BLACK, 5);
@@ -159,13 +186,14 @@ namespace fluent::cli
             const T &def
         )
         {
-            if (commands.contains(name) || commands.contains(alias))
+            if (commands.contains(name) || cmd_aliases_reverse.contains(alias))
             {
                 throw except::exception("Command already exists");
             }
 
-            commands[name] = value(def, description, alias, std::nullopt, false);
-            commands[alias] = value(def, description, alias, std::make_optional(name), true);
+            cmd_aliases[name] = alias;
+            cmd_aliases_reverse[alias] = name;
+            commands[name] = value(def, description);
         }
 
         template <typename T>
@@ -192,13 +220,14 @@ namespace fluent::cli
             const T &def
         )
         {
-            if (flags.contains(name) || commands.contains(alias))
+            if (flags.contains(name) || flag_aliases_reverse.contains(alias))
             {
                 throw except::exception("Flag already exists");
             }
 
-            flags[name] = value(def, description, alias, std::nullopt, false);
-            flags[alias] = value(def, description, alias, std::make_optional(name), true);
+            flag_aliases[name] = alias;
+            flag_aliases_reverse[alias] = name;
+            flags[name] = value(def, description);
         }
 
         template <typename T>
@@ -218,7 +247,7 @@ namespace fluent::cli
         }
 
         [[nodiscard]] container::string help()
-        const {
+        {
             container::string msg;
             msg.push(ANSI_BOLD_BRIGHT_BLUE, 7);
             msg.push(name_);
@@ -316,11 +345,6 @@ namespace fluent::cli
 
             for (const auto &[name, val] : commands)
             {
-                if (val.is_alias())
-                {
-                    continue; // Skip aliases in the help output
-                }
-
                 msg.push(ANSI_BRIGHT_BLACK, 5);
                 msg.push("  ", 2);
                 msg.push("➤ ");
@@ -329,12 +353,12 @@ namespace fluent::cli
                 msg.push(name.ptr(), name.size());
 
                 // Honor aliases
-                const auto &alias = val.get_alias();
+                const auto &alias = cmd_aliases[name];
                 msg.push(", ", 2);
                 msg.push(alias.ptr(), alias.size());
 
                 // Write the value's info
-                write_val_info(msg, name, val);
+                write_val_info(msg, name, val, false);
             }
 
             if (!flags.empty())
@@ -349,22 +373,17 @@ namespace fluent::cli
 
             for (auto &[name, val] : flags)
             {
-                if (val.is_alias())
-                {
-                    continue;
-                }
-
                 msg.push("  ", 2);
                 msg.push(ANSI_BRIGHT_BLUE, 5);
                 msg.push("--", 2);
                 msg.push(name.ptr(), name.size());
 
                 // Honor aliases
-                const auto &alias = val.get_alias();
+                const auto &alias = flag_aliases[name];
                 msg.push(", -", 3);
                 msg.push(alias.ptr(), alias.size());
 
-                write_val_info(msg, name, val, 1);
+                write_val_info(msg, name, val, true, 1);
             }
 
             return msg;
