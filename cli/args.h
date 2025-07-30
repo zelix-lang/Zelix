@@ -743,7 +743,11 @@ namespace fluent::cli
                     // Check if the command is valid
                     if (commands.contains(cmd))
                     {
-                        const auto &cmd_val = commands.at(cmd);
+                        const auto &cmd_it = commands.find(cmd);
+                        const auto &cmd_val = cmd_it->second;
+
+                        // Modify cmd to the original ptr
+                        cmd = cmd_it->first;
                         waiting_value = cmd_val.get_type() != value::BOOL;
                         expected = cmd_val.get_type();
 
