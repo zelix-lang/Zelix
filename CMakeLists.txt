@@ -32,7 +32,7 @@ add_executable(Fluent
         container/vector.h
         container/external_string.h
         except/exception.h
-        cli/cli.h
+        cli/args.h
         cli/app.h
         cli/value.h
 )
