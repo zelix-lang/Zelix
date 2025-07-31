@@ -19,20 +19,21 @@ Please note that any code that does not follow the guidelines in this document w
 
 **Guidelines:**
 
-- 4 spaces for indentation, no tabs (You should have this configured as per the .editorconfig file)
+- 4 spaces for indentation, no tabs (You should have this configured as per the .clang-format file)
 - No trailing whitespace or empty lines at the end of files
 - No outrageously long lines of code, try to keep logic as concise as possible
   - For example:
-    - ```go
+    - ```c++
       // Bad
-      if err != nil { 
+      if (err != nullptr)
+      { 
         return err
       }
         ```
       
-    - ```go
+    - ```c++
       // Bad
-	  if err != nil || my_file_is_okay > 0 && ((myOtherFile == "okay" || myOtherFile == "not okay") || fetchSomeResource() == "13.5") {
+	  if (err != nullptr || my_file_is_okay > 0 && ((myOtherFile == "okay" || myOtherFile == "not okay") || fetchSomeResource() == "13.5")) {
         return err
 	  }
         ```
@@ -41,6 +42,7 @@ Please note that any code that does not follow the guidelines in this document w
 - No unused variables or imports
 - No unnecessary type casting
 - No syntax errors
+- Every curly brace must have its own line, no exceptions.
 
 **1. Function invocations**
 
@@ -85,32 +87,11 @@ This is a comment
 
 **4. Naming conventions**
 
-- Use `camelCase` for variables and functions
+- Use `snake_case` for variables and functions
 - Use `PascalCase` for types and interfaces
 - Use `UPPER_SNAKE_CASE` for constants
-- Use `camelCase` for file and directory names
+- Use `snake_case` for file and directory names
 - Use lowercase for package names
-
-**5. Error handling**
-
-Always handle errors, do not ignore them.
-
-Example:
-
-```go
-// Good
-if err != nil {
-    return err
-}
-
-// Bad
-if err != nil {
-    // Do nothing
-}
-```
-
-Unless there is underlying logic that requires it, do not use `panic()`.
-Instead use the `logger` package to log information, warns and errors.
 
 **6. Copyright**
 
@@ -118,16 +99,27 @@ All files must contain the following header at the top of the file:
 
 ```go
 /*
-   The Fluent Programming Language
-   -----------------------------------------------------
-   This code is released under the GNU GPL v3 license.
-   For more information, please visit:
-   https://www.gnu.org/licenses/gpl-3.0.html
-   -----------------------------------------------------
-   Copyright (c) 2025 Rodrigo R. & All Fluent Contributors
-   This program comes with ABSOLUTELY NO WARRANTY.
-   For details type `fluent l`. This is free software,
-   and you are welcome to redistribute it under certain
-   conditions; type `fluent l -f` for details.
+        ==== The Fluent Programming Language ====
+---------------------------------------------------------
+  - This file is part of the Fluent Programming Language
+    codebase. Fluent is a fast, statically-typed and
+    memory-safe programming language that aims to
+    match native speeds while staying highly performant.
+---------------------------------------------------------
+  - Fluent is categorized as free software; you can
+    redistribute it and/or modify it under the terms of
+    the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+---------------------------------------------------------
+  - Fluent is distributed in the hope that it will
+    be useful, but WITHOUT ANY WARRANTY; without even
+    the implied warranty of MERCHANTABILITY or FITNESS
+    FOR A PARTICULAR PURPOSE. See the GNU General Public
+    License for more details.
+---------------------------------------------------------
+  - You should have received a copy of the GNU General
+    Public License along with Fluent. If not, see
+    <https://www.gnu.org/licenses/>.
 */
 ```
