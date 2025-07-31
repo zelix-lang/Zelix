@@ -52,12 +52,25 @@ int main(const int argc, const char **argv)
         "."
     );
 
-    const auto args = app.parse();
+    auto args = app.parse();
     if (cli::args::is_err())
     {
         auto help = app.help();
         printf("%s", help.c_str());
     }
 
+    // Get the command
+    const auto &cmd = args.get_cmd();
+
+    if (
+        const auto cmd_ptr = cmd.ptr();
+        cmd_ptr == compile
+    )
+    {
+
+    } else if (cmd_ptr == run)
+    {
+
+    }
     return 0;
 }
