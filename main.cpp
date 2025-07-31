@@ -28,6 +28,9 @@ using namespace fluent;
 
 int main(const int argc, const char **argv)
 {
+    const auto *compile = "compile";
+    const auto *run = "run";
+
     cli::app app(
         "The Fluent Programming Language",
         "A blazingly fast programming language",
@@ -36,17 +39,17 @@ int main(const int argc, const char **argv)
     );
 
     app.command<const char*>(
-        "compile",
+        compile,
         "c",
         "compiles a Fluent project",
         "."
     );
 
-    app.flag<bool>(
-        "verbose",
-        "v",
-        "verbose output",
-        false
+    app.command<const char*>(
+        run,
+        "r",
+        "runs a Fluent project",
+        "."
     );
 
     const auto args = app.parse();
