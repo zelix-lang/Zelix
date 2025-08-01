@@ -349,6 +349,30 @@ noexcept {
             continue;
         }
 
+        // Special cases: >=, <=, !=
+        if (
+            !str && (c == '>' || c == '<' || c == '!')
+            && ptr[i + 1] == '='
+        )
+        {
+            push_token(tokens, ptr);
+            i++; // Skip the next character
+
+            tokens.push_back(token{
+                .value = container::optional<container::external_string>::none(),
+                .type = c == '>' ? token::BOOL_GTE :
+                        c == '<' ? token::BOOL_LTE :
+                        token::BOOL_NEQ,
+                .line = line,
+                .column = col
+            });
+
+            start = i + 1; // Move start to the next character
+            reset_flags();
+            col += 2; // Increment column for the "!=" or ">="
+            continue;
+        }
+
         // Handle sing-char punctuation
         if (
             !str && c == '{' || c == '}' || c == '(' || c == ')'
