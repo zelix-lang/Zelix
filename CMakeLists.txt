@@ -28,7 +28,11 @@ FetchContent_MakeAvailable(fluent_stl)
 set(CMAKE_CXX_STANDARD 20)
 
 add_executable(Fluent
-        main.cpp)
+        main.cpp
+        lexer/lexer.h
+        lexer/token.h
+        lexer/lexer.cpp
+        util/read_file.h)
 
 target_include_directories(Fluent PRIVATE ${CMAKE_BINARY_DIR}/_deps/fluent_libc-src/include)
 target_include_directories(Fluent PRIVATE .)
@@ -40,6 +44,6 @@ add_definitions(-DDEBUG -DFLUENT_LIBC_RELEASE=1)
 set_target_properties(Fluent PROPERTIES OUTPUT_NAME "fluent")
 
 if (NOT WIN32)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -march=native -funroll-loops -flto")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -march=native -funroll-loops -flto")
+#    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -march=native -funroll-loops -flto")
+#    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -march=native -funroll-loops -flto")
 endif ()
