@@ -25,7 +25,7 @@
 
 #include "parser.h"
 
-#include "import/import.h"
+#include "rule/import.h"
 using namespace fluent;
 
 parser::ast parse(container::stream<lexer::token> &tokens)
@@ -48,6 +48,11 @@ parser::ast parse(container::stream<lexer::token> &tokens)
             {
                 parser::rule::imp(root, tokens, top_level, current);
                 break;
+            }
+
+            case lexer::token::FUNCTION:
+            {
+
             }
 
             default:
