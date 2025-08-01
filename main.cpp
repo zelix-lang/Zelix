@@ -52,6 +52,13 @@ int main(const int argc, const char **argv)
         "."
     );
 
+    app.flag<int>(
+        "optimization",
+        "O",
+        "specifies the optimization level",
+        3
+    );
+
     auto args = app.parse();
     if (cli::args::is_err())
     {
