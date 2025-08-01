@@ -74,7 +74,10 @@ namespace fluent::lexer
             OR,
             NOT,
             DOT,
-            STEP
+            STEP,
+            BOOL,
+            TRUE,
+            FALSE
         };
 
         container::optional<container::external_string> value
