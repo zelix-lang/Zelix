@@ -32,7 +32,8 @@ add_executable(Fluent
         lexer/lexer.h
         lexer/token.h
         lexer/lexer.cpp
-        util/read_file.h)
+        util/read_file.h
+        parser/ast.h)
 
 target_include_directories(Fluent PRIVATE ${CMAKE_BINARY_DIR}/_deps/fluent_libc-src/include)
 target_include_directories(Fluent PRIVATE .)
