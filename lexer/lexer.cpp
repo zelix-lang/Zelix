@@ -179,6 +179,22 @@ bool push_token(container::vector<lexer::token> &tokens, const char *source)
     return true;
 }
 
+/// \brief Lexical analyzer for the Fluent Programming Language.
+///
+/// This function tokenizes the given source code string into a stream of tokens.
+/// It handles whitespace, newlines, string literals, line and block comments,
+/// identifiers, numbers, decimals, and various punctuation and operator tokens.
+///
+/// The lexer maintains state for line and column tracking, as well as flags for
+/// string, identifier, number, decimal, and block comment detection. It pushes
+/// tokens to the output vector as they are recognized, and sets global error
+/// information if an invalid or unknown token is encountered.
+///
+/// \param source The source code to tokenize, as an external string.
+/// \return An optional stream of tokens. Returns none if a lexical error occurs.
+///
+/// \note This function is not thread-safe due to the use of global state for
+///       error reporting and tokenization flags.
 container::optional<container::stream<lexer::token>> lexer::lex(
     const container::external_string &source
 )
