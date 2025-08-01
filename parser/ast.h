@@ -29,7 +29,7 @@
 
 #pragma once
 #include "fluent/container/optional.h"
-#include "fluent/container/owned_string.h"
+#include "fluent/container/external_string.h"
 #include "fluent/container/vector.h"
 
 namespace fluent::parser
@@ -71,7 +71,7 @@ namespace fluent::parser
         };
 
         rule_t rule = ROOT;
-        container::optional<container::string> value = container::optional<container::string>::none();
+        container::optional<container::external_string> value = container::optional<container::external_string>::none();
         container::vector<ast> children;
     };
 }
