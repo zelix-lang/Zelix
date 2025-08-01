@@ -81,6 +81,10 @@ ankerl::unordered_dense::map<
         container::external_string("const", 3),
         lexer::token::CONST
     },
+    {
+        container::external_string("pub", 3),
+        lexer::token::PUB
+    },
 };
 
 bool lexer::is_err()
