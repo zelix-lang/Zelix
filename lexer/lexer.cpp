@@ -88,6 +88,16 @@ void reset_flags()
     t_len = 0;
 }
 
+/// \brief Pushes the current token to the token vector if a valid token is present.
+///
+/// This function examines the current tokenization state (number, decimal, string, identifier)
+/// and pushes the appropriate token to the provided token vector. It also checks for known
+/// keywords using the token map. If the token is unknown and not an identifier, it sets a
+/// global error and returns false.
+///
+/// \param tokens Reference to the vector where tokens are stored.
+/// \param source Pointer to the source code string.
+/// \return true if the token was successfully pushed or if there was no token to push; false if an unknown token was encountered.
 bool push_token(container::vector<lexer::token> &tokens, const char *source)
 {
     if (t_len == 0)
