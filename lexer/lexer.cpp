@@ -105,6 +105,10 @@ ankerl::unordered_dense::map<
         container::external_string("for", 3),
         lexer::token::FOR
     },
+    {
+        container::external_string("while", 5),
+        lexer::token::WHILE
+    },
 };
 
 bool lexer::is_err()
