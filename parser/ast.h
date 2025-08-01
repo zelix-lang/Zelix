@@ -34,7 +34,7 @@
 
 namespace fluent::parser
 {
-    class ast
+    struct ast
     {
         enum rule_t
         {
