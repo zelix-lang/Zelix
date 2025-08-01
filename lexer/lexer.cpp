@@ -46,34 +46,6 @@ ankerl::unordered_dense::map<
         lexer::token::MOD
     },
     {
-        container::external_string("->", 2),
-        lexer::token::ARROW
-    },
-    {
-        container::external_string("{", 1),
-        lexer::token::OPEN_CURLY
-    },
-    {
-        container::external_string("}", 1),
-        lexer::token::CLOSE_CURLY
-    },
-    {
-        container::external_string("(", 1),
-        lexer::token::OPEN_PAREN
-    },
-    {
-        container::external_string(")", 1),
-        lexer::token::CLOSE_PAREN
-    },
-    {
-        container::external_string("[", 1),
-        lexer::token::OPEN_BRACKET
-    },
-    {
-        container::external_string("]", 1),
-        lexer::token::CLOSE_BRACKET
-    },
-    {
         container::external_string("str", 3),
         lexer::token::STRING
     },
@@ -85,39 +57,6 @@ ankerl::unordered_dense::map<
         container::external_string("dec", 3),
         lexer::token::DECIMAL
     },
-    {
-        container::external_string(";", 1),
-        lexer::token::SEMICOLON
-    },
-    {
-        container::external_string(",", 1),
-        lexer::token::COMMA
-    },
-    {
-        container::external_string(":", 1),
-        lexer::token::COLON
-    },
-    {
-        container::external_string("=", 1),
-        lexer::token::EQUALS
-    },
-    {
-        container::external_string("+", 1),
-        lexer::token::PLUS
-    },
-    {
-        container::external_string("-", 1),
-        lexer::token::MINUS
-    },
-    {
-        container::external_string("*", 1),
-        lexer::token::MULTIPLY
-    },
-    {
-        container::external_string("/", 1),
-        lexer::token::DIVIDE
-    },
-
 };
 
 bool lexer::is_err()
