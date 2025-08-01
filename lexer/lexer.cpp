@@ -572,5 +572,14 @@ container::optional<container::stream<lexer::token>> lexer::lex(
         t_len++; // Increment token length
     }
 
+    // Handle unclosed comments or strings
+    if (str || block_comment)
+    {
+        global_err.type = str ? UNCLOSED_STRING : UNCLOSED_COMMENT;
+        global_err.line = line;
+        global_err.column = col - t_len; // Column where the unclosed string/comment started
+        return container::optional<container::stream<token>>::none();
+    }
+
     return container::optional<container::stream<token>>::emplace(tokens);
 }
