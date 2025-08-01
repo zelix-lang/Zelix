@@ -35,7 +35,7 @@ namespace fluent::lexer
 {
     container::optional<container::stream<token>> lex(
         const container::external_string &source
-    ) noexcept;
+    );
 
     enum error_type
     {
