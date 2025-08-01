@@ -24,6 +24,8 @@
 */
 
 #include "parser.h"
+
+#include "import/import.h"
 using namespace fluent;
 
 parser::ast parse(container::stream<lexer::token> &tokens)
@@ -44,7 +46,7 @@ parser::ast parse(container::stream<lexer::token> &tokens)
         {
             case lexer::token::IMPORT:
             {
-                // TODO!
+                parser::rule::imp(root, tokens, top_level, current);
                 break;
             }
 
@@ -53,7 +55,7 @@ parser::ast parse(container::stream<lexer::token> &tokens)
                 parser::global_err.type = parser::UNEXPECTED_TOKEN;
                 parser::global_err.line = current.line;
                 parser::global_err.column = current.column;
-                return root;
+                throw except::exception("Unexpected token encountered during parsing");
             }
         }
 
