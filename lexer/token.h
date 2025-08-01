@@ -79,7 +79,8 @@ namespace fluent::lexer
             TRUE,
             FALSE,
             LET,
-            CONST
+            CONST,
+            PUB
         };
 
         container::optional<container::external_string> value
