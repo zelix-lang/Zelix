@@ -78,7 +78,7 @@ ankerl::unordered_dense::map<
         lexer::token::LET
     },
     {
-        container::external_string("const", 3),
+        container::external_string("const", 5),
         lexer::token::CONST
     },
     {
