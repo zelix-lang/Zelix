@@ -80,7 +80,11 @@ namespace fluent::lexer
             FALSE,
             LET,
             CONST,
-            PUB
+            PUB,
+            IF,
+            ELSEIF,
+            ELSE,
+            FOR
         };
 
         container::optional<container::external_string> value
