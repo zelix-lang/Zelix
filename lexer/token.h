@@ -84,7 +84,8 @@ namespace fluent::lexer
             IF,
             ELSEIF,
             ELSE,
-            FOR
+            FOR,
+            WHILE
         };
 
         container::optional<container::external_string> value
