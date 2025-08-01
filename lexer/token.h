@@ -28,8 +28,7 @@
 //
 
 #pragma once
-#include <optional>
-
+#include "fluent/container/optional.h"
 #include "fluent/container/external_string.h"
 
 namespace fluent::lexer
@@ -61,6 +60,12 @@ namespace fluent::lexer
             COMMA,
             COLON,
             EQUALS,
+            BOOL_EQ,
+            BOOL_NEQ,
+            BOOL_LT,
+            BOOL_GT,
+            BOOL_LTE,
+            BOOL_GTE,
             PLUS,
             MINUS,
             MULTIPLY,
@@ -70,7 +75,8 @@ namespace fluent::lexer
             NOT,
         };
 
-        std::optional<container::external_string> value;
+        container::optional<container::external_string> value
+            = container::optional<container::external_string>::none();
         t_type type = UNKNOWN;
         size_t line = 0;
         size_t column = 0;
