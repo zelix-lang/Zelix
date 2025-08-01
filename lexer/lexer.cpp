@@ -73,6 +73,14 @@ ankerl::unordered_dense::map<
         container::external_string("false", 3),
         lexer::token::FALSE
     },
+    {
+        container::external_string("let", 3),
+        lexer::token::LET
+    },
+    {
+        container::external_string("const", 3),
+        lexer::token::CONST
+    },
 };
 
 bool lexer::is_err()
