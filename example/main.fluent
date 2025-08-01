@@ -23,7 +23,7 @@
     <https://www.gnu.org/licenses/>.
 */
 
-include "@std::io::print";
+import "@std::io::print";
 
 fun main() {
     // Print a message to the console
