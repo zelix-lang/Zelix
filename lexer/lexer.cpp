@@ -70,7 +70,7 @@ ankerl::unordered_dense::map<
         lexer::token::TRUE
     },
     {
-        container::external_string("false", 3),
+        container::external_string("false", 5),
         lexer::token::FALSE
     },
     {
