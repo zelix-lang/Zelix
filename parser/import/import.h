@@ -48,7 +48,7 @@ namespace fluent::parser::rule
             global_err.type = ILLEGAL_IMPORT;
             global_err.column = trace.column;
             global_err.line = trace.line;
-            return;
+            throw except::exception("Illegal import statement outside of top-level scope");
         }
 
         expect(tokens, lexer::token::STRING_LITERAL);
