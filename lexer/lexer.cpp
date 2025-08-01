@@ -109,6 +109,10 @@ ankerl::unordered_dense::map<
         container::external_string("while", 5),
         lexer::token::WHILE
     },
+    {
+        container::external_string("return", 6),
+        lexer::token::RETURN
+    },
 };
 
 bool lexer::is_err()
