@@ -101,6 +101,10 @@ ankerl::unordered_dense::map<
         container::external_string("elseif", 6),
         lexer::token::ELSEIF
     },
+    {
+        container::external_string("for", 3),
+        lexer::token::FOR
+    },
 };
 
 bool lexer::is_err()
