@@ -74,6 +74,11 @@ inline bool num = false; // Flag to track if we are in a number literal
 inline bool dec = false; // Flag to track if we are in a decimal literal
 inline bool block_comment = false; // Flag to track if we are in a block comment
 
+/// \brief Resets all tokenization flags and the current token length.
+///
+/// This function is called after a token is pushed to reset the state
+/// for the next token. It clears the flags for string, identifier,
+/// number, and decimal detection, and sets the token length to zero.
 void reset_flags()
 {
     str = false;
