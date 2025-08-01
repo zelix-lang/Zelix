@@ -58,7 +58,7 @@ ankerl::unordered_dense::map<
         lexer::token::DECIMAL
     },
     {
-        container::external_string("bool", 3),
+        container::external_string("bool", 4),
         lexer::token::BOOL
     },
     {
