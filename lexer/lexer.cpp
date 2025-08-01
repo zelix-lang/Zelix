@@ -89,6 +89,18 @@ ankerl::unordered_dense::map<
         container::external_string("pub", 3),
         lexer::token::PUB
     },
+    {
+        container::external_string("if", 2),
+        lexer::token::IF
+    },
+    {
+        container::external_string("else", 4),
+        lexer::token::ELSE
+    },
+    {
+        container::external_string("elseif", 6),
+        lexer::token::ELSEIF
+    },
 };
 
 bool lexer::is_err()
