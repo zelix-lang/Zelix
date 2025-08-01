@@ -44,6 +44,7 @@ namespace fluent::parser
             MOD,
             TYPE,
             ARGUMENTS,
+            ARGUMENT,
             BLOCK,
             DECLARATION,
             CONST_DECLARATION,
