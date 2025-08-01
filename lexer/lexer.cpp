@@ -198,7 +198,7 @@ bool push_token(container::vector<lexer::token> &tokens, const char *source)
 container::optional<container::stream<lexer::token>> lexer::lex(
     const container::external_string &source
 )
-noexcept {
+{
     container::vector<token> tokens; // Vector to hold the tokens
     const auto ptr = source.ptr();
 
