@@ -66,7 +66,7 @@ ankerl::unordered_dense::map<
         lexer::token::STEP
     },
     {
-        container::external_string("true", 3),
+        container::external_string("true", 4),
         lexer::token::TRUE
     },
     {
