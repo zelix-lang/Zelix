@@ -62,7 +62,7 @@ ankerl::unordered_dense::map<
         lexer::token::BOOL
     },
     {
-        container::external_string("step", 3),
+        container::external_string("step", 4),
         lexer::token::STEP
     },
     {
