@@ -216,7 +216,7 @@ noexcept {
                 continue;
             }
 
-            push_token(tokens, ptr); // Push the current token if any
+            if (!push_token(tokens, ptr)) return container::optional<container::stream<token>>::none();
             start = i + 1; // Move start to the next character
             continue;
         }
@@ -265,7 +265,7 @@ noexcept {
             }
             else
             {
-                push_token(tokens, ptr);
+                if (!push_token(tokens, ptr)) return container::optional<container::stream<token>>::none();
                 // Start a new string literal
                 str = true;
                 start = i + 1; // Start after the quote
@@ -331,7 +331,7 @@ noexcept {
         if (!str && c == '/' && ptr[i + 1] == '*')
         {
             // Push the current token if any
-            push_token(tokens, ptr);
+            if (!push_token(tokens, ptr)) return container::optional<container::stream<token>>::none();
             block_comment = true; // Enter block comment mode
             continue; // Skip the rest of the line
         }
@@ -362,7 +362,7 @@ noexcept {
             && ptr[i + 1] == c
         )
         {
-            push_token(tokens, ptr);
+            if (!push_token(tokens, ptr)) return container::optional<container::stream<token>>::none();
             i++; // Skip the next character
 
             tokens.push_back(token{
@@ -386,7 +386,7 @@ noexcept {
             && ptr[i + 1] == '='
         )
         {
-            push_token(tokens, ptr);
+            if (!push_token(tokens, ptr)) return container::optional<container::stream<token>>::none();
             i++; // Skip the next character
 
             tokens.push_back(token{
@@ -409,7 +409,7 @@ noexcept {
             !str && c == '-' && ptr[i + 1] == '>'
         )
         {
-            push_token(tokens, ptr);
+            if (!push_token(tokens, ptr)) return container::optional<container::stream<token>>::none();
             i++; // Skip the next character
 
             tokens.push_back(token{
@@ -433,7 +433,7 @@ noexcept {
             || c == '*' || c == '/' || c == '!'
         )
         {
-            push_token(tokens, ptr); // Push the current token if any
+            if (!push_token(tokens, ptr)) return container::optional<container::stream<token>>::none();
 
             tokens.push_back(token{
                 .value = container::optional<container::external_string>::none(),
@@ -479,7 +479,7 @@ noexcept {
             // Handle punctuation
             if (!dec)
             {
-                push_token(tokens, ptr);
+                if (!push_token(tokens, ptr)) return container::optional<container::stream<token>>::none();
                 col++; // Increment column for the dot
 
                 tokens.push_back(token{
