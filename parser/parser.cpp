@@ -25,13 +25,16 @@
 
 #include "parser.h"
 
+#include "memory/allocator.h"
 #include "rule/import.h"
 using namespace fluent;
 
-parser::ast parse(container::stream<lexer::token> &tokens)
+parser::ast *parse(container::stream<lexer::token> &tokens)
 {
+    memory::lazy_allocator<parser::ast> allocator(100); // Create a lazy allocator for AST nodes
+
     // Create the root AST node
-    parser::ast root;
+    parser::ast *root = allocator.alloc();
 
     bool top_level = true; // Flag to track if we are at the top level of the AST
 
@@ -46,7 +49,7 @@ parser::ast parse(container::stream<lexer::token> &tokens)
         {
             case lexer::token::IMPORT:
             {
-                parser::rule::imp(root, tokens, top_level, current);
+                parser::rule::imp(root, tokens, top_level, allocator, current);
                 break;
             }
 
