@@ -29,13 +29,12 @@
 
 #pragma once
 #include "fluent/container/stream.h"
-#include "fluent/container/vector.h"
 #include "lexer/token.h"
 #include "parser/parser.h"
 
 namespace fluent::parser
 {
-    inline container::vector<lexer::token> extract(
+    inline container::stream<lexer::token> extract(
         const container::vector<lexer::token> &tokens_vec,
         size_t start = 0,
         const lexer::token::t_type end_delim = lexer::token::OPEN_PAREN,
@@ -44,7 +43,8 @@ namespace fluent::parser
         const bool exclude_first_delim = true
     )
     {
-        container::vector<lexer::token> result;
+        container::vector<lexer::token> vec;
+        container::stream result(container::move(vec));
         size_t nested_count = 0;
 
         // Iterate over the tokens
@@ -87,7 +87,7 @@ namespace fluent::parser
                 }
             }
 
-            result.push_back(current);
+            result.push(current);
             start++;
         }
 
@@ -107,7 +107,7 @@ namespace fluent::parser
         throw except::exception("Unexpected end delimiter");
     }
 
-    inline container::vector<lexer::token> extract(
+    inline container::stream<lexer::token> extract(
         container::stream<lexer::token> &tokens,
         const lexer::token::t_type end_delim = lexer::token::OPEN_PAREN,
         const lexer::token::t_type start_delim = lexer::token::OPEN_PAREN,
