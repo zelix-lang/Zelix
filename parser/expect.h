@@ -50,7 +50,7 @@ namespace fluent::parser
             }
             else
             {
-                const auto &current_token = trace.get();
+                auto current_token = trace.get();
                 global_err.type = UNEXPECTED_TOKEN;
                 global_err.column = current_token.column; // Use the column from the current token
                 global_err.line = current_token.line; // Use the line from the current token
