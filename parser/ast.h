@@ -73,6 +73,6 @@ namespace fluent::parser
 
         rule_t rule = ROOT;
         container::optional<container::external_string> value = container::optional<container::external_string>::none();
-        container::vector<ast> children;
+        container::vector<ast *> children;
     };
 }
