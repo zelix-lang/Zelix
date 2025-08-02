@@ -38,6 +38,7 @@ namespace fluent::parser
         const container::vector<lexer::token> &tokens_vec,
         size_t start = 0,
         const lexer::token::t_type end_delim = lexer::token::OPEN_PAREN,
+        const lexer::token::t_type nested_end_delim = lexer::token::OPEN_PAREN,
         const lexer::token::t_type start_delim = lexer::token::OPEN_PAREN,
         const bool handle_nested = true,
         const bool exclude_first_delim = true
@@ -52,7 +53,7 @@ namespace fluent::parser
         {
             const auto &current = tokens_vec.ref_at(start);
 
-            if (current.type == end_delim)
+            if (current.type == nested_end_delim)
             {
                 // Handle nested delimiters
                 if (handle_nested)
@@ -62,16 +63,36 @@ namespace fluent::parser
                         global_err.type = UNEXPECTED_TOKEN;
                         global_err.column = current.column;
                         global_err.line = current.line;
-                        throw except::exception("Unexpected end delimiter");
+                        throw except::exception("Unexpected nested end delimiter");
                     }
 
                     nested_count--;
                 }
 
-                if (nested_count == 0)
+                if (
+                    const bool ok_ret = nested_end_delim == end_delim;
+                    (ok_ret && handle_nested && nested_count == 0)
+                    || (ok_ret && !handle_nested)
+                )
                 {
                     return result;
                 }
+            }
+            if (current.type == end_delim)
+            {
+                // Handle nested delimiters
+                if (handle_nested)
+                {
+                    if (nested_count != 0)
+                    {
+                        global_err.type = UNEXPECTED_TOKEN;
+                        global_err.column = current.column;
+                        global_err.line = current.line;
+                        throw except::exception("Unexpected end delimiter");
+                    }
+                }
+
+                return result;
             }
             else if (current.type == start_delim)
             {
@@ -110,6 +131,7 @@ namespace fluent::parser
     inline container::stream<lexer::token> extract(
         container::stream<lexer::token> &tokens,
         const lexer::token::t_type end_delim = lexer::token::OPEN_PAREN,
+        const lexer::token::t_type nested_end_delim = lexer::token::OPEN_PAREN,
         const lexer::token::t_type start_delim = lexer::token::OPEN_PAREN,
         const bool handle_nested = true,
         const bool exclude_first_delim = true
@@ -119,6 +141,7 @@ namespace fluent::parser
             tokens.ptr(),
             tokens.pos(),
             end_delim,
+            nested_end_delim,
             start_delim,
             handle_nested,
             exclude_first_delim
