@@ -33,7 +33,7 @@
 #include "likely.h"
 #include "memory/allocator.h"
 #include "parser/parser.h"
-#include "parser/rule/args.h"
+#include "parser/rule/call.h"
 #include "parser/rule/extractor.h"
 #include "queue.h"
 
@@ -216,7 +216,14 @@ namespace fluent::parser::rule
             first = first_opt.get();
             if (likely & expr::CALL_LIKELY && first.type == lexer::token::OPEN_PAREN)
             {
+                candidate = call(
+                    candidate,
+                    expr_stream,
+                    allocator,
+                    expr_queue
+                ); // Call the function with the candidate
 
+                likely = expr::ALL_LIKELY ^ expr::CALL_LIKELY; // Remove the call likely from the set
             }
 
             if (likely & expr::PROP_ACCESS_LIKELY && first.type == lexer::token::DOT)
