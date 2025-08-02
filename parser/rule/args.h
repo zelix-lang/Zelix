@@ -87,6 +87,8 @@ namespace fluent::parser::rule
                     arg_node,
                     root
                 );
+
+                break; // Exit the loop if we reach the end of args
             }
         }
     }
