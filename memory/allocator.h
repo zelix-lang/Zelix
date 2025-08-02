@@ -28,7 +28,6 @@
 //
 
 #pragma once
-#include <cstdlib>
 
 #include "fluent/container/vector.h"
 #include "fluent/except/exception.h"
@@ -46,7 +45,7 @@ namespace fluent::memory
         explicit lazy_page(const size_t page_size)
         {
             size = sizeof(T) * page_size;
-            ptr = malloc(size);
+            ptr = new T[page_size];
         }
 
         T *alloc()
@@ -60,6 +59,8 @@ namespace fluent::memory
             T *next_ptr = reinterpret_cast<T *>(reinterpret_cast<char *>(ptr) + used);
             used += sizeof(T);
 
+            // Initialize the allocated memory
+            new (next_ptr) T(); // Placement new to construct the object in the allocated memory
             return next_ptr;
         }
 
@@ -70,7 +71,8 @@ namespace fluent::memory
 
         ~lazy_page()
         {
-            free(ptr);
+            delete[] ptr; // Free the allocated memory
+            ptr = nullptr; // Avoid dangling pointer
         }
     };
 
@@ -120,6 +122,7 @@ namespace fluent::memory
 
         void dealloc(T *ptr)
         {
+            ptr->~T(); // Call the destructor for the object
             free_list.push_back(ptr);
         }
 
