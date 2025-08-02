@@ -91,5 +91,8 @@ namespace fluent::parser::rule
                 break; // Exit the loop if we reach the end of args
             }
         }
+
+        // Append the args node to the root
+        root->children.push_back(args_node);
     }
 }
