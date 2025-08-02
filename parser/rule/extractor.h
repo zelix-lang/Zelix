@@ -51,7 +51,7 @@ namespace fluent::parser
         auto next_opt = tokens.next();
         while (next_opt.is_some())
         {
-            const auto &current = next_opt.get();;
+            const auto &current = next_opt.get();
 
             if (current.type == nested_end_delim)
             {
