@@ -42,6 +42,12 @@ namespace fluent::memory
         size_t used = 0;
 
     public:
+        explicit lazy_page()
+        {
+            size = sizeof(T) * 20;
+            ptr = new T[20];
+        }
+
         explicit lazy_page(const size_t page_size)
         {
             size = sizeof(T) * page_size;
@@ -97,7 +103,7 @@ namespace fluent::memory
             // Check the free list first
             if (!free_list.empty())
             {
-                T *ptr = free_list.back();
+                T *ptr = free_list.ref_at(free_list.size() - 1);
                 free_list.pop_back();
                 return ptr;
             }
