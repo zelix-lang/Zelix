@@ -30,11 +30,12 @@
 #pragma once
 #include "fluent/container/stream.h"
 #include "lexer/token.h"
+#include "likely.h"
 #include "memory/allocator.h"
 #include "parser/parser.h"
+#include "parser/rule/args.h"
 #include "parser/rule/extractor.h"
 #include "queue.h"
-#include "likely.h"
 
 namespace fluent::parser::rule
 {
@@ -55,6 +56,7 @@ namespace fluent::parser::rule
             tokens,
             lexer::token::SEMICOLON,
             lexer::token::UNKNOWN,
+            lexer::token::UNKNOWN,
             false, // Do not handle nested delimiters
             false // Do not exclude the first delimiter
         );
@@ -69,7 +71,7 @@ namespace fluent::parser::rule
             auto &[expr_stream, node, parent] = expr_queue.ref_at(expr_queue.size() - 1);
             expr_queue.pop_back(); // Remove the current expression from the queue
 
-            auto first_opt = expr_stream.next();
+            auto first_opt = expr_stream.peek();
             // Check if the current element is empty
             if (first_opt.is_none())
             {
@@ -100,6 +102,7 @@ namespace fluent::parser::rule
                     candidate = allocator.alloc();
                     candidate->rule = ast::IDENTIFIER;
                     candidate->value = first.value;
+                    expr_stream.next(); // Consume the identifier token
                     break;
                 }
 
@@ -113,6 +116,7 @@ namespace fluent::parser::rule
                     candidate = allocator.alloc();
                     candidate->rule = ast::NUMBER_LITERAL;
                     candidate->value = first.value;
+                    expr_stream.next(); // Consume the number literal token
                     break;
                 }
 
@@ -126,6 +130,7 @@ namespace fluent::parser::rule
                     candidate = allocator.alloc();
                     candidate->rule = ast::DECIMAL_LITERAL;
                     candidate->value = first.value;
+                    expr_stream.next(); // Consume the decimal literal token
                     break;
                 }
 
@@ -138,6 +143,7 @@ namespace fluent::parser::rule
                     candidate = allocator.alloc();
                     candidate->rule = ast::STRING_LITERAL;
                     candidate->value = first.value;
+                    expr_stream.next(); // Consume the string literal token
                     break;
                 }
 
@@ -148,6 +154,7 @@ namespace fluent::parser::rule
                     // Update the candidate
                     candidate = allocator.alloc();
                     candidate->rule = ast::TRUE;
+                    expr_stream.next(); // Consume the true token
                     break;
                 }
 
@@ -156,12 +163,16 @@ namespace fluent::parser::rule
                     // Update the candidate
                     candidate = allocator.alloc();
                     candidate->rule = ast::FALSE;
+                    expr_stream.next(); // Consume the false token
+                    likely |= expr::BOOLEAN_OP_LIKELY; // Boolean operation is likely
                     break;
                 }
 
                 case lexer::token::OPEN_PAREN:
                 {
-                    likely |= expr::PROP_ACCESS_LIKELY; // Property access is likely
+                    likely |= expr::PROP_ACCESS_LIKELY // Property access is likely
+                            | expr::ARITHMETIC_OP_LIKELY // Arithmetic operation is likely
+                            | expr::BOOLEAN_OP_LIKELY; // Boolean ops are also likely (ex. 1 == 2)
 
                     // Handle nested expression
                     candidate = allocator.alloc();
@@ -185,7 +196,7 @@ namespace fluent::parser::rule
             }
 
             // Start checking for likely ops
-            first_opt = expr_stream.next();
+            first_opt = expr_stream.peek();
             if (first_opt.is_none())
             {
                 // Push the candidate to the current node
@@ -205,7 +216,7 @@ namespace fluent::parser::rule
             first = first_opt.get();
             if (likely & expr::CALL_LIKELY && first.type == lexer::token::OPEN_PAREN)
             {
-                // TODO!
+
             }
 
             if (likely & expr::PROP_ACCESS_LIKELY && first.type == lexer::token::DOT)
