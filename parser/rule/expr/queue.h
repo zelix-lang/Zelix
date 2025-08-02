@@ -28,7 +28,6 @@
 //
 
 #pragma once
-#include "fluent/container/vector.h"
 #include "lexer/token.h"
 #include "parser/ast.h"
 
