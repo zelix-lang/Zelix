@@ -94,7 +94,8 @@ namespace fluent::parser
 
                 return result;
             }
-            else if (current.type == start_delim)
+
+            if (current.type == start_delim)
             {
                 if (handle_nested)
                 {
