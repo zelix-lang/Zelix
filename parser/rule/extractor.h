@@ -78,7 +78,8 @@ namespace fluent::parser
                     return result;
                 }
             }
-            if (current.type == end_delim)
+
+            else if (current.type == end_delim)
             {
                 // Handle nested delimiters
                 if (handle_nested)
