@@ -37,7 +37,7 @@ namespace fluent::parser
 {
     inline container::vector<lexer::token> extract(
         container::vector<lexer::token> &tokens_vec,
-        size_t start,
+        size_t start = 0,
         const lexer::token::t_type end_delim = lexer::token::OPEN_PAREN,
         const lexer::token::t_type start_delim = lexer::token::OPEN_PAREN,
         const bool handle_nested = true,
