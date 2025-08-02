@@ -36,7 +36,8 @@
 namespace fluent::parser
 {
     inline container::vector<lexer::token> extract(
-        container::stream<lexer::token> &tokens,
+        container::vector<lexer::token> &tokens_vec,
+        size_t start,
         const lexer::token::t_type end_delim = lexer::token::OPEN_PAREN,
         const lexer::token::t_type start_delim = lexer::token::OPEN_PAREN,
         const bool handle_nested = true,
@@ -47,10 +48,9 @@ namespace fluent::parser
         size_t nested_count = 0;
 
         // Iterate over the tokens
-        auto current_opt = tokens.next();
-        while (current_opt.is_some())
+        while (start < tokens_vec.size())
         {
-            const auto &current = current_opt.get();
+            const auto &current = tokens_vec.ref_at(start);
 
             if (current.type == end_delim)
             {
@@ -82,17 +82,17 @@ namespace fluent::parser
 
                 if (exclude_first_delim)
                 {
-                    current_opt = tokens.next();
+                    start++;
                     continue;
                 }
             }
 
             result.push_back(current);
-            current_opt = tokens.next();
+            start++;
         }
 
         // Delimiter never closed
-        if (current_opt.is_none())
+        if (start >= tokens_vec.size())
         {
             global_err.type = UNEXPECTED_TOKEN;
             global_err.column = 0;
@@ -100,10 +100,28 @@ namespace fluent::parser
             throw except::exception("Unexpected end delimiter");
         }
 
-        const auto &current = current_opt.get();
+        const auto &current = tokens_vec.ref_at(start);
         global_err.type = UNEXPECTED_TOKEN;
         global_err.column = current.column;
         global_err.line = current.line;
         throw except::exception("Unexpected end delimiter");
+    }
+
+    inline container::vector<lexer::token> extract(
+        container::stream<lexer::token> &tokens,
+        const lexer::token::t_type end_delim = lexer::token::OPEN_PAREN,
+        const lexer::token::t_type start_delim = lexer::token::OPEN_PAREN,
+        const bool handle_nested = true,
+        const bool exclude_first_delim = true
+    )
+    {
+        return extract(
+            tokens.ptr(),
+            tokens.pos(),
+            end_delim,
+            start_delim,
+            handle_nested,
+            exclude_first_delim
+        );
     }
 }
