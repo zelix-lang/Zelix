@@ -36,9 +36,10 @@
 namespace fluent::parser::rule
 {
     inline void imp(
-        ast &root,
+        ast *&root,
         container::stream<lexer::token> &tokens,
         const bool &top_level,
+        memory::lazy_allocator<ast> &allocator,
         const lexer::token &trace
     )
     {
@@ -59,9 +60,9 @@ namespace fluent::parser::rule
         expect(tokens, lexer::token::SEMICOLON);
 
         // Create the import node
-        ast import_node;
-        import_node.rule = ast::IMPORT;
-        import_node.value = path.value;
-        root.children.push_back(import_node);
+        ast *import_node = allocator.alloc();
+        import_node->rule = ast::IMPORT;
+        import_node->value = path.value;
+        root->children.push_back(import_node);
     }
 }
