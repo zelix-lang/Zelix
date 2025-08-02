@@ -85,7 +85,7 @@ namespace fluent::parser::rule
                 expr_queue.emplace_back(
                     container::move(args_group),
                     arg_node,
-                    root
+                    args_node
                 );
 
                 break; // Exit the loop if we reach the end of args
