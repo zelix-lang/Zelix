@@ -46,6 +46,7 @@ namespace fluent::parser
         container::vector<lexer::token> vec;
         container::stream result(container::move(vec));
         size_t nested_count = 0;
+        size_t start_pos = tokens.pos();
 
         // Iterate over the tokens
         auto next_opt = tokens.next();
@@ -113,6 +114,9 @@ namespace fluent::parser
             result.push(current);
             next_opt = tokens.next();
         }
+
+        // Restore the original position of the tokens stream
+        tokens.set_pos(start_pos);
 
         // Delimiter never closed
         if (next_opt.is_none())
