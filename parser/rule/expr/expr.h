@@ -221,7 +221,6 @@ namespace fluent::parser::rule
                     global_err.column = trace.column;
                     global_err.line = trace.line;
                     throw except::exception("Unexpected token in expression");
-                    break;
                 }
             }
 
