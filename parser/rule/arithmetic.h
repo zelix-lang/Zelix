@@ -37,115 +37,132 @@
 
 namespace fluent::parser::rule
 {
-    inline ast::rule_t arithmetic_rule(
-        const lexer::token &op
-    )
+    namespace arith
     {
-        switch (op.type)
+        static inline int get_precedence(const lexer::token::t_type type)
         {
-            case lexer::token::PLUS:
-                return ast::SUM;
-            case lexer::token::MINUS:
-                return ast::SUB;
-            case lexer::token::MULTIPLY:
-                return ast::MUL;
-            case lexer::token::DIVIDE:
-                return ast::DIV;
-            default:
-                return ast::ROOT; // Should not happen, as this is validated earlier
-        }
-    }
-
-    template <typename Complex>
-    static inline container::vector<lexer::token> collect_arithmetic_tokens(
-        container::stream<lexer::token> &tokens
-    )
-    {
-        // No special precedence, just add the next token as a child
-        container::vector<lexer::token> vec;
-        auto next_opt = tokens.peek();
-        size_t nested_count = 0;
-
-        while (next_opt.is_some())
-        {
-            const auto &next = next_opt.get();
-
-            // Handle nested expressions
-            if (next.type == lexer::token::OPEN_PAREN)
+            switch (type)
             {
-                // Do not use extract() directly, since it will create
-                // another stream
-                nested_count++;
+                case lexer::token::PLUS:
+                case lexer::token::MINUS:
+                    return 1; // Lowest precedence
+                case lexer::token::MULTIPLY:
+                case lexer::token::DIVIDE:
+                    return 3; // Highest precedence
+                default:
+                    return 0; // No precedence
             }
-            else if (next.type == lexer::token::CLOSE_PAREN)
+        }
+        inline ast::rule_t rule(
+            const lexer::token &op
+        )
+        {
+            switch (op.type)
             {
-                if (nested_count == 0)
+                case lexer::token::PLUS:
+                    return ast::SUM;
+                case lexer::token::MINUS:
+                    return ast::SUB;
+                case lexer::token::MULTIPLY:
+                    return ast::MUL;
+                case lexer::token::DIVIDE:
+                    return ast::DIV;
+                default:
+                    return ast::ROOT; // Should not happen, as this is validated earlier
+            }
+        }
+
+        template <typename Complex>
+        static inline container::vector<lexer::token> collect(
+            container::stream<lexer::token> &tokens
+        )
+        {
+            // No special precedence, just add the next token as a child
+            container::vector<lexer::token> vec;
+            auto next_opt = tokens.peek();
+            size_t nested_count = 0;
+
+            while (next_opt.is_some())
+            {
+                const auto &next = next_opt.get();
+
+                // Handle nested expressions
+                if (next.type == lexer::token::OPEN_PAREN)
                 {
-                    global_err.type = UNEXPECTED_TOKEN;
-                    global_err.column = next.column;
-                    global_err.line = next.line;
-                    throw except::exception("Unexpected nested end delimiter");
+                    // Do not use extract() directly, since it will create
+                    // another stream
+                    nested_count++;
+                }
+                else if (next.type == lexer::token::CLOSE_PAREN)
+                {
+                    if (nested_count == 0)
+                    {
+                        global_err.type = UNEXPECTED_TOKEN;
+                        global_err.column = next.column;
+                        global_err.line = next.line;
+                        throw except::exception("Unexpected nested end delimiter");
+                    }
+
+                    nested_count--;
                 }
 
-                nested_count--;
-            }
+                // Ignore nested expressions
+                if (nested_count != 0)
+                {
+                    vec.push_back(next);
+                    continue;
+                }
 
-            // Ignore nested expressions
-            if (nested_count != 0)
-            {
+                if constexpr (std::is_same_v<Complex, bool>)
+                {
+                    if (
+                        // Break if we find arithmetic operators OR boolean operators
+                        next.type == lexer::token::AND ||
+                        next.type == lexer::token::OR ||
+                        next.type == lexer::token::NOT ||
+                        next.type == lexer::token::BOOL_EQ ||
+                        next.type == lexer::token::BOOL_NEQ ||
+                        next.type == lexer::token::BOOL_GT ||
+                        next.type == lexer::token::BOOL_GTE ||
+                        next.type == lexer::token::BOOL_LT ||
+                        next.type == lexer::token::BOOL_LTE ||
+                        next.type == lexer::token::PLUS ||
+                        next.type == lexer::token::MINUS ||
+                        next.type == lexer::token::MULTIPLY ||
+                        next.type == lexer::token::DIVIDE
+                    )
+                    {
+                        // If we encounter another arithmetic operator, break the loop
+                        break;
+                    }
+                }
+                else
+                {
+                    if (
+                        // Break if we find boolean operators, which are
+                        // the only possible tokens after an arithmetic operator
+                        next.type == lexer::token::AND ||
+                        next.type == lexer::token::OR ||
+                        next.type == lexer::token::NOT ||
+                        next.type == lexer::token::BOOL_EQ ||
+                        next.type == lexer::token::BOOL_NEQ ||
+                        next.type == lexer::token::BOOL_GT ||
+                        next.type == lexer::token::BOOL_GTE ||
+                        next.type == lexer::token::BOOL_LT ||
+                        next.type == lexer::token::BOOL_LTE
+                    )
+                    {
+                        // If we encounter another arithmetic operator, break the loop
+                        break;
+                    }
+                }
+
                 vec.push_back(next);
-                continue;
+                next_opt = tokens.next(); // Get the next token
             }
 
-            if constexpr (std::is_same_v<Complex, bool>)
-            {
-                if (
-                    // Break if we find arithmetic operators OR boolean operators
-                    next.type == lexer::token::AND ||
-                    next.type == lexer::token::OR ||
-                    next.type == lexer::token::NOT ||
-                    next.type == lexer::token::BOOL_EQ ||
-                    next.type == lexer::token::BOOL_NEQ ||
-                    next.type == lexer::token::BOOL_GT ||
-                    next.type == lexer::token::BOOL_GTE ||
-                    next.type == lexer::token::BOOL_LT ||
-                    next.type == lexer::token::BOOL_LTE ||
-                    next.type == lexer::token::PLUS ||
-                    next.type == lexer::token::MINUS ||
-                    next.type == lexer::token::MULTIPLY ||
-                    next.type == lexer::token::DIVIDE
-                )
-                {
-                    // If we encounter another arithmetic operator, break the loop
-                    break;
-                }
-            }
-            else
-            {
-                if (
-                    // Break if we find boolean operators, which are
-                    // the only possible tokens after an arithmetic operator
-                    next.type == lexer::token::AND ||
-                    next.type == lexer::token::OR ||
-                    next.type == lexer::token::NOT ||
-                    next.type == lexer::token::BOOL_EQ ||
-                    next.type == lexer::token::BOOL_NEQ ||
-                    next.type == lexer::token::BOOL_GT ||
-                    next.type == lexer::token::BOOL_GTE ||
-                    next.type == lexer::token::BOOL_LT ||
-                    next.type == lexer::token::BOOL_LTE
-                )
-                {
-                    // If we encounter another arithmetic operator, break the loop
-                    break;
-                }
-            }
-
-            vec.push_back(next);
-            next_opt = tokens.next(); // Get the next token
+            return vec;
         }
-
-        return vec;
     }
 
     inline ast *arithmetic(
@@ -160,7 +177,7 @@ namespace fluent::parser::rule
         const auto &next = next_opt.get();
         // Create a new AST node for the arithmetic operation
         ast *arithmetic_node = allocator.alloc();
-        arithmetic_node->rule = arithmetic_rule(next); // Set the rule based on the operator type
+        arithmetic_node->rule = arith::rule(next); // Set the rule based on the operator type
         arithmetic_node->children.push_back(candidate); // Add the candidate as the first child
 
         // Since the arithmetic operator is validated earlier, possible tokens are:
@@ -177,7 +194,7 @@ namespace fluent::parser::rule
             while (true)
             {
                 // Collect the tokens until the next arithmetic operator
-                auto tokens_group = collect_arithmetic_tokens<float>(tokens);
+                auto tokens_group = arith::collect<float>(tokens);
                 auto curr_opt = tokens.curr();
                 if (tokens_group.empty() || curr_opt.is_none())
                 {
@@ -194,7 +211,7 @@ namespace fluent::parser::rule
                 {
                     // Create a new AST node for the arithmetic operation
                     ast *expr_node = allocator.alloc();
-                    expr_node->rule = arithmetic_rule(curr); // Set the rule based on the operator type
+                    expr_node->rule = arith::rule(curr); // Set the rule based on the operator type
                     expr_node->children.push_back(arithmetic_node); // Add the previous node as a child
                     arithmetic_node = expr_node; // Update the arithmetic node to the new one
 
@@ -217,7 +234,7 @@ namespace fluent::parser::rule
 
             // Append the expression to the queue
             expr_queue.emplace_back(
-                collect_arithmetic_tokens<float>(tokens), // Collect the tokens until the next arithmetic operator
+                arith::collect<float>(tokens), // Collect the tokens until the next arithmetic operator
                 expr_node
             );
         }
