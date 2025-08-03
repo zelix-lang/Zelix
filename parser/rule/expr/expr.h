@@ -225,8 +225,26 @@ namespace fluent::parser::rule
                 ); // Call the function with the candidate
 
                 likely = expr::ALL_LIKELY ^ expr::CALL_LIKELY; // Remove the call likely from the set
+                first_opt = expr_stream.next(); // Peek the next token again
             }
 
+            if (first_opt.is_none())
+            {
+                // Push the candidate to the current node
+                if (candidate != nullptr)
+                {
+                    parent->children.push_back(candidate);
+                    continue;
+                }
+
+                // Set error state
+                global_err.type = UNEXPECTED_TOKEN;
+                global_err.column = trace.column;
+                global_err.line = trace.line;
+                throw except::exception("Unexpected end of expression");
+            }
+
+            first = first_opt.get();
             if (likely & expr::PROP_ACCESS_LIKELY && first.type == lexer::token::DOT)
             {
                 candidate = prop(
