@@ -37,6 +37,7 @@
 namespace fluent::parser::rule
 {
     inline ast *prop(
+        ast *&candidate,
         container::stream<lexer::token> &tokens,
         memory::lazy_allocator<ast> &allocator,
         const lexer::token &trace,
@@ -46,6 +47,7 @@ namespace fluent::parser::rule
         // Create a new AST node for the property access
         ast *prop_node = allocator.alloc();
         prop_node->rule = ast::PROP_ACCESS;
+        prop_node->children.push_back(candidate); // Add the candidate as the first child
 
         while (true)
         {
