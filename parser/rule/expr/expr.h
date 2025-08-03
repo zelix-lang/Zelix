@@ -314,21 +314,15 @@ namespace fluent::parser::rule
 
             // Start checking for likely ops
             first_opt = expr_stream.next();
-            if (first_opt.is_none())
-            {
-                // Push the candidate to the current node
-                if (candidate != nullptr)
-                {
-                    parent->children.push_back(candidate);
-                    continue;
-                }
-
-                // Set error state
-                global_err.type = UNEXPECTED_TOKEN;
-                global_err.column = trace.column;
-                global_err.line = trace.line;
-                throw except::exception("Unexpected end of expression");
-            }
+            if (
+                process_next(
+                    parent,
+                    candidate,
+                    trace,
+                    first_opt,
+                    first
+                ) // Process the next token
+            ) continue;
 
             // Invalid token detected
             global_err.type = UNEXPECTED_TOKEN;
