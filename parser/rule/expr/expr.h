@@ -254,6 +254,9 @@ namespace fluent::parser::rule
                     trace,
                     expr_queue
                 ); // Call the property access with the candidate
+
+                likely ^= expr::PROP_ACCESS_LIKELY; // Remove the call likely from the set
+                first_opt = expr_stream.next(); // Peek the next token again
             }
 
             if (
