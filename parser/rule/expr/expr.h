@@ -35,6 +35,7 @@
 #include "parser/parser.h"
 #include "parser/rule/call.h"
 #include "parser/rule/extractor.h"
+#include "parser/rule/prop.h"
 #include "queue.h"
 
 namespace fluent::parser::rule
@@ -228,7 +229,13 @@ namespace fluent::parser::rule
 
             if (likely & expr::PROP_ACCESS_LIKELY && first.type == lexer::token::DOT)
             {
-                // TODO!
+                candidate = prop(
+                    candidate,
+                    expr_stream,
+                    allocator,
+                    trace,
+                    expr_queue
+                ); // Call the property access with the candidate
             }
 
             if (
