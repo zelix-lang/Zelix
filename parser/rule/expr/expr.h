@@ -259,6 +259,23 @@ namespace fluent::parser::rule
                 first_opt = expr_stream.next(); // Peek the next token again
             }
 
+            if (first_opt.is_none())
+            {
+                // Push the candidate to the current node
+                if (candidate != nullptr)
+                {
+                    parent->children.push_back(candidate);
+                    continue;
+                }
+
+                // Set error state
+                global_err.type = UNEXPECTED_TOKEN;
+                global_err.column = trace.column;
+                global_err.line = trace.line;
+                throw except::exception("Unexpected end of expression");
+            }
+
+            first = first_opt.get();
             if (
                 likely & expr::BOOLEAN_OP_LIKELY
                 && (
