@@ -126,7 +126,7 @@ namespace fluent::parser::rule
     {
         // Get the next token
         auto next_opt = tokens.next();
-        auto &next = next_opt.get();
+        const auto &next = next_opt.get();
         // Create a new AST node for the arithmetic operation
         ast *arithmetic_node = allocator.alloc();
         arithmetic_node->rule = arithmetic_rule(next); // Set the rule based on the operator type
