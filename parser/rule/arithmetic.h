@@ -39,7 +39,7 @@ namespace fluent::parser::rule
 {
     namespace arith
     {
-        static inline int get_precedence(const lexer::token::t_type type)
+        static inline int precedence(const lexer::token::t_type type)
         {
             switch (type)
             {
@@ -72,7 +72,6 @@ namespace fluent::parser::rule
             }
         }
 
-        template <typename Complex>
         static inline container::vector<lexer::token> collect(
             container::stream<lexer::token> &tokens
         )
@@ -113,48 +112,25 @@ namespace fluent::parser::rule
                     continue;
                 }
 
-                if constexpr (std::is_same_v<Complex, bool>)
+                if (
+                    // Break if we find arithmetic operators OR boolean operators
+                    next.type == lexer::token::AND ||
+                    next.type == lexer::token::OR ||
+                    next.type == lexer::token::NOT ||
+                    next.type == lexer::token::BOOL_EQ ||
+                    next.type == lexer::token::BOOL_NEQ ||
+                    next.type == lexer::token::BOOL_GT ||
+                    next.type == lexer::token::BOOL_GTE ||
+                    next.type == lexer::token::BOOL_LT ||
+                    next.type == lexer::token::BOOL_LTE ||
+                    next.type == lexer::token::PLUS ||
+                    next.type == lexer::token::MINUS ||
+                    next.type == lexer::token::MULTIPLY ||
+                    next.type == lexer::token::DIVIDE
+                )
                 {
-                    if (
-                        // Break if we find arithmetic operators OR boolean operators
-                        next.type == lexer::token::AND ||
-                        next.type == lexer::token::OR ||
-                        next.type == lexer::token::NOT ||
-                        next.type == lexer::token::BOOL_EQ ||
-                        next.type == lexer::token::BOOL_NEQ ||
-                        next.type == lexer::token::BOOL_GT ||
-                        next.type == lexer::token::BOOL_GTE ||
-                        next.type == lexer::token::BOOL_LT ||
-                        next.type == lexer::token::BOOL_LTE ||
-                        next.type == lexer::token::PLUS ||
-                        next.type == lexer::token::MINUS ||
-                        next.type == lexer::token::MULTIPLY ||
-                        next.type == lexer::token::DIVIDE
-                    )
-                    {
-                        // If we encounter another arithmetic operator, break the loop
-                        break;
-                    }
-                }
-                else
-                {
-                    if (
-                        // Break if we find boolean operators, which are
-                        // the only possible tokens after an arithmetic operator
-                        next.type == lexer::token::AND ||
-                        next.type == lexer::token::OR ||
-                        next.type == lexer::token::NOT ||
-                        next.type == lexer::token::BOOL_EQ ||
-                        next.type == lexer::token::BOOL_NEQ ||
-                        next.type == lexer::token::BOOL_GT ||
-                        next.type == lexer::token::BOOL_GTE ||
-                        next.type == lexer::token::BOOL_LT ||
-                        next.type == lexer::token::BOOL_LTE
-                    )
-                    {
-                        // If we encounter another arithmetic operator, break the loop
-                        break;
-                    }
+                    // If we encounter another arithmetic operator, break the loop
+                    break;
                 }
 
                 vec.push_back(next);
@@ -175,68 +151,65 @@ namespace fluent::parser::rule
         // Get the next token
         auto next_opt = tokens.next();
         const auto &next = next_opt.get();
+
         // Create a new AST node for the arithmetic operation
         ast *arithmetic_node = allocator.alloc();
         arithmetic_node->rule = arith::rule(next); // Set the rule based on the operator type
         arithmetic_node->children.push_back(candidate); // Add the candidate as the first child
 
-        // Since the arithmetic operator is validated earlier, possible tokens are:
-        // lexer::token::PLUS
-        // lexer::token::MINUS
-        // lexer::token::MULTIPLY
-        // lexer::token::DIVIDE
-        // Check if we have an operator with special precedence
-        if (
-            next.type == lexer::token::MULTIPLY ||
-            next.type == lexer::token::DIVIDE
-        )
+        // Save the last known precedence
+        int last_precedence = arith::precedence(next.type);
+        while (true)
         {
-            while (true)
+            // Collect all tokens until we find another arithmetic operator
+            const auto tokens_group = arith::collect(tokens);
+
+            // Get the current operator
+            auto curr_opt = tokens.curr();
+            if (curr_opt.is_none())
             {
-                // Collect the tokens until the next arithmetic operator
-                auto tokens_group = arith::collect<float>(tokens);
-                auto curr_opt = tokens.curr();
-                if (tokens_group.empty() || curr_opt.is_none())
-                {
-                    break; // No more tokens, exit the loop
-                }
-
-                // Check if the current token is an arithmetic operator
-                // with the same precedence
-                if (
-                    const auto &curr = curr_opt.get();
-                    curr.type == lexer::token::MULTIPLY ||
-                    curr.type == lexer::token::DIVIDE
-                )
-                {
-                    // Create a new AST node for the arithmetic operation
-                    ast *expr_node = allocator.alloc();
-                    expr_node->rule = arith::rule(curr); // Set the rule based on the operator type
-                    expr_node->children.push_back(arithmetic_node); // Add the previous node as a child
-                    arithmetic_node = expr_node; // Update the arithmetic node to the new one
-
-                    // Consume the operator token
-                    tokens.next();
-                }
-                else
-                {
-                    // If we encounter a different operator, break the loop
-                    break;
-                }
+                break; // No more tokens, exit the loop
             }
-        }
-        else
-        {
-            // Allocate a new expression for the arithmetic operation
-            ast *expr_node = allocator.alloc();
-            expr_node->rule = ast::EXPRESSION;
-            arithmetic_node->children.push_back(expr_node);
 
-            // Append the expression to the queue
+            const auto &curr = curr_opt.get();
+
+            // Check if we have a valid operator
+            const int new_precedence = arith::precedence(curr.type);
+            // Check if we have to break
+            if (new_precedence == 0)
+            {
+                // Make sure that we parsed at least 2 sub-expressions
+                if (arithmetic_node->children.size() < 2)
+                {
+                    global_err.type = UNEXPECTED_TOKEN;
+                    global_err.column = curr.column;
+                    global_err.line = curr.line;
+                    throw except::exception("Not enough operands for arithmetic operation");
+                }
+
+                break; // Exit the loop if we don't have a valid operator
+            }
+
+            // If the precedence is not the same, we need to create a new node
+            if (new_precedence != last_precedence)
+            {
+                // Create a new AST node for the arithmetic operation
+                ast *new_arithmetic_node = allocator.alloc();
+                new_arithmetic_node->rule = arith::rule(curr);
+                new_arithmetic_node->children.push_back(arithmetic_node); // Add the previous node as a child
+                arithmetic_node = new_arithmetic_node; // Update the current node
+                last_precedence = new_precedence; // Update the last precedence
+                continue; // Continue to the next iteration to handle the new operator
+            }
+
+            // Append to the current arithmetic node
+            ast *sub_expr_node = allocator.alloc();
+            sub_expr_node->rule = ast::EXPRESSION; // Set the rule for the sub
+            arithmetic_node->children.push_back(sub_expr_node); // Add the sub-expression node
             expr_queue.emplace_back(
-                arith::collect<float>(tokens), // Collect the tokens until the next arithmetic operator
-                expr_node
-            );
+                container::move(tokens_group),
+                sub_expr_node
+            ); // Add the expression to the queue
         }
 
         return arithmetic_node;
