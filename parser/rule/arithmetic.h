@@ -32,6 +32,7 @@
 #include "fluent/container/stream.h"
 #include "lexer/token.h"
 #include "memory/allocator.h"
+#include "parser/parser.h"
 #include "parser/rule/expr/queue.h"
 
 namespace fluent::parser::rule
@@ -63,9 +64,39 @@ namespace fluent::parser::rule
         // No special precedence, just add the next token as a child
         container::vector<lexer::token> vec;
         auto next_opt = tokens.peek();
+        size_t nested_count = 0;
+
         while (next_opt.is_some())
         {
             const auto &next = next_opt.get();
+
+            // Handle nested expressions
+            if (next.type == lexer::token::OPEN_PAREN)
+            {
+                // Do not use extract() directly, since it will create
+                // another stream
+                nested_count++;
+            }
+            else if (next.type == lexer::token::CLOSE_PAREN)
+            {
+                if (nested_count == 0)
+                {
+                    global_err.type = UNEXPECTED_TOKEN;
+                    global_err.column = next.column;
+                    global_err.line = next.line;
+                    throw except::exception("Unexpected nested end delimiter");
+                }
+
+                nested_count--;
+            }
+
+            // Ignore nested expressions
+            if (nested_count != 0)
+            {
+                vec.push_back(next);
+                continue;
+            }
+
             if constexpr (std::is_same_v<Complex, bool>)
             {
                 if (
