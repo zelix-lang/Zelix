@@ -40,6 +40,34 @@
 
 namespace fluent::parser::rule
 {
+    static inline bool process_next(
+        ast *&parent,
+        ast *&candidate,
+        const lexer::token &trace,
+        container::optional<lexer::token> &first_opt,
+        lexer::token &first
+    )
+    {
+        if (first_opt.is_none())
+        {
+            // Push the candidate to the current node
+            if (candidate != nullptr)
+            {
+                parent->children.push_back(candidate);
+                return true;
+            }
+
+            // Set error state
+            global_err.type = UNEXPECTED_TOKEN;
+            global_err.column = trace.column;
+            global_err.line = trace.line;
+            throw except::exception("Unexpected end of expression");
+        }
+
+        first = first_opt.get();
+        return false;
+    }
+
     inline void expression(
         ast *&root,
         container::stream<lexer::token> &tokens,
@@ -198,21 +226,15 @@ namespace fluent::parser::rule
 
             // Start checking for likely ops
             first_opt = expr_stream.peek();
-            if (first_opt.is_none())
-            {
-                // Push the candidate to the current node
-                if (candidate != nullptr)
-                {
-                    parent->children.push_back(candidate);
-                    continue;
-                }
-
-                // Set error state
-                global_err.type = UNEXPECTED_TOKEN;
-                global_err.column = trace.column;
-                global_err.line = trace.line;
-                throw except::exception("Unexpected end of expression");
-            }
+            if (
+                process_next(
+                    parent,
+                    candidate,
+                    trace,
+                    first_opt,
+                    first
+                ) // Process the next token
+            ) continue;
 
             first = first_opt.get();
             if (likely & expr::CALL_LIKELY && first.type == lexer::token::OPEN_PAREN)
@@ -227,21 +249,15 @@ namespace fluent::parser::rule
                 first_opt = expr_stream.next(); // Peek the next token again
             }
 
-            if (first_opt.is_none())
-            {
-                // Push the candidate to the current node
-                if (candidate != nullptr)
-                {
-                    parent->children.push_back(candidate);
-                    continue;
-                }
-
-                // Set error state
-                global_err.type = UNEXPECTED_TOKEN;
-                global_err.column = trace.column;
-                global_err.line = trace.line;
-                throw except::exception("Unexpected end of expression");
-            }
+            if (
+                process_next(
+                    parent,
+                    candidate,
+                    trace,
+                    first_opt,
+                    first
+                ) // Process the next token
+            ) continue;
 
             first = first_opt.get();
             if (likely & expr::PROP_ACCESS_LIKELY && first.type == lexer::token::DOT)
@@ -257,21 +273,15 @@ namespace fluent::parser::rule
                 first_opt = expr_stream.next(); // Peek the next token again
             }
 
-            if (first_opt.is_none())
-            {
-                // Push the candidate to the current node
-                if (candidate != nullptr)
-                {
-                    parent->children.push_back(candidate);
-                    continue;
-                }
-
-                // Set error state
-                global_err.type = UNEXPECTED_TOKEN;
-                global_err.column = trace.column;
-                global_err.line = trace.line;
-                throw except::exception("Unexpected end of expression");
-            }
+            if (
+                process_next(
+                    parent,
+                    candidate,
+                    trace,
+                    first_opt,
+                    first
+                ) // Process the next token
+            ) continue;
 
             first = first_opt.get();
             if (
