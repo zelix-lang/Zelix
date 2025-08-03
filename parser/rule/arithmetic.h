@@ -1,0 +1,165 @@
+/*
+        ==== The Fluent Programming Language ====
+---------------------------------------------------------
+  - This file is part of the Fluent Programming Language
+    codebase. Fluent is a fast, statically-typed and
+    memory-safe programming language that aims to
+    match native speeds while staying highly performant.
+---------------------------------------------------------
+  - Fluent is categorized as free software; you can
+    redistribute it and/or modify it under the terms of
+    the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+---------------------------------------------------------
+  - Fluent is distributed in the hope that it will
+    be useful, but WITHOUT ANY WARRANTY; without even
+    the implied warranty of MERCHANTABILITY or FITNESS
+    FOR A PARTICULAR PURPOSE. See the GNU General Public
+    License for more details.
+---------------------------------------------------------
+  - You should have received a copy of the GNU General
+    Public License along with Fluent. If not, see
+    <https://www.gnu.org/licenses/>.
+*/
+
+//
+// Created by rodrigo on 8/2/25.
+//
+
+#pragma once
+
+#include "fluent/container/stream.h"
+#include "lexer/token.h"
+#include "memory/allocator.h"
+#include "parser/rule/expr/queue.h"
+
+namespace fluent::parser::rule
+{
+    inline ast::rule_t arithmetic_rule(
+        const lexer::token &op
+    )
+    {
+        switch (op.type)
+        {
+            case lexer::token::PLUS:
+                return ast::SUM;
+            case lexer::token::MINUS:
+                return ast::SUB;
+            case lexer::token::MULTIPLY:
+                return ast::MUL;
+            case lexer::token::DIVIDE:
+                return ast::DIV;
+            default:
+                return ast::ROOT; // Should not happen, as this is validated earlier
+        }
+    }
+
+    template <typename Complex>
+    static inline container::vector<lexer::token> collect_arithmetic_tokens(
+        container::stream<lexer::token> &tokens
+    )
+    {
+        // No special precedence, just add the next token as a child
+        container::vector<lexer::token> vec;
+        auto next_opt = tokens.peek();
+        while (next_opt.is_some())
+        {
+            const auto &next = next_opt.get();
+            if constexpr (std::is_same_v<Complex, bool>)
+            {
+                if (
+                    // Break if we find arithmetic operators OR boolean operators
+                    next.type == lexer::token::AND ||
+                    next.type == lexer::token::OR ||
+                    next.type == lexer::token::NOT ||
+                    next.type == lexer::token::BOOL_EQ ||
+                    next.type == lexer::token::BOOL_NEQ ||
+                    next.type == lexer::token::BOOL_GT ||
+                    next.type == lexer::token::BOOL_GTE ||
+                    next.type == lexer::token::BOOL_LT ||
+                    next.type == lexer::token::BOOL_LTE ||
+                    next.type == lexer::token::PLUS ||
+                    next.type == lexer::token::MINUS ||
+                    next.type == lexer::token::MULTIPLY ||
+                    next.type == lexer::token::DIVIDE
+                )
+                {
+                    // If we encounter another arithmetic operator, break the loop
+                    break;
+                }
+            }
+            else
+            {
+                if (
+                    // Break if we find boolean operators, which are
+                    // the only possible tokens after an arithmetic operator
+                    next.type == lexer::token::AND ||
+                    next.type == lexer::token::OR ||
+                    next.type == lexer::token::NOT ||
+                    next.type == lexer::token::BOOL_EQ ||
+                    next.type == lexer::token::BOOL_NEQ ||
+                    next.type == lexer::token::BOOL_GT ||
+                    next.type == lexer::token::BOOL_GTE ||
+                    next.type == lexer::token::BOOL_LT ||
+                    next.type == lexer::token::BOOL_LTE
+                )
+                {
+                    // If we encounter another arithmetic operator, break the loop
+                    break;
+                }
+            }
+
+            vec.push_back(next);
+            next_opt = tokens.next(); // Get the next token
+        }
+
+        return vec;
+    }
+
+    inline ast *arithmetic(
+        ast *&candidate,
+        container::stream<lexer::token> &tokens,
+        memory::lazy_allocator<ast> &allocator,
+        container::vector<expr::queue_node> &expr_queue
+    )
+    {
+        // Get the next token
+        auto next_opt = tokens.next();
+        auto &next = next_opt.get();
+        // Create a new AST node for the arithmetic operation
+        ast *arithmetic_node = allocator.alloc();
+        arithmetic_node->rule = arithmetic_rule(next); // Set the rule based on the operator type
+        arithmetic_node->children.push_back(candidate); // Add the candidate as the first child
+
+        container::vector<ast *> children; // Vector to hold the children of the arithmetic node
+        // Since the arithmetic operator is validated earlier, possible tokens are:
+        // lexer::token::PLUS
+        // lexer::token::MINUS
+        // lexer::token::MULTIPLY
+        // lexer::token::DIVIDE
+        // Check if we have an operator with special precedence
+        if (
+            next.type == lexer::token::MULTIPLY ||
+            next.type == lexer::token::DIVIDE
+        )
+        {
+            // TODO!
+        }
+        else
+        {
+            // Allocate a new expression for the arithmetic operation
+            ast *expr_node = allocator.alloc();
+            expr_node->rule = ast::EXPRESSION;
+            arithmetic_node->children.push_back(expr_node);
+
+            // Append the expression to the queue
+            expr_queue.emplace_back(
+                collect_arithmetic_tokens<float>(tokens), // Collect the tokens until the next arithmetic operator
+                expr_node
+            );
+        }
+
+        return arithmetic_node;
+    }
+} // namespace fluent::parser::rule
