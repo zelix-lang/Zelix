@@ -275,6 +275,19 @@ namespace fluent::parser::rule
 
             first = first_opt.get();
             if (
+                likely & expr::ARITHMETIC_OP_LIKELY
+                && (
+                    first.type == lexer::token::PLUS ||
+                    first.type == lexer::token::MINUS ||
+                    first.type == lexer::token::MULTIPLY ||
+                    first.type == lexer::token::DIVIDE
+                )
+            )
+            {
+                // TODO!
+            }
+
+            if (
                 likely & expr::BOOLEAN_OP_LIKELY
                 && (
                     first.type == lexer::token::BOOL_EQ ||
@@ -283,19 +296,6 @@ namespace fluent::parser::rule
                     first.type == lexer::token::BOOL_LT ||
                     first.type == lexer::token::BOOL_LTE ||
                     first.type == lexer::token::BOOL_NEQ
-                )
-            )
-            {
-                // TODO!
-            }
-
-            if (
-                likely & expr::ARITHMETIC_OP_LIKELY
-                && (
-                    first.type == lexer::token::PLUS ||
-                    first.type == lexer::token::MINUS ||
-                    first.type == lexer::token::MULTIPLY ||
-                    first.type == lexer::token::DIVIDE
                 )
             )
             {
