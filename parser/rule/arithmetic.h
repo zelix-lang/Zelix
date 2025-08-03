@@ -162,7 +162,7 @@ namespace fluent::parser::rule
         while (true)
         {
             // Collect all tokens until we find another arithmetic operator
-            const auto tokens_group = arith::collect(tokens);
+            auto tokens_group = arith::collect(tokens);
 
             // Get the current operator
             auto curr_opt = tokens.curr();
@@ -207,7 +207,7 @@ namespace fluent::parser::rule
             sub_expr_node->rule = ast::EXPRESSION; // Set the rule for the sub
             arithmetic_node->children.push_back(sub_expr_node); // Add the sub-expression node
             expr_queue.emplace_back(
-                container::move(tokens_group),
+                container::stream(container::move(tokens_group)),
                 sub_expr_node
             ); // Add the expression to the queue
         }
