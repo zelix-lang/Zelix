@@ -48,7 +48,7 @@ namespace fluent::parser::rule
                     return 1; // Lowest precedence
                 case lexer::token::MULTIPLY:
                 case lexer::token::DIVIDE:
-                    return 3; // Highest precedence
+                    return 2; // Highest precedence
                 default:
                     return 0; // No precedence
             }
