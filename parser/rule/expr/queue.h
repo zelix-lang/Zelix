@@ -37,5 +37,8 @@ namespace fluent::parser::rule::expr
     {
         container::stream<lexer::token> tokens; // Tokens for the expression
         ast *node = nullptr; // Pointer to the AST node for this expression
+
+        queue_node(container::stream<lexer::token> tokens, ast* node)
+            : tokens(std::move(tokens)), node(node) {}
     };
 }
