@@ -97,7 +97,7 @@ namespace fluent::parser::rule
         // Process all expressions
         while (!expr_queue.empty())
         {
-            auto &[expr_stream, node, parent] = expr_queue.ref_at(expr_queue.size() - 1);
+            auto &[expr_stream, node] = expr_queue.ref_at(expr_queue.size() - 1);
             expr_queue.pop_back(); // Remove the current expression from the queue
 
             auto first_opt = expr_stream.peek();
@@ -228,7 +228,7 @@ namespace fluent::parser::rule
             first_opt = expr_stream.peek();
             if (
                 process_next(
-                    parent,
+                    node,
                     candidate,
                     trace,
                     first_opt,
@@ -251,7 +251,7 @@ namespace fluent::parser::rule
 
             if (
                 process_next(
-                    parent,
+                    node,
                     candidate,
                     trace,
                     first_opt,
@@ -275,7 +275,7 @@ namespace fluent::parser::rule
 
             if (
                 process_next(
-                    parent,
+                    node,
                     candidate,
                     trace,
                     first_opt,
@@ -316,7 +316,7 @@ namespace fluent::parser::rule
             first_opt = expr_stream.next();
             if (
                 process_next(
-                    parent,
+                    node,
                     candidate,
                     trace,
                     first_opt,
