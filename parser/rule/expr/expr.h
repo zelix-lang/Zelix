@@ -33,6 +33,7 @@
 #include "likely.h"
 #include "memory/allocator.h"
 #include "parser/parser.h"
+#include "parser/rule/arithmetic.h"
 #include "parser/rule/call.h"
 #include "parser/rule/extractor.h"
 #include "parser/rule/prop.h"
@@ -294,9 +295,27 @@ namespace fluent::parser::rule
                 )
             )
             {
-                // TODO!
+                candidate = arithmetic(
+                    candidate,
+                    expr_stream,
+                    allocator,
+                    expr_queue
+                );
+
+                first_opt = expr_stream.curr(); // Get the current token
             }
 
+            if (
+                process_next(
+                    node,
+                    candidate,
+                    trace,
+                    first_opt,
+                    first
+                ) // Process the next token
+            ) continue;
+
+            first = first_opt.get();
             if (
                 likely & expr::BOOLEAN_OP_LIKELY
                 && (
