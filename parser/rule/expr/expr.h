@@ -92,7 +92,7 @@ namespace fluent::parser::rule
 
         // Create a queue for nested expressions
         container::vector<expr::queue_node> expr_queue;
-        expr_queue.emplace_back(expr_group, expr_node, root);
+        expr_queue.emplace_back(expr_group, expr_node);
 
         // Process all expressions
         while (!expr_queue.empty())
