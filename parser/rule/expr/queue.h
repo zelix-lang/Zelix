@@ -37,6 +37,5 @@ namespace fluent::parser::rule::expr
     {
         container::stream<lexer::token> tokens; // Tokens for the expression
         ast *node = nullptr; // Pointer to the AST node for this expression
-        ast *parent = nullptr; // Pointer to the parent AST node
     };
 }
