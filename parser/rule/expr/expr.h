@@ -101,7 +101,6 @@ namespace fluent::parser::rule
             auto [expr_stream, node] = expr_queue[expr_queue.size() - 1];
             expr_queue.pop_back(); // Remove the current expression from the queue
 
-            printf("%lld\n", expr_stream.size());
             auto first_opt = expr_stream.peek();
             // Check if the current element is empty
             if (first_opt.is_none())
