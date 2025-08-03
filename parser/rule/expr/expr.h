@@ -246,17 +246,16 @@ namespace fluent::parser::rule
                 ); // Call the function with the candidate
 
                 first_opt = expr_stream.next(); // Peek the next token again
+                if (
+                    process_next(
+                        node,
+                        candidate,
+                        trace,
+                        first_opt,
+                        first
+                    ) // Process the next token
+                ) continue;
             }
-
-            if (
-                process_next(
-                    node,
-                    candidate,
-                    trace,
-                    first_opt,
-                    first
-                ) // Process the next token
-            ) continue;
 
             if (likely & expr::PROP_ACCESS_LIKELY && first.type == lexer::token::DOT)
             {
@@ -269,17 +268,17 @@ namespace fluent::parser::rule
                 ); // Call the property access with the candidate
 
                 first_opt = expr_stream.next(); // Peek the next token again
-            }
 
-            if (
-                process_next(
-                    node,
-                    candidate,
-                    trace,
-                    first_opt,
-                    first
-                ) // Process the next token
-            ) continue;
+                if (
+                    process_next(
+                        node,
+                        candidate,
+                        trace,
+                        first_opt,
+                        first
+                    ) // Process the next token
+                ) continue;
+            }
 
             if (
                 likely & expr::ARITHMETIC_OP_LIKELY
@@ -299,17 +298,16 @@ namespace fluent::parser::rule
                 );
 
                 first_opt = expr_stream.curr(); // Get the current token
+                if (
+                    process_next(
+                        node,
+                        candidate,
+                        trace,
+                        first_opt,
+                        first
+                    ) // Process the next token
+                ) continue;
             }
-
-            if (
-                process_next(
-                    node,
-                    candidate,
-                    trace,
-                    first_opt,
-                    first
-                ) // Process the next token
-            ) continue;
 
             if (
                 likely & expr::BOOLEAN_OP_LIKELY
