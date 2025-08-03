@@ -237,7 +237,6 @@ namespace fluent::parser::rule
                 ) // Process the next token
             ) continue;
 
-            first = first_opt.get();
             if (likely & expr::CALL_LIKELY && first.type == lexer::token::OPEN_PAREN)
             {
                 candidate = call(
@@ -260,7 +259,6 @@ namespace fluent::parser::rule
                 ) // Process the next token
             ) continue;
 
-            first = first_opt.get();
             if (likely & expr::PROP_ACCESS_LIKELY && first.type == lexer::token::DOT)
             {
                 candidate = prop(
@@ -284,7 +282,6 @@ namespace fluent::parser::rule
                 ) // Process the next token
             ) continue;
 
-            first = first_opt.get();
             if (
                 likely & expr::ARITHMETIC_OP_LIKELY
                 && (
@@ -315,7 +312,6 @@ namespace fluent::parser::rule
                 ) // Process the next token
             ) continue;
 
-            first = first_opt.get();
             if (
                 likely & expr::BOOLEAN_OP_LIKELY
                 && (
