@@ -98,9 +98,10 @@ namespace fluent::parser::rule
         // Process all expressions
         while (!expr_queue.empty())
         {
-            auto &[expr_stream, node] = expr_queue.ref_at(expr_queue.size() - 1);
+            auto [expr_stream, node] = expr_queue[expr_queue.size() - 1];
             expr_queue.pop_back(); // Remove the current expression from the queue
 
+            printf("%lld\n", expr_stream.size());
             auto first_opt = expr_stream.peek();
             // Check if the current element is empty
             if (first_opt.is_none())
