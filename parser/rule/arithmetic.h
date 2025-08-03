@@ -132,7 +132,6 @@ namespace fluent::parser::rule
         arithmetic_node->rule = arithmetic_rule(next); // Set the rule based on the operator type
         arithmetic_node->children.push_back(candidate); // Add the candidate as the first child
 
-        container::vector<ast *> children; // Vector to hold the children of the arithmetic node
         // Since the arithmetic operator is validated earlier, possible tokens are:
         // lexer::token::PLUS
         // lexer::token::MINUS
@@ -144,7 +143,39 @@ namespace fluent::parser::rule
             next.type == lexer::token::DIVIDE
         )
         {
-            // TODO!
+            while (true)
+            {
+                // Collect the tokens until the next arithmetic operator
+                auto tokens_group = collect_arithmetic_tokens<float>(tokens);
+                auto curr_opt = tokens.curr();
+                if (tokens_group.empty() || curr_opt.is_none())
+                {
+                    break; // No more tokens, exit the loop
+                }
+
+                // Check if the current token is an arithmetic operator
+                // with the same precedence
+                if (
+                    const auto &curr = curr_opt.get();
+                    curr.type == lexer::token::MULTIPLY ||
+                    curr.type == lexer::token::DIVIDE
+                )
+                {
+                    // Create a new AST node for the arithmetic operation
+                    ast *expr_node = allocator.alloc();
+                    expr_node->rule = arithmetic_rule(curr); // Set the rule based on the operator type
+                    expr_node->children.push_back(arithmetic_node); // Add the previous node as a child
+                    arithmetic_node = expr_node; // Update the arithmetic node to the new one
+
+                    // Consume the operator token
+                    tokens.next();
+                }
+                else
+                {
+                    // If we encounter a different operator, break the loop
+                    break;
+                }
+            }
         }
         else
         {
