@@ -40,5 +40,11 @@ namespace fluent::parser::rule::expr
 
         queue_node(container::stream<lexer::token> tokens, ast* node)
             : tokens(std::move(tokens)), node(node) {}
+
+        explicit queue_node()
+            : tokens(container::stream(container::vector<lexer::token>()))
+        {
+            node = nullptr;
+        }
     };
 }
