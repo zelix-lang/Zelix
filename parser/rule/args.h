@@ -74,8 +74,7 @@ namespace fluent::parser::rule
                 // Push the argument group to the args node
                 expr_queue.emplace_back(
                     container::move(arg_group),
-                    arg_node,
-                    root
+                    arg_node
                 );
             }
             catch (const except::exception &_)
@@ -84,8 +83,7 @@ namespace fluent::parser::rule
                 // and the position was restored
                 expr_queue.emplace_back(
                     container::move(args_group),
-                    arg_node,
-                    args_node
+                    arg_node
                 );
 
                 break; // Exit the loop if we reach the end of args
