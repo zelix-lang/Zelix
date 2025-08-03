@@ -224,7 +224,6 @@ namespace fluent::parser::rule
                     expr_queue
                 ); // Call the function with the candidate
 
-                likely = expr::ALL_LIKELY ^ expr::CALL_LIKELY; // Remove the call likely from the set
                 first_opt = expr_stream.next(); // Peek the next token again
             }
 
@@ -255,7 +254,6 @@ namespace fluent::parser::rule
                     expr_queue
                 ); // Call the property access with the candidate
 
-                likely ^= expr::PROP_ACCESS_LIKELY; // Remove the call likely from the set
                 first_opt = expr_stream.next(); // Peek the next token again
             }
 
