@@ -44,7 +44,7 @@ namespace fluent::parser::rule
     static inline bool process_next(
         ast *&parent,
         ast *&candidate,
-        const lexer::token *&trace,
+        const lexer::token *const &trace,
         container::optional<lexer::token *> &first_opt,
         lexer::token *&first
     )
