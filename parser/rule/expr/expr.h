@@ -338,8 +338,8 @@ namespace fluent::parser::rule
 
             // Invalid token detected
             global_err.type = UNEXPECTED_TOKEN;
-            global_err.column = trace.column;
-            global_err.line = trace.line;
+            global_err.column = first.column;
+            global_err.line = first.line;
             throw except::exception("Unexpected token in expression");
         }
     }
