@@ -31,36 +31,36 @@
 
 #include "fluent/container/vector.h"
 #include "fluent/except/exception.h"
+#include <new>
+#include <cstddef>
 
 namespace fluent::memory
 {
-    template <typename T, size_t N>
+    template <typename T>
     class lazy_page
     {
-        union storage_u {
-            alignas(T) char raw[sizeof(T)];
-        };
-
-        storage_u storage[N];
-        container::vector<storage_u*> mem_list;
+        std::byte *buffer = nullptr;
+        size_t capacity = 0;
+        size_t offset = 0;
 
     public:
-        explicit lazy_page()
+        explicit lazy_page(const size_t page_size = 1024)
+            : capacity(page_size)
         {
-            for (size_t i = 0; i < N; ++i)
-                mem_list.push_back(&storage[i]);
+            buffer = static_cast<std::byte*>(std::malloc(page_size * sizeof(T)));
+            if (!buffer) throw std::bad_alloc();
         }
 
         T *alloc()
         {
-            if (mem_list.empty())
+            if (offset >= capacity)
             {
                 throw except::exception("Out of memory in lazy page allocator");
             }
 
-            // Get the next available pointer
-            T* ptr = reinterpret_cast<T*>(mem_list.ref_at(mem_list.size() - 1));
-            mem_list.calibrate(mem_list.size() - 1);
+            // Allocate the next object in the buffer
+            T* ptr = reinterpret_cast<T*>(buffer + offset * sizeof(T));
+            ++offset;
 
             // Placement new to construct object
             new (ptr) T();
@@ -69,18 +69,23 @@ namespace fluent::memory
 
         [[nodiscard]] bool full() const
         {
-            return mem_list.empty();
+            return offset >= capacity;
         }
     };
 
-    template <typename T, size_t N = 50>
+    template <typename T>
     class lazy_allocator
     {
-        container::vector<lazy_page<T, N>> pages;
+        container::vector<lazy_page<T>> pages;
         container::vector<T *> free_list;
+        size_t page_size = 1024;
+
     public:
-        explicit lazy_allocator()
-        {}
+        explicit lazy_allocator(const size_t page_size = 1024)
+            : page_size(page_size)
+        {
+            static_assert(sizeof(T) >= sizeof(void*), "T must be large enough to hold a pointer");
+        }
 
         T *alloc()
         {
@@ -102,7 +107,7 @@ namespace fluent::memory
             if (back.full())
             {
                 // Allocate a new page
-                pages.emplace_back();
+                pages.emplace_back(page_size);
                 back = pages.ref_at(pages.size() - 1);
                 return back.alloc();
             }
