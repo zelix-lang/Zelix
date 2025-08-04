@@ -33,6 +33,7 @@
 #include "fluent/except/exception.h"
 #include <new>
 #include <cstddef>
+#include <cstdlib>
 
 namespace fluent::memory
 {
@@ -47,7 +48,7 @@ namespace fluent::memory
         explicit lazy_page(const size_t page_size = 512)
             : capacity(page_size)
         {
-            buffer = static_cast<std::byte*>(std::malloc(page_size * sizeof(T)));
+            buffer = static_cast<std::byte*>(malloc(page_size * sizeof(T)));
             if (!buffer) throw std::bad_alloc();
         }
 
