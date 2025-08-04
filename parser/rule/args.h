@@ -39,7 +39,7 @@ namespace fluent::parser::rule
 {
     inline void args(
         ast *&root,
-        container::stream<lexer::token> &tokens,
+        container::stream<lexer::token *> &tokens,
         memory::lazy_allocator<ast> &allocator,
         container::vector<expr::queue_node> &expr_queue
     )
