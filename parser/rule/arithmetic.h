@@ -38,9 +38,9 @@ namespace fluent::parser::rule
 {
     namespace arith
     {
-        static inline ast::rule_t rule(const lexer::token::t_type type)
+        inline ast::rule_t rule(const lexer::token &token)
         {
-            switch (type)
+            switch (token.type)
             {
                 case lexer::token::PLUS:
                     return ast::SUM;
@@ -51,122 +51,162 @@ namespace fluent::parser::rule
                 case lexer::token::DIVIDE:
                     return ast::DIV;
                 default:
-                    throw except::exception("Invalid arithmetic operator");
+                    return ast::ROOT; // Default case if no arithmetic operation matches
             }
         }
 
-        static inline bool is_boolean_op(lexer::token::t_type type)
-        {
-            return type == lexer::token::BOOL_EQ || type == lexer::token::BOOL_NEQ || type == lexer::token::BOOL_LT ||
-                   type == lexer::token::BOOL_GT || type == lexer::token::BOOL_LTE || type == lexer::token::BOOL_GTE;
-        }
-
-        inline ast *parse_term(
-            ast *left,
-            container::stream<lexer::token> &term_tokens,
-            container::vector<expr::queue_node> &expr_queue,
-            memory::lazy_allocator<ast> &allocator
+        inline void process_op(
+            const lexer::token &next,
+            memory::lazy_allocator<ast> &allocator,
+            ast *arithmetic_node
         )
         {
-            ast *result = left;
-            while (!term_tokens.empty())
-            {
-                auto current_opt = term_tokens.peek();
-                if (current_opt.is_none())
-                {
-                    break; // No more tokens, exit the loop
-                }
-
-                const auto &current = current_opt.get();
-                if (current.type != lexer::token::MULTIPLY && current.type != lexer::token::DIVIDE)
-                {
-                    break; // Exit if not * or /
-                }
-                term_tokens.next(); // Consume operator
-
-                // Get the next operand
-                if (term_tokens.empty())
-                {
-                    throw except::exception("Expected operand after operator");
-                }
-
-                auto next_opt = term_tokens.peek();
-                if (next_opt.is_none())
-                {
-                    throw except::exception("Expected operand after operator");
-                }
-
-                const auto &next = next_opt.get();
-                ast *right = nullptr;
-                if (next.type == lexer::token::OPEN_PAREN)
-                {
-                    // Handle subexpression: push to expr_queue
-                    term_tokens.next(); // Consume '('
-                    container::vector<lexer::token> sub_tokens;
-                    int paren_count = 1;
-                    while (!term_tokens.empty() && paren_count > 0)
-                    {
-                        auto token_opt = term_tokens.peek();
-                        if (token_opt.is_none())
-                        {
-                            throw std::runtime_error("Mismatched parentheses");
-                        }
-
-                        const auto &t = token_opt.get();
-                        term_tokens.next();
-                        if (t.type == lexer::token::OPEN_PAREN)
-                            paren_count++;
-                        else if (t.type == lexer::token::CLOSE_PAREN)
-                            paren_count--;
-                        if (paren_count > 0 || t.type != lexer::token::CLOSE_PAREN)
-                        {
-                            sub_tokens.push_back(t);
-                        }
-                    }
-
-                    if (paren_count != 0)
-                    {
-                        throw except::exception("Mismatched parentheses");
-                    }
-
-                    right = allocator.alloc();
-                    right->rule = ast::EXPRESSION;
-                    expr_queue.emplace_back(container::stream(sub_tokens), right);
-                }
-                else if (next.type == lexer::token::NUMBER || next.type == lexer::token::DECIMAL ||
-                         next.type == lexer::token::NUMBER_LITERAL || next.type == lexer::token::DECIMAL_LITERAL)
-                {
-                    // Handle numeric literal
-                    right = allocator.alloc();
-                    right->rule = (next.type == lexer::token::NUMBER || next.type == lexer::token::NUMBER_LITERAL)
-                                          ? ast::NUMBER_LITERAL
-                                          : ast::DECIMAL_LITERAL;
-                    right->value = next.value;
-                    term_tokens.next();
-                }
-                else if (next.type == lexer::token::IDENTIFIER)
-                {
-                    // Handle identifier
-                    right = allocator.alloc();
-                    right->rule = ast::IDENTIFIER;
-                    right->value = next.value;
-                    term_tokens.next();
-                }
-                else
-                {
-                    throw except::exception("Expected number, identifier, or subexpression");
-                }
-
-                // Create new AST node for the operator
-                ast *op_node = allocator.alloc();
-                op_node->rule = rule(current.type);
-                op_node->children.push_back(result);
-                op_node->children.push_back(right);
-                result = op_node;
-            }
-            return result;
+            // Create a new AST node for the arithmetic operation
+            ast *arithmetic_op_node = allocator.alloc();
+            arithmetic_op_node->rule = rule(next);
+            arithmetic_node->children.push_back(arithmetic_op_node); // Add the operation node
         }
-    } // namespace arith
+
+        inline void process_sub(
+            container::vector<lexer::token> &current_tokens,
+            const lexer::token &next,
+            ast *arithmetic_node,
+            ast *candidate,
+            memory::lazy_allocator<ast> &allocator,
+            container::vector<expr::queue_node> &expr_queue,
+            bool &first_iteration,
+            const bool append_sign = true
+        )
+        {
+            // Handle first iteration
+            if (first_iteration)
+            {
+                first_iteration = false; // Set the flag to false for subsequent iterations
+                arithmetic_node->children.push_back(candidate); // Add the candidate as the first child
+
+                if (append_sign)
+                {
+                    process_op(
+                        next,
+                        allocator,
+                        arithmetic_node
+                    ); // Process the arithmetic operator
+                }
+
+                return;
+            }
+
+            // Append the current tokens to the last nested node
+            if (current_tokens.empty())
+            {
+                global_err.type = UNEXPECTED_TOKEN;
+                global_err.column = next.column;
+                global_err.line = next.line;
+                throw except::exception("Unexpected empty arithmetic expression");
+            }
+
+            // Create a new expression node for the current tokens
+            ast *expr_node = allocator.alloc();
+            expr_node->rule = ast::EXPRESSION;
+            arithmetic_node->children.push_back(expr_node); // Add the expression node
+
+            // Queue the current tokens for processing
+            expr_queue.push_back(
+                expr::queue_node(
+                    container::stream<lexer::token>(current_tokens), // Clone the current tokens
+                    expr_node
+                )
+            );
+            current_tokens.clear(); // Clear the current tokens for the next operation
+
+            if (!append_sign) return; // If we don't want to append the sign, return early
+            process_op(
+                next,
+                allocator,
+                arithmetic_node
+            ); // Process the arithmetic operator
+        }
+
+        inline void process_mul_div(
+            container::vector<lexer::token> &current_tokens,
+            const lexer::token &next,
+            ast *&last_nested,
+            ast *&arithmetic_node,
+            ast *&candidate,
+            memory::lazy_allocator<ast> &allocator,
+            container::vector<expr::queue_node> &expr_queue,
+            bool &first_iteration
+        )
+        {
+            // Allocate the last nested node if it doesn't exist
+            if (last_nested == nullptr)
+            {
+                last_nested = allocator.alloc();
+                last_nested->rule = ast::ARITHMETIC;
+                arithmetic_node->children.push_back(last_nested);
+            }
+
+            process_sub(
+                current_tokens,
+                next,
+                last_nested,
+                candidate,
+                allocator,
+                expr_queue,
+                first_iteration
+            ); // Process the subexpression
+        }
+
+        inline void process_add_sub(
+            container::vector<lexer::token> &current_tokens,
+            const lexer::token &next,
+            ast *&last_nested,
+            ast *&arithmetic_node,
+            ast *&candidate,
+            memory::lazy_allocator<ast> &allocator,
+            container::vector<expr::queue_node> &expr_queue,
+            bool &first_iteration
+        )
+        {
+            // Check if we have a last nested node
+            if (last_nested != nullptr)
+            {
+                // Process the last nested node
+                process_sub(
+                    current_tokens,
+                    next,
+                    last_nested,
+                    candidate,
+                    allocator,
+                    expr_queue,
+                    first_iteration,
+                    false
+                ); // Process the subexpression
+            }
+            else
+            {
+                process_sub(
+                    current_tokens,
+                    next,
+                    arithmetic_node,
+                    candidate,
+                    allocator,
+                    expr_queue,
+                    first_iteration,
+                    false
+                ); // Process the subexpression
+            }
+
+            // Set the last nested node to nullptr
+            last_nested = nullptr; // Reset the last nested node
+
+            process_op(
+                next,
+                allocator,
+                arithmetic_node
+            ); // Process the arithmetic operator
+        }
+    }
 
     inline ast *arithmetic(
         ast *&candidate,
@@ -175,108 +215,155 @@ namespace fluent::parser::rule
         container::vector<expr::queue_node> &expr_queue
     )
     {
-        ast *result = arith::parse_term(candidate, tokens, expr_queue, allocator);
-        while (!tokens.empty())
+        // Create the arithmetic AST node
+        ast *arithmetic_node = allocator.alloc();
+        arithmetic_node->rule = ast::ARITHMETIC;
+
+        ast *last_nested = nullptr; // Last nested arithmetic node
+        auto next_opt = tokens.next();
+        auto &next = next_opt.get();
+        // Tokens for the current subexpression
+        container::vector<lexer::token> current_tokens;
+        // Track nested parentheses
+        size_t nested_count = 0;
+        bool first_iteration = true; // Flag for the first iteration
+        bool last_is_mul = false; // Track if the last operation was multiplication/division
+
+        while (next_opt.is_some())
         {
-            auto current_opt = tokens.peek();
-            if (current_opt.is_none())
+            next = next_opt.get();
+
+            // Check if we have to break
+            if (
+                next.type >= lexer::token::BOOL_EQ &&
+                next.type <= lexer::token::BOOL_GTE
+            )
             {
-                break; // No more tokens, exit the loop
+                break;
             }
 
-            const auto &current = current_opt.get();
-            if (arith::is_boolean_op(current.type))
+            // Check if we have an arithmetic operation with high precedence
+            if (
+                nested_count == 0 &&
+                (
+                    next.type == lexer::token::MULTIPLY ||
+                    next.type == lexer::token::DIVIDE
+                )
+            )
             {
-                break; // Stop at boolean operator
+                last_is_mul = true;
+                arith::process_mul_div(
+                    current_tokens,
+                    next,
+                    last_nested,
+                    arithmetic_node,
+                    candidate,
+                    allocator,
+                    expr_queue,
+                    first_iteration
+                ); // Process the multiplication/division operation
             }
-            if (current.type != lexer::token::PLUS && current.type != lexer::token::MINUS)
+            // Check if we have an arithmetic operator with low precedence
+            else if (
+                nested_count == 0 &&
+                (
+                    next.type == lexer::token::PLUS ||
+                    next.type == lexer::token::MINUS
+                )
+            )
             {
-                break; // Exit if not + or -
+                last_is_mul = false;
+                arith::process_add_sub(
+                    current_tokens,
+                    next,
+                    last_nested,
+                    arithmetic_node,
+                    candidate,
+                    allocator,
+                    expr_queue,
+                    first_iteration
+                ); // Process the addition/subtraction operation
             }
-            tokens.next(); // Consume operator
-
-            // Get the next operand
-            if (tokens.empty())
-            {
-                throw except::exception("Expected operand after operator");
-            }
-
-            auto next_opt = tokens.peek();
-            if (next_opt.is_none())
-            {
-                throw except::exception("Expected operand after operator");
-            }
-
-            const auto &next = next_opt.get();
-            ast *right = nullptr;
-            if (next.type == lexer::token::OPEN_PAREN)
-            {
-                // Handle subexpression: push to expr_queue
-                tokens.next(); // Consume '('
-                container::vector<lexer::token> sub_tokens;
-                int paren_count = 1;
-                while (!tokens.empty() && paren_count > 0)
-                {
-                    auto t_opt = tokens.peek();
-                    if (t_opt.is_none())
-                    {
-                        throw except::exception("Mismatched parentheses");
-                    }
-
-                    const auto &t = t_opt.get();
-                    tokens.next();
-                    if (t.type == lexer::token::OPEN_PAREN)
-                        paren_count++;
-                    else if (t.type == lexer::token::CLOSE_PAREN)
-                        paren_count--;
-                    if (paren_count > 0 || t.type != lexer::token::CLOSE_PAREN)
-                    {
-                        sub_tokens.push_back(t);
-                    }
-                }
-                if (paren_count != 0)
-                {
-                    throw std::runtime_error("Mismatched parentheses");
-                }
-                right = allocator.alloc();
-                right->rule = ast::EXPRESSION;
-                expr_queue.emplace_back(container::stream(sub_tokens), right);
-            }
-            else if (next.type == lexer::token::NUMBER || next.type == lexer::token::DECIMAL ||
-                     next.type == lexer::token::NUMBER_LITERAL || next.type == lexer::token::DECIMAL_LITERAL)
-            {
-                // Handle numeric literal
-                right = allocator.alloc();
-                right->rule = (next.type == lexer::token::NUMBER || next.type == lexer::token::NUMBER_LITERAL)
-                                      ? ast::NUMBER_LITERAL
-                                      : ast::DECIMAL_LITERAL;
-                right->value = next.value;
-                tokens.next();
-            }
-            else if (next.type == lexer::token::IDENTIFIER)
-            {
-                // Handle identifier
-                right = allocator.alloc();
-                right->rule = ast::IDENTIFIER;
-                right->value = next.value;
-                tokens.next();
-            }
+            // Push the token to the current vector
             else
             {
-                throw except::exception("Expected number, identifier, or subexpression");
+                // Check if we have a nested expression
+                if (next.type == lexer::token::OPEN_PAREN)
+                {
+                    nested_count++;
+
+                    // Make sure we don't include the opening parenthesis in the current tokens
+                    if (nested_count == 1)
+                    {
+                        next_opt = tokens.next();
+                        continue;
+                    }
+                }
+
+                else if (next.type == lexer::token::CLOSE_PAREN)
+                {
+                    // Make sure we don't overflow
+                    if (nested_count == 0)
+                    {
+                        global_err.type = UNEXPECTED_TOKEN;
+                        global_err.column = next.column;
+                        global_err.line = next.line;
+                        throw except::exception("Unexpected closing parenthesis in arithmetic expression");
+                    }
+
+                    nested_count--;
+                    // Make sure we don't include the closing parenthesis in the current tokens
+                    if (nested_count == 0)
+                    {
+                        next_opt = tokens.next();
+                        continue;
+                    }
+                }
+
+                current_tokens.push_back(next); // Add the token to the current tokens
             }
 
-            // Parse any following * or / operators with the right operand
-            right = arith::parse_term(right, tokens, expr_queue, allocator);
-
-            // Create new AST node for the operator
-            ast *op_node = allocator.alloc();
-            op_node->rule = arith::rule(current.type);
-            op_node->children.push_back(result);
-            op_node->children.push_back(right);
-            result = op_node;
+            next_opt = tokens.next();
         }
 
-        return result;
+        // In a valid expression, the last chunk should not be empty
+        if (current_tokens.empty())
+        {
+            global_err.type = UNEXPECTED_TOKEN;
+            global_err.column = next.column;
+            global_err.line = next.line;
+            throw except::exception("Unexpected empty arithmetic expression");
+        }
+
+        // Process the last arithmetic operation
+        const auto last_sub = allocator.alloc();
+        last_sub->rule = ast::EXPRESSION;
+        if (last_is_mul)
+        {
+            last_nested->children.push_back(last_sub); // Add the last subexpression to the last nested node
+        }
+        else
+        {
+            arithmetic_node->children.push_back(last_sub); // Add the last subexpression to the arithmetic node
+        }
+
+        // Queue the current tokens for processing
+        expr_queue.push_back(
+            expr::queue_node(
+                container::stream<lexer::token>(current_tokens), // Clone the current tokens
+                last_sub
+            )
+        );
+
+        // Unwrap if we have a nested expression
+        if (arithmetic_node->children.size() == 1)
+        {
+            const auto first_child = arithmetic_node->children[0];
+            allocator.dealloc(arithmetic_node); // Deallocate the arithmetic node
+            arithmetic_node = first_child; // Set the first child as the new node
+        }
+
+        return arithmetic_node;
+
     }
 } // namespace fluent::parser::rule
