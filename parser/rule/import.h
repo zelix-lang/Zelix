@@ -62,7 +62,7 @@ namespace fluent::parser::rule
         // Create the import node
         ast *import_node = allocator.alloc();
         import_node->rule = ast::IMPORT;
-        import_node->value = path.value;
+        import_node->value = path->value;
         root->children.push_back(import_node);
     }
 }
