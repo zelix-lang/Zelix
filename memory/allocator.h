@@ -44,7 +44,7 @@ namespace fluent::memory
         size_t offset = 0;
 
     public:
-        explicit lazy_page(const size_t page_size = 1024)
+        explicit lazy_page(const size_t page_size = 512)
             : capacity(page_size)
         {
             buffer = static_cast<std::byte*>(std::malloc(page_size * sizeof(T)));
@@ -78,10 +78,10 @@ namespace fluent::memory
     {
         container::vector<lazy_page<T>> pages;
         container::vector<T *> free_list;
-        size_t page_size = 1024;
+        size_t page_size = 512;
 
     public:
-        explicit lazy_allocator(const size_t page_size = 1024)
+        explicit lazy_allocator(const size_t page_size = 512)
             : page_size(page_size)
         {
             static_assert(sizeof(T) >= sizeof(void*), "T must be large enough to hold a pointer");
