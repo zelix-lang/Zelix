@@ -38,9 +38,9 @@ namespace fluent::parser::rule
 {
     namespace arith
     {
-        inline ast::rule_t rule(const lexer::token &token)
+        inline ast::rule_t rule(lexer::token *&token)
         {
-            switch (token.type)
+            switch (token->type)
             {
                 case lexer::token::PLUS:
                     return ast::SUM;
@@ -56,7 +56,7 @@ namespace fluent::parser::rule
         }
 
         inline void process_op(
-            const lexer::token &next,
+            lexer::token *&next,
             memory::lazy_allocator<ast> &allocator,
             ast *arithmetic_node
         )
@@ -68,8 +68,8 @@ namespace fluent::parser::rule
         }
 
         inline void process_sub(
-            container::vector<lexer::token> &current_tokens,
-            const lexer::token &next,
+            container::vector<lexer::token *> &current_tokens,
+            lexer::token *&next,
             ast *arithmetic_node,
             ast *candidate,
             memory::lazy_allocator<ast> &allocator,
@@ -100,8 +100,8 @@ namespace fluent::parser::rule
             if (current_tokens.empty())
             {
                 global_err.type = UNEXPECTED_TOKEN;
-                global_err.column = next.column;
-                global_err.line = next.line;
+                global_err.column = next->column;
+                global_err.line = next->line;
                 throw except::exception("Unexpected empty arithmetic expression");
             }
 
@@ -113,7 +113,7 @@ namespace fluent::parser::rule
             // Queue the current tokens for processing
             expr_queue.push_back(
                 expr::queue_node(
-                    container::stream<lexer::token>(current_tokens), // Clone the current tokens
+                    container::stream<lexer::token *>(current_tokens), // Clone the current tokens
                     expr_node
                 )
             );
@@ -128,8 +128,8 @@ namespace fluent::parser::rule
         }
 
         inline void process_mul_div(
-            container::vector<lexer::token> &current_tokens,
-            const lexer::token &next,
+            container::vector<lexer::token *> &current_tokens,
+            lexer::token *&next,
             ast *&last_nested,
             ast *&arithmetic_node,
             ast *&candidate,
@@ -158,8 +158,8 @@ namespace fluent::parser::rule
         }
 
         inline void process_add_sub(
-            container::vector<lexer::token> &current_tokens,
-            const lexer::token &next,
+            container::vector<lexer::token *> &current_tokens,
+            lexer::token *&next,
             ast *&last_nested,
             ast *&arithmetic_node,
             ast *&candidate,
@@ -210,7 +210,7 @@ namespace fluent::parser::rule
 
     inline ast *arithmetic(
         ast *&candidate,
-        container::stream<lexer::token> &tokens,
+        container::stream<lexer::token *> &tokens,
         memory::lazy_allocator<ast> &allocator,
         container::vector<expr::queue_node> &expr_queue
     )
@@ -223,7 +223,7 @@ namespace fluent::parser::rule
         auto next_opt = tokens.next();
         auto &next = next_opt.get();
         // Tokens for the current subexpression
-        container::vector<lexer::token> current_tokens;
+        container::vector<lexer::token *> current_tokens;
         // Track nested parentheses
         size_t nested_count = 0;
         bool first_iteration = true; // Flag for the first iteration
@@ -235,8 +235,8 @@ namespace fluent::parser::rule
 
             // Check if we have to break
             if (
-                next.type >= lexer::token::BOOL_EQ &&
-                next.type <= lexer::token::BOOL_GTE
+                next->type >= lexer::token::BOOL_EQ &&
+                next->type <= lexer::token::BOOL_GTE
             )
             {
                 break;
@@ -246,8 +246,8 @@ namespace fluent::parser::rule
             if (
                 nested_count == 0 &&
                 (
-                    next.type == lexer::token::MULTIPLY ||
-                    next.type == lexer::token::DIVIDE
+                    next->type == lexer::token::MULTIPLY ||
+                    next->type == lexer::token::DIVIDE
                 )
             )
             {
@@ -267,8 +267,8 @@ namespace fluent::parser::rule
             else if (
                 nested_count == 0 &&
                 (
-                    next.type == lexer::token::PLUS ||
-                    next.type == lexer::token::MINUS
+                    next->type == lexer::token::PLUS ||
+                    next->type == lexer::token::MINUS
                 )
             )
             {
@@ -288,7 +288,7 @@ namespace fluent::parser::rule
             else
             {
                 // Check if we have a nested expression
-                if (next.type == lexer::token::OPEN_PAREN)
+                if (next->type == lexer::token::OPEN_PAREN)
                 {
                     nested_count++;
 
@@ -300,14 +300,14 @@ namespace fluent::parser::rule
                     }
                 }
 
-                else if (next.type == lexer::token::CLOSE_PAREN)
+                else if (next->type == lexer::token::CLOSE_PAREN)
                 {
                     // Make sure we don't overflow
                     if (nested_count == 0)
                     {
                         global_err.type = UNEXPECTED_TOKEN;
-                        global_err.column = next.column;
-                        global_err.line = next.line;
+                        global_err.column = next->column;
+                        global_err.line = next->line;
                         throw except::exception("Unexpected closing parenthesis in arithmetic expression");
                     }
 
@@ -330,8 +330,8 @@ namespace fluent::parser::rule
         if (current_tokens.empty())
         {
             global_err.type = UNEXPECTED_TOKEN;
-            global_err.column = next.column;
-            global_err.line = next.line;
+            global_err.column = next->column;
+            global_err.line = next->line;
             throw except::exception("Unexpected empty arithmetic expression");
         }
 
@@ -350,7 +350,7 @@ namespace fluent::parser::rule
         // Queue the current tokens for processing
         expr_queue.push_back(
             expr::queue_node(
-                container::stream<lexer::token>(current_tokens), // Clone the current tokens
+                container::stream<lexer::token *>(current_tokens), // Clone the current tokens
                 last_sub
             )
         );
