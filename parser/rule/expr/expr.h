@@ -71,9 +71,9 @@ namespace fluent::parser::rule
 
     inline void expression(
         ast *&root,
-        container::stream<lexer::token> &tokens,
+        container::stream<lexer::token *> &tokens,
         memory::lazy_allocator<ast> &allocator,
-        const lexer::token &trace
+        const lexer::token *const &trace
     )
     {
         // Create a new AST node for the expression
@@ -106,8 +106,8 @@ namespace fluent::parser::rule
             if (first_opt.is_none())
             {
                 global_err.type = UNEXPECTED_TOKEN;
-                global_err.column = trace.column;
-                global_err.line = trace.line;
+                global_err.column = trace->column;
+                global_err.line = trace->line;
                 throw except::exception("Unexpected empty expression");
             }
 
@@ -122,7 +122,7 @@ namespace fluent::parser::rule
 #       endif
 
             auto &first = first_opt.get();
-            switch (first.type)
+            switch (first->type)
             {
                 case lexer::token::IDENTIFIER:
                 {
@@ -131,7 +131,7 @@ namespace fluent::parser::rule
                     // Update the candidate
                     candidate = allocator.alloc();
                     candidate->rule = ast::IDENTIFIER;
-                    candidate->value = first.value;
+                    candidate->value = first->value;
                     expr_stream.next(); // Consume the identifier token
                     break;
                 }
@@ -145,7 +145,7 @@ namespace fluent::parser::rule
                     // Update the candidate
                     candidate = allocator.alloc();
                     candidate->rule = ast::NUMBER_LITERAL;
-                    candidate->value = first.value;
+                    candidate->value = first->value;
                     expr_stream.next(); // Consume the number literal token
                     break;
                 }
@@ -159,7 +159,7 @@ namespace fluent::parser::rule
                     // Update the candidate
                     candidate = allocator.alloc();
                     candidate->rule = ast::DECIMAL_LITERAL;
-                    candidate->value = first.value;
+                    candidate->value = first->value;
                     expr_stream.next(); // Consume the decimal literal token
                     break;
                 }
@@ -172,7 +172,7 @@ namespace fluent::parser::rule
                     // Update the candidate
                     candidate = allocator.alloc();
                     candidate->rule = ast::STRING_LITERAL;
-                    candidate->value = first.value;
+                    candidate->value = first->value;
                     expr_stream.next(); // Consume the string literal token
                     break;
                 }
@@ -218,8 +218,8 @@ namespace fluent::parser::rule
                 default:
                 {
                     global_err.type = UNEXPECTED_TOKEN;
-                    global_err.column = trace.column;
-                    global_err.line = trace.line;
+                    global_err.column = trace->column;
+                    global_err.line = trace->line;
                     throw except::exception("Unexpected token in expression");
                 }
             }
@@ -236,7 +236,7 @@ namespace fluent::parser::rule
                 ) // Process the next token
             ) continue;
 
-            if (likely & expr::CALL_LIKELY && first.type == lexer::token::OPEN_PAREN)
+            if (likely & expr::CALL_LIKELY && first->type == lexer::token::OPEN_PAREN)
             {
                 candidate = call(
                     candidate,
@@ -257,7 +257,7 @@ namespace fluent::parser::rule
                 ) continue;
             }
 
-            if (likely & expr::PROP_ACCESS_LIKELY && first.type == lexer::token::DOT)
+            if (likely & expr::PROP_ACCESS_LIKELY && first->type == lexer::token::DOT)
             {
                 candidate = prop(
                     candidate,
@@ -283,10 +283,10 @@ namespace fluent::parser::rule
             if (
                 likely & expr::ARITHMETIC_OP_LIKELY
                 && (
-                    first.type == lexer::token::PLUS ||
-                    first.type == lexer::token::MINUS ||
-                    first.type == lexer::token::MULTIPLY ||
-                    first.type == lexer::token::DIVIDE
+                    first->type == lexer::token::PLUS ||
+                    first->type == lexer::token::MINUS ||
+                    first->type == lexer::token::MULTIPLY ||
+                    first->type == lexer::token::DIVIDE
                 )
             )
             {
@@ -312,12 +312,12 @@ namespace fluent::parser::rule
             if (
                 likely & expr::BOOLEAN_OP_LIKELY
                 && (
-                    first.type == lexer::token::BOOL_EQ ||
-                    first.type == lexer::token::BOOL_GT ||
-                    first.type == lexer::token::BOOL_GTE ||
-                    first.type == lexer::token::BOOL_LT ||
-                    first.type == lexer::token::BOOL_LTE ||
-                    first.type == lexer::token::BOOL_NEQ
+                    first->type == lexer::token::BOOL_EQ ||
+                    first->type == lexer::token::BOOL_GT ||
+                    first->type == lexer::token::BOOL_GTE ||
+                    first->type == lexer::token::BOOL_LT ||
+                    first->type == lexer::token::BOOL_LTE ||
+                    first->type == lexer::token::BOOL_NEQ
                 )
             )
             {
@@ -338,8 +338,8 @@ namespace fluent::parser::rule
 
             // Invalid token detected
             global_err.type = UNEXPECTED_TOKEN;
-            global_err.column = first.column;
-            global_err.line = first.line;
+            global_err.column = first->column;
+            global_err.line = first->line;
             throw except::exception("Unexpected token in expression");
         }
     }
