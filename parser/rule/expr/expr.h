@@ -44,9 +44,9 @@ namespace fluent::parser::rule
     static inline bool process_next(
         ast *&parent,
         ast *&candidate,
-        const lexer::token &trace,
-        container::optional<lexer::token> &first_opt,
-        lexer::token &first
+        const lexer::token *&trace,
+        container::optional<lexer::token *> &first_opt,
+        lexer::token *&first
     )
     {
         if (first_opt.is_none())
@@ -60,8 +60,8 @@ namespace fluent::parser::rule
 
             // Set error state
             global_err.type = UNEXPECTED_TOKEN;
-            global_err.column = trace.column;
-            global_err.line = trace.line;
+            global_err.column = trace->column;
+            global_err.line = trace->line;
             throw except::exception("Unexpected end of expression");
         }
 
