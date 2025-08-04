@@ -35,14 +35,14 @@ namespace fluent::parser::rule::expr
 {
     struct queue_node
     {
-        container::stream<lexer::token> tokens; // Tokens for the expression
+        container::stream<lexer::token *> tokens; // Tokens for the expression
         ast *node = nullptr; // Pointer to the AST node for this expression
 
-        queue_node(container::stream<lexer::token> tokens, ast* node)
+        queue_node(container::stream<lexer::token *> tokens, ast* node)
             : tokens(std::move(tokens)), node(node) {}
 
         explicit queue_node()
-            : tokens(container::stream(container::vector<lexer::token>()))
+            : tokens(container::stream(container::vector<lexer::token *>()))
         {
             node = nullptr;
         }
