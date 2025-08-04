@@ -84,9 +84,7 @@ namespace fluent::memory
     public:
         explicit lazy_allocator(const size_t page_size = 512)
             : page_size(page_size)
-        {
-            static_assert(sizeof(T) >= sizeof(void*), "T must be large enough to hold a pointer");
-        }
+        {}
 
         T *alloc()
         {
