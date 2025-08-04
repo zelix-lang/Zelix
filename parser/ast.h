@@ -60,6 +60,7 @@ namespace fluent::parser
             LT,
             LTE,
             EXPRESSION,
+            ARITHMETIC,
             CALL,
             PROP_ACCESS,
             IF,
