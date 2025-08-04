@@ -101,7 +101,7 @@ namespace fluent::memory
             // See if we have any pages available
             if (pages.empty())
             {
-                pages.emplace_back();
+                pages.emplace_back(page_size);
             }
 
             auto &back = pages.ref_at(pages.size() - 1);
