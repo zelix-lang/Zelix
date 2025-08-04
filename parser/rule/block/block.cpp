@@ -30,7 +30,7 @@ using namespace fluent;
 
 void parser::rule::block(
     ast *&root,
-    container::stream<lexer::token> &tokens,
+    container::stream<lexer::token*> &tokens,
     memory::lazy_allocator<ast> &allocator,
     const lexer::token &trace
 )
@@ -63,7 +63,7 @@ void parser::rule::block(
 
         switch (
             const auto &next = next_opt.get();
-            next.type
+            next->type
         )
         {
             case lexer::token::CLOSE_CURLY:
