@@ -23,6 +23,7 @@
     <https://www.gnu.org/licenses/>.
 */
 
+#include "command/compile.h"
 #include "fluent/cli/app.h"
 using namespace fluent;
 
@@ -74,7 +75,7 @@ int main(const int argc, const char **argv)
         cmd_ptr == compile
     )
     {
-
+        command::compile(args);
     } else if (cmd_ptr == run)
     {
 
