@@ -37,56 +37,56 @@ namespace fluent::lexer
     {
         enum t_type
         {
-            UNKNOWN,
-            IMPORT,
-            FUNCTION,
-            MOD,
-            ARROW,
-            OPEN_CURLY,
-            CLOSE_CURLY,
-            OPEN_PAREN,
-            CLOSE_PAREN,
-            OPEN_BRACKET,
-            CLOSE_BRACKET,
-            IDENTIFIER,
-            STRING,
-            NUMBER,
-            DECIMAL,
-            NOTHING,
-            STRING_LITERAL,
-            NUMBER_LITERAL,
-            DECIMAL_LITERAL,
-            SEMICOLON,
-            COMMA,
-            COLON,
-            EQUALS,
-            BOOL_EQ,
-            BOOL_NEQ,
-            BOOL_LT,
-            BOOL_GT,
-            BOOL_LTE,
-            BOOL_GTE,
-            PLUS,
-            MINUS,
-            MULTIPLY,
-            DIVIDE,
-            AND,
-            OR,
-            NOT,
-            DOT,
-            STEP,
-            BOOL,
-            TRUE,
-            FALSE,
-            LET,
-            CONST,
-            PUB,
-            IF,
-            ELSEIF,
-            ELSE,
-            FOR,
-            WHILE,
-            RETURN
+            UNKNOWN, // 0
+            IMPORT, // 1
+            FUNCTION, // 2
+            MOD, // 3
+            ARROW, // 4
+            OPEN_CURLY, // 5
+            CLOSE_CURLY, // 6
+            OPEN_PAREN, // 7
+            CLOSE_PAREN, // 8
+            OPEN_BRACKET, // 9
+            CLOSE_BRACKET, // 10
+            IDENTIFIER, // 11
+            STRING, // 12
+            NUMBER, // 13
+            DECIMAL, // 14
+            NOTHING, // 15
+            STRING_LITERAL, // 16
+            NUMBER_LITERAL, // 17
+            DECIMAL_LITERAL, // 18
+            SEMICOLON, // 19
+            COMMA, // 20
+            COLON, // 21
+            EQUALS, // 22
+            BOOL_EQ, // 23
+            BOOL_NEQ, // 24
+            BOOL_LT, // 25
+            BOOL_GT, // 26
+            BOOL_LTE, // 27
+            BOOL_GTE, // 28
+            PLUS, // 29
+            MINUS, // 30
+            MULTIPLY, // 31
+            DIVIDE, // 32
+            AND, // 33
+            OR, // 34
+            NOT, // 35
+            DOT, // 36
+            STEP, // 37
+            BOOL, // 38
+            TRUE, // 39
+            FALSE, // 40
+            LET, // 41
+            CONST, // 42
+            PUB, // 43
+            IF, // 44
+            ELSEIF, // 45
+            ELSE, // 46
+            FOR, // 47
+            WHILE, // 48
+            RETURN // 49
         };
 
         container::optional<container::external_string> value
