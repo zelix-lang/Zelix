@@ -48,8 +48,7 @@ namespace fluent::util
         FILE *file = fopen(path, "r");
 
         if (file == nullptr) {
-            printf("Error: Could not open file.\n");
-            exit(1);
+            throw except::exception("Failed to open file");
         }
 
         container::string content; // String to hold the file contents
