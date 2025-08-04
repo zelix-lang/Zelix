@@ -44,7 +44,7 @@ parser::ast *parse(container::stream<lexer::token *> &tokens)
     {
         switch (
             const auto &current = current_opt.get();
-            current.type
+            current->type
         )
         {
             case lexer::token::IMPORT:
@@ -61,8 +61,8 @@ parser::ast *parse(container::stream<lexer::token *> &tokens)
             default:
             {
                 parser::global_err.type = parser::UNEXPECTED_TOKEN;
-                parser::global_err.line = current.line;
-                parser::global_err.column = current.column;
+                parser::global_err.line = current->line;
+                parser::global_err.column = current->column;
                 throw except::exception("Unexpected token encountered during parsing");
             }
         }
