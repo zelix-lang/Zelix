@@ -87,7 +87,7 @@ namespace fluent::memory
             // Check the free list first
             if (!free_list.empty())
             {
-                T *ptr = free_list.ref_at(free_list.size() - 1);
+                T *ptr = free_list[free_list.size() - 1];
                 free_list.pop_back();
                 return ptr;
             }
