@@ -38,9 +38,9 @@ namespace fluent::parser::rule
 {
     inline ast *prop(
         ast *&candidate,
-        container::stream<lexer::token> &tokens,
+        container::stream<lexer::token *> &tokens,
         memory::lazy_allocator<ast> &allocator,
-        const lexer::token &trace,
+        const lexer::token *const &trace,
         container::vector<expr::queue_node> &expr_queue
     )
     {
@@ -56,12 +56,12 @@ namespace fluent::parser::rule
             if (next_opt.is_none())
             {
                 global_err.type = UNEXPECTED_TOKEN;
-                global_err.column = trace.column;
-                global_err.line = trace.line;
+                global_err.column = trace->column;
+                global_err.line = trace->line;
                 throw except::exception("Unexpected end of input while parsing property access");
             }
 
-            if (next_opt.get().type != lexer::token::DOT)
+            if (next_opt.get()->type != lexer::token::DOT)
             {
                 break; // If the next token is not a dot, exit the loop
             }
@@ -71,7 +71,7 @@ namespace fluent::parser::rule
             const auto prop_name = tokens.next().get();
             ast *prop_name_node = allocator.alloc();
             prop_name_node->rule = ast::IDENTIFIER;
-            prop_name_node->value = prop_name.value;
+            prop_name_node->value = prop_name->value;
 
             // Peek into the next token
             next_opt = tokens.peek();
@@ -82,7 +82,7 @@ namespace fluent::parser::rule
 
             if (
                 const auto &next = next_opt.get();
-                next.type == lexer::token::OPEN_PAREN
+                next->type == lexer::token::OPEN_PAREN
             )
             {
                 // Create a call token
