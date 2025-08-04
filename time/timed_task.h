@@ -33,5 +33,6 @@ namespace fluent::time
 {
     void post(const char *name, int max_steps);
     void advance();
+    void fail(const char *reason);
     void complete(bool recompute_time = true);
 }
