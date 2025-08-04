@@ -24,7 +24,7 @@
 */
 
 #include "timed_task.h"
-
+#include <fluent/ansi/ansi.h>
 #include <chrono>
 
 struct timed_task
@@ -38,6 +38,80 @@ struct timed_task
 
 // Save the current task
 timed_task task;
+
+void print_task(
+    const bool failed = false,
+    const bool complete = false,
+    const char *reason = nullptr
+)
+{
+    if (failed)
+    {
+        printf(
+            ANSI_BRIGHT_BLACK
+            "\033[2m["
+            ANSI_RESET
+            ANSI_BRIGHT_RED
+            "\033[2m%d"
+            ANSI_RESET
+            ANSI_BRIGHT_BLACK
+            "\033[2m/%d]"
+            ANSI_RESET
+            ANSI_BRIGHT_RED
+            " %s [x]"
+            ANSI_RESET
+            "\n    \033[38;5;214m\033[2m(!) what "
+            ANSI_RESET
+            ANSI_BRIGHT_BLACK
+            "~ "
+            ANSI_RESET
+            "\033[38;5;214m%s\n",
+            task.steps,
+            task.max_steps,
+            task.name,
+            reason
+        );
+
+        return;
+    }
+
+    if (complete)
+    {
+        printf(
+            ANSI_BRIGHT_GREEN
+            "\033[2m[%d/%d]\033[22m"
+            ANSI_RESET
+            ANSI_BRIGHT_GREEN
+            " %s"
+            ANSI_RESET,
+            task.steps,
+            task.max_steps,
+            task.name
+        );
+
+        return;
+    }
+    printf(
+        ANSI_BRIGHT_BLACK
+        "[%d/"
+        ANSI_RESET
+        ANSI_BRIGHT_BLUE
+        "%d"
+        ANSI_RESET
+        ANSI_BRIGHT_BLACK
+        "]"
+        ANSI_RESET
+        ANSI_BRIGHT_BLUE
+        " %s"
+        ANSI_RESET
+        "\r",
+        task.steps,
+        task.max_steps,
+        task.name
+    );
+
+    fflush(stdout);
+}
 
 void fluent::time::complete(const bool recompute_time)
 {
@@ -55,7 +129,14 @@ void fluent::time::complete(const bool recompute_time)
     }
 
     task.steps = task.max_steps;
-    printf("[%d/%d] %s - %lldµs\n", task.steps, task.max_steps, task.name, task.took);
+    print_task(false, true); // Print the completed task
+    printf(
+        ANSI_BRIGHT_BLACK
+        " ~ %lldµs"
+        ANSI_RESET
+        "\n",
+        task.took
+    );
     task.name = nullptr; // Clear the task name
 }
 
@@ -82,7 +163,7 @@ void fluent::time::advance()
         return;
     }
 
-    printf("[%d/%d] %s\r", task.steps, task.max_steps, task.name);
+    print_task();
 }
 
 void fluent::time::post(const char *name, const int max_steps)
@@ -93,5 +174,16 @@ void fluent::time::post(const char *name, const int max_steps)
     task.start_time = std::chrono::system_clock::now(); // Reset the start time
     task.took = 0; // Reset the time taken
     task.steps = 0; // Reset the steps
-    printf("[%d/%d] %s\r", task.steps, task.max_steps, name);
+
+    print_task();
+}
+
+void fluent::time::fail(const char *reason)
+{
+    if (task.name == nullptr)
+    {
+        return; // No task to advance
+    }
+
+    print_task(true, true, reason);
 }
