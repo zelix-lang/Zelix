@@ -130,13 +130,36 @@ void fluent::time::complete(const bool recompute_time)
 
     task.steps = task.max_steps;
     print_task(false, true); // Print the completed task
-    printf(
-        ANSI_BRIGHT_BLACK
-        " ~ %lldµs"
-        ANSI_RESET
-        "\n",
-        task.took
-    );
+
+    if (task.took < 1000)
+    {
+        printf(
+            ANSI_BRIGHT_BLACK
+            " ~ %lldµs"
+            ANSI_RESET
+            "\n",
+            task.took
+        );
+    } else if (task.took < 1000000)
+    {
+        printf(
+            ANSI_BRIGHT_BLACK
+            " ~ %.2fms"
+            ANSI_RESET
+            "\n",
+            static_cast<double>(task.took) / 1000.0
+        );
+    } else
+    {
+        printf(
+            ANSI_BRIGHT_BLACK
+            " ~ %.2fs"
+            ANSI_RESET
+            "\n",
+            static_cast<double>(task.took) / 1000000.0
+        );
+    }
+
     task.name = nullptr; // Clear the task name
 }
 
