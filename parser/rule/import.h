@@ -37,18 +37,18 @@ namespace fluent::parser::rule
 {
     inline void imp(
         ast *&root,
-        container::stream<lexer::token> &tokens,
+        container::stream<lexer::token *> &tokens,
         const bool &top_level,
         memory::lazy_allocator<ast> &allocator,
-        const lexer::token &trace
+        const lexer::token *const& trace
     )
     {
         // Make sure we are at the top level
         if (!top_level)
         {
             global_err.type = ILLEGAL_IMPORT;
-            global_err.column = trace.column;
-            global_err.line = trace.line;
+            global_err.column = trace->column;
+            global_err.line = trace->line;
             throw except::exception("Illegal import statement outside of top-level scope");
         }
 
