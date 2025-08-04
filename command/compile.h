@@ -40,33 +40,39 @@ namespace fluent::command
 {
     inline void compile(cli::args &args)
     {
-        time::post("Reading", 1);
-        auto f = util::read_file(
-            args.command<container::external_string>(
-                container::external_string("compile", 7)
-            ).ptr()
-        );
+        try
+        {
+            time::post("Reading", 1);
+            auto f = util::read_file(
+                args.command<container::external_string>(
+                    container::external_string("compile", 7)
+                ).ptr()
+            );
 
-        time::post("Lexing", 1);
-        auto stream_opt = lexer::lex(
-            container::external_string(
-                f.c_str(),
-                f.size()
-            )
-        );
+            time::post("Lexing", 1);
+            auto stream_opt = lexer::lex(
+                container::external_string(
+                    f.c_str(),
+                    f.size()
+                )
+            );
 
-        time::post("Parsing", 1);
-        auto &tokens = stream_opt.get();
-        memory::lazy_allocator<parser::ast> allocator;
-        auto *root = allocator.alloc();
-        const auto &trace = tokens.peek().get();
-        parser::rule::expression(
-            root,
-            tokens,
-            allocator,
-            trace
-        );
+            time::post("Parsing", 1);
+            auto &tokens = stream_opt.get();
+            memory::lazy_allocator<parser::ast> allocator;
+            auto *root = allocator.alloc();
+            const auto &trace = tokens.peek().get();
+            parser::rule::expression(
+                root,
+                tokens,
+                allocator,
+                trace
+            );
 
-        time::complete();
+            time::complete();
+        } catch (const except::exception &e)
+        {
+            time::fail(e.what());
+        }
     }
 }
