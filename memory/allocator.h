@@ -34,69 +34,53 @@
 
 namespace fluent::memory
 {
-    template <typename T>
+    template <typename T, size_t N>
     class lazy_page
     {
-        T *ptr = nullptr;
-        size_t size = 0;
-        size_t used = 0;
+        union storage_u {
+            alignas(T) char raw[sizeof(T)];
+        };
+
+        storage_u storage[N];
+        container::vector<storage_u*> mem_list;
 
     public:
         explicit lazy_page()
         {
-            size = sizeof(T) * 20;
-            ptr = new T[20];
-        }
-
-        explicit lazy_page(const size_t page_size)
-        {
-            size = sizeof(T) * page_size;
-            ptr = new T[page_size];
+            for (size_t i = 0; i < N; ++i)
+                mem_list.push_back(&storage[i]);
         }
 
         T *alloc()
         {
-            if (used >= size)
+            if (mem_list.empty())
             {
                 throw except::exception("Out of memory in lazy page allocator");
             }
 
             // Get the next available pointer
-            T *next_ptr = reinterpret_cast<T *>(reinterpret_cast<char *>(ptr) + used);
-            used += sizeof(T);
+            T* ptr = reinterpret_cast<T*>(mem_list.ref_at(mem_list.size() - 1));
+            mem_list.calibrate(mem_list.size() - 1);
 
-            // Initialize the allocated memory
-            new (next_ptr) T(); // Placement new to construct the object in the allocated memory
-            return next_ptr;
+            // Placement new to construct object
+            new (ptr) T();
+            return ptr;
         }
 
         [[nodiscard]] bool full() const
         {
-            return used >= size;
-        }
-
-        ~lazy_page()
-        {
-            delete[] ptr; // Free the allocated memory
-            ptr = nullptr; // Avoid dangling pointer
+            return mem_list.empty();
         }
     };
 
-    template <typename T>
+    template <typename T, size_t N = 50>
     class lazy_allocator
     {
-        container::vector<lazy_page<T>> pages;
+        container::vector<lazy_page<T, N>> pages;
         container::vector<T *> free_list;
-        size_t page_size;
     public:
-        explicit lazy_allocator(const size_t page_size)
-            : page_size(page_size)
-        {
-            if (page_size == 0)
-            {
-                throw except::exception("Page size cannot be zero");
-            }
-        }
+        explicit lazy_allocator()
+        {}
 
         T *alloc()
         {
@@ -111,14 +95,14 @@ namespace fluent::memory
             // See if we have any pages available
             if (pages.empty())
             {
-                pages.emplace_back(page_size);
+                pages.emplace_back();
             }
 
             auto &back = pages.ref_at(pages.size() - 1);
             if (back.full())
             {
                 // Allocate a new page
-                pages.emplace_back(page_size);
+                pages.emplace_back();
                 back = pages.ref_at(pages.size() - 1);
                 return back.alloc();
             }
