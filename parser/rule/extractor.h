@@ -34,8 +34,8 @@
 
 namespace fluent::parser
 {
-    inline container::stream<lexer::token> extract(
-        container::stream<lexer::token> &tokens,
+    inline container::stream<lexer::token *> extract(
+        container::stream<lexer::token*> &tokens,
         const lexer::token::t_type end_delim = lexer::token::CLOSE_PAREN,
         const lexer::token::t_type nested_end_delim = lexer::token::CLOSE_PAREN,
         const lexer::token::t_type start_delim = lexer::token::OPEN_PAREN,
@@ -43,7 +43,7 @@ namespace fluent::parser
         const bool exclude_first_delim = true
     )
     {
-        container::vector<lexer::token> vec;
+        container::vector<lexer::token *> vec;
         container::stream result(container::move(vec));
         size_t nested_count = 0;
         const size_t start_pos = tokens.pos();
@@ -54,7 +54,7 @@ namespace fluent::parser
         {
             const auto &current = next_opt.get();
 
-            if (current.type == nested_end_delim)
+            if (current->type == nested_end_delim)
             {
                 // Handle nested delimiters
                 if (handle_nested)
@@ -62,8 +62,8 @@ namespace fluent::parser
                     if (nested_count == 0)
                     {
                         global_err.type = UNEXPECTED_TOKEN;
-                        global_err.column = current.column;
-                        global_err.line = current.line;
+                        global_err.column = current->column;
+                        global_err.line = current->line;
                         throw except::exception("Unexpected nested end delimiter");
                     }
 
@@ -80,7 +80,7 @@ namespace fluent::parser
                 }
             }
 
-            else if (current.type == end_delim)
+            else if (current->type == end_delim)
             {
                 // Handle nested delimiters
                 if (handle_nested)
@@ -96,7 +96,7 @@ namespace fluent::parser
                 return result;
             }
 
-            if (current.type == start_delim)
+            if (current->type == start_delim)
             {
                 if (handle_nested)
                 {
@@ -128,8 +128,8 @@ namespace fluent::parser
 
         const auto &current = next_opt.get();
         global_err.type = UNEXPECTED_TOKEN;
-        global_err.column = current.column;
-        global_err.line = current.line;
+        global_err.column = current->column;
+        global_err.line = current->line;
         throw except::exception("Unexpected end delimiter");
     }
 }
