@@ -26,6 +26,7 @@
 #include "lexer.h"
 
 #include "ankerl/unordered_dense.h"
+#include "memory/allocator.h"
 
 using namespace fluent;
 ankerl::unordered_dense::map<
@@ -153,8 +154,13 @@ void reset_flags()
 ///
 /// \param tokens Reference to the vector where tokens are stored.
 /// \param source Pointer to the source code string.
+/// \param allocator Lazy allocator for managing memory for the tokens.
 /// \return true if the token was successfully pushed or if there was no token to push; false if an unknown token was encountered.
-bool push_token(container::vector<lexer::token> &tokens, const char *source)
+bool push_token(
+    container::vector<lexer::token *> &tokens,
+    const char *source,
+    memory::lazy_allocator<lexer::token> &allocator
+)
 {
     if (t_len == 0)
     {
@@ -170,31 +176,31 @@ bool push_token(container::vector<lexer::token> &tokens, const char *source)
     {
         if (dec)
         {
-            tokens.push_back(lexer::token{
-                .value = value_opt,
-                .type = lexer::token::DECIMAL_LITERAL,
-                .line = line,
-                .column = col - t_len
-            });
+            const auto t = allocator.alloc();
+            t->value = value_opt;
+            t->type = lexer::token::DECIMAL_LITERAL;
+            t->line = line;
+            t->column = col - t_len;
+            tokens.push_back(t);
         }
         else
         {
-            tokens.push_back(lexer::token{
-                .value = value_opt,
-                .type = lexer::token::NUMBER_LITERAL,
-                .line = line,
-                .column = col - t_len
-            });
+            const auto t = allocator.alloc();
+            t->value = value_opt;
+            t->type = lexer::token::NUMBER_LITERAL;
+            t->line = line;
+            t->column = col - t_len;
+            tokens.push_back(t);
         }
     }
     else if (str)
     {
-        tokens.push_back(lexer::token{
-            .value = value_opt,
-            .type = lexer::token::STRING_LITERAL,
-            .line = line,
-            .column = col - t_len
-        });
+        const auto t = allocator.alloc();
+        t->value = value_opt;
+        t->type = lexer::token::STRING_LITERAL;
+        t->line = line;
+        t->column = col - t_len;
+        tokens.push_back(t);
     }
     else
     {
@@ -203,23 +209,23 @@ bool push_token(container::vector<lexer::token> &tokens, const char *source)
             it != token_map.end()
         )
         {
-            tokens.push_back(lexer::token{
-                .value = container::optional<container::external_string>::none(),
-                .type = it->second, // Default to UNKNOWN for now
-                .line = line,
-                .column = col - t_len
-            });
+            const auto t = allocator.alloc();
+            t->value = container::optional<container::external_string>::none();
+            t->type = it->second;
+            t->line = line;
+            t->column = col - t_len;
+            tokens.push_back(t);
         }
         else
         {
             if (identifier)
             {
-                tokens.push_back(lexer::token{
-                    .value = value_opt,
-                    .type = lexer::token::IDENTIFIER,
-                    .line = line,
-                    .column = col - t_len
-                });
+                const auto t = allocator.alloc();
+                t->value = value_opt;
+                t->type = lexer::token::IDENTIFIER;
+                t->line = line;
+                t->column = col - t_len;
+                tokens.push_back(t);
             }
             else
             {
@@ -249,15 +255,17 @@ bool push_token(container::vector<lexer::token> &tokens, const char *source)
 /// information if an invalid or unknown token is encountered.
 ///
 /// \param source The source code to tokenize, as an external string.
+/// \param allocator A lazy allocator for managing memory for the tokens.
 /// \return An optional stream of tokens. Returns none if a lexical error occurs.
 ///
 /// \note This function is not thread-safe due to the use of global state for
 ///       error reporting and tokenization flags.
-container::optional<container::stream<lexer::token>> lexer::lex(
-    const container::external_string &source
+container::optional<container::stream<lexer::token *>> lexer::lex(
+    const container::external_string &source,
+    memory::lazy_allocator<token> &allocator
 )
 {
-    container::vector<token> tokens; // Vector to hold the tokens
+    container::vector<token *> tokens; // Vector to hold the tokens
     const auto ptr = source.ptr();
 
     for (size_t i = 0; i < source.size(); i++)
@@ -274,7 +282,7 @@ container::optional<container::stream<lexer::token>> lexer::lex(
                 continue;
             }
 
-            if (!push_token(tokens, ptr)) return container::optional<container::stream<token>>::none();
+            if (!push_token(tokens, ptr, allocator)) return container::optional<container::stream<token *>>::none();
             start = i + 1; // Move start to the next character
             continue;
         }
@@ -294,7 +302,7 @@ container::optional<container::stream<lexer::token>> lexer::lex(
                 global_err.type = UNCLOSED_STRING;
                 global_err.line = line;
                 global_err.column = col;
-                return container::optional<container::stream<token>>::none();
+                return container::optional<container::stream<token *>>::none();
             }
 
             line++;
@@ -310,12 +318,12 @@ container::optional<container::stream<lexer::token>> lexer::lex(
             if (str)
             {
                 // If we are already in a string, push the token
-                tokens.push_back(token{
-                    .value = container::optional<container::external_string>::emplace(ptr + start, t_len),
-                    .type = token::STRING_LITERAL,
-                    .line = line,
-                    .column = col - t_len
-                });
+                auto t = allocator.alloc();
+                t->value = container::optional<container::external_string>::emplace(ptr + start, t_len);
+                t->type = token::STRING_LITERAL;
+                t->line = line;
+                t->column = col - t_len;
+                tokens.push_back(t);
 
                 start = i + 1; // Move start to the next character
                 t_len = 0; // Reset token length
@@ -323,7 +331,7 @@ container::optional<container::stream<lexer::token>> lexer::lex(
             }
             else
             {
-                if (!push_token(tokens, ptr)) return container::optional<container::stream<token>>::none();
+                if (!push_token(tokens, ptr, allocator)) return container::optional<container::stream<token *>>::none();
                 // Start a new string literal
                 str = true;
                 start = i + 1; // Start after the quote
@@ -389,7 +397,7 @@ container::optional<container::stream<lexer::token>> lexer::lex(
         if (c == '/' && ptr[i + 1] == '*')
         {
             // Push the current token if any
-            if (!push_token(tokens, ptr)) return container::optional<container::stream<token>>::none();
+            if (!push_token(tokens, ptr, allocator)) return container::optional<container::stream<token *>>::none();
             block_comment = true; // Enter block comment mode
             continue; // Skip the rest of the line
         }
@@ -420,17 +428,17 @@ container::optional<container::stream<lexer::token>> lexer::lex(
             && ptr[i + 1] == c
         )
         {
-            if (!push_token(tokens, ptr)) return container::optional<container::stream<token>>::none();
+            if (!push_token(tokens, ptr, allocator)) return container::optional<container::stream<token *>>::none();
             i++; // Skip the next character
 
-            tokens.push_back(token{
-                .value = container::optional<container::external_string>::none(),
-                .type = c == '&' ? token::AND :
+            const auto t = allocator.alloc();
+            t->value = container::optional<container::external_string>::none();
+            t->line = line;
+            t->column = col;
+            t->type = c == '&' ? token::AND :
                         c == '|' ? token::OR :
                         token::BOOL_EQ,
-                .line = line,
-                .column = col
-            });
+            tokens.push_back(t);
 
             start = i + 1; // Move start to the next character
             reset_flags();
@@ -444,17 +452,17 @@ container::optional<container::stream<lexer::token>> lexer::lex(
             && ptr[i + 1] == '='
         )
         {
-            if (!push_token(tokens, ptr)) return container::optional<container::stream<token>>::none();
+            if (!push_token(tokens, ptr, allocator)) return container::optional<container::stream<token *>>::none();
             i++; // Skip the next character
 
-            tokens.push_back(token{
-                .value = container::optional<container::external_string>::none(),
-                .type = c == '>' ? token::BOOL_GTE :
+            const auto t = allocator.alloc();
+            t->value = container::optional<container::external_string>::none();
+            t->line = line;
+            t->column = col;
+            t->type = c == '>' ? token::BOOL_GTE :
                         c == '<' ? token::BOOL_LTE :
-                        token::BOOL_NEQ,
-                .line = line,
-                .column = col
-            });
+                        token::BOOL_NEQ;
+            tokens.push_back(t);
 
             start = i + 1; // Move start to the next character
             reset_flags();
@@ -467,15 +475,15 @@ container::optional<container::stream<lexer::token>> lexer::lex(
             c == '-' && ptr[i + 1] == '>'
         )
         {
-            if (!push_token(tokens, ptr)) return container::optional<container::stream<token>>::none();
+            if (!push_token(tokens, ptr, allocator)) return container::optional<container::stream<token *>>::none();
             i++; // Skip the next character
 
-            tokens.push_back(token{
-                .value = container::optional<container::external_string>::none(),
-                .type = token::ARROW,
-                .line = line,
-                .column = col
-            });
+            const auto t = allocator.alloc();
+            t->value = container::optional<container::external_string>::none();
+            t->type = token::ARROW;
+            t->line = line;
+            t->column = col;
+            tokens.push_back(t);
 
             start = i + 1; // Move start to the next character
             reset_flags();
@@ -491,11 +499,13 @@ container::optional<container::stream<lexer::token>> lexer::lex(
             || c == '*' || c == '/' || c == '!'
         )
         {
-            if (!push_token(tokens, ptr)) return container::optional<container::stream<token>>::none();
+            if (!push_token(tokens, ptr, allocator)) return container::optional<container::stream<token *>>::none();
 
-            tokens.push_back(token{
-                .value = container::optional<container::external_string>::none(),
-                .type = c == '{' ? token::OPEN_CURLY :
+            const auto t = allocator.alloc();
+            t->value = container::optional<container::external_string>::none();
+            t->line = line;
+            t->column = col;
+            t->type = c == '{' ? token::OPEN_CURLY :
                         c == '}' ? token::CLOSE_CURLY :
                         c == '(' ? token::OPEN_PAREN :
                         c == ')' ? token::CLOSE_PAREN :
@@ -509,10 +519,9 @@ container::optional<container::stream<lexer::token>> lexer::lex(
                         c == '-' ? token::MINUS :
                         c == '*' ? token::MULTIPLY :
                         c == '/' ? token::DIVIDE :
-                            token::NOT,
-                .line = line,
-                .column = col
-            });
+                            token::NOT;
+
+            tokens.push_back(t);
 
             start = i + 1; // Move start to the next character
             reset_flags();
@@ -529,7 +538,7 @@ container::optional<container::stream<lexer::token>> lexer::lex(
                 global_err.type = UNKNOWN_TOKEN;
                 global_err.line = line;
                 global_err.column = col;
-                return container::optional<container::stream<token>>::none();
+                return container::optional<container::stream<token *>>::none();
             }
 
             dec = num; // If we were in a number, we are now in a decimal
@@ -537,15 +546,15 @@ container::optional<container::stream<lexer::token>> lexer::lex(
             // Handle punctuation
             if (!dec)
             {
-                if (!push_token(tokens, ptr)) return container::optional<container::stream<token>>::none();
+                if (!push_token(tokens, ptr, allocator)) return container::optional<container::stream<token *>>::none();
                 col++; // Increment column for the dot
 
-                tokens.push_back(token{
-                    .value = container::optional<container::external_string>::none(),
-                    .type = token::DOT,
-                    .line = line,
-                    .column = col
-                });
+                const auto t = allocator.alloc();
+                t->value = container::optional<container::external_string>::none();
+                t->type = token::DOT;
+                t->line = line;
+                t->column = col - 1; // Column is the current position minus one for
+                tokens.push_back(t);
 
                 start = i + 1; // Move start to the next character
                 reset_flags();
@@ -559,7 +568,7 @@ container::optional<container::stream<lexer::token>> lexer::lex(
             global_err.type = UNKNOWN_TOKEN;
             global_err.line = line;
             global_err.column = col;
-            return container::optional<container::stream<token>>::none();
+            return container::optional<container::stream<token *>>::none();
         }
 
         if (!str && ((num && !isdigit(c) && c != '.') || (dec && !isdigit(c))))
@@ -567,7 +576,7 @@ container::optional<container::stream<lexer::token>> lexer::lex(
             global_err.type = UNKNOWN_TOKEN;
             global_err.line = line;
             global_err.column = col;
-            return container::optional<container::stream<token>>::none();
+            return container::optional<container::stream<token *>>::none();
         }
 
         col++; // Increment column for each character
@@ -580,8 +589,8 @@ container::optional<container::stream<lexer::token>> lexer::lex(
         global_err.type = str ? UNCLOSED_STRING : UNCLOSED_COMMENT;
         global_err.line = line;
         global_err.column = col - t_len; // Column where the unclosed string/comment started
-        return container::optional<container::stream<token>>::none();
+        return container::optional<container::stream<token *>>::none();
     }
 
-    return container::optional<container::stream<token>>::emplace(tokens);
+    return container::optional<container::stream<token *>>::emplace(tokens);
 }
