@@ -29,12 +29,14 @@
 
 #pragma once
 #include "fluent/container/stream.h"
+#include "memory/allocator.h"
 #include "token.h"
 
 namespace fluent::lexer
 {
-    container::optional<container::stream<token>> lex(
-        const container::external_string &source
+    container::optional<container::stream<token *>> lex(
+        const container::external_string &source,
+        memory::lazy_allocator<token> &allocator
     );
 
     enum error_type
