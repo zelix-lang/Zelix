@@ -221,11 +221,13 @@ bool push_token(container::vector<lexer::token> &tokens, const char *source)
                     .column = col - t_len
                 });
             }
-
-            lexer::global_err.type = lexer::UNKNOWN_TOKEN;
-            lexer::global_err.line = line;
-            lexer::global_err.column = col - t_len;
-            return false;
+            else
+            {
+                lexer::global_err.type = lexer::UNKNOWN_TOKEN;
+                lexer::global_err.line = line;
+                lexer::global_err.column = col - t_len;
+                return false;
+            }
         }
     }
 
@@ -384,7 +386,7 @@ container::optional<container::stream<lexer::token>> lexer::lex(
         }
 
         // Handle block comments
-        if (!str && c == '/' && ptr[i + 1] == '*')
+        if (c == '/' && ptr[i + 1] == '*')
         {
             // Push the current token if any
             if (!push_token(tokens, ptr)) return container::optional<container::stream<token>>::none();
@@ -414,7 +416,7 @@ container::optional<container::stream<lexer::token>> lexer::lex(
 
         // Handle punctuation signs
         if (
-            !str && (c == '&' || c == '=' || c == '|')
+            (c == '&' || c == '=' || c == '|')
             && ptr[i + 1] == c
         )
         {
@@ -438,7 +440,7 @@ container::optional<container::stream<lexer::token>> lexer::lex(
 
         // Special cases: >=, <=, !=
         if (
-            !str && (c == '>' || c == '<' || c == '!')
+            (c == '>' || c == '<' || c == '!')
             && ptr[i + 1] == '='
         )
         {
@@ -462,7 +464,7 @@ container::optional<container::stream<lexer::token>> lexer::lex(
 
         // Special case: ->
         if (
-            !str && c == '-' && ptr[i + 1] == '>'
+            c == '-' && ptr[i + 1] == '>'
         )
         {
             if (!push_token(tokens, ptr)) return container::optional<container::stream<token>>::none();
@@ -483,7 +485,7 @@ container::optional<container::stream<lexer::token>> lexer::lex(
 
         // Handle sing-char punctuation
         if (
-            !str && c == '{' || c == '}' || c == '(' || c == ')'
+            c == '{' || c == '}' || c == '(' || c == ')'
             || c == '[' || c == ']' || c == ';' || c == ','
             || c == ':' || c == '=' || c == '+' || c == '-'
             || c == '*' || c == '/' || c == '!'
@@ -519,7 +521,7 @@ container::optional<container::stream<lexer::token>> lexer::lex(
         }
 
         // Handle decimals
-        if (!str && c == '.')
+        if (c == '.')
         {
             // Prevent stuff like "1..2" or "1.2.3"
             if (dec)
@@ -552,7 +554,7 @@ container::optional<container::stream<lexer::token>> lexer::lex(
         }
 
         // Handle invalid identifiers
-        if (!str && identifier && !isalnum(c) && c != '_')
+        if (identifier && !isalnum(c) && c != '_')
         {
             global_err.type = UNKNOWN_TOKEN;
             global_err.line = line;
