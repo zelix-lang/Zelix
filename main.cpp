@@ -27,14 +27,17 @@
 #include "fluent/cli/app.h"
 using namespace fluent;
 
+#define APP_NAME "The Fluent Programming Language"
+#define APP_DESC "A blazingly fast programming language"
+
 int main(const int argc, const char **argv)
 {
     const auto *compile = "compile";
     const auto *run = "run";
 
     cli::app app(
-        "The Fluent Programming Language",
-        "A blazingly fast programming language",
+        APP_NAME,
+        APP_DESC,
         argc,
         argv
     );
@@ -65,6 +68,12 @@ int main(const int argc, const char **argv)
     {
         auto help = app.help();
         printf("%s", help.c_str());
+    }
+    else
+    {
+        // Print the header
+        printf(ANSI_BOLD_BRIGHT_BLUE APP_NAME ANSI_RESET "\n");
+        printf(ANSI_BRIGHT_BLACK APP_DESC ANSI_RESET "\n\n");
     }
 
     // Get the command
