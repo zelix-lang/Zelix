@@ -40,7 +40,7 @@ namespace fluent::parser::rule
 {
     inline ast *call(
         ast *&candidate,
-        container::stream<lexer::token> &tokens,
+        container::stream<lexer::token *> &tokens,
         memory::lazy_allocator<ast> &allocator,
         container::vector<expr::queue_node> &expr_queue
     )
@@ -56,8 +56,8 @@ namespace fluent::parser::rule
         {
             const auto &trace = vec.ref_at(pos);
             global_err.type = UNEXPECTED_TOKEN;
-            global_err.column = trace.column;
-            global_err.line = trace.line;
+            global_err.column = trace->column;
+            global_err.line = trace->line;
             throw except::exception("Not enough tokens to form a call expression");
         }
 
