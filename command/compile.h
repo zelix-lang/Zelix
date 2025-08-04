@@ -66,7 +66,8 @@ namespace fluent::command
             const auto &trace = tokens.peek().get();
 
             time::complete();
-        } catch (const except::exception &e)
+        }
+        catch (const except::exception &e)
         {
             time::fail(e.what());
         }
