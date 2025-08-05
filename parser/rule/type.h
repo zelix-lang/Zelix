@@ -52,8 +52,8 @@ namespace fluent::parser::rule
         }
 
         // Create a new AST node for the type
-        ast type_node;
-        type_node.rule = ast::TYPE;
+        ast *type_node = allocator.alloc();
+        type_node->rule = ast::TYPE;
 
         auto &next = next_opt.get();
         ast *node = allocator.alloc();
@@ -98,7 +98,7 @@ namespace fluent::parser::rule
             }
         }
 
-        type_node.children.push_back(node);
-        root->children.push_back(container::move(node));
+        type_node->children.push_back(node);
+        root->children.push_back(container::move(type_node));
     }
 }
