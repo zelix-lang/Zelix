@@ -58,6 +58,7 @@ namespace fluent::parser::rule
 
         // Expect a semicolon
         expect(tokens, lexer::token::SEMICOLON);
+        tokens.next(); // Consume the semicolon
 
         // Create the import node
         ast *import_node = allocator.alloc();
