@@ -25,6 +25,7 @@
 
 #include "block.h"
 #include "parser/expect.h"
+#include "parser/rule/declaration.h"
 #include "parser/rule/expr/expr.h"
 
 using namespace fluent;
@@ -90,6 +91,29 @@ void parser::rule::block(
                 current_block->children.push_back(nested_block);
 
                 block_queue.push_back(nested_block);
+                break;
+            }
+
+            // Handle variables
+            case lexer::token::LET:
+            {
+                declaration(
+                    false,
+                    current_block,
+                    tokens,
+                    allocator
+                );
+                break;
+            }
+
+            case lexer::token::CONST:
+            {
+                declaration(
+                    true,
+                    current_block,
+                    tokens,
+                    allocator
+                );
                 break;
             }
 
