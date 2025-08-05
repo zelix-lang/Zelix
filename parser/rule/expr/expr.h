@@ -33,10 +33,10 @@
 #include "likely.h"
 #include "memory/allocator.h"
 #include "parser/parser.h"
-#include "parser/rule/arithmetic.h"
 #include "parser/rule/call.h"
 #include "parser/rule/extractor.h"
 #include "parser/rule/prop.h"
+#include "parser/rule/signed.h"
 #include "queue.h"
 
 namespace fluent::parser::rule
@@ -291,7 +291,7 @@ namespace fluent::parser::rule
                 )
             )
             {
-                candidate = arithmetic(
+                candidate = signed_op(
                     candidate,
                     expr_stream,
                     allocator,
@@ -322,20 +322,24 @@ namespace fluent::parser::rule
                 )
             )
             {
-                // TODO!
-            }
-
-            // Start checking for likely ops
-            first_opt = expr_stream.next();
-            if (
-                process_next(
-                    node,
+                candidate = signed_op<false>(
                     candidate,
-                    trace,
-                    first_opt,
-                    first
-                ) // Process the next token
-            ) continue;
+                    expr_stream,
+                    allocator,
+                    expr_queue
+                );
+
+                first_opt = expr_stream.curr(); // Get the current token
+                if (
+                    process_next(
+                        node,
+                        candidate,
+                        trace,
+                        first_opt,
+                        first
+                    ) // Process the next token
+                ) continue;
+            }
 
             // Invalid token detected
             global_err.type = UNEXPECTED_TOKEN;
