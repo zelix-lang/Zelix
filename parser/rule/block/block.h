@@ -39,6 +39,6 @@ namespace fluent::parser::rule
         ast *&root,
         container::stream<lexer::token *> &tokens,
         memory::lazy_allocator<ast> &allocator,
-        const lexer::token &trace
+        const lexer::token *&trace
     );
 }
