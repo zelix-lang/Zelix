@@ -49,8 +49,9 @@ namespace fluent::command
                 ).ptr()
             );
 
-            time::post("Lexing", 1);
+            time::complete();
             memory::lazy_allocator<lexer::token> token_allocator;
+            time::post("Lexing", 1);
             auto stream_opt = lexer::lex(
                 container::external_string(
                     f.c_str(),
@@ -59,11 +60,9 @@ namespace fluent::command
                 token_allocator
             );
 
-            time::post("Parsing", 1);
             auto &tokens = stream_opt.get();
-            memory::lazy_allocator<parser::ast> allocator;
-            auto *root = allocator.alloc();
-            const auto &trace = tokens.peek().get();
+            memory::lazy_allocator<parser::ast> allocator(10);
+            time::post("Parsing", 1);
 
             time::complete();
         }
