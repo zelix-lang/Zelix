@@ -25,6 +25,7 @@
 
 #include "block.h"
 #include "parser/expect.h"
+#include "parser/rule/expr/expr.h"
 
 using namespace fluent;
 
@@ -93,7 +94,13 @@ void parser::rule::block(
 
             default:
             {
-
+                // Pass the expression to the expression parser
+                expression(
+                    current_block,
+                    tokens,
+                    allocator,
+                    trace
+                );
             }
         }
     }
