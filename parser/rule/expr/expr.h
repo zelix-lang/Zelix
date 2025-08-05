@@ -86,7 +86,7 @@ namespace fluent::parser::rule
 
         if constexpr (ForLoop)
         {
-            // Apply directly for "for" loops
+            // Add directly for "for" loops
             container::stream<lexer::token *> group(container::move(tokens));
             expr_queue.emplace_back(group, expr_node);
         }
