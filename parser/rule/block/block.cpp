@@ -42,6 +42,7 @@ void parser::rule::block(
     // Create a new block AST node
     ast *root_block = allocator.alloc();
     root_block->rule = ast::BLOCK;
+    root->children.push_back(root_block);
 
     // Use a queue for the children of the block
     container::vector<ast *> block_queue;
