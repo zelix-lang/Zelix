@@ -84,8 +84,13 @@ namespace fluent::parser::rule
         // Create a queue for nested expressions
         container::vector<expr::queue_node> expr_queue;
 
-        if constexpr (!ForLoop)
+        if constexpr (ForLoop)
         {
+            // Apply directly for "for" loops
+            container::stream<lexer::token *> group(container::move(tokens));
+            expr_queue.emplace_back(group, expr_node);
+        }
+        else {
             // Extract all tokens until the next delimiter
             constexpr auto delimiter = Condition
                 ? lexer::token::OPEN_CURLY // If condition, use open curly brace
