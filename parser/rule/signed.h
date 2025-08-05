@@ -284,15 +284,16 @@ namespace fluent::parser::rule
                     next->type == lexer::token::MULTIPLY ||
                     next->type == lexer::token::DIVIDE
                 :
-                    next->type == lexer::token::OR ||
-                    next->type == lexer::token::AND;
+                    next->type == lexer::token::OR;
 
             constexpr bool low_precedence = Arithmetic ?
                     next->type == lexer::token::PLUS ||
                     next->type == lexer::token::MINUS
                 :
-                    next->type >= lexer::token::BOOL_EQ &&
-                    next->type <= lexer::token::BOOL_GTE;
+                    (
+                        next->type >= lexer::token::BOOL_EQ &&
+                        next->type <= lexer::token::BOOL_GTE
+                    ) || next->type == lexer::token::AND;
 
             if (nested_count == 0 && high_precedence)
             {
