@@ -53,12 +53,12 @@ namespace fluent::parser::rule
         ast *function = allocator.alloc(); // Create a new function AST node
         ast *name_ast = allocator.alloc();;
         name_ast->rule = ast::IDENTIFIER;
-        name_ast->value = name.value;
+        name_ast->value = name->value;
         function->children.push_back(name_ast);
 
         // Check if we don't have any args
         auto peek = tokens.peek();
-        if (peek.is_some() && peek.get().type == lexer::token::CLOSE_PAREN)
+        if (peek.is_some() && peek.get()->type == lexer::token::CLOSE_PAREN)
         {
             tokens.next(); // Consume the close parenthesis
         }
@@ -80,7 +80,7 @@ namespace fluent::parser::rule
                 // Create a name AST
                 ast *arg_name = allocator.alloc();
                 arg_name->rule = ast::IDENTIFIER;
-                arg_name->value = arg.value;
+                arg_name->value = arg->value;
 
                 ast *arg_node = allocator.alloc();
                 arg_node->rule = ast::ARGUMENT;
@@ -95,28 +95,28 @@ namespace fluent::parser::rule
                 if (next_opt.is_none())
                 {
                     global_err.type = UNEXPECTED_TOKEN;
-                    global_err.column = arg.column;
-                    global_err.line = arg.line;
+                    global_err.column = arg->column;
+                    global_err.line = arg->line;
                 }
 
                 // Get the next token
                 const auto &next = next_opt.get();
 
                 // Check for more params
-                if (next.type == lexer::token::COMMA)
+                if (next->type == lexer::token::COMMA)
                 {
                     continue;
                 }
 
                 // Check if we have reached the end
-                if (next.type == lexer::token::CLOSE_PAREN)
+                if (next->type == lexer::token::CLOSE_PAREN)
                 {
                     break;
                 }
 
                 global_err.type = UNEXPECTED_TOKEN;
-                global_err.column = arg.column;
-                global_err.line = arg.line;
+                global_err.column = arg->column;
+                global_err.line = arg->line;
                 throw except::exception("Invalid function signature");
             }
 
@@ -128,15 +128,15 @@ namespace fluent::parser::rule
         if (peek_opt.is_none())
         {
             global_err.type = UNEXPECTED_TOKEN;
-            global_err.column = trace.column;
-            global_err.line = trace.line;
+            global_err.column = trace->column;
+            global_err.line = trace->line;
             throw except::exception("Invalid function signature");
         }
 
         // Check if we have a return type
         if (
             const auto type_peek = peek_opt.get();
-            type_peek.type == lexer::token::ARROW
+            type_peek->type == lexer::token::ARROW
         )
         {
             // Consume the arrow token
@@ -145,11 +145,11 @@ namespace fluent::parser::rule
             // Parse the return type
             type(function, tokens, allocator, type_peek);
         }
-        else if (type_peek.type != lexer::token::CLOSE_PAREN)
+        else if (type_peek->type != lexer::token::CLOSE_PAREN)
         {
             global_err.type = UNEXPECTED_TOKEN;
-            global_err.column = type_peek.column;
-            global_err.line = type_peek.line;
+            global_err.column = type_peek->column;
+            global_err.line = type_peek->line;
             throw except::exception("Invalid function signature");
         }
 
