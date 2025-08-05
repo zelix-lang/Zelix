@@ -68,6 +68,14 @@ void parser::rule::block(
         {
             case lexer::token::CLOSE_CURLY:
             {
+                if (block_queue.empty())
+                {
+                    global_err.type = UNEXPECTED_TOKEN;
+                    global_err.column = next->column;
+                    global_err.line = next->line;
+                    throw except::exception("Unexpected close curly brace without an open block");
+                }
+
                 block_queue.pop_back(); // Close the current block
                 break;
             }
