@@ -32,7 +32,7 @@ void parser::rule::block(
     ast *&root,
     container::stream<lexer::token*> &tokens,
     memory::lazy_allocator<ast> &allocator,
-    const lexer::token &trace
+    const lexer::token *&trace
 )
 {
     expect(tokens, lexer::token::OPEN_CURLY);
@@ -53,8 +53,8 @@ void parser::rule::block(
         if (block_queue.empty())
         {
             global_err.type = UNEXPECTED_TOKEN;
-            global_err.column = trace.column;
-            global_err.line = trace.line;
+            global_err.column = trace->column;
+            global_err.line = trace->line;
             throw except::exception("Unexpected end of block");
         }
 
