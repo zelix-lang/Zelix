@@ -90,6 +90,7 @@ namespace fluent::parser::rule
             false, // Do not handle nested delimiters
             false // Do not exclude the first delimiter
         );
+        tokens.next(); // Consume the semicolon token
 
         // Create a queue for nested expressions
         container::vector<expr::queue_node> expr_queue;
