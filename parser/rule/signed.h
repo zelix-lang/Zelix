@@ -38,23 +38,46 @@ namespace fluent::parser::rule
 {
     namespace arith
     {
+        template <bool Arithmetic>
         inline ast::rule_t rule(lexer::token *&token)
         {
+            if constexpr (Arithmetic)
+            {
+                switch (token->type)
+                {
+                    case lexer::token::PLUS:
+                        return ast::SUM;
+                    case lexer::token::MINUS:
+                        return ast::SUB;
+                    case lexer::token::MULTIPLY:
+                        return ast::MUL;
+                    case lexer::token::DIVIDE:
+                        return ast::DIV;
+                    default:
+                        return ast::ROOT; // Default case if no arithmetic operation matches
+                }
+            }
+
             switch (token->type)
             {
-                case lexer::token::PLUS:
-                    return ast::SUM;
-                case lexer::token::MINUS:
-                    return ast::SUB;
-                case lexer::token::MULTIPLY:
-                    return ast::MUL;
-                case lexer::token::DIVIDE:
-                    return ast::DIV;
+                case lexer::token::BOOL_EQ:
+                    return ast::EQ;
+                case lexer::token::BOOL_GT:
+                    return ast::GT;
+                case lexer::token::BOOL_GTE:
+                    return ast::GTE;
+                case lexer::token::BOOL_LT:
+                    return ast::LT;
+                case lexer::token::BOOL_LTE:
+                    return ast::LTE;
+                case lexer::token::BOOL_NEQ:
+                    return ast::NEQ;
                 default:
                     return ast::ROOT; // Default case if no arithmetic operation matches
             }
         }
 
+        template <bool Arithmetic>
         inline void process_op(
             lexer::token *&next,
             memory::lazy_allocator<ast> &allocator,
@@ -63,10 +86,11 @@ namespace fluent::parser::rule
         {
             // Create a new AST node for the arithmetic operation
             ast *arithmetic_op_node = allocator.alloc();
-            arithmetic_op_node->rule = rule(next);
+            arithmetic_op_node->rule = rule<Arithmetic>(next);
             arithmetic_node->children.push_back(arithmetic_op_node); // Add the operation node
         }
 
+        template <bool Arithmetic>
         inline void process_sub(
             container::vector<lexer::token *> &current_tokens,
             lexer::token *&next,
@@ -86,7 +110,7 @@ namespace fluent::parser::rule
 
                 if (append_sign)
                 {
-                    process_op(
+                    process_op<Arithmetic>(
                         next,
                         allocator,
                         arithmetic_node
@@ -120,14 +144,15 @@ namespace fluent::parser::rule
             current_tokens.clear(); // Clear the current tokens for the next operation
 
             if (!append_sign) return; // If we don't want to append the sign, return early
-            process_op(
+            process_op<Arithmetic>(
                 next,
                 allocator,
                 arithmetic_node
             ); // Process the arithmetic operator
         }
 
-        inline void process_mul_div(
+        template <bool Arithmetic>
+        inline void process_high_precedence(
             container::vector<lexer::token *> &current_tokens,
             lexer::token *&next,
             ast *&last_nested,
@@ -146,7 +171,7 @@ namespace fluent::parser::rule
                 arithmetic_node->children.push_back(last_nested);
             }
 
-            process_sub(
+            process_sub<Arithmetic>(
                 current_tokens,
                 next,
                 last_nested,
@@ -157,7 +182,8 @@ namespace fluent::parser::rule
             ); // Process the subexpression
         }
 
-        inline void process_add_sub(
+        template <bool Arithmetic>
+        inline void process_low_precedence(
             container::vector<lexer::token *> &current_tokens,
             lexer::token *&next,
             ast *&last_nested,
@@ -172,7 +198,7 @@ namespace fluent::parser::rule
             if (last_nested != nullptr)
             {
                 // Process the last nested node
-                process_sub(
+                process_sub<Arithmetic>(
                     current_tokens,
                     next,
                     last_nested,
@@ -185,7 +211,7 @@ namespace fluent::parser::rule
             }
             else
             {
-                process_sub(
+                process_sub<Arithmetic>(
                     current_tokens,
                     next,
                     arithmetic_node,
@@ -200,7 +226,7 @@ namespace fluent::parser::rule
             // Set the last nested node to nullptr
             last_nested = nullptr; // Reset the last nested node
 
-            process_op(
+            process_op<Arithmetic>(
                 next,
                 allocator,
                 arithmetic_node
@@ -208,7 +234,8 @@ namespace fluent::parser::rule
         }
     }
 
-    inline ast *arithmetic(
+    template <bool Arithmetic = true>
+    inline ast *signed_op(
         ast *&candidate,
         container::stream<lexer::token *> &tokens,
         memory::lazy_allocator<ast> &allocator,
@@ -217,7 +244,14 @@ namespace fluent::parser::rule
     {
         // Create the arithmetic AST node
         ast *arithmetic_node = allocator.alloc();
-        arithmetic_node->rule = ast::ARITHMETIC;
+        if constexpr (Arithmetic)
+        {
+            arithmetic_node->rule = ast::ARITHMETIC;
+        }
+        else
+        {
+            arithmetic_node->rule = ast::BOOLEAN;
+        }
 
         ast *last_nested = nullptr; // Last nested arithmetic node
         auto next_opt = tokens.next();
@@ -233,26 +267,37 @@ namespace fluent::parser::rule
         {
             next = next_opt.get();
 
-            // Check if we have to break
-            if (
-                next->type >= lexer::token::BOOL_EQ &&
-                next->type <= lexer::token::BOOL_GTE
-            )
+            if constexpr (Arithmetic)
             {
-                break;
+                // Check if we have to break
+                if (
+                    next->type >= lexer::token::BOOL_EQ &&
+                    next->type <= lexer::token::BOOL_GTE
+                )
+                {
+                    break;
+                }
             }
 
             // Check if we have an arithmetic operation with high precedence
-            if (
-                nested_count == 0 &&
-                (
+            constexpr bool high_precedence = Arithmetic ?
                     next->type == lexer::token::MULTIPLY ||
                     next->type == lexer::token::DIVIDE
-                )
-            )
+                :
+                    next->type == lexer::token::OR ||
+                    next->type == lexer::token::AND;
+
+            constexpr bool low_precedence = Arithmetic ?
+                    next->type == lexer::token::PLUS ||
+                    next->type == lexer::token::MINUS
+                :
+                    next->type >= lexer::token::BOOL_EQ &&
+                    next->type <= lexer::token::BOOL_GTE;
+
+            if (nested_count == 0 && high_precedence)
             {
                 last_is_mul = true;
-                arith::process_mul_div(
+                arith::process_high_precedence<Arithmetic>(
                     current_tokens,
                     next,
                     last_nested,
@@ -264,16 +309,10 @@ namespace fluent::parser::rule
                 ); // Process the multiplication/division operation
             }
             // Check if we have an arithmetic operator with low precedence
-            else if (
-                nested_count == 0 &&
-                (
-                    next->type == lexer::token::PLUS ||
-                    next->type == lexer::token::MINUS
-                )
-            )
+            else if (nested_count == 0 && low_precedence)
             {
                 last_is_mul = false;
-                arith::process_add_sub(
+                arith::process_low_precedence<Arithmetic>(
                     current_tokens,
                     next,
                     last_nested,
@@ -299,7 +338,6 @@ namespace fluent::parser::rule
                         continue;
                     }
                 }
-
                 else if (next->type == lexer::token::CLOSE_PAREN)
                 {
                     // Make sure we don't overflow
