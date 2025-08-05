@@ -38,7 +38,7 @@ namespace fluent::parser::rule
         ast *&root,
         container::stream<lexer::token *> &tokens,
         memory::lazy_allocator<ast> &allocator,
-        lexer::token *&trace
+        lexer::token *const& trace
     )
     {
         // Get the next token
