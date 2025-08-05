@@ -234,7 +234,7 @@ namespace fluent::parser::rule
         }
     }
 
-    template <bool Arithmetic = true, bool Conditional = false>
+    template <bool Arithmetic = true>
     inline ast *signed_op(
         ast *&candidate,
         container::stream<lexer::token *> &tokens,
@@ -274,13 +274,6 @@ namespace fluent::parser::rule
                     next->type >= lexer::token::BOOL_EQ &&
                     next->type <= lexer::token::BOOL_GTE
                 )
-                {
-                    break;
-                }
-            }
-            else if constexpr (Conditional)
-            {
-                if (next->type >= lexer::token::OPEN_CURLY)
                 {
                     break;
                 }
