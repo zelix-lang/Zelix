@@ -39,9 +39,9 @@ namespace fluent::parser::rule
 {
     inline void function(
         ast *&root,
-        container::stream<lexer::token> &tokens,
+        container::stream<lexer::token *> &tokens,
         memory::lazy_allocator<ast> &allocator,
-        const lexer::token &trace
+        const lexer::token *&trace
     )
     {
         expect(tokens, lexer::token::IDENTIFIER);
