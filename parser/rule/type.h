@@ -36,9 +36,9 @@ namespace fluent::parser::rule
 {
     inline void type(
         ast *&root,
-        container::stream<lexer::token> &tokens,
+        container::stream<lexer::token *> &tokens,
         memory::lazy_allocator<ast> &allocator,
-        const lexer::token &trace
+        lexer::token *&trace
     )
     {
         // Get the next token
@@ -46,8 +46,8 @@ namespace fluent::parser::rule
         if (next_opt.is_none())
         {
             global_err.type = UNEXPECTED_TOKEN;
-            global_err.column = trace.column;
-            global_err.line = trace.line;
+            global_err.column = trace->column;
+            global_err.line = trace->line;
             throw except::exception("Unexpected end of input while parsing type");
         }
 
@@ -57,7 +57,7 @@ namespace fluent::parser::rule
 
         auto &next = next_opt.get();
         ast *node = allocator.alloc();
-        switch (next.type)
+        switch (next->type)
         {
             case lexer::token::NOTHING:
             {
@@ -92,8 +92,8 @@ namespace fluent::parser::rule
             default:
             {
                 global_err.type = UNEXPECTED_TOKEN;
-                global_err.column = next.column;
-                global_err.line = next.line;
+                global_err.column = next->column;
+                global_err.line = next->line;
                 throw except::exception("Unexpected token while parsing type");
             }
         }
