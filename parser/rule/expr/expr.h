@@ -69,7 +69,7 @@ namespace fluent::parser::rule
         return false;
     }
 
-    template <bool Condition = false>
+    template <bool Condition = false, bool ForLoop = false>
     inline void expression(
         ast *&root,
         container::stream<lexer::token *> &tokens,
@@ -81,25 +81,28 @@ namespace fluent::parser::rule
         ast *expr_node = allocator.alloc();
         expr_node->rule = ast::EXPRESSION;
         root->children.push_back(expr_node);
-
-        // Extract all tokens until the next delimiter
-        constexpr auto delimiter = Condition
-            ? lexer::token::OPEN_CURLY // If condition, use open curly brace
-            : lexer::token::SEMICOLON; // Otherwise, use semicolon
-
-        auto expr_group = extract(
-            tokens,
-            delimiter,
-            lexer::token::UNKNOWN,
-            lexer::token::UNKNOWN,
-            false, // Do not handle nested delimiters
-            false // Do not exclude the first delimiter
-        );
-        tokens.next(); // Consume the delimiter token
-
         // Create a queue for nested expressions
         container::vector<expr::queue_node> expr_queue;
-        expr_queue.emplace_back(expr_group, expr_node);
+
+        if constexpr (!ForLoop)
+        {
+            // Extract all tokens until the next delimiter
+            constexpr auto delimiter = Condition
+                ? lexer::token::OPEN_CURLY // If condition, use open curly brace
+                : lexer::token::SEMICOLON; // Otherwise, use semicolon
+
+            auto expr_group = extract(
+                tokens,
+                delimiter,
+                lexer::token::UNKNOWN,
+                lexer::token::UNKNOWN,
+                false, // Do not handle nested delimiters
+                false // Do not exclude the first delimiter
+            );
+            tokens.next(); // Consume the delimiter token
+
+            expr_queue.emplace_back(expr_group, expr_node);
+        }
 
         // Process all expressions
         while (!expr_queue.empty())
