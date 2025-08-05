@@ -280,20 +280,24 @@ namespace fluent::parser::rule
             }
 
             // Check if we have an arithmetic operation with high precedence
-            constexpr bool high_precedence = Arithmetic ?
-                    next->type == lexer::token::MULTIPLY ||
-                    next->type == lexer::token::DIVIDE
-                :
-                    next->type == lexer::token::OR;
+            bool high_precedence;
+            if constexpr (Arithmetic) {
+                high_precedence = next->type == lexer::token::MULTIPLY ||
+                    next->type == lexer::token::DIVIDE;
+            } else {
+                high_precedence = next->type == lexer::token::OR;
+            }
 
-            constexpr bool low_precedence = Arithmetic ?
-                    next->type == lexer::token::PLUS ||
-                    next->type == lexer::token::MINUS
-                :
-                    (
+            bool low_precedence;
+            if constexpr (Arithmetic) {
+                low_precedence = next->type == lexer::token::PLUS ||
+                    next->type == lexer::token::MINUS;
+            } else {
+                high_precedence = (
                         next->type >= lexer::token::BOOL_EQ &&
                         next->type <= lexer::token::BOOL_GTE
                     ) || next->type == lexer::token::AND;
+            }
 
             if (nested_count == 0 && high_precedence)
             {
