@@ -97,7 +97,8 @@ namespace fluent::parser::rule
             q_el->node = expr_node;
             expr_queue.push_back(q_el);
         }
-        else {
+        else
+        {
             // Extract all tokens until the next delimiter
             constexpr auto delimiter = Condition
                 ? lexer::token::OPEN_CURLY // If condition, use open curly brace
