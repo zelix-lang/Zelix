@@ -21,17 +21,10 @@ FetchContent_Declare(
         GIT_TAG        master
 )
 
-FetchContent_Declare(
-        abseil
-        GIT_REPOSITORY https://github.com/abseil/abseil-cpp.git
-        GIT_TAG        master
-)
-
 FetchContent_MakeAvailable(fluent_libc)
 FetchContent_MakeAvailable(fluent_cli)
 FetchContent_MakeAvailable(unordered_dense)
 FetchContent_MakeAvailable(fluent_stl)
-FetchContent_MakeAvailable(abseil)
 set(CMAKE_CXX_STANDARD 20)
 
 add_executable(Fluent
@@ -70,7 +63,6 @@ target_link_libraries(Fluent PRIVATE fluent_libc)
 target_link_libraries(Fluent PRIVATE fluent::stl)
 target_link_libraries(Fluent PRIVATE fluent::cli)
 target_link_libraries(Fluent PRIVATE unordered_dense::unordered_dense)
-target_link_libraries(Fluent PRIVATE absl::inlined_vector)
 add_definitions(-DDEBUG -DFLUENT_LIBC_RELEASE=1)
 set_target_properties(Fluent PROPERTIES OUTPUT_NAME "fluent")
 
