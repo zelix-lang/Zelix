@@ -41,7 +41,8 @@ namespace fluent::parser::rule
         ast *&root,
         container::stream<lexer::token *> &tokens,
         memory::lazy_allocator<ast> &allocator,
-        container::vector<expr::queue_node> &expr_queue
+        memory::lazy_allocator<expr::queue_node> &q_allocator,
+        container::vector<expr::queue_node *> &expr_queue
     )
     {
         // Create a new AST node for the arguments
@@ -72,19 +73,19 @@ namespace fluent::parser::rule
                 );
 
                 // Push the argument group to the args node
-                expr_queue.emplace_back(
-                    container::move(arg_group),
-                    arg_node
-                );
+                auto q_el = q_allocator.alloc();
+                q_el->tokens = container::move(arg_group);
+                q_el->node = arg_node;
+                expr_queue.emplace_back(q_el);
             }
             catch (const except::exception &_)
             {
                 // If the delimiter was not found, we are at the last argument
                 // and the position was restored
-                expr_queue.emplace_back(
-                    container::move(args_group),
-                    arg_node
-                );
+                auto q_el = q_allocator.alloc();
+                q_el->tokens = container::move(args_group);
+                q_el->node = arg_node;
+                expr_queue.emplace_back(q_el);
 
                 break; // Exit the loop if we reach the end of args
             }
