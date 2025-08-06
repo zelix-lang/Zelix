@@ -41,7 +41,8 @@ namespace fluent::parser::rule
         container::stream<lexer::token *> &tokens,
         memory::lazy_allocator<ast> &allocator,
         const lexer::token *const &trace,
-        container::vector<expr::queue_node> &expr_queue
+        memory::lazy_allocator<expr::queue_node> &q_allocator,
+        container::vector<expr::queue_node *> &expr_queue
     )
     {
         // Create a new AST node for the property access
@@ -91,7 +92,7 @@ namespace fluent::parser::rule
                 prop_call_node->children.push_back(prop_name_node);
 
                 // Parse the arguments
-                args(prop_call_node, tokens, allocator, expr_queue);
+                args(prop_call_node, tokens, allocator, q_allocator, expr_queue);
                 prop_node->children.push_back(prop_call_node);
             }
             else
