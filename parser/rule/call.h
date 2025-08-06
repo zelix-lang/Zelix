@@ -68,7 +68,7 @@ namespace fluent::parser::rule
         call_node->children.push_back(candidate); // Push the candidate as the first child (function name)
 
         // Parse the arguments
-        args(call_node, tokens, allocator, expr_queue);
+        args(call_node, tokens, allocator, q_allocator, expr_queue);
 
         return call_node; // Return the call node to update the candidate
     }
