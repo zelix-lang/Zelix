@@ -63,7 +63,11 @@ namespace fluent::memory
             ++offset;
 
             // Placement new to construct object
-            new (ptr) T();
+            if constexpr (!std::is_trivially_copyable_v<T>)
+            {
+                new (ptr) T(); // Construct the object in place
+            }
+
             return ptr;
         }
 
@@ -77,14 +81,9 @@ namespace fluent::memory
     class lazy_allocator
     {
         container::vector<lazy_page<T, Capacity>> pages;
-        std::vector<T *> free_list;
-        size_t page_size = 512;
+        container::vector<T *> free_list;
 
     public:
-        explicit lazy_allocator(const size_t page_size = 512)
-            : page_size(page_size)
-        {}
-
         T *alloc()
         {
             // Check the free list first
@@ -92,20 +91,27 @@ namespace fluent::memory
             {
                 T *ptr = free_list[free_list.size() - 1];
                 free_list.pop_back();
+                if constexpr (std::is_trivially_destructible_v<T>)
+                {
+                    // If T is trivially destructible, we can just return the pointer
+                    return ptr;
+                }
+
+                new (ptr) T(); // Placement new to construct the object
                 return ptr;
             }
 
             // See if we have any pages available
             if (pages.empty())
             {
-                pages.emplace_back(page_size);
+                pages.emplace_back(Capacity);
             }
 
             auto &back = pages[pages.size() - 1];
             if (back.full())
             {
                 // Allocate a new page
-                pages.emplace_back(page_size);
+                pages.emplace_back(Capacity);
                 back = pages[pages.size() - 1];
                 return back.alloc();
             }
@@ -115,7 +121,11 @@ namespace fluent::memory
 
         void dealloc(T *ptr)
         {
-            ptr->~T(); // Call the destructor for the object
+            if constexpr (!std::is_trivially_destructible_v<T>)
+            {
+                ptr->~T(); // Call the destructor if T is not trivially destructible
+            }
+
             free_list.push_back(ptr);
         }
 
