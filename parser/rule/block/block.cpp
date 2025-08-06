@@ -160,6 +160,18 @@ void parser::rule::block(
                 break;
             }
 
+            case lexer::token::WHILE:
+            {
+                conditional<false, false, false, true>(
+                    current_block,
+                    current_conditional,
+                    next,
+                    tokens,
+                    allocator
+                );
+                break;
+            }
+
             default:
             {
                 // Pass the expression to the expression parser
