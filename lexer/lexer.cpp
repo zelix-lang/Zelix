@@ -218,7 +218,7 @@ bool push_token(
         }
         else
         {
-            if (identifier)
+            if (__builtin_expect(identifier, true))
             {
                 const auto t = allocator.alloc();
                 t->value = value_opt;
