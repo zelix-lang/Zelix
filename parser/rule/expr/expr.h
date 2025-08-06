@@ -288,6 +288,7 @@ namespace fluent::parser::rule
                     expr_stream,
                     allocator,
                     trace,
+                    queue_allocator,
                     expr_queue
                 ); // Call the property access with the candidate
 
