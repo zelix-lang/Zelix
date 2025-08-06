@@ -41,7 +41,6 @@ namespace fluent::memory
     class lazy_page
     {
         std::byte *buffer = nullptr;
-        constexpr size_t capacity = Capacity;
         size_t offset = 0;
 
     public:
@@ -53,7 +52,7 @@ namespace fluent::memory
 
         T *alloc()
         {
-            if (offset >= capacity)
+            if (offset >= Capacity)
             {
                 throw except::exception("Out of memory in lazy page allocator");
             }
@@ -73,7 +72,7 @@ namespace fluent::memory
 
         [[nodiscard]] bool full() const
         {
-            return offset >= capacity;
+            return offset >= Capacity;
         }
     };
 
@@ -104,14 +103,14 @@ namespace fluent::memory
             // See if we have any pages available
             if (pages.empty())
             {
-                pages.emplace_back(Capacity);
+                pages.emplace_back();
             }
 
             auto &back = pages[pages.size() - 1];
             if (back.full())
             {
                 // Allocate a new page
-                pages.emplace_back(Capacity);
+                pages.emplace_back();
                 back = pages[pages.size() - 1];
                 return back.alloc();
             }
