@@ -56,6 +56,7 @@ parser::ast *parse(container::stream<lexer::token *> &tokens)
 
             case lexer::token::FUNCTION:
             {
+                top_level = false; // We are no longer at the top level after a function declaration
                 parser::rule::function(root, tokens, allocator, current);
                 break;
             }
