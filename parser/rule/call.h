@@ -42,7 +42,8 @@ namespace fluent::parser::rule
         ast *&candidate,
         container::stream<lexer::token *> &tokens,
         memory::lazy_allocator<ast> &allocator,
-        container::vector<expr::queue_node> &expr_queue
+        memory::lazy_allocator<expr::queue_node> &q_allocator,
+        container::vector<expr::queue_node *> &expr_queue
     )
     {
         // Get the vector under the tokens
