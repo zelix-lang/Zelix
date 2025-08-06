@@ -124,7 +124,7 @@ void parser::rule::block(
                 conditional<true, false, false>(
                     current_block,
                     current_conditional,
-                    trace,
+                    next,
                     tokens,
                     allocator
                 );
@@ -136,7 +136,7 @@ void parser::rule::block(
                 conditional<false, true, false>(
                     current_block,
                     current_conditional,
-                    trace,
+                    next,
                     tokens,
                     allocator
                 );
@@ -148,7 +148,7 @@ void parser::rule::block(
                 conditional<false, false, true>(
                     current_block,
                     current_conditional,
-                    trace,
+                    next,
                     tokens,
                     allocator
                 );
