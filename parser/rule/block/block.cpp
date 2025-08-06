@@ -27,6 +27,7 @@
 #include "parser/expect.h"
 #include "parser/rule/declaration.h"
 #include "parser/rule/expr/expr.h"
+#include "parser/rule/for.h"
 #include "parser/rule/if.h"
 
 using namespace fluent;
@@ -168,6 +169,17 @@ void parser::rule::block(
                     next,
                     tokens,
                     allocator
+                );
+                break;
+            }
+
+            case lexer::token::FOR:
+            {
+                for_loop(
+                    current_block,
+                    tokens,
+                    allocator,
+                    next
                 );
                 break;
             }
