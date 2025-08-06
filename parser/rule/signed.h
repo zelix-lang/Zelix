@@ -392,12 +392,10 @@ namespace fluent::parser::rule
         }
 
         // Queue the current tokens for processing
-        expr_queue.push_back(
-            expr::queue_node(
-                container::stream<lexer::token *>(current_tokens), // Clone the current tokens
-                last_sub
-            )
-        );
+        const auto q_el = q_allocator.alloc();
+        q_el->tokens = container::stream<lexer::token *>(current_tokens); // Clone
+        q_el->node = last_sub;
+        expr_queue.push_back(q_el);
 
         // Unwrap if we have a nested expression
         if (arithmetic_node->children.size() == 1)
