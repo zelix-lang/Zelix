@@ -40,7 +40,7 @@ namespace fluent::parser::rule
     inline void conditional(
         ast *&root,
         ast *&current_conditional,
-        lexer::token *&trace,
+        const lexer::token *&trace,
         container::stream<lexer::token *> &tokens,
         memory::lazy_allocator<ast> &allocator
     )
