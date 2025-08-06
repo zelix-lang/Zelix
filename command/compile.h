@@ -62,7 +62,7 @@ namespace fluent::command
 
             time::complete();
             auto &tokens = stream_opt.get();
-            memory::lazy_allocator<parser::ast> allocator(24);
+            memory::lazy_allocator<parser::ast> allocator;
             time::post("Parsing", 1);
             parser::parse(
                 tokens,
