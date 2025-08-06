@@ -97,7 +97,8 @@ namespace fluent::parser::rule
             ast *arithmetic_node,
             ast *candidate,
             memory::lazy_allocator<ast> &allocator,
-            container::vector<expr::queue_node> &expr_queue,
+            memory::lazy_allocator<expr::queue_node> &q_allocator,
+            container::vector<expr::queue_node *> &expr_queue,
             bool &first_iteration,
             const bool append_sign = true
         )
@@ -135,12 +136,10 @@ namespace fluent::parser::rule
             arithmetic_node->children.push_back(expr_node); // Add the expression node
 
             // Queue the current tokens for processing
-            expr_queue.push_back(
-                expr::queue_node(
-                    container::stream<lexer::token *>(current_tokens), // Clone the current tokens
-                    expr_node
-                )
-            );
+            const auto q_el = q_allocator.alloc();
+            q_el->tokens = container::stream<lexer::token *>(current_tokens);
+            q_el->node = expr_node;
+            expr_queue.push_back(q_el);
             current_tokens.clear(); // Clear the current tokens for the next operation
 
             if (!append_sign) return; // If we don't want to append the sign, return early
@@ -159,7 +158,8 @@ namespace fluent::parser::rule
             ast *&arithmetic_node,
             ast *&candidate,
             memory::lazy_allocator<ast> &allocator,
-            container::vector<expr::queue_node> &expr_queue,
+            memory::lazy_allocator<expr::queue_node> &q_allocator,
+            container::vector<expr::queue_node *> &expr_queue,
             bool &first_iteration
         )
         {
@@ -177,6 +177,7 @@ namespace fluent::parser::rule
                 last_nested,
                 candidate,
                 allocator,
+                q_allocator,
                 expr_queue,
                 first_iteration
             ); // Process the subexpression
@@ -190,7 +191,8 @@ namespace fluent::parser::rule
             ast *&arithmetic_node,
             ast *&candidate,
             memory::lazy_allocator<ast> &allocator,
-            container::vector<expr::queue_node> &expr_queue,
+            memory::lazy_allocator<expr::queue_node> &q_allocator,
+            container::vector<expr::queue_node *> &expr_queue,
             bool &first_iteration
         )
         {
@@ -204,6 +206,7 @@ namespace fluent::parser::rule
                     last_nested,
                     candidate,
                     allocator,
+                    q_allocator,
                     expr_queue,
                     first_iteration,
                     false
@@ -217,6 +220,7 @@ namespace fluent::parser::rule
                     arithmetic_node,
                     candidate,
                     allocator,
+                    q_allocator,
                     expr_queue,
                     first_iteration,
                     false
@@ -310,6 +314,7 @@ namespace fluent::parser::rule
                     arithmetic_node,
                     candidate,
                     allocator,
+                    q_allocator,
                     expr_queue,
                     first_iteration
                 ); // Process the multiplication/division operation
@@ -325,6 +330,7 @@ namespace fluent::parser::rule
                     arithmetic_node,
                     candidate,
                     allocator,
+                    q_allocator,
                     expr_queue,
                     first_iteration
                 ); // Process the addition/subtraction operation
