@@ -81,8 +81,12 @@ namespace fluent::parser::rule
         ast *expr_node = allocator.alloc();
         expr_node->rule = ast::EXPRESSION;
         root->children.push_back(expr_node);
+
         // Create a queue for nested expressions
-        container::vector<expr::queue_node> expr_queue;
+        container::vector<expr::queue_node *> expr_queue;
+
+        // Create an allocator for the queue nodes
+        memory::lazy_allocator<expr::queue_node> queue_allocator;
 
         if constexpr (ForLoop)
         {
@@ -112,7 +116,9 @@ namespace fluent::parser::rule
         // Process all expressions
         while (!expr_queue.empty())
         {
-            auto &[expr_stream, node] = expr_queue[expr_queue.size() - 1];
+            const auto back = expr_queue.back();
+            auto &expr_stream = back->tokens; // Get the stream from the queue node
+            ast *node = back->node; // Get the node from the queue node
             expr_queue.pop_back(); // Remove the current expression from the queue
 
             auto first_opt = expr_stream.peek();
