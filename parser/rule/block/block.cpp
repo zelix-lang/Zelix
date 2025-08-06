@@ -54,15 +54,21 @@ void parser::rule::block(
     ast *current_conditional = nullptr;
 
     // Get the next token
-    auto next_opt = tokens.next();
-    while (next_opt.is_some())
+    while (true)
     {
-        if (block_queue.empty())
+        auto next_opt = tokens.next();
+        if (next_opt.is_none() && !block_queue.empty())
         {
             global_err.type = UNEXPECTED_TOKEN;
             global_err.column = trace->column;
             global_err.line = trace->line;
             throw except::exception("Unexpected end of block");
+        }
+
+        // Break when there are no more tokens
+        if (block_queue.empty())
+        {
+            break;
         }
 
         // Get the current block node
