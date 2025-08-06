@@ -239,7 +239,8 @@ namespace fluent::parser::rule
         ast *&candidate,
         container::stream<lexer::token *> &tokens,
         memory::lazy_allocator<ast> &allocator,
-        container::vector<expr::queue_node> &expr_queue
+        memory::lazy_allocator<expr::queue_node> &q_allocator,
+        container::vector<expr::queue_node *> &expr_queue
     )
     {
         // Create the arithmetic AST node
@@ -293,7 +294,7 @@ namespace fluent::parser::rule
                 low_precedence = next->type == lexer::token::PLUS ||
                     next->type == lexer::token::MINUS;
             } else {
-                high_precedence = (
+                low_precedence = (
                         next->type >= lexer::token::BOOL_EQ &&
                         next->type <= lexer::token::BOOL_GTE
                     ) || next->type == lexer::token::AND;
