@@ -77,7 +77,7 @@ namespace fluent::parser::rule
         }
 
         // Parse the condition
-        if constexpr (If || ElseIf)
+        if constexpr (If || ElseIf || While)
         {
             expression<true, false>(
                 cond_node,
