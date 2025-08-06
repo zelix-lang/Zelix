@@ -47,13 +47,15 @@ namespace fluent::util
         // Open the file in read mode
         FILE *file = fopen(path, "r");
 
-        if (file == nullptr) {
+        if (file == nullptr)
+        {
             throw except::exception("Failed to open file");
         }
 
         container::string content; // String to hold the file contents
         // Read each line until EOF
-        while (fgets(line, sizeof(line), file)) {
+        while (fgets(line, sizeof(line), file))
+        {
             content.push(line); // Append the line to the content string
         }
 
