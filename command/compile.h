@@ -60,8 +60,9 @@ namespace fluent::command
                 token_allocator
             );
 
+            time::complete();
             auto &tokens = stream_opt.get();
-            memory::lazy_allocator<parser::ast> allocator(10);
+            memory::lazy_allocator<parser::ast> allocator(24);
             time::post("Parsing", 1);
 
             time::complete();
