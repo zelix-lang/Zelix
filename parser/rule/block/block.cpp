@@ -97,8 +97,7 @@ void parser::rule::block(
             // Handle variables
             case lexer::token::LET:
             {
-                declaration(
-                    false,
+                declaration<false>(
                     current_block,
                     tokens,
                     allocator
@@ -108,8 +107,7 @@ void parser::rule::block(
 
             case lexer::token::CONST:
             {
-                declaration(
-                    true,
+                declaration<true>(
                     current_block,
                     tokens,
                     allocator
