@@ -37,18 +37,17 @@
 
 namespace fluent::memory
 {
-    template <typename T>
+    template <typename T, size_t Capacity>
     class lazy_page
     {
         std::byte *buffer = nullptr;
-        size_t capacity = 0;
+        constexpr size_t capacity = Capacity;
         size_t offset = 0;
 
     public:
-        explicit lazy_page(const size_t page_size = 512)
-            : capacity(page_size)
+        explicit lazy_page()
         {
-            buffer = static_cast<std::byte*>(malloc(page_size * sizeof(T)));
+            buffer = static_cast<std::byte*>(malloc(Capacity * sizeof(T)));
             if (!buffer) throw std::bad_alloc();
         }
 
@@ -74,10 +73,10 @@ namespace fluent::memory
         }
     };
 
-    template <typename T>
+    template <typename T, size_t Capacity = 256>
     class lazy_allocator
     {
-        absl::InlinedVector<lazy_page<T>, 4> pages;
+        container::vector<lazy_page<T, Capacity>> pages;
         std::vector<T *> free_list;
         size_t page_size = 512;
 
