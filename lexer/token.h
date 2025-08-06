@@ -86,7 +86,9 @@ namespace fluent::lexer
             ELSE, // 46
             FOR, // 47
             WHILE, // 48
-            RETURN // 49
+            RETURN, // 49
+            TO, // 50
+            IN // 51
         };
 
         container::optional<container::external_string> value
