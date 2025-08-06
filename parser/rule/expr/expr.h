@@ -112,7 +112,7 @@ namespace fluent::parser::rule
         // Process all expressions
         while (!expr_queue.empty())
         {
-            auto [expr_stream, node] = expr_queue[expr_queue.size() - 1];
+            auto &[expr_stream, node] = expr_queue[expr_queue.size() - 1];
             expr_queue.pop_back(); // Remove the current expression from the queue
 
             auto first_opt = expr_stream.peek();
