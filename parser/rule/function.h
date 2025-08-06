@@ -146,7 +146,7 @@ namespace fluent::parser::rule
             // Parse the return type
             type(function, tokens, allocator, type_peek);
         }
-        else if (type_peek->type != lexer::token::CLOSE_PAREN)
+        else if (type_peek->type != lexer::token::OPEN_CURLY)
         {
             global_err.type = UNEXPECTED_TOKEN;
             global_err.column = type_peek->column;
