@@ -92,7 +92,10 @@ namespace fluent::parser::rule
         {
             // Add directly for "for" loops
             container::stream<lexer::token *> group(container::move(tokens));
-            expr_queue.emplace_back(group, expr_node);
+            const auto q_el = queue_allocator.alloc();
+            q_el->tokens = container::move(group);
+            q_el->node = expr_node;
+            expr_queue.push_back(q_el);
         }
         else {
             // Extract all tokens until the next delimiter
