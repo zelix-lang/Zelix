@@ -34,7 +34,7 @@
 #include "parser/expect.h"
 #include "parser/rule/call.h"
 
-namespace fluent::parser::rule
+namespace zelix::parser::rule
 {
     inline ast *prop(
         ast *&candidate,

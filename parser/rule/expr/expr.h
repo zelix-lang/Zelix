@@ -39,7 +39,7 @@
 #include "parser/rule/signed.h"
 #include "queue.h"
 
-namespace fluent::parser::rule
+namespace zelix::parser::rule
 {
     static inline bool process_next(
         ast *&parent,

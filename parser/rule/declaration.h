@@ -36,7 +36,7 @@
 #include "parser/expect.h"
 #include "type.h"
 
-namespace fluent::parser::rule
+namespace zelix::parser::rule
 {
     template <bool Const>
     inline void declaration(

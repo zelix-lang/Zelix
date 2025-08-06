@@ -33,7 +33,7 @@
 #include "fluent/container/owned_string.h"
 #include "fluent/container/vector.h"
 
-namespace fluent::parser
+namespace zelix::parser
 {
     struct ast
     {

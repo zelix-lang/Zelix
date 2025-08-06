@@ -36,7 +36,7 @@
 #include "time/timed_task.h"
 #include "util/read_file.h"
 
-namespace fluent::command
+namespace zelix::command
 {
     inline void compile(cli::args &args)
     {

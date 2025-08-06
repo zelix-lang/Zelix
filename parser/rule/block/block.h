@@ -33,7 +33,7 @@
 #include "memory/allocator.h"
 #include "parser/parser.h"
 
-namespace fluent::parser::rule
+namespace zelix::parser::rule
 {
     void block(
         ast *&root,

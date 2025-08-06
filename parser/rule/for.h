@@ -38,7 +38,7 @@
 #include "parser/expect.h"
 #include "parser/parser.h"
 
-namespace fluent::parser::rule
+namespace zelix::parser::rule
 {
     inline void for_loop(
         ast *&root,

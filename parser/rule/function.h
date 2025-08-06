@@ -36,7 +36,7 @@
 #include "parser/parser.h"
 #include "parser/rule/type.h"
 
-namespace fluent::parser::rule
+namespace zelix::parser::rule
 {
     inline void function(
         ast *&root,

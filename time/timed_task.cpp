@@ -113,7 +113,7 @@ void print_task(
     fflush(stdout);
 }
 
-void fluent::time::complete(const bool recompute_time)
+void zelix::time::complete(const bool recompute_time)
 {
     if (task.name == nullptr)
     {

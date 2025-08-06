@@ -31,7 +31,7 @@
 #include "fluent/container/optional.h"
 #include "fluent/container/external_string.h"
 
-namespace fluent::lexer
+namespace zelix::lexer
 {
     struct token
     {

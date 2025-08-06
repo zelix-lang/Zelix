@@ -31,7 +31,7 @@
 #include "fluent/container/stream.h"
 #include "parser.h"
 
-namespace fluent::parser
+namespace zelix::parser
 {
     inline void expect(
         container::stream<lexer::token *> &tokens,

@@ -34,7 +34,7 @@
 #include "memory/allocator.h"
 #include "parser/parser.h"
 
-namespace fluent::parser::rule
+namespace zelix::parser::rule
 {
     template <bool If, bool ElseIf, bool Else, bool While>
     inline void conditional(

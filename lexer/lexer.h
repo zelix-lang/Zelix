@@ -32,7 +32,7 @@
 #include "memory/allocator.h"
 #include "token.h"
 
-namespace fluent::lexer
+namespace zelix::lexer
 {
     container::stream<token *> lex(
         const container::external_string &source,

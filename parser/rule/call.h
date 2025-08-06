@@ -36,7 +36,7 @@
 #include "parser/rule/expr/queue.h"
 #include "parser/rule/args.h"
 
-namespace fluent::parser::rule
+namespace zelix::parser::rule
 {
     inline ast *call(
         ast *&candidate,

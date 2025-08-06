@@ -34,7 +34,7 @@
 #include "memory/allocator.h"
 #include "parser/rule/expr/queue.h"
 
-namespace fluent::parser::rule
+namespace zelix::parser::rule
 {
     namespace arith
     {
@@ -414,4 +414,4 @@ namespace fluent::parser::rule
         return arithmetic_node;
 
     }
-} // namespace fluent::parser::rule
+} // namespace zelix::parser::rule

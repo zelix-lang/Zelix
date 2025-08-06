@@ -30,7 +30,7 @@
 #include "parser/rule/for.h"
 #include "parser/rule/if.h"
 
-using namespace fluent;
+using namespace zelix;
 
 void parser::rule::block(
     ast *&root,

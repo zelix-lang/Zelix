@@ -35,7 +35,7 @@
 #include "absl/container/inlined_vector.h"
 #include "fluent/except/exception.h"
 
-namespace fluent::memory
+namespace zelix::memory
 {
     template <typename T, size_t Capacity>
     class lazy_page

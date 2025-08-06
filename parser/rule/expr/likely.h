@@ -29,7 +29,7 @@
 
 #pragma once
 
-namespace fluent::parser::rule::expr
+namespace zelix::parser::rule::expr
 {
 #if defined(__x86_64__) || defined(_M_X64) || defined(__aarch64__)
     static constexpr uint64_t CALL_LIKELY = 0x1; // Likely a function call

@@ -28,7 +28,7 @@
 #include "memory/allocator.h"
 #include "rule/function.h"
 #include "rule/import.h"
-using namespace fluent;
+using namespace zelix;
 
 parser::ast *parser::parse(
     container::stream<lexer::token *> &tokens,

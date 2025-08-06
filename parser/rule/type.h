@@ -32,7 +32,7 @@
 #include "lexer/token.h"
 #include "parser/parser.h"
 
-namespace fluent::parser::rule
+namespace zelix::parser::rule
 {
     inline void type(
         ast *&root,

@@ -25,9 +25,9 @@
 
 #include "command/compile.h"
 #include "fluent/cli/app.h"
-using namespace fluent;
+using namespace zelix;
 
-#define APP_NAME "The Fluent Programming Language"
+#define APP_NAME "The Zelix Programming Language"
 #define APP_DESC "A blazingly fast programming language"
 
 int main(const int argc, const char **argv)

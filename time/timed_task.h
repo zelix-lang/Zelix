@@ -29,7 +29,7 @@
 
 #pragma once
 
-namespace fluent::time
+namespace zelix::time
 {
     void post(const char *name, int max_steps);
     void advance();

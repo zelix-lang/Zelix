@@ -32,7 +32,7 @@
 #include "lexer/token.h"
 #include "parser/parser.h"
 
-namespace fluent::parser
+namespace zelix::parser
 {
     inline container::stream<lexer::token *> extract(
         container::stream<lexer::token*> &tokens,

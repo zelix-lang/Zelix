@@ -31,7 +31,7 @@
 #include "lexer/token.h"
 #include "parser/ast.h"
 
-namespace fluent::parser::rule::expr
+namespace zelix::parser::rule::expr
 {
     struct queue_node
     {

@@ -33,7 +33,7 @@
 #include "lexer/token.h"
 #include "memory/allocator.h"
 
-namespace fluent::parser
+namespace zelix::parser
 {
     enum error_type
     {

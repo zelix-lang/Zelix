@@ -35,7 +35,7 @@
 #include "memory/allocator.h"
 #include "parser/rule/expr/queue.h"
 
-namespace fluent::parser::rule
+namespace zelix::parser::rule
 {
     inline void args(
         ast *&root,
