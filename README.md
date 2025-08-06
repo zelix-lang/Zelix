@@ -104,7 +104,7 @@ Please refer to [SECURITY.md](SECURITY.md) for more information on how to report
 This project is licensed under the GNU General Public License v3.0. See the [LICENSE](LICENSE) file for more information.
 
 ```
-        ==== The Fluent Programming Language ====
+        ==== The Zelix Programming Language ====
 ---------------------------------------------------------
   - This file is part of the Fluent Programming Language
     codebase. Fluent is a fast, statically-typed and

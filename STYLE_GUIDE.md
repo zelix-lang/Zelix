@@ -99,7 +99,7 @@ All files must contain the following header at the top of the file:
 
 ```go
 /*
-        ==== The Fluent Programming Language ====
+        ==== The Zelix Programming Language ====
 ---------------------------------------------------------
   - This file is part of the Fluent Programming Language
     codebase. Fluent is a fast, statically-typed and
