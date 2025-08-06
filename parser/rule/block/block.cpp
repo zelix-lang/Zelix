@@ -27,12 +27,13 @@
 #include "parser/expect.h"
 #include "parser/rule/declaration.h"
 #include "parser/rule/expr/expr.h"
+#include "parser/rule/if.h"
 
 using namespace fluent;
 
 void parser::rule::block(
     ast *&root,
-    container::stream<lexer::token*> &tokens,
+    container::stream<lexer::token *> &tokens,
     memory::lazy_allocator<ast> &allocator,
     const lexer::token *&trace
 )
@@ -48,6 +49,9 @@ void parser::rule::block(
     // Use a queue for the children of the block
     container::vector<ast *> block_queue;
     block_queue.push_back(root_block);
+
+    // Save the current conditional for if/else blocks
+    ast *current_conditional = nullptr;
 
     // Get the next token
     auto next_opt = tokens.next();
@@ -109,6 +113,18 @@ void parser::rule::block(
             {
                 declaration<true>(
                     current_block,
+                    tokens,
+                    allocator
+                );
+                break;
+            }
+
+            case lexer::token::IF:
+            {
+                conditional<true, false, false>(
+                    current_block,
+                    current_conditional,
+                    trace,
                     tokens,
                     allocator
                 );
