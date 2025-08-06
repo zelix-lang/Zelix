@@ -34,7 +34,7 @@
 
 namespace fluent::lexer
 {
-    container::optional<container::stream<token *>> lex(
+    container::stream<token *> lex(
         const container::external_string &source,
         memory::lazy_allocator<token> &allocator
     );
