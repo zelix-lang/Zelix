@@ -140,7 +140,8 @@ void fluent::time::complete(const bool recompute_time)
             "\n",
             task.took
         );
-    } else if (task.took < 1000000)
+    }
+    else if (task.took < 1000000)
     {
         printf(
             ANSI_BRIGHT_BLACK
@@ -149,7 +150,8 @@ void fluent::time::complete(const bool recompute_time)
             "\n",
             static_cast<double>(task.took) / 1000.0
         );
-    } else
+    }
+    else
     {
         printf(
             ANSI_BRIGHT_BLACK
