@@ -38,7 +38,7 @@
 
 namespace fluent::parser::rule
 {
-    template <bool is_const>
+    template <bool Const>
     inline void declaration(
         ast *root,
         container::stream<lexer::token *> &tokens,
@@ -51,7 +51,7 @@ namespace fluent::parser::rule
 
         // Allocate a new AST node for the declaration
         ast *decl_node = allocator.alloc();
-        if constexpr (is_const)
+        if constexpr (Const)
         {
             decl_node->rule = ast::CONST_DECLARATION;
         }
