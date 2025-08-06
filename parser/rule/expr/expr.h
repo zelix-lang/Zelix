@@ -230,7 +230,10 @@ namespace fluent::parser::rule
 
                     // Extract the nested expression
                     auto nested_expr = extract(expr_stream);
-                    expr_queue.emplace_back(container::move(nested_expr), candidate);
+                    auto *nested_node = queue_allocator.alloc();
+                    nested_node->tokens = container::move(nested_expr);
+                    nested_node->node = candidate;
+                    expr_queue.push_back(nested_node);
                     expr_stream.next(); // Consume the close parenthesis
                     break;
                 }
