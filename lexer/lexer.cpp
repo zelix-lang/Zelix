@@ -114,6 +114,14 @@ ankerl::unordered_dense::map<
         container::external_string("return", 6),
         lexer::token::RETURN
     },
+    {
+        container::external_string("to", 2),
+        lexer::token::RETURN
+    },
+    {
+        container::external_string("in", 2),
+        lexer::token::RETURN
+    },
 };
 
 bool lexer::is_err()
