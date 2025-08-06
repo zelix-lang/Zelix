@@ -26,6 +26,7 @@
 #include "parser.h"
 
 #include "memory/allocator.h"
+#include "rule/function.h"
 #include "rule/import.h"
 using namespace fluent;
 
@@ -55,7 +56,8 @@ parser::ast *parse(container::stream<lexer::token *> &tokens)
 
             case lexer::token::FUNCTION:
             {
-
+                parser::rule::function(root, tokens, allocator, current);
+                break;
             }
 
             default:
