@@ -60,13 +60,7 @@ namespace fluent::memory
             // Allocate the next object in the buffer
             T* ptr = reinterpret_cast<T*>(buffer + offset * sizeof(T));
             ++offset;
-
-            // Placement new to construct object
-            if constexpr (!std::is_trivially_copyable_v<T>)
-            {
-                new (ptr) T(); // Construct the object in place
-            }
-
+            new (ptr) T(); // Construct the object in place
             return ptr;
         }
 
@@ -90,12 +84,6 @@ namespace fluent::memory
             {
                 T *ptr = free_list[free_list.size() - 1];
                 free_list.pop_back();
-                if constexpr (std::is_trivially_destructible_v<T>)
-                {
-                    // If T is trivially destructible, we can just return the pointer
-                    return ptr;
-                }
-
                 new (ptr) T(); // Placement new to construct the object
                 return ptr;
             }
@@ -120,11 +108,7 @@ namespace fluent::memory
 
         void dealloc(T *ptr)
         {
-            if constexpr (!std::is_trivially_destructible_v<T>)
-            {
-                ptr->~T(); // Call the destructor if T is not trivially destructible
-            }
-
+            ptr->~T(); // Call the destructor
             free_list.push_back(ptr);
         }
 
