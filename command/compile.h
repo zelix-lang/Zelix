@@ -64,7 +64,10 @@ namespace fluent::command
             auto &tokens = stream_opt.get();
             memory::lazy_allocator<parser::ast> allocator(24);
             time::post("Parsing", 1);
-
+            parser::parse(
+                tokens,
+                allocator
+            );
             time::complete();
         }
         catch (const except::exception &e)
