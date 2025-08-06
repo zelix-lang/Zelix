@@ -65,12 +65,6 @@ void parser::rule::block(
             throw except::exception("Unexpected end of block");
         }
 
-        // Break when there are no more tokens
-        if (block_queue.empty())
-        {
-            break;
-        }
-
         // Get the current block node
         ast *current_block = block_queue.ref_at(block_queue.size() - 1);
 
@@ -90,6 +84,11 @@ void parser::rule::block(
                 }
 
                 block_queue.pop_back(); // Close the current block
+                if (block_queue.empty())
+                {
+                    return; // If the block queue is empty, we are done parsing the block
+                }
+
                 break;
             }
 
