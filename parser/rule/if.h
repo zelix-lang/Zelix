@@ -36,7 +36,7 @@
 
 namespace fluent::parser::rule
 {
-    template <bool If, bool ElseIf, bool Else>
+    template <bool If, bool ElseIf, bool Else, bool While>
     inline void conditional(
         ast *&root,
         ast *&current_conditional,
@@ -58,6 +58,10 @@ namespace fluent::parser::rule
         else if constexpr (Else)
         {
             cond_node->rule = ast::ELSE;
+        }
+        else if constexpr (While)
+        {
+            cond_node->rule = ast::WHILE;
         }
 
         if constexpr (!If)
@@ -93,7 +97,7 @@ namespace fluent::parser::rule
         root->children.push_back(cond_node);
 
         // Set the current conditional to the new node
-        if constexpr (If || ElseIf)
+        if constexpr ((If || ElseIf) && !While)
         {
             current_conditional = cond_node; // Set the current conditional to the new node
         }
