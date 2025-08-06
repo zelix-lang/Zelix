@@ -113,7 +113,10 @@ namespace fluent::parser::rule
             );
             tokens.next(); // Consume the delimiter token
 
-            expr_queue.emplace_back(expr_group, expr_node);
+            const auto q_el = queue_allocator.alloc();
+            q_el->tokens = container::move(expr_group);
+            q_el->node = expr_node;
+            expr_queue.push_back(q_el);
         }
 
         // Process all expressions
