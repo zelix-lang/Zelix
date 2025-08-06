@@ -30,10 +30,11 @@
 #include "rule/import.h"
 using namespace fluent;
 
-parser::ast *parse(container::stream<lexer::token *> &tokens)
+parser::ast *parse(
+    container::stream<lexer::token *> &tokens,
+    memory::lazy_allocator<parser::ast> &allocator
+)
 {
-    memory::lazy_allocator<parser::ast > allocator; // Create a lazy allocator for AST nodes
-
     // Create the root AST node
     parser::ast *root = allocator.alloc();
 
