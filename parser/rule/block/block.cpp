@@ -131,6 +131,30 @@ void parser::rule::block(
                 break;
             }
 
+            case lexer::token::ELSEIF:
+            {
+                conditional<false, true, false>(
+                    current_block,
+                    current_conditional,
+                    trace,
+                    tokens,
+                    allocator
+                );
+                break;
+            }
+
+            case lexer::token::ELSE:
+            {
+                conditional<false, false, true>(
+                    current_block,
+                    current_conditional,
+                    trace,
+                    tokens,
+                    allocator
+                );
+                break;
+            }
+
             default:
             {
                 // Pass the expression to the expression parser
