@@ -55,7 +55,8 @@ add_executable(Fluent
         time/timed_task.h
         time/timed_task.cpp
         parser/rule/declaration.h
-        parser/rule/if.h)
+        parser/rule/if.h
+        parser/rule/for.h)
 
 target_include_directories(Fluent PRIVATE ${CMAKE_BINARY_DIR}/_deps/fluent_libc-src/include)
 target_include_directories(Fluent PRIVATE .)
