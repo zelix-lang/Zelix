@@ -29,11 +29,11 @@
 
 #pragma once
 
-#include "fluent/container/vector.h"
-#include "fluent/except/exception.h"
-#include <new>
 #include <cstddef>
 #include <cstdlib>
+#include <new>
+#include "absl/container/inlined_vector.h"
+#include "fluent/except/exception.h"
 
 namespace fluent::memory
 {
@@ -77,8 +77,8 @@ namespace fluent::memory
     template <typename T>
     class lazy_allocator
     {
-        container::vector<lazy_page<T>> pages;
-        container::vector<T *> free_list;
+        absl::InlinedVector<lazy_page<T>, 4> pages;
+        std::vector<T *> free_list;
         size_t page_size = 512;
 
     public:
@@ -102,12 +102,12 @@ namespace fluent::memory
                 pages.emplace_back(page_size);
             }
 
-            auto &back = pages.ref_at(pages.size() - 1);
+            auto &back = pages[pages.size() - 1];
             if (back.full())
             {
                 // Allocate a new page
                 pages.emplace_back(page_size);
-                back = pages.ref_at(pages.size() - 1);
+                back = pages[pages.size() - 1];
                 return back.alloc();
             }
 
