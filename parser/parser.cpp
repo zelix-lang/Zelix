@@ -30,13 +30,13 @@
 #include "rule/import.h"
 using namespace fluent;
 
-parser::ast *parse(
+parser::ast *parser::parse(
     container::stream<lexer::token *> &tokens,
-    memory::lazy_allocator<parser::ast> &allocator
+    memory::lazy_allocator<ast> &allocator
 )
 {
     // Create the root AST node
-    parser::ast *root = allocator.alloc();
+    ast *root = allocator.alloc();
 
     bool top_level = true; // Flag to track if we are at the top level of the AST
 
@@ -51,22 +51,22 @@ parser::ast *parse(
         {
             case lexer::token::IMPORT:
             {
-                parser::rule::imp(root, tokens, top_level, allocator, current);
+                rule::imp(root, tokens, top_level, allocator, current);
                 break;
             }
 
             case lexer::token::FUNCTION:
             {
                 top_level = false; // We are no longer at the top level after a function declaration
-                parser::rule::function(root, tokens, allocator, current);
+                rule::function(root, tokens, allocator, current);
                 break;
             }
 
             default:
             {
-                parser::global_err.type = parser::UNEXPECTED_TOKEN;
-                parser::global_err.line = current->line;
-                parser::global_err.column = current->column;
+                global_err.type = UNEXPECTED_TOKEN;
+                global_err.line = current->line;
+                global_err.column = current->column;
                 throw except::exception("Unexpected token encountered during parsing");
             }
         }
