@@ -35,7 +35,7 @@
 
 namespace fluent::parser::rule
 {
-    inline void block(
+    void block(
         ast *&root,
         container::stream<lexer::token *> &tokens,
         memory::lazy_allocator<ast> &allocator,
