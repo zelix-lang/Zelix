@@ -319,6 +319,7 @@ namespace fluent::parser::rule
                     candidate,
                     expr_stream,
                     allocator,
+                    queue_allocator,
                     expr_queue
                 );
 
