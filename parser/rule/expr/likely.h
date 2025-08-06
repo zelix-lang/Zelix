@@ -28,7 +28,6 @@
 //
 
 #pragma once
-#include <cstdint>
 
 namespace fluent::parser::rule::expr
 {
