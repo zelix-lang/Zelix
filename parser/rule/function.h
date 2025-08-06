@@ -28,6 +28,7 @@
 //
 
 #pragma once
+#include "block/block.h"
 #include "fluent/container/stream.h"
 #include "lexer/token.h"
 #include "memory/allocator.h"
@@ -153,6 +154,8 @@ namespace fluent::parser::rule
             throw except::exception("Invalid function signature");
         }
 
+        // Parse the block
+        block(function, tokens, allocator, trace);
         root->children.push_back(function);
     }
 }
