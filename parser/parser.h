@@ -31,6 +31,7 @@
 #include "ast.h"
 #include "fluent/container/stream.h"
 #include "lexer/token.h"
+#include "memory/allocator.h"
 
 namespace fluent::parser
 {
@@ -55,5 +56,8 @@ namespace fluent::parser
         return global_err.type != NONE;
     }
 
-    ast parse(container::stream<lexer::token *> &tokens);
+    ast *parse(
+        container::stream<lexer::token *> &,
+        memory::lazy_allocator<ast> &
+    );
 }
