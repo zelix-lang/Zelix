@@ -1,6 +1,6 @@
 <div align="center">
     <img src="https://assets.zelixlang.dev/logo.png" height="60" width="60">
-    <h1>The Zelix Programmign Language</h1>
+    <h1>The Zelix Programming Language</h1>
     Zelix a modern and blazing-fast programming language.
 </div>
 
