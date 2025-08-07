@@ -1,6 +1,6 @@
 <div align="center">
     <img src="assets/logo.png" height="60" width="60">
-    <h1>Fluent Language</h1>
+    <h1>The Zelix Programmign Language</h1>
     Fluent is a modern and blazing-fast programming language.
 </div>
 
