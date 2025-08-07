@@ -1,7 +1,7 @@
 <div align="center">
     <img src="https://assets.zelixlang.dev/logo.png?update=true" height="60" width="60">
     <h1>The Zelix Programming Language</h1>
-    Zelix — a modern and blazing-fast programming language.
+    Zelix is a modern and blazing-fast programming language.
 </div>
 
 ---
