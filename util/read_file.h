@@ -38,7 +38,9 @@ namespace zelix::util
     /**
      * Reads the contents of a file into a container::owned_string.
      * @param path The path to the file to read.
-     * @return A container::owned_string containing the file contents.
+     * Reads the contents of a file into a container::string.
+     * @param path The path to the file to read.
+     * @return A container::string containing the file contents.
      */
     inline container::string read_file(const char* path)
     {
