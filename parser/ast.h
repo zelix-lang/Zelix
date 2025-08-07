@@ -93,7 +93,8 @@ namespace zelix::parser
                 "ROOT", "IMPORT", "FUNCTION", "MOD", "TYPE", "ARGUMENTS", "ARGUMENT", "BLOCK",
                 "DECLARATION", "CONST_DECLARATION", "BOOLEAN_OPERATION", "SUM", "SUB", "MUL", "DIV",
                 "EQ", "NEQ", "GT", "GTE", "LT", "LTE", "EXPRESSION", "ARITHMETIC", "CALL",
-                "PROP_ACCESS", "IF", "ELSEIF", "ELSE", "FOR", "WHILE", "STR", "NUM", "DEC", "BOOL",
+                "EQ", "NEQ", "GT", "GTE", "LT", "LTE", "EXPRESSION", "ARITHMETIC", "BOOLEAN", "CALL",
+                "PROP_ACCESS", "IF", "ELSEIF", "ELSE", "FOR", "FROM", "TO", "IN", "STEP", "WHILE", "STR", "NUM", "DEC", "BOOL",
                 "NOTHING", "STRING_LITERAL", "NUMBER_LITERAL", "DECIMAL_LITERAL", "TRUE", "FALSE", "IDENTIFIER"
             };
 
