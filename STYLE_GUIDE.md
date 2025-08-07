@@ -8,8 +8,8 @@
 
 ## 👋 Welcome
 
-Welcome to the official Fluent repository! In this file, you'll find a guide on how to style your code
-to contribute to the Fluent language.
+Welcome to the official Zelix repository! In this file, you'll find a guide on how to style your code
+to contribute to the Zelix language.
 
 ---
 
