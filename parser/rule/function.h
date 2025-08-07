@@ -52,7 +52,7 @@ namespace zelix::parser::rule
         expect(tokens, lexer::token::OPEN_PAREN);
         tokens.next(); // Consume the open parenthesis
         ast *function = allocator.alloc(); // Create a new function AST node
-        ast *name_ast = allocator.alloc();;
+        ast *name_ast = allocator.alloc();
         name_ast->rule = ast::IDENTIFIER;
         name_ast->value = name->value;
         function->children.push_back(name_ast);
