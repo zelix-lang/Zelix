@@ -165,7 +165,7 @@ void zelix::time::complete(const bool recompute_time)
     task.name = nullptr; // Clear the task name
 }
 
-void fluent::time::advance()
+void zelix::time::advance()
 {
     if (task.name == nullptr)
     {
@@ -191,7 +191,7 @@ void fluent::time::advance()
     print_task();
 }
 
-void fluent::time::post(const char *name, const int max_steps)
+void zelix::time::post(const char *name, const int max_steps)
 {
     complete();
     task.name = name; // Set the task name
@@ -203,7 +203,7 @@ void fluent::time::post(const char *name, const int max_steps)
     print_task();
 }
 
-void fluent::time::fail(const char *reason)
+void zelix::time::fail(const char *reason)
 {
     if (task.name == nullptr)
     {
