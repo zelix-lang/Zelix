@@ -63,7 +63,41 @@ namespace zelix::util
 
         // Close the file
         fclose(file);
+        // Open the file in read mode
+        FILE *file = fopen(path, "rb");
 
+        if (file == nullptr)
+        {
+            throw except::exception("Failed to open file");
+        }
+
+        // Seek to the end to determine file size
+        if (fseek(file, 0, SEEK_END) != 0) {
+            fclose(file);
+            throw except::exception("Failed to seek file");
+        }
+        long file_size = ftell(file);
+        if (file_size < 0) {
+            fclose(file);
+            throw except::exception("Failed to determine file size");
+        }
+        rewind(file);
+
+        // Allocate buffer and read file
+        char* buffer = static_cast<char*>(std::malloc(file_size + 1));
+        if (!buffer) {
+            fclose(file);
+            throw except::exception("Failed to allocate buffer");
+        }
+        size_t read_size = std::fread(buffer, 1, file_size, file);
+        buffer[read_size] = '\0';
+
+        // Close the file
+        fclose(file);
+
+        // Construct the string and free buffer
+        container::string content(buffer);
+        std::free(buffer);
         return content;
     }
 }
