@@ -33,7 +33,7 @@
 #include <cstdlib>
 #include "zelix/container/owned_string.h"
 
-namespace fluent::util
+namespace zelix::util
 {
     /**
      * Reads the contents of a file into a container::owned_string.
