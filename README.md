@@ -8,13 +8,13 @@
 
 ## 👋 Welcome
 
-Welcome to the official Fluent repository! Here, you will find the source code of the Fluent language. Have fun!
+Welcome to the official Zelix repository! Here, you will find the source code of the Fluent language. Have fun!
 
 > **NOTE:**
 > This project is still in development and may not be stable.
-> **Fluent is still not a language for production use.**
+> **Zelix is still not a language for production use.**
 > All development changes are going to be uploaded
-> to the [`dev`](https://github.com/fluent-lang/Fluent/tree/dev) branch.
+> to the [`dev`](https://github.com/zelix-lang/Zelix/tree/dev) branch.
 
 ---
 
@@ -31,7 +31,7 @@ Welcome to the official Fluent repository! Here, you will find the source code o
 
 ## 🎆 Installation
 
-To install Fluent, you can download the official Fluent installer from the **Releases** pages.
+To install Zelix, you can download the official Zelix installer from the **Releases** pages.
 Once the installer shows that the installation was successful, you may need to restart your terminal for changes to take effect.
 
 - **On Windows**: Just close and re-open the terminal (CMD, PowerShell, etc.)
@@ -41,50 +41,50 @@ Once the installer shows that the installation was successful, you may need to r
 
 ## 🚀 Getting Started
 
-To create a new Fluent project, you can use the `fluent init` command. This will create a new Fluent project in the current directory.
+To create a new Zelix project, you can use the `zelix init` command. This will create a new Zelix project in the current directory.
 
-> **NOTE:** Make sure the current directory is empty before running the `fluent init` command, otherwise, add a name after the command to create a new directory with the project name, e.g. `fluent init my_project`.
+> **NOTE:** Make sure the current directory is empty before running the `zelix init` command, otherwise, add a name after the command to create a new directory with the project name, e.g. `zelix init my_project`.
 
 ```shell
-fluent init
+zelix init
 ```
 
 You will be prompted to fill relevant information about your project like project name, author, etc.
-Once you've filled in the information, the project will be created and you can start coding!
+Once you've filled in the information, the project will be created, and you can start coding!
 
 **Example structure:**
 
 ```
 my_project/
     src/
-        main.fluent
-    Fluent.yml
+        main.zx
+    Zelix.yml
     .gitignore
 ```
 
 To run your code use:
 
 ```
-fluent run
+zelix run
 ```
 
 ---
 
 ## 📚 Documentation
 
-The official Fluent documentation can be found on the [official website](https://fluent-lang.github.io/docs).
+The official Zelix documentation can be found on the [official website](https://docs.zelixlang.dev).
 
 ---
 
 ## 📦 Contributions
 
-Contributions are welcome! If you'd like to contribute to the Fluent language, please read the [CONTRIBUTING.md](CONTRIBUTING.md) file for more information.
+Contributions are welcome! If you'd like to contribute to the Zelix language, please read the [CONTRIBUTING.md](CONTRIBUTING.md) file for more information.
 
 ---
 
 ## 🎲 Building from Source
 
-To build Fluent from source into an executable, you need to execute either one of the **build scripts**:
+To build Zelix from source into an executable, you need to execute either one of the **build scripts**:
 
 - **On Windows**: `build.bat`
 - **On Linux/macOS**: `build.sh`
