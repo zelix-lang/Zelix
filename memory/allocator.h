@@ -32,8 +32,7 @@
 #include <cstddef>
 #include <cstdlib>
 #include <new>
-#include "absl/container/inlined_vector.h"
-#include "fluent/except/exception.h"
+#include "zelix/except/exception.h"
 
 namespace zelix::memory
 {
