@@ -135,7 +135,7 @@ void zelix::time::complete(const bool recompute_time)
     {
         printf(
             ANSI_BRIGHT_BLACK
-            " ~ %lldµs"
+            " ~ %zuµs"
             ANSI_RESET
             "\n",
             task.took
