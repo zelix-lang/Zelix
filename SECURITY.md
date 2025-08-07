@@ -8,8 +8,8 @@
 
 ## 👋 Welcome
 
-Welcome to the official Fluent repository! In this file, you'll find a guide on how to
-report security vulnerabilities in the Fluent programming language.
+Welcome to the official Zelix repository! In this file, you'll find a guide on how to
+report security vulnerabilities in the Zelix programming language.
 
 ---
 
@@ -47,7 +47,7 @@ implications, is not a vulnerability, and modifies the intended behavior of the 
 - Any security vulnerability that is the result of the points mentioned in the **NOT tied to** section.
 
 > In case of a vulnerability that is caused by a third-party library, please report it to the library's maintainers.
-> Fluent will update this library as soon as they release a fix, please do not report this kind of vulnerabilities to us.
+> Zelix will update this library as soon as they release a fix, please do not report this kind of vulnerabilities to us.
 
 ---
 
@@ -91,7 +91,7 @@ Doing so will result in your email being blocked.
    - The impact is measured by the potential damage that the vulnerability can cause.
    - An issue that can cause incorrect terminal input or CLI crashes is considered a **BUG**, not a vulnerability.
    - A vulnerability that gives an attacker any control over (RCE, privilege escalation, reading files, changing files, modifying system behavior, etc.) a foreign machine is considered a **10**.
-   - A vulnerability that allows DoS (albeit highly unlikely with Fluent) or network attacks is considered a **5**.
+   - A vulnerability that allows DoS (albeit highly unlikely with Zelix) or network attacks is considered a **5**.
    - A vulnerability that triggers an infinite loop and resource exhaustion is considered a **5**. **[3]**
    - A vulnerability that allows information disclosure in a negligent manner is considered a **1**. (E.g. Compiler versions in an error message).
    - A vulnerability that is caused by a third-party library is **initially** considered a **4**, if the vulnerability is severe, we might develop a custom solution or switch to another library.
@@ -102,7 +102,7 @@ Doing so will result in your email being blocked.
    - A vulnerability that requires the attacker to have physical access to the machine.
    - A vulnerability that requires the attacker to be a privileged user.
    - A vulnerability that requires the attacker to disable security features.
-   - A vulnerability that only occurs if the attacker modifies Fluent's source code (i.e., self-inflicted security risk).
+   - A vulnerability that only occurs if the attacker modifies Zelix's source code (i.e., self-inflicted security risk).
 
 7. **How long can it take for my message to get a response?**
    - It can take up to 48 hours for your message to get a response.
