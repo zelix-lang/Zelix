@@ -107,7 +107,7 @@ This project is licensed under the GNU General Public License v3.0. See the [LIC
         ==== The Zelix Programming Language ====
 ---------------------------------------------------------
   - This file is part of the Zelix Programming Language
-    codebase. Fluent is a fast, statically-typed and
+    codebase. Zelix is a fast, statically-typed and
     memory-safe programming language that aims to
     match native speeds while staying highly performant.
 ---------------------------------------------------------
@@ -117,13 +117,13 @@ This project is licensed under the GNU General Public License v3.0. See the [LIC
     Free Software Foundation, either version 3 of the
     License, or (at your option) any later version.
 ---------------------------------------------------------
-  - Fluent is distributed in the hope that it will
+  - Zelix is distributed in the hope that it will
     be useful, but WITHOUT ANY WARRANTY; without even
     the implied warranty of MERCHANTABILITY or FITNESS
     FOR A PARTICULAR PURPOSE. See the GNU General Public
     License for more details.
 ---------------------------------------------------------
   - You should have received a copy of the GNU General
-    Public License along with Fluent. If not, see
+    Public License along with Zelix. If not, see
     <https://www.gnu.org/licenses/>.
 ```
