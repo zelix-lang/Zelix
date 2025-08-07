@@ -28,8 +28,8 @@
 //
 
 #pragma once
-#include "fluent/container/optional.h"
-#include "fluent/container/external_string.h"
+#include "zelix/container/optional.h"
+#include "zelix/container/external_string.h"
 
 namespace zelix::lexer
 {
