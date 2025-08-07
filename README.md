@@ -58,7 +58,7 @@ Once you've filled in the information, the project will be created, and you can 
 my_project/
     src/
         main.zx
-    Zelix.yml
+    package.zx
     .gitignore
 ```
 
