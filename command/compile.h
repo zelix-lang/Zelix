@@ -28,7 +28,7 @@
 //
 
 #pragma once
-#include "fluent/cli/app.h"
+#include "zelix/cli/app.h"
 #include "lexer/lexer.h"
 #include "memory/allocator.h"
 #include "parser/parser.h"

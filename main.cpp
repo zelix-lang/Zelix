@@ -24,7 +24,7 @@
 */
 
 #include "command/compile.h"
-#include "fluent/cli/app.h"
+#include "zelix/cli/app.h"
 using namespace zelix;
 
 #define APP_NAME "The Zelix Programming Language"
