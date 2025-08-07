@@ -8,20 +8,20 @@
 
 ## 👋 Welcome
 
-Welcome to the official Fluent repository! In this file, you'll find a guide on how to contribute to the Fluent language.
+Welcome to the official Zelix repository! In this file, you'll find a guide on how to contribute to the Zelix language.
 
 ---
 
 ## 📝 The basics
 
-Before contributing to the Fluent language, make sure you have read the [Code of Conduct](CODE_OF_CONDUCT.md).
-On top of that, certain restrictions apply to the code contributed to the Fluent language, such as:
+Before contributing to the Zelix language, make sure you have read the [Code of Conduct](CODE_OF_CONDUCT.md).
+On top of that, certain restrictions apply to the code contributed to the Zelix language, such as:
 
 - You may not contribute code that is not yours, or wasn't given permission to use
 - You may not contribute code that is harmful to the community
-- **You may not attempt to pull obfuscated code into the Fluent language**
-- **You may not attempt to pull malicious code into the Fluent language**
-- **You may not attempt to pull code that is not related to the Fluent language**
+- **You may not attempt to pull obfuscated code into the Zelix language**
+- **You may not attempt to pull malicious code into the Zelix language**
+- **You may not attempt to pull code that is not related to the Zelix language**
 - All contributed code should have an explanation of what it does and why it was added, code that is self-explanatory is an exception.
 
 **Please, send any PRs to the `dev` branch, changes are only merged into the `main` branch after they have been reviewed and tested thoroughly.**
@@ -30,9 +30,9 @@ On top of that, certain restrictions apply to the code contributed to the Fluent
 
 ## 📝 Our standards
 
-Before you jump into editing and/or pulling code into the Fluent language,
+Before you jump into editing and/or pulling code into the Zelix language,
 make sure your code follows our [Style Guide](STYLE_GUIDE.md),
-which provides a set of rules and guidelines to follow when writing code for the Fluent language.
+which provides a set of rules and guidelines to follow when writing code for the Zelix language.
 
 Also, please **Benchmark** your code before submitting it, we want
 to ensure that the code you submit is as fast as possible.
@@ -50,7 +50,7 @@ go run main.go -bE
 
 ## 🤖 Copilot & other AI-generated code
 
-AI-Generated code **might** be allowed in the Fluent language, but it must be reviewed and tested thoroughly before being merged into the `main` branch.
+AI-Generated code **might** be allowed in the Zelix language, but it must be reviewed and tested thoroughly before being merged into the `main` branch.
 
 If you are using any copilot-like tool, before submitting your code,
 make sure it:
