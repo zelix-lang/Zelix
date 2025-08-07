@@ -116,7 +116,7 @@ ankerl::unordered_dense::map<
     },
     {
         container::external_string("to", 2),
-        lexer::token::RETURN
+        lexer::token::TO
     },
     {
         container::external_string("in", 2),
