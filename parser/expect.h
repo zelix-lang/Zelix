@@ -28,7 +28,7 @@
 //
 
 #pragma once
-#include "fluent/container/stream.h"
+#include "zelix/container/stream.h"
 #include "parser.h"
 
 namespace zelix::parser

@@ -32,7 +32,7 @@
 #include "block/block.h"
 #include "expr/expr.h"
 #include "extractor.h"
-#include "fluent/container/stream.h"
+#include "zelix/container/stream.h"
 #include "lexer/token.h"
 #include "memory/allocator.h"
 #include "parser/expect.h"

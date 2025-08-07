@@ -29,7 +29,7 @@
 
 #pragma once
 #include "ast.h"
-#include "fluent/container/stream.h"
+#include "zelix/container/stream.h"
 #include "lexer/token.h"
 #include "memory/allocator.h"
 

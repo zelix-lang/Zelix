@@ -28,7 +28,7 @@
 //
 
 #pragma once
-#include "fluent/container/stream.h"
+#include "zelix/container/stream.h"
 #include "lexer/token.h"
 #include "parser/expect.h"
 #include "parser/parser.h"
