@@ -1,7 +1,7 @@
 /*
         ==== The Zelix Programming Language ====
 ---------------------------------------------------------
-  - This file is part of the Fluent Programming Language
+  - This file is part of the Zelix Programming Language
     codebase. Fluent is a fast, statically-typed and
     memory-safe programming language that aims to
     match native speeds while staying highly performant.
