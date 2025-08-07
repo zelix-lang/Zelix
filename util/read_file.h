@@ -51,7 +51,7 @@ namespace zelix::util
 
         if (file == nullptr)
         {
-            throw except::exception("Failed to open file");
+            throw except::exception((std::string("Failed to open file: ") + path).c_str());
         }
 
         container::string content; // String to hold the file contents
