@@ -89,5 +89,14 @@ parser::ast *parser::parse(
         current_opt = tokens.next();
     }
 
+    // Pub must be false at the end of parsing
+    if (pub)
+    {
+        global_err.type = UNEXPECTED_TOKEN;
+        global_err.line = 0; // No specific line for the error
+        global_err.column = 0; // No specific column for the error
+        throw except::exception("The 'pub' modifier must be followed by a declaration");
+    }
+
     return root;
 }
