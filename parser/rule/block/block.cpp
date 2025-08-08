@@ -57,7 +57,7 @@ void parser::rule::block(
     // Get the next token
     while (true)
     {
-        auto next_opt = tokens.next();
+        auto next_opt = tokens.peek();
         if (next_opt.is_none() && !block_queue.empty())
         {
             global_err.type = UNEXPECTED_TOKEN;
@@ -85,6 +85,7 @@ void parser::rule::block(
                 }
 
                 block_queue.pop_back(); // Close the current block
+                tokens.next(); // Consume the close curly brace
                 if (block_queue.empty())
                 {
                     return; // If the block queue is empty, we are done parsing the block
@@ -99,6 +100,7 @@ void parser::rule::block(
                 ast *nested_block = allocator.alloc();
                 nested_block->rule = ast::BLOCK;
                 current_block->children.push_back(nested_block);
+                tokens.next(); // Consume the open curly brace
 
                 block_queue.push_back(nested_block);
                 break;
@@ -112,6 +114,8 @@ void parser::rule::block(
                     tokens,
                     allocator
                 );
+                tokens.next(); // Consume the let token
+
                 break;
             }
 
@@ -122,6 +126,8 @@ void parser::rule::block(
                     tokens,
                     allocator
                 );
+
+                tokens.next(); // Consume the const token
                 break;
             }
 
@@ -134,6 +140,8 @@ void parser::rule::block(
                     tokens,
                     allocator
                 );
+
+                tokens.next(); // Consume the token
                 break;
             }
 
@@ -146,6 +154,8 @@ void parser::rule::block(
                     tokens,
                     allocator
                 );
+
+                tokens.next(); // Consume the token
                 break;
             }
 
@@ -158,6 +168,8 @@ void parser::rule::block(
                     tokens,
                     allocator
                 );
+
+                tokens.next(); // Consume the token
                 break;
             }
 
@@ -170,6 +182,8 @@ void parser::rule::block(
                     tokens,
                     allocator
                 );
+
+                tokens.next(); // Consume the token
                 break;
             }
 
@@ -181,6 +195,8 @@ void parser::rule::block(
                     allocator,
                     next
                 );
+
+                tokens.next(); // Consume the token
                 break;
             }
 
