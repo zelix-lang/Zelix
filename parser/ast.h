@@ -83,7 +83,8 @@ namespace zelix::parser
             DECIMAL_LITERAL,
             TRUE,
             FALSE,
-            IDENTIFIER
+            IDENTIFIER,
+            PUBLIC
         };
 
         rule_t rule = ROOT;
