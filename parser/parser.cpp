@@ -28,6 +28,7 @@
 #include "memory/allocator.h"
 #include "rule/function.h"
 #include "rule/import.h"
+#include "rule/mod.h"
 using namespace zelix;
 
 parser::ast *parser::parse(
@@ -74,6 +75,13 @@ parser::ast *parser::parse(
             {
                 top_level = false; // We are no longer at the top level after a function declaration
                 rule::function(root, tokens, allocator, current, pub);
+                break;
+            }
+
+            case lexer::token::MOD:
+            {
+                top_level = false; // We are no longer at the top level after a mod declaration
+                rule::mod(root, tokens, allocator, current, pub);
                 break;
             }
 
