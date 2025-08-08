@@ -39,6 +39,7 @@ parser::ast *parser::parse(
     ast *root = allocator.alloc();
 
     bool top_level = true; // Flag to track if we are at the top level of the AST
+    bool pub = false; // Flag to track if the next declaration is public
 
     // Iterate over the tokens
     auto current_opt = tokens.next();
@@ -49,8 +50,22 @@ parser::ast *parser::parse(
             current->type
         )
         {
+            case lexer::token::PUB:
+            {
+                pub = true; // Next declaration is public
+                break;
+            }
+
             case lexer::token::IMPORT:
             {
+                if (pub)
+                {
+                    global_err.type = UNEXPECTED_TOKEN;
+                    global_err.line = current->line;
+                    global_err.column = current->column;
+                    throw except::exception("The 'pub' modifier cannot be applied to import statements");
+                }
+
                 rule::imp(root, tokens, top_level, allocator, current);
                 break;
             }
@@ -58,7 +73,7 @@ parser::ast *parser::parse(
             case lexer::token::FUNCTION:
             {
                 top_level = false; // We are no longer at the top level after a function declaration
-                rule::function(root, tokens, allocator, current);
+                rule::function(root, tokens, allocator, current, pub);
                 break;
             }
 
