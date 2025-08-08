@@ -58,6 +58,14 @@ namespace zelix::parser::rule
         name_ast->value = name->value;
         function->children.push_back(name_ast);
 
+        if (pub)
+        {
+            pub = false; // Reset the pub flag
+            ast *public_ast = allocator.alloc();
+            public_ast->rule = ast::PUBLIC;
+            function->children.push_back(public_ast);
+        }
+
         // Check if we don't have any args
         auto peek = tokens.peek();
         if (peek.is_some() && peek.get()->type == lexer::token::CLOSE_PAREN)
