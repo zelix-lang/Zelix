@@ -28,6 +28,7 @@
 //
 
 #pragma once
+#include "declaration.h"
 #include "function.h"
 #include "lexer/token.h"
 #include "memory/allocator.h"
@@ -94,6 +95,28 @@ namespace zelix::parser::rule
                 {
                     // Parse the function declaration
                     function(module, tokens, allocator, next, pub);
+                    break;
+                }
+
+                case lexer::token::LET:
+                {
+                    declaration<false>(
+                        module,
+                        tokens,
+                        allocator
+                    );
+                    break;
+                }
+
+                case lexer::token::CONST:
+                {
+                    declaration<true>(
+                        module,
+                        tokens,
+                        allocator
+                    );
+
+                    tokens.next(); // Consume the const token
                     break;
                 }
 
