@@ -112,7 +112,6 @@ namespace zelix::parser::rule
                 false, // Do not handle nested delimiters
                 false // Do not exclude the first delimiter
             );
-            tokens.next(); // Consume the delimiter token
 
             const auto q_el = queue_allocator.alloc();
             q_el->tokens = container::move(expr_group);
