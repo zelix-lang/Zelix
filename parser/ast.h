@@ -87,43 +87,6 @@ namespace zelix::parser
             IDENTIFIER
         };
 
-        inline container::string str(const int indent = 0) const
-        {
-            static const char* rule_names[] = {
-                "ROOT", "IMPORT", "FUNCTION", "MOD", "TYPE", "ARGUMENTS", "ARGUMENT", "BLOCK",
-                "DECLARATION", "CONST_DECLARATION", "BOOLEAN_OPERATION", "SUM", "SUB", "MUL", "DIV",
-                "EQ", "NEQ", "GT", "GTE", "LT", "LTE", "EXPRESSION", "ARITHMETIC", "CALL",
-                "EQ", "NEQ", "GT", "GTE", "LT", "LTE", "EXPRESSION", "ARITHMETIC", "BOOLEAN", "CALL",
-                "PROP_ACCESS", "IF", "ELSEIF", "ELSE", "FOR", "FROM", "TO", "IN", "STEP", "WHILE", "STR", "NUM", "DEC", "BOOL",
-                "NOTHING", "STRING_LITERAL", "NUMBER_LITERAL", "DECIMAL_LITERAL", "TRUE", "FALSE", "IDENTIFIER"
-            };
-
-            container::string result;
-            for (int i = 0; i < indent; ++i) {
-                result.push(' ');
-            }
-
-            result.push(rule_names[static_cast<int>(rule)]);
-            if (value.is_some())
-            {
-                result.push(": ");
-                result.push(value.get().ptr(), value.get().size());
-            }
-
-            result.push("\n");
-
-            for (const auto* child : children)
-            {
-                if (child)
-                {
-                    auto s = child->str(indent + 4);
-                    result.push(s.c_str(), s.size());
-                }
-            }
-
-            return result;
-        }
-
         rule_t rule = ROOT;
         container::optional<container::external_string> value = container::optional<container::external_string>::none();
         container::vector<ast *> children;
