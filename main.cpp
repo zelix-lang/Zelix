@@ -45,14 +45,14 @@ int main(const int argc, const char **argv)
     app.command<const char*>(
         compile,
         "c",
-        "compiles a Fluent project",
+        "compiles a Zelix project",
         "."
     );
 
     app.command<const char*>(
         run,
         "r",
-        "runs a Fluent project",
+        "runs a Zelix project",
         "."
     );
 
