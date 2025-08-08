@@ -125,7 +125,7 @@ namespace zelix::parser::rule
         }
 
         // Get the next token
-        auto peek_opt = tokens.next();
+        auto peek_opt = tokens.peek();
         if (peek_opt.is_none())
         {
             global_err.type = UNEXPECTED_TOKEN;
