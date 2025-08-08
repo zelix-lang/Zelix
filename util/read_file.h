@@ -32,6 +32,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include "zelix/container/owned_string.h"
+#include "zelix/except/exception.h"
 
 namespace zelix::util
 {
@@ -59,7 +60,7 @@ namespace zelix::util
             throw except::exception("Failed to seek file");
         }
 
-        long file_size = ftell(file);
+        const long file_size = ftell(file);
         if (file_size < 0)
         {
             fclose(file);
