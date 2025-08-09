@@ -122,6 +122,10 @@ ankerl::unordered_dense::map<
         container::external_string("in", 2),
         lexer::token::IN
     },
+    {
+        container::external_string("derive", 6),
+        lexer::token::DERIVE
+    },
 };
 
 bool lexer::is_err()

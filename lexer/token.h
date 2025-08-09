@@ -89,7 +89,8 @@ namespace zelix::lexer
             RETURN, // 49
             TO, // 50
             IN, // 51
-            AMPERSAND // 51
+            AMPERSAND, // 51
+            DERIVE // 52
         };
 
         container::optional<container::external_string> value
