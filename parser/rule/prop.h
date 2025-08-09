@@ -72,6 +72,8 @@ namespace zelix::parser::rule
             const auto prop_name = tokens.next().get();
             ast *prop_name_node = allocator.alloc();
             prop_name_node->rule = ast::IDENTIFIER;
+            prop_name_node->line = prop_name->line;
+            prop_name_node->column = prop_name->column;
             prop_name_node->value = prop_name->value;
 
             // Peek into the next token
