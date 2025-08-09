@@ -65,6 +65,8 @@ namespace zelix::parser::rule
         {
             ast *pointer_node = allocator.alloc();
             pointer_node->rule = ast::PTR;
+            pointer_node->line = next->line;
+            pointer_node->column = next->column;
             type_node->children.push_back(pointer_node);
 
             if (next->type == lexer::token::AND)
@@ -86,6 +88,8 @@ namespace zelix::parser::rule
         }
 
         ast *node = allocator.alloc();
+        node->line = next->line;
+        node->column = next->column;
         switch (next->type)
         {
             case lexer::token::NOTHING:
@@ -115,6 +119,7 @@ namespace zelix::parser::rule
             case lexer::token::IDENTIFIER:
             {
                 node->rule = ast::IDENTIFIER;
+                node->value = next->value;
                 break;
             }
 
