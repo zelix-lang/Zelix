@@ -94,5 +94,7 @@ namespace zelix::parser
         rule_t rule = ROOT;
         container::optional<container::external_string> value = container::optional<container::external_string>::none();
         container::vector<ast *> children;
+        size_t line = 0;
+        size_t column = 0;
     };
 }
