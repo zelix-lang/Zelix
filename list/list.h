@@ -28,3 +28,69 @@
 //
 
 #pragma once
+
+#include "memory/allocator.h"
+
+// Zelix STL extension for a linked list
+namespace zelix::container
+{
+    template <typename T>
+    class list
+    {
+        struct node
+        {
+            T value;
+            node *next = nullptr;
+        };
+
+        memory::lazy_allocator<node> allocator;
+        node *head = nullptr;
+        size_t size_ = 0;
+    public:
+        class iterator
+        {
+            node *current = nullptr;
+        public:
+            T next()
+            {
+                if (current == nullptr)
+                {
+                    throw except::exception("Iterator out of range");
+                }
+
+                T value = current->value;
+                current = current->next;
+                return value;
+            }
+
+            bool has_next()
+            {
+                return current != nullptr;
+            }
+        };
+
+        void push_front(const T &value)
+        {
+            node *new_node = allocator.alloc();
+            new_node->value = value;
+            new_node->next = head;
+            head = new_node;
+            size_++;
+        }
+
+        [[nodiscard]] size_t size() const
+        {
+            return size_;
+        }
+
+        [[nodiscard]] bool empty() const
+        {
+            return size_ == 0;
+        }
+
+        iterator it()
+        {
+            return iterator{head};
+        }
+    };
+}
