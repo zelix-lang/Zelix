@@ -55,6 +55,8 @@ namespace zelix::parser::rule
         ast *function = allocator.alloc(); // Create a new function AST node
         ast *name_ast = allocator.alloc();
         name_ast->rule = ast::IDENTIFIER;
+        name_ast->line = name->line;
+        name_ast->column = name->column;
         name_ast->value = name->value;
         function->children.push_back(name_ast);
 
