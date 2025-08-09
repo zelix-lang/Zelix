@@ -44,7 +44,7 @@ namespace zelix::parser::rule
     )
     {
         // Peek into the next token to determine if it's an assignment
-        const auto next_opt = tokens.peek();
+        const auto next_opt = tokens.peek(1);
         if (next_opt.is_none())
         {
             return false; // No more tokens to process
@@ -52,12 +52,13 @@ namespace zelix::parser::rule
 
         if (
             const auto &next = next_opt.get();
-            next->type == lexer::token::EQUALS
+            next->type != lexer::token::EQUALS
         )
         {
             return false; // Not an assignment
         }
 
+        tokens.next(); // Consume the identifier token
         tokens.next(); // Consume the '=' token
 
         // Create an assignment AST node
