@@ -43,6 +43,10 @@ namespace zelix::parser::rule
         memory::lazy_allocator<ast> &allocator
     )
     {
+        // Expect an open parenthesis
+        expect(tokens, lexer::token::OPEN_PAREN);
+        tokens.next(); // Consume the open parenthesis
+
         // Get the next token
         auto next_opt = tokens.next();
         if (next_opt.is_none())
@@ -61,7 +65,7 @@ namespace zelix::parser::rule
         bool expecting_comma = false;
 
         // Parse the derive list
-        while (next->type != lexer::token::SEMICOLON)
+        while (next->type != lexer::token::CLOSE_PAREN)
         {
             if (expecting_comma)
             {
