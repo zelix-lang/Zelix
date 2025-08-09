@@ -147,6 +147,8 @@ namespace zelix::parser::rule
             {
                 // Allocate a new AST node for the memory operation
                 ast *mem_node = allocator.alloc();
+                mem_node->line = first->line;
+                mem_node->column = first->column;
                 switch (first->type)
                 {
                     case lexer::token::AMPERSAND:
@@ -209,6 +211,8 @@ namespace zelix::parser::rule
                     // Update the candidate
                     candidate = allocator.alloc();
                     candidate->rule = ast::IDENTIFIER;
+                    candidate->line = first->line;
+                    candidate->column = first->column;
                     candidate->value = first->value;
                     expr_stream.next(); // Consume the identifier token
                     break;
@@ -223,6 +227,8 @@ namespace zelix::parser::rule
                     // Update the candidate
                     candidate = allocator.alloc();
                     candidate->rule = ast::NUMBER_LITERAL;
+                    candidate->line = first->line;
+                    candidate->column = first->column;
                     candidate->value = first->value;
                     expr_stream.next(); // Consume the number literal token
                     break;
@@ -237,6 +243,8 @@ namespace zelix::parser::rule
                     // Update the candidate
                     candidate = allocator.alloc();
                     candidate->rule = ast::DECIMAL_LITERAL;
+                    candidate->line = first->line;
+                    candidate->column = first->column;
                     candidate->value = first->value;
                     expr_stream.next(); // Consume the decimal literal token
                     break;
@@ -250,6 +258,8 @@ namespace zelix::parser::rule
                     // Update the candidate
                     candidate = allocator.alloc();
                     candidate->rule = ast::STRING_LITERAL;
+                    candidate->line = first->line;
+                    candidate->column = first->column;
                     candidate->value = first->value;
                     expr_stream.next(); // Consume the string literal token
                     break;
@@ -261,6 +271,8 @@ namespace zelix::parser::rule
 
                     // Update the candidate
                     candidate = allocator.alloc();
+                    candidate->line = first->line;
+                    candidate->column = first->column;
                     candidate->rule = ast::TRUE;
                     expr_stream.next(); // Consume the true token
                     break;
@@ -270,6 +282,8 @@ namespace zelix::parser::rule
                 {
                     // Update the candidate
                     candidate = allocator.alloc();
+                    candidate->line = first->line;
+                    candidate->column = first->column;
                     candidate->rule = ast::FALSE;
                     expr_stream.next(); // Consume the false token
                     likely |= expr::BOOLEAN_OP_LIKELY; // Boolean operation is likely
