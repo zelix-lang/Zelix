@@ -61,6 +61,8 @@ namespace zelix::parser::rule
         module->rule = ast::MOD;
         ast *name_ast = allocator.alloc();
         name_ast->rule = ast::IDENTIFIER;
+        name_ast->line = name->line;
+        name_ast->column = name->column;
         name_ast->value = name->value;
         module->children.push_back(name_ast);
 
