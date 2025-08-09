@@ -29,6 +29,7 @@
 
 #pragma once
 #include "declaration.h"
+#include "derive.h"
 #include "function.h"
 #include "lexer/token.h"
 #include "memory/allocator.h"
@@ -71,6 +72,8 @@ namespace zelix::parser::rule
         // Start parsing the module block
         pub = false; // Reset the pub flag for the module
         auto next_opt = tokens.next();
+        bool expecting_declaration = false;
+
         while (next_opt.is_some())
         {
             const auto &next = next_opt.get();
@@ -105,6 +108,7 @@ namespace zelix::parser::rule
                         tokens,
                         allocator
                     );
+                    expecting_declaration = false;
                     break;
                 }
 
@@ -116,7 +120,18 @@ namespace zelix::parser::rule
                         allocator
                     );
 
-                    tokens.next(); // Consume the const token
+                    expecting_declaration = false;
+                    break;
+                }
+
+                case lexer::token::DERIVE:
+                {
+                    derive(
+                        module,
+                        tokens,
+                        allocator
+                    );
+                    expecting_declaration = true; // Next we expect a declaration
                     break;
                 }
 
@@ -131,6 +146,15 @@ namespace zelix::parser::rule
             }
 
             next_opt = tokens.next(); // Get the next token
+        }
+
+        // Make sure we don't expect a declaration
+        if (expecting_declaration)
+        {
+            global_err.type = UNEXPECTED_TOKEN;
+            global_err.line = trace->line;
+            global_err.column = trace->column;
+            throw except::exception("Expected a declaration after 'derive'");
         }
 
         // pub must never be true at this point
