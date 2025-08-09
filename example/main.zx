@@ -29,7 +29,7 @@ mod Abc {
     derive(ptr, setter, getter)
     let a: str = "Hello, Zelix!";
 
-    fn display() {
+    fun display() {
         print(a);
     }
 }

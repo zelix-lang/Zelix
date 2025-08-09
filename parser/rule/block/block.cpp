@@ -25,6 +25,7 @@
 
 #include "block.h"
 #include "parser/expect.h"
+#include "parser/rule/assignment.h"
 #include "parser/rule/declaration.h"
 #include "parser/rule/expr/expr.h"
 #include "parser/rule/for.h"
@@ -94,7 +95,7 @@ void parser::rule::block(
                 break;
             }
 
-            case lexer::token::OPEN_CURLY:
+                case lexer::token::OPEN_CURLY:
             {
                 // Create a new block node for the nested block
                 ast *nested_block = allocator.alloc();
@@ -106,8 +107,8 @@ void parser::rule::block(
                 break;
             }
 
-            // Handle variables
-            case lexer::token::LET:
+                // Handle variables
+                case lexer::token::LET:
             {
                 tokens.next(); // Consume the let token
 
@@ -120,7 +121,7 @@ void parser::rule::block(
                 break;
             }
 
-            case lexer::token::CONST:
+                case lexer::token::CONST:
             {
                 tokens.next(); // Consume the const token
 
@@ -133,7 +134,7 @@ void parser::rule::block(
                 break;
             }
 
-            case lexer::token::IF:
+                case lexer::token::IF:
             {
                 tokens.next(); // Consume the token
 
@@ -148,7 +149,7 @@ void parser::rule::block(
                 break;
             }
 
-            case lexer::token::ELSEIF:
+                case lexer::token::ELSEIF:
             {
                 tokens.next(); // Consume the token
 
@@ -163,7 +164,7 @@ void parser::rule::block(
                 break;
             }
 
-            case lexer::token::ELSE:
+                case lexer::token::ELSE:
             {
                 tokens.next(); // Consume the token
 
@@ -178,7 +179,7 @@ void parser::rule::block(
                 break;
             }
 
-            case lexer::token::WHILE:
+                case lexer::token::WHILE:
             {
                 tokens.next(); // Consume the token
 
@@ -192,7 +193,7 @@ void parser::rule::block(
                 break;
             }
 
-            case lexer::token::FOR:
+                case lexer::token::FOR:
             {
                 tokens.next(); // Consume the token
 
@@ -204,6 +205,20 @@ void parser::rule::block(
                 );
 
                 break;
+            }
+
+            case lexer::token::IDENTIFIER:
+            {
+                if (
+                    assignment(
+                        current_block,
+                        tokens,
+                        allocator,
+                        next
+                    )
+                ) break; // Successfully parsed an assignment
+
+                continue;
             }
 
             default:

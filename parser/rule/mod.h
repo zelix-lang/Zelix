@@ -28,6 +28,9 @@
 //
 
 #pragma once
+#include <cstdio>
+
+
 #include "declaration.h"
 #include "derive.h"
 #include "function.h"
