@@ -109,30 +109,34 @@ void parser::rule::block(
             // Handle variables
             case lexer::token::LET:
             {
+                tokens.next(); // Consume the let token
+
                 declaration<false>(
                     current_block,
                     tokens,
                     allocator
                 );
-                tokens.next(); // Consume the let token
 
                 break;
             }
 
             case lexer::token::CONST:
             {
+                tokens.next(); // Consume the const token
+
                 declaration<true>(
                     current_block,
                     tokens,
                     allocator
                 );
 
-                tokens.next(); // Consume the const token
                 break;
             }
 
             case lexer::token::IF:
             {
+                tokens.next(); // Consume the token
+
                 conditional<true, false, false, false>(
                     current_block,
                     current_conditional,
@@ -141,12 +145,13 @@ void parser::rule::block(
                     allocator
                 );
 
-                tokens.next(); // Consume the token
                 break;
             }
 
             case lexer::token::ELSEIF:
             {
+                tokens.next(); // Consume the token
+
                 conditional<false, true, false, false>(
                     current_block,
                     current_conditional,
@@ -155,12 +160,13 @@ void parser::rule::block(
                     allocator
                 );
 
-                tokens.next(); // Consume the token
                 break;
             }
 
             case lexer::token::ELSE:
             {
+                tokens.next(); // Consume the token
+
                 conditional<false, false, true, false>(
                     current_block,
                     current_conditional,
@@ -169,12 +175,13 @@ void parser::rule::block(
                     allocator
                 );
 
-                tokens.next(); // Consume the token
                 break;
             }
 
             case lexer::token::WHILE:
             {
+                tokens.next(); // Consume the token
+
                 conditional<false, false, false, true>(
                     current_block,
                     current_conditional,
@@ -182,13 +189,13 @@ void parser::rule::block(
                     tokens,
                     allocator
                 );
-
-                tokens.next(); // Consume the token
                 break;
             }
 
             case lexer::token::FOR:
             {
+                tokens.next(); // Consume the token
+
                 for_loop(
                     current_block,
                     tokens,
@@ -196,7 +203,6 @@ void parser::rule::block(
                     next
                 );
 
-                tokens.next(); // Consume the token
                 break;
             }
 
