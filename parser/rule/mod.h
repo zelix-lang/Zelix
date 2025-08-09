@@ -82,7 +82,6 @@ namespace zelix::parser::rule
             if (next->type == lexer::token::CLOSE_CURLY)
             {
                 // Nested braces are handled by individual parsers
-                tokens.next(); // Consume the close curly brace
                 break; // Exit the loop when we reach the end of the module block
             }
 
