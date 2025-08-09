@@ -34,18 +34,37 @@ struct timed_task
     size_t took = 0;
     int steps = 0;
     int max_steps = 0;
+    size_t nested = 0;
 };
 
 // Save the current task
 timed_task task;
 
-void print_task(
-    const bool failed = false,
-    const bool complete = false,
-    const char *reason = nullptr
-)
+template <bool Failed, bool Complete>
+void print_task(const size_t nested, const char *reason)
 {
-    if (failed)
+    if (nested > 0)
+    {
+        for (size_t i = 0; i < nested; i++)
+        {
+            printf("  ");
+        }
+
+        if constexpr (Failed)
+        {
+            printf(ANSI_BRIGHT_RED "└─" ANSI_RESET);
+        }
+        else if constexpr (Complete)
+        {
+            printf(ANSI_BRIGHT_GREEN "└─" ANSI_RESET);
+        }
+        else
+        {
+            printf(ANSI_BRIGHT_BLACK "└─" ANSI_RESET);
+        }
+    }
+
+    if constexpr (Failed)
     {
         printf(
             ANSI_BRIGHT_BLACK
@@ -71,11 +90,9 @@ void print_task(
             task.name,
             reason
         );
-
-        return;
     }
 
-    if (complete)
+    else if constexpr (Complete)
     {
         printf(
             ANSI_BRIGHT_GREEN
@@ -88,27 +105,29 @@ void print_task(
             task.max_steps,
             task.name
         );
-
-        return;
     }
-    printf(
-        ANSI_BRIGHT_BLACK
-        "[%d/"
-        ANSI_RESET
-        ANSI_BRIGHT_BLUE
-        "%d"
-        ANSI_RESET
-        ANSI_BRIGHT_BLACK
-        "]"
-        ANSI_RESET
-        ANSI_BRIGHT_BLUE
-        " %s"
-        ANSI_RESET
-        "\r",
-        task.steps,
-        task.max_steps,
-        task.name
-    );
+
+    else
+    {
+        printf(
+            ANSI_BRIGHT_BLACK
+            "[%d/"
+            ANSI_RESET
+            ANSI_BRIGHT_BLUE
+            "%d"
+            ANSI_RESET
+            ANSI_BRIGHT_BLACK
+            "]"
+            ANSI_RESET
+            ANSI_BRIGHT_BLUE
+            " %s"
+            ANSI_RESET
+            "\r",
+            task.steps,
+            task.max_steps,
+            task.name
+        );
+    }
 
     fflush(stdout);
 }
@@ -129,7 +148,7 @@ void zelix::time::complete(const bool recompute_time)
     }
 
     task.steps = task.max_steps;
-    print_task(false, true); // Print the completed task
+    print_task<false, true>(task.nested, nullptr); // Print the completed task
 
     if (task.took < 1000)
     {
@@ -188,10 +207,14 @@ void zelix::time::advance()
         return;
     }
 
-    print_task();
+    print_task<false, false>(task.nested, nullptr);
 }
 
-void zelix::time::post(const char *name, const int max_steps)
+void zelix::time::post(
+    const char *name,
+    const int max_steps,
+    const size_t nested
+)
 {
     complete();
     task.name = name; // Set the task name
@@ -199,8 +222,9 @@ void zelix::time::post(const char *name, const int max_steps)
     task.start_time = std::chrono::system_clock::now(); // Reset the start time
     task.took = 0; // Reset the time taken
     task.steps = 0; // Reset the steps
+    task.nested = nested; // Set the nesting level
 
-    print_task();
+    print_task<false, false>(nested, nullptr);
 }
 
 void zelix::time::fail(const char *reason)
@@ -210,5 +234,5 @@ void zelix::time::fail(const char *reason)
         return; // No task to advance
     }
 
-    print_task(true, true, reason);
+    print_task<true, true>(task.nested, reason);
 }
