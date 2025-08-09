@@ -64,11 +64,15 @@ namespace zelix::parser::rule
         // Create an assignment AST node
         ast *assign_node = allocator.alloc();
         assign_node->rule = ast::ASSIGNMENT;
+        assign_node->line = trace->line;
+        assign_node->column = trace->column;
 
         // Allocate a new node for the identifier
         ast *id_node = allocator.alloc();
         id_node->rule = ast::IDENTIFIER;
         id_node->value = trace->value; // Set the identifier value
+        id_node->line = trace->line;
+        id_node->column = trace->column;
         assign_node->children.push_back(id_node); // Add the identifier node as a child
 
         // Parse the expression on the right side of the assignment
