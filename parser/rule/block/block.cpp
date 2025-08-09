@@ -217,8 +217,6 @@ void parser::rule::block(
                         next
                     )
                 ) break; // Successfully parsed an assignment
-
-                continue;
             }
 
             default:
