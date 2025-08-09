@@ -84,7 +84,9 @@ namespace zelix::parser
             TRUE,
             FALSE,
             IDENTIFIER,
-            PUBLIC
+            PUBLIC,
+            PTR,
+            DEREF
         };
 
         rule_t rule = ROOT;
