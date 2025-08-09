@@ -65,6 +65,8 @@ namespace zelix::parser::rule
         // Create a new AST node for the call
         ast *call_node = allocator.alloc();
         call_node->rule = ast::CALL;
+        call_node->line = candidate->line;
+        call_node->column = candidate->column;
         call_node->children.push_back(candidate); // Push the candidate as the first child (function name)
 
         // Parse the arguments
