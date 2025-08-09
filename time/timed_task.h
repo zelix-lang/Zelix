@@ -28,10 +28,16 @@
 //
 
 #pragma once
+#include <cstddef>
 
 namespace zelix::time
 {
-    void post(const char *name, int max_steps);
+    void post(
+        const char *name,
+        int max_steps,
+        size_t nested = 0
+    );
+
     void advance();
     void fail(const char *reason);
     void complete(bool recompute_time = true);
