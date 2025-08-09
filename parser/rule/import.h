@@ -64,6 +64,8 @@ namespace zelix::parser::rule
         ast *import_node = allocator.alloc();
         import_node->rule = ast::IMPORT;
         import_node->value = path->value;
+        import_node->line = path->line;
+        import_node->column = path->column;
         root->children.push_back(import_node);
     }
 }
