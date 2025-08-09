@@ -59,6 +59,8 @@ namespace zelix::parser::rule
         {
             decl_node->rule = ast::DECLARATION;
         }
+        decl_node->line = identifier->line;
+        decl_node->column = identifier->column;
         root->children.push_back(decl_node); // Add the declaration node as a child of the root
 
         // Allocate a new node for the identifier
