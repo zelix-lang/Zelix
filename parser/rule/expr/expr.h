@@ -137,6 +137,59 @@ namespace zelix::parser::rule
                 throw except::exception("Unexpected empty expression");
             }
 
+            auto &first = first_opt.get();
+            // Parse pointers and dereferences
+            while (
+                first->type == lexer::token::AMPERSAND || // &
+                first->type == lexer::token::AND || // edge case: &&
+                first->type == lexer::token::MULTIPLY // dereference (*)
+            )
+            {
+                // Allocate a new AST node for the memory operation
+                ast *mem_node = allocator.alloc();
+                switch (first->type)
+                {
+                    case lexer::token::AMPERSAND:
+                    {
+                        mem_node->rule = ast::PTR;
+                        node->children.push_back(mem_node);
+                        break;
+                    }
+
+                    case lexer::token::AND:
+                    {
+                        mem_node->rule = ast::PTR;
+                        node->children.push_back(mem_node);
+                        // Append the same node twice, no need
+                        // to allocate a new one
+                        node->children.push_back(mem_node);
+                        break;
+                    }
+
+                    case lexer::token::MULTIPLY:
+                    {
+                        mem_node->rule = ast::DEREF;
+                        node->children.push_back(mem_node);
+                        break;
+                    }
+
+                    default:
+                    {
+                        // Unreachable code
+                    }
+                }
+
+                first_opt = expr_stream.next(); // Consume the token
+                if (first_opt.is_none())
+                {
+                    global_err.type = UNEXPECTED_TOKEN;
+                    global_err.column = trace->column;
+                    global_err.line = trace->line;
+                    throw except::exception("Unexpected empty expression");
+                }
+
+                first = first_opt.get();
+            }
 
             // Get the first token to determine the expression type
             ast *candidate = nullptr;
@@ -147,7 +200,6 @@ namespace zelix::parser::rule
             uint32_t likely = 0;
 #       endif
 
-            auto &first = first_opt.get();
             switch (first->type)
             {
                 case lexer::token::IDENTIFIER:
