@@ -42,7 +42,7 @@ namespace zelix::parser::rule
     )
     {
         // Get the next token
-        const auto next_opt = tokens.next();
+        auto next_opt = tokens.next();
         if (next_opt.is_none())
         {
             global_err.type = UNEXPECTED_TOKEN;
@@ -56,6 +56,35 @@ namespace zelix::parser::rule
         type_node->rule = ast::TYPE;
 
         auto &next = next_opt.get();
+
+        // Parse pointers
+        while (
+            next->type == lexer::token::AMPERSAND || // Pointer type
+            next->type == lexer::token::AND // Double pointer (&&)
+        )
+        {
+            ast *pointer_node = allocator.alloc();
+            pointer_node->rule = ast::PTR;
+            type_node->children.push_back(pointer_node);
+
+            if (next->type == lexer::token::AND)
+            {
+                // Add the same node for a double pointer (&&)
+                type_node->children.push_back(pointer_node);
+            }
+
+            // Get the next token
+            next_opt = tokens.next();
+            if (next_opt.is_none())
+            {
+                global_err.type = UNEXPECTED_TOKEN;
+                global_err.column = trace->column;
+                global_err.line = trace->line;
+                throw except::exception("Unexpected end of input while parsing type");
+            }
+            next = next_opt.get();
+        }
+
         ast *node = allocator.alloc();
         switch (next->type)
         {
