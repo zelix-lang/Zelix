@@ -25,6 +25,15 @@
 
 import "@std::io::print";
 
+mod Abc {
+    derive(ptr, setter, getter)
+    let a: str = "Hello, Zelix!";
+
+    fn display() {
+        print(a);
+    }
+}
+
 fun main() {
     // Print a message to the console
     println("Hello, Zelix!");
