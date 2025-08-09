@@ -430,6 +430,12 @@ container::stream<lexer::token *> lexer::lex(
                 dec = true; // Start of a decimal
                 start = i; // Set start to the current index
             }
+            else if (c == '-' && isdigit(ptr[i + 1]))
+            {
+                num = true;
+                start = i;
+                continue;
+            }
         }
 
         // Handle punctuation signs
