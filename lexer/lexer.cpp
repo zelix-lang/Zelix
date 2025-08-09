@@ -502,7 +502,7 @@ container::stream<lexer::token *> lexer::lex(
             c == '{' || c == '}' || c == '(' || c == ')'
             || c == '[' || c == ']' || c == ';' || c == ','
             || c == ':' || c == '=' || c == '+' || c == '-'
-            || c == '*' || c == '/' || c == '!'
+            || c == '*' || c == '/' || c == '!' || c == '&'
         )
         {
             push_token(tokens, ptr, allocator);
@@ -525,6 +525,7 @@ container::stream<lexer::token *> lexer::lex(
                         c == '-' ? token::MINUS :
                         c == '*' ? token::MULTIPLY :
                         c == '/' ? token::DIVIDE :
+                        c == '&' ? token::AMPERSAND :
                             token::NOT;
 
             tokens.push(t);

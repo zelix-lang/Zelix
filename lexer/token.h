@@ -88,7 +88,8 @@ namespace zelix::lexer
             WHILE, // 48
             RETURN, // 49
             TO, // 50
-            IN // 51
+            IN, // 51
+            AMPERSAND // 51
         };
 
         container::optional<container::external_string> value
