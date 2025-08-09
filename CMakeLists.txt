@@ -57,7 +57,8 @@ add_executable(Zelix
         parser/rule/declaration.h
         parser/rule/if.h
         parser/rule/for.h
-        parser/rule/mod.h)
+        parser/rule/mod.h
+        analyzer/analyzer.h)
 
 target_include_directories(Zelix PRIVATE ${CMAKE_BINARY_DIR}/_deps/fluent_libc-src/include)
 target_include_directories(Zelix PRIVATE .)
