@@ -29,12 +29,12 @@
 
 #pragma once
 #include "block/block.h"
-#include "zelix/container/stream.h"
 #include "lexer/token.h"
 #include "memory/allocator.h"
 #include "parser/expect.h"
 #include "parser/parser.h"
-#include "parser/rule/type.h"
+#include "type/type.h"
+#include "zelix/container/stream.h"
 
 namespace zelix::parser::rule
 {
