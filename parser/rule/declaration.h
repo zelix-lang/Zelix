@@ -30,11 +30,11 @@
 #pragma once
 
 #include "expr/expr.h"
-#include "zelix/container/stream.h"
 #include "lexer/token.h"
 #include "memory/allocator.h"
 #include "parser/expect.h"
-#include "type.h"
+#include "type/type.h"
+#include "zelix/container/stream.h"
 
 namespace zelix::parser::rule
 {
