@@ -603,6 +603,12 @@ container::stream<lexer::token *> lexer::lex(
         t_len++; // Increment token length
     }
 
+    // Push any remaining token
+    if (t_len > 0)
+    {
+        push_token(tokens, ptr, allocator);
+    }
+
     // Handle unclosed comments or strings
     if (str || block_comment)
     {
