@@ -29,9 +29,9 @@
 
 #pragma once
 #include "ankerl/unordered_dense.h"
+#include "zelix/container/owned_string.h"
 #include "function.h"
 #include "mod.h"
-#include "parser/ast.h"
 
 namespace zelix::code
 {
@@ -48,5 +48,7 @@ namespace zelix::code
             mod *,
             container::external_string_hash
         > modules; // The mod map
+
+        container::string path; // The file path
     };
 }
