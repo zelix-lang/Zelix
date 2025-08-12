@@ -39,7 +39,7 @@ add_executable(Zelix
         parser/rule/import.h
         parser/expect.h
         parser/rule/function.h
-        parser/rule/type.h
+        parser/rule/type/type.h
         memory/allocator.h
         parser/rule/block/block.h
         parser/rule/block/block.cpp
@@ -62,6 +62,12 @@ add_executable(Zelix
         parser/rule/derive.h
         parser/rule/assignment.h
         list/list.h
+        file_code/file_code.h
+        file_code/function.h
+        file_code/mod.h
+        file_code/type.h
+        parser/rule/type/type.cpp
+        file_code/declaration.h
 )
 
 target_include_directories(Zelix PRIVATE ${CMAKE_BINARY_DIR}/_deps/fluent_libc-src/include)
