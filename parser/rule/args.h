@@ -72,6 +72,11 @@ namespace zelix::parser::rule
                     false // Do not exclude the first delimiter
                 );
 
+                if (arg_group.empty())
+                {
+                    continue;
+                }
+
                 // Push the argument group to the args node
                 auto q_el = q_allocator.alloc();
                 q_el->tokens = container::move(arg_group);
