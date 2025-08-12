@@ -1,0 +1,11 @@
+ROOT
+    IMPORT: @std::io::print
+    ROOT
+        IDENTIFIER: main
+        BLOCK
+            EXPRESSION
+                CALL
+                    IDENTIFIER: println
+                    ARGUMENTS
+                        ARGUMENT
+                            STRING_LITERAL: Hello, Zelix!

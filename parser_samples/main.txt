@@ -1,0 +1,29 @@
+ROOT
+    IMPORT: @std::io::print
+    MOD
+        IDENTIFIER: Abc
+        DERIVE
+        DECLARATION
+            IDENTIFIER: a
+            TYPE
+                STR
+            EXPRESSION
+                STRING_LITERAL: Hello, Zelix!
+        ROOT
+            IDENTIFIER: display
+            BLOCK
+                EXPRESSION
+                    CALL
+                        IDENTIFIER: print
+                        ARGUMENTS
+                            ARGUMENT
+                                IDENTIFIER: a
+    ROOT
+        IDENTIFIER: main
+        BLOCK
+            EXPRESSION
+                CALL
+                    IDENTIFIER: println
+                    ARGUMENTS
+                        ARGUMENT
+                            STRING_LITERAL: Hello, Zelix!
