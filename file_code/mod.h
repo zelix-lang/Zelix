@@ -32,7 +32,6 @@
 #include "declaration.h"
 #include "function.h"
 #include "parser/ast.h"
-#include "type.h"
 
 namespace zelix::code
 {
