@@ -35,25 +35,6 @@
 
 namespace zelix::parser
 {
-    enum error_type
-    {
-        NONE,
-        ILLEGAL_IMPORT,
-        UNEXPECTED_TOKEN
-    };
-
-    struct error
-    {
-        error_type type = NONE;
-    };
-
-    inline error global_err;
-
-    inline bool is_err() noexcept
-    {
-        return global_err.type != NONE;
-    }
-
     ast *parse(
         container::stream<lexer::token *> &,
         memory::lazy_allocator<ast> &
