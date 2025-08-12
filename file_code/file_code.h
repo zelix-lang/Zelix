@@ -47,6 +47,6 @@ namespace zelix::code
             container::external_string,
             mod *,
             container::external_string_hash
-        > modules; // The function map
+        > modules; // The mod map
     };
 }
