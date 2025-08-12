@@ -35,10 +35,10 @@ namespace zelix::code
 {
     struct function
     {
-        type *return_type;
+        type return_type;
         ankerl::unordered_dense::map<
             container::external_string,
-            type *,
+            type,
             container::external_string_hash
         > args; // The function's arguments
         parser::ast *body = nullptr; // The function's body
