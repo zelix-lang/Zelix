@@ -1,0 +1,11 @@
+TYPE
+    IDENTIFIER: Abc
+    TYPE
+        TYPE
+            IDENTIFIER: Def
+            TYPE
+                IDENTIFIER: Bcd
+                TYPE
+                    STR
+        TYPE
+            BOOL
