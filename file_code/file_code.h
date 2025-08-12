@@ -39,13 +39,13 @@ namespace zelix::code
     {
         ankerl::unordered_dense::map<
             container::external_string,
-            function,
+            function *,
             container::external_string_hash
         > functions; // The function map
 
         ankerl::unordered_dense::map<
             container::external_string,
-            mod,
+            mod *,
             container::external_string_hash
         > modules; // The mod map
     };
