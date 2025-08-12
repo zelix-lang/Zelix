@@ -59,12 +59,6 @@ namespace zelix::parser::rule
         // Create a new AST node for the module
         ast *module = allocator.alloc();
         module->rule = ast::MOD;
-        ast *name_ast = allocator.alloc();
-        name_ast->rule = ast::IDENTIFIER;
-        name_ast->line = name->line;
-        name_ast->column = name->column;
-        name_ast->value = name->value;
-        module->children.push_back(name_ast);
 
         // Honor the public flag
         if (pub)
@@ -73,6 +67,13 @@ namespace zelix::parser::rule
             public_ast->rule = ast::PUBLIC;
             module->children.push_back(public_ast);
         }
+
+        ast *name_ast = allocator.alloc();
+        name_ast->rule = ast::IDENTIFIER;
+        name_ast->line = name->line;
+        name_ast->column = name->column;
+        name_ast->value = name->value;
+        module->children.push_back(name_ast);
 
         // Start parsing the module block
         pub = false; // Reset the pub flag for the module
