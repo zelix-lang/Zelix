@@ -250,8 +250,8 @@ void zelix::time::post(
 
 void zelix::time::post(
     const container::external_string &name,
-    int max_steps,
-    size_t nested
+    const int max_steps,
+    const size_t nested
 )
 {
     post(
