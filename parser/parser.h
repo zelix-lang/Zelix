@@ -45,8 +45,6 @@ namespace zelix::parser
     struct error
     {
         error_type type = NONE;
-        size_t line = 0;
-        size_t column = 0;
     };
 
     inline error global_err;
