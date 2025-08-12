@@ -30,10 +30,25 @@
 #pragma once
 #include <cstddef>
 
+#include "zelix/container/external_string.h"
+
 namespace zelix::time
 {
     void post(
         const char *name,
+        int len,
+        int max_steps,
+        size_t nested = 0
+    );
+
+    void post(
+        const char *name,
+        int max_steps,
+        size_t nested = 0
+    );
+
+    void post(
+        const container::external_string &name,
         int max_steps,
         size_t nested = 0
     );
