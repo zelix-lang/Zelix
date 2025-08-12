@@ -28,6 +28,7 @@
 //
 
 #pragma once
+#include <ankerl/unordered_dense.h>
 #include "parser/ast.h"
 #include "type.h"
 
