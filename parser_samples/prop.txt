@@ -1,0 +1,15 @@
+ROOT
+    IMPORT: @std::io::print
+    ROOT
+        IDENTIFIER: main
+        ARGUMENTS
+            ARGUMENT
+                IDENTIFIER: a
+                TYPE
+                    STR
+        BLOCK
+            EXPRESSION
+                PROP_ACCESS
+                    IDENTIFIER: Abc
+                    CALL
+                        IDENTIFIER: new
