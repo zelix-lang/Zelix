@@ -30,6 +30,7 @@
 struct timed_task
 {
     const char *name = nullptr;
+    int name_len = 0;
     std::chrono::system_clock::time_point start_time = std::chrono::system_clock::now();
     size_t took = 0;
     int steps = 0;
@@ -77,7 +78,7 @@ void print_task(const size_t nested, const char *reason)
             "\033[2m/%d]"
             ANSI_RESET
             ANSI_BRIGHT_RED
-            " %s [x]"
+            " %.*s [x]"
             ANSI_RESET
             "\n    \033[38;5;214m\033[2m(!) what "
             ANSI_RESET
@@ -87,6 +88,7 @@ void print_task(const size_t nested, const char *reason)
             "\033[38;5;214m%s\n",
             task.steps,
             task.max_steps,
+            task.name_len,
             task.name,
             reason
         );
@@ -99,10 +101,11 @@ void print_task(const size_t nested, const char *reason)
             "\033[2m[%d/%d]\033[22m"
             ANSI_RESET
             ANSI_BRIGHT_GREEN
-            " %s"
+            " %.*s"
             ANSI_RESET,
             task.steps,
             task.max_steps,
+            task.name_len,
             task.name
         );
     }
@@ -120,11 +123,12 @@ void print_task(const size_t nested, const char *reason)
             "]"
             ANSI_RESET
             ANSI_BRIGHT_BLUE
-            " %s"
+            " %.*s"
             ANSI_RESET
             "\r",
             task.steps,
             task.max_steps,
+            task.name_len,
             task.name
         );
     }
@@ -212,12 +216,14 @@ void zelix::time::advance()
 
 void zelix::time::post(
     const char *name,
+    const int len,
     const int max_steps,
     const size_t nested
 )
 {
     complete();
     task.name = name; // Set the task name
+    task.name_len = len; // Set the task name length
     task.max_steps = max_steps; // Set the maximum steps
     task.start_time = std::chrono::system_clock::now(); // Reset the start time
     task.took = 0; // Reset the time taken
