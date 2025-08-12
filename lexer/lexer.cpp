@@ -520,24 +520,6 @@ container::stream<lexer::token *> lexer::lex(
             }
 
             dec = num; // If we were in a number, we are now in a decimal
-
-            // Handle punctuation
-            if (!dec)
-            {
-                push_token(tokens, ptr, allocator);
-                col++; // Increment column for the dot
-
-                const auto t = allocator.alloc();
-                t->value = container::optional<container::external_string>::none();
-                t->type = token::DOT;
-                t->line = line;
-                t->column = col - 1; // Column is the current position minus one for
-                tokens.push(t);
-
-                start = i + 1; // Move start to the next character
-                reset_flags();
-                continue;
-            }
         }
 
         // Handle sing-char punctuation
