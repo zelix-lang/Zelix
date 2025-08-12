@@ -1,0 +1,18 @@
+TYPE
+    PTR
+    PTR
+    PTR
+    IDENTIFIER: Abc
+    TYPE
+        TYPE
+            PTR
+            IDENTIFIER: Def
+            TYPE
+                PTR
+                IDENTIFIER: Bcd
+                TYPE
+                    PTR
+                    STR
+        TYPE
+            PTR
+            BOOL
