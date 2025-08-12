@@ -54,12 +54,6 @@ namespace zelix::parser::rule
         tokens.next(); // Consume the open parenthesis
         ast *function = allocator.alloc(); // Create a new function AST node
         function->rule = ast::FUNCTION;
-        ast *name_ast = allocator.alloc();
-        name_ast->rule = ast::IDENTIFIER;
-        name_ast->line = name->line;
-        name_ast->column = name->column;
-        name_ast->value = name->value;
-        function->children.push_back(name_ast);
 
         if (pub)
         {
@@ -68,6 +62,13 @@ namespace zelix::parser::rule
             public_ast->rule = ast::PUBLIC;
             function->children.push_back(public_ast);
         }
+
+        ast *name_ast = allocator.alloc();
+        name_ast->rule = ast::IDENTIFIER;
+        name_ast->line = name->line;
+        name_ast->column = name->column;
+        name_ast->value = name->value;
+        function->children.push_back(name_ast);
 
         // Check if we don't have any args
         auto peek = tokens.peek();
