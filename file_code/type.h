@@ -47,6 +47,6 @@ namespace zelix::code
         size_t pointers = 0;
         primitive base = NOTHING;
         container::external_string name;
-        container::vector<type *> children;
+        container::vector<type> children;
     };
 }
