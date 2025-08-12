@@ -24,8 +24,9 @@
 */
 
 #include "timed_task.h"
-#include <fluent/ansi/ansi.h>
 #include <chrono>
+#include <cstring>
+#include <fluent/ansi/ansi.h>
 
 struct timed_task
 {
@@ -231,6 +232,34 @@ void zelix::time::post(
     task.nested = nested; // Set the nesting level
 
     print_task<false, false>(nested, nullptr);
+}
+
+void zelix::time::post(
+    const char *name,
+    const int max_steps,
+    const size_t nested
+)
+{
+    post(
+        name,
+        static_cast<int>(strlen(name)),
+        max_steps,
+        nested
+    ); // Call the overloaded post function with the name length
+}
+
+void zelix::time::post(
+    const container::external_string &name,
+    int max_steps,
+    size_t nested
+)
+{
+    post(
+        name.ptr(),
+        static_cast<int>(name.size()),
+        max_steps,
+        nested
+    ); // Call the overloaded post function with the name length
 }
 
 void zelix::time::fail(const char *reason)
