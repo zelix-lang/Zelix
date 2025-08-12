@@ -268,7 +268,6 @@ void parser::rule::type(
             auto &last_child = children.back();
             parse_base(tokens, allocator, trace, allow_nested, last_child);
             parsed_base = true; // Set the parsed base flag to true
-            allow_nested = curr->type == lexer::token::IDENTIFIER;
             peek_opt = tokens.peek(); // Peek the next token
             continue;
         }
