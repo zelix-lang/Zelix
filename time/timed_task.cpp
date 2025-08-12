@@ -54,15 +54,15 @@ void print_task(const size_t nested, const char *reason)
 
         if constexpr (Failed)
         {
-            printf(ANSI_BRIGHT_RED "└─" ANSI_RESET);
+            printf(ANSI_BRIGHT_RED "\033[2m└─" ANSI_RESET);
         }
         else if constexpr (Complete)
         {
-            printf(ANSI_BRIGHT_GREEN "└─" ANSI_RESET);
+            printf(ANSI_BRIGHT_GREEN "\033[2m└─" ANSI_RESET);
         }
         else
         {
-            printf(ANSI_BRIGHT_BLACK "└─" ANSI_RESET);
+            printf(ANSI_BRIGHT_BLACK "\033[2m└─" ANSI_RESET);
         }
     }
 
