@@ -507,48 +507,6 @@ container::stream<lexer::token *> lexer::lex(
             continue;
         }
 
-        // Handle sing-char punctuation
-        if (
-            c == '{' || c == '}' || c == '(' || c == ')'
-            || c == '[' || c == ']' || c == ';' || c == ','
-            || c == ':' || c == '=' || c == '+' || c == '-'
-            || c == '*' || c == '/' || c == '!' || c == '&'
-            || c == '<' || c == '>'
-        )
-        {
-            push_token(tokens, ptr, allocator);
-
-            const auto t = allocator.alloc();
-            t->value = container::optional<container::external_string>::none();
-            t->line = line;
-            t->column = col;
-            t->type = c == '{' ? token::OPEN_CURLY :
-                        c == '}' ? token::CLOSE_CURLY :
-                        c == '(' ? token::OPEN_PAREN :
-                        c == ')' ? token::CLOSE_PAREN :
-                        c == '[' ? token::OPEN_BRACKET :
-                        c == ']' ? token::CLOSE_BRACKET :
-                        c == ';' ? token::SEMICOLON :
-                        c == ',' ? token::COMMA :
-                        c == ':' ? token::COLON :
-                        c == '=' ? token::EQUALS :
-                        c == '+' ? token::PLUS :
-                        c == '-' ? token::MINUS :
-                        c == '*' ? token::MULTIPLY :
-                        c == '/' ? token::DIVIDE :
-                        c == '&' ? token::AMPERSAND :
-                        c == '>' ? token::BOOL_GT :
-                        c == '<' ? token::BOOL_LT :
-                            token::NOT;
-
-            tokens.push(t);
-
-            start = i + 1; // Move start to the next character
-            reset_flags();
-            col++; // Increment column for the punctuation
-            continue;
-        }
-
         // Handle decimals
         if (c == '.')
         {
@@ -582,6 +540,49 @@ container::stream<lexer::token *> lexer::lex(
             }
         }
 
+        // Handle sing-char punctuation
+        if (
+            c == '{' || c == '}' || c == '(' || c == ')'
+            || c == '[' || c == ']' || c == ';' || c == ','
+            || c == ':' || c == '=' || c == '+' || c == '-'
+            || c == '*' || c == '/' || c == '!' || c == '&'
+            || c == '<' || c == '>' || c == '.'
+        )
+        {
+            push_token(tokens, ptr, allocator);
+
+            const auto t = allocator.alloc();
+            t->value = container::optional<container::external_string>::none();
+            t->line = line;
+            t->column = col;
+            t->type = c == '{' ? token::OPEN_CURLY :
+                        c == '}' ? token::CLOSE_CURLY :
+                        c == '(' ? token::OPEN_PAREN :
+                        c == ')' ? token::CLOSE_PAREN :
+                        c == '[' ? token::OPEN_BRACKET :
+                        c == ']' ? token::CLOSE_BRACKET :
+                        c == ';' ? token::SEMICOLON :
+                        c == ',' ? token::COMMA :
+                        c == ':' ? token::COLON :
+                        c == '=' ? token::EQUALS :
+                        c == '+' ? token::PLUS :
+                        c == '-' ? token::MINUS :
+                        c == '*' ? token::MULTIPLY :
+                        c == '/' ? token::DIVIDE :
+                        c == '&' ? token::AMPERSAND :
+                        c == '>' ? token::BOOL_GT :
+                        c == '<' ? token::BOOL_LT :
+                        c == '.' ? token::DOT :
+                            token::NOT;
+
+            tokens.push(t);
+
+            start = i + 1; // Move start to the next character
+            reset_flags();
+            col++; // Increment column for the punctuation
+            continue;
+        }
+
         // Handle invalid identifiers
         if (identifier && !isalnum(c) && c != '_')
         {
@@ -591,7 +592,7 @@ container::stream<lexer::token *> lexer::lex(
             throw except::exception("Invalid character in identifier");
         }
 
-        if (!str && ((num && !isdigit(c) && c != '.') || (dec && !isdigit(c))))
+        if (!str && ((num && !isdigit(c)) || (dec && !isdigit(c))))
         {
             global_err.type = UNKNOWN_TOKEN;
             global_err.line = line;
