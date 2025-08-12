@@ -157,9 +157,20 @@ void parser::rule::type(
     ast *base = parse_base(tokens, allocator, trace, allow_nested, type_node);
     bool parsed_base = true; // Flag to indicate if we successfully parsed a base type
     container::vector<ast *> children; // Vector to hold the children of the base type
-    children.push_back(base);
 
     auto peek_opt = tokens.peek();
+    if (!allow_nested || peek_opt.is_none())
+    {
+        children.push_back(base);
+    }
+    else
+    {
+        auto nested = allocator.alloc();
+        nested->rule = ast::TYPE;
+        base->children.push_back(nested); // Add the nested type to the base type
+        children.push_back(nested);
+    }
+
     // Peek into the next token
     while (peek_opt.is_some())
     {
@@ -209,7 +220,6 @@ void parser::rule::type(
 
             // Pop the last nested type
             children.pop_back();
-            base = children.back(); // Get the last base type
             tokens.next(); // Consume the '>' token
             peek_opt = tokens.peek(); // Peek the next token
             continue;
