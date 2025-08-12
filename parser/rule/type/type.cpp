@@ -265,10 +265,7 @@ void parser::rule::type(
         }
 
         // If we reach here, it means we have a valid base type
-        global_err.type = UNEXPECTED_TOKEN;
-        global_err.column = curr->column;
-        global_err.line = curr->line;
-        throw except::exception("Unexpected token in type declaration");
+        break; // Exit the loop
     }
 
     // Make sure there are no unclosed nested types
