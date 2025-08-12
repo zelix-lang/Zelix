@@ -56,10 +56,7 @@ namespace zelix::parser::rule
             auto next_opt = tokens.next();
             if (next_opt.is_none())
             {
-                global_err.type = UNEXPECTED_TOKEN;
-                global_err.column = trace->column;
-                global_err.line = trace->line;
-                throw except::exception("Unexpected end of input while parsing property access");
+                break;
             }
 
             if (next_opt.get()->type != lexer::token::DOT)
