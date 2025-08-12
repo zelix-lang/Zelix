@@ -33,6 +33,7 @@
 #include "memory/allocator.h"
 #include "parser/expect.h"
 #include "parser/rule/call.h"
+#include <cstdio>
 
 namespace zelix::parser::rule
 {
@@ -49,6 +50,7 @@ namespace zelix::parser::rule
         ast *prop_node = allocator.alloc();
         prop_node->rule = ast::PROP_ACCESS;
         prop_node->children.push_back(candidate); // Add the candidate as the first child
+        bool allow_dot = true;
 
         while (true)
         {
@@ -56,34 +58,51 @@ namespace zelix::parser::rule
             auto next_opt = tokens.next();
             if (next_opt.is_none())
             {
+                if (!allow_dot)
+                {
+                    global_err.type = UNEXPECTED_TOKEN;
+                    global_err.column = trace->column;
+                    global_err.line = trace->line;
+                    throw except::exception("Unexpected dot in property access");
+                }
+
                 break;
             }
 
-            if (next_opt.get()->type != lexer::token::DOT)
+            const auto &next = next_opt.get();
+            if (next->type == lexer::token::DOT)
             {
-                break; // If the next token is not a dot, exit the loop
+                if (!allow_dot)
+                {
+                    global_err.type = UNEXPECTED_TOKEN;
+                    global_err.column = next->column;
+                    global_err.line = next->line;
+                    throw except::exception("Unexpected dot in property access");
+                }
+
+                allow_dot = false;
+                continue;
             }
 
             // Expect an identifier token
-            expect(tokens, lexer::token::IDENTIFIER);
-            const auto prop_name = tokens.next().get();
+            if (next->type != lexer::token::IDENTIFIER)
+            {
+                global_err.type = UNEXPECTED_TOKEN;
+                global_err.column = next->column;
+                global_err.line = next->line;
+                throw except::exception("Expected identifier in property access");
+            }
+
             ast *prop_name_node = allocator.alloc();
             prop_name_node->rule = ast::IDENTIFIER;
-            prop_name_node->line = prop_name->line;
-            prop_name_node->column = prop_name->column;
-            prop_name_node->value = prop_name->value;
+            prop_name_node->line = next->line;
+            prop_name_node->column = next->column;
+            prop_name_node->value = next->value;
 
             // Peek into the next token
             next_opt = tokens.peek();
-            if (next_opt.is_none())
-            {
-                break; // No more tokens, exit the loop
-            }
 
-            if (
-                const auto &next = next_opt.get();
-                next->type == lexer::token::OPEN_PAREN
-            )
+            if (next_opt.is_some() && next_opt.get()->type == lexer::token::OPEN_PAREN)
             {
                 // Create a call token
                 ast *prop_call_node = allocator.alloc();
@@ -96,8 +115,11 @@ namespace zelix::parser::rule
             }
             else
             {
+                tokens.next(); // Consume the identifier token
                 prop_node->children.push_back(prop_name_node);
             }
+
+            allow_dot = true;
         }
 
         return prop_node; // Return the property access node
