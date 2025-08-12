@@ -237,8 +237,7 @@ void parser::rule::type(
             tokens.next();
 
             // Go back to the container TYPE (just inside the < >)
-            auto container_type = children[children.size() - 2];
-
+            const auto container_type = children[children.size() - 2];
             // Create a new TYPE node for the next argument
             auto arg_type = allocator.alloc();
             arg_type->rule = ast::TYPE;
