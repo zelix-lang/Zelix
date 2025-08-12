@@ -42,5 +42,6 @@ namespace zelix::code
             container::external_string_hash
         > args; // The function's arguments
         parser::ast *body = nullptr; // The function's body
+        bool pub; // Whether the function is public
     };
 }

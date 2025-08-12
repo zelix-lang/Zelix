@@ -48,5 +48,7 @@ namespace zelix::code
             function,
             container::external_string_hash
         > functions; // The module's functions
+
+        bool pub; // Whether the module is public
     };
 }
