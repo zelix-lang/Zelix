@@ -425,7 +425,7 @@ container::stream<lexer::token *> lexer::lex(
                 num = true; // Start of a number
                 start = i; // Set start to the current index
             }
-            else if (c == '.')
+            else if (c == '.' && isdigit(ptr[i + 1]))
             {
                 dec = true; // Start of a decimal
                 start = i; // Set start to the current index
