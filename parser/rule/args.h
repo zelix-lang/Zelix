@@ -45,12 +45,16 @@ namespace zelix::parser::rule
         container::vector<expr::queue_node *> &expr_queue
     )
     {
+        // Extract all tokens until the end of args
+        auto args_group = extract(tokens);
+        if (args_group.empty())
+        {
+            return;
+        }
+
         // Create a new AST node for the arguments
         ast *args_node = allocator.alloc();
         args_node->rule = ast::ARGUMENTS;
-
-        // Extract all tokens until the end of args
-        auto args_group = extract(tokens);
 
         // Iterate over the extracted tokens
         while (true)
@@ -74,7 +78,10 @@ namespace zelix::parser::rule
 
                 if (arg_group.empty())
                 {
-                    continue;
+                    global_err.type = UNEXPECTED_TOKEN;
+                    global_err.column = args_group.curr().get()->column;
+                    global_err.line = args_group.curr().get()->line;
+                    throw except::exception("Unexpected empty argument group");
                 }
 
                 // Push the argument group to the args node
