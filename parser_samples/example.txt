@@ -1,6 +1,6 @@
 ROOT
     IMPORT: @std::io::print
-    ROOT
+    FUNCTION
         IDENTIFIER: main
         BLOCK
             EXPRESSION
