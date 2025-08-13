@@ -23,7 +23,7 @@
     <https://www.gnu.org/licenses/>.
 */
 
-import "@std::io::print";
+import "@std/io/print";
 
 fun main(a: str) {
     Abc.new();
