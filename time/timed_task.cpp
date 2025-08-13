@@ -28,6 +28,8 @@
 #include <cstring>
 #include <fluent/ansi/ansi.h>
 
+#include "util/nested_spaces.h"
+
 struct timed_task
 {
     const char *name = nullptr;
@@ -42,20 +44,12 @@ struct timed_task
 // Save the current task
 timed_task task;
 
-void print_nested_spaces(const size_t nested)
-{
-    for (size_t i = 0; i < nested; i++)
-    {
-        printf("  ");
-    }
-}
-
 template <bool Failed, bool Complete>
 void print_task(const size_t nested, const char *reason)
 {
     if (nested > 0)
     {
-        print_nested_spaces(nested);
+        zelix::util::print_nested_spaces(nested);
 
         if constexpr (Failed)
         {
@@ -93,7 +87,7 @@ void print_task(const size_t nested, const char *reason)
         );
 
         printf("\n");
-        print_nested_spaces(nested);
+        zelix::util::print_nested_spaces(nested);
         printf(
             "    \033[38;5;214m\033[2m(!) what "
             ANSI_RESET
