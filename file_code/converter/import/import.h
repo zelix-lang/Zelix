@@ -106,21 +106,18 @@ namespace zelix::code::converter
             time::fail("Circular import detected");
             printf("\n" ANSI_BRIGHT_BLACK "Import chain:\n" ANSI_RESET);
 
+            printf("\n" ANSI_BRIGHT_RED "error" ANSI_RESET
+                ANSI_BRIGHT_BLACK ":" ANSI_RESET
+                " %s\n" ANSI_BRIGHT_GREEN
+                "|\n└─ help: %s" ANSI_RESET "\n",
+                constants::import::circular_help,
+                constants::import::circular_help
+            );
+
             helper::print_import_chain(
                 files,
                 path,
                 root_path
-            );
-
-            printf("\n" ANSI_BRIGHT_RED "error" ANSI_RESET
-                ANSI_BRIGHT_BLACK ":" ANSI_RESET
-                " %s\n",
-                constants::import::circular_help
-            );
-
-            printf(
-                ANSI_BRIGHT_GREEN "|\n└─ help: %s" ANSI_RESET "\n",
-                constants::import::circular_help
             );
 
             throw except::exception("");
