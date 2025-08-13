@@ -81,7 +81,8 @@ container::vector<code::file_code *> code::convert(
                         queue,
                         ast_allocator,
                         token_allocator,
-                        dir
+                        dir,
+                        root_path
                     );
                     break;
                 }
