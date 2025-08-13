@@ -280,4 +280,5 @@ void zelix::time::fail(const char *reason)
     }
 
     print_task<true, true>(task.nested, reason);
+    task.name = nullptr; // Clear the task name
 }
