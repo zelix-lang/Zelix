@@ -118,7 +118,7 @@ namespace zelix::code::converter
             );
 
             printf(
-                ANSI_BRIGHT_GREEN "|\n└─ help: %s" ANSI_RESET,
+                ANSI_BRIGHT_GREEN "|\n└─ help: %s" ANSI_RESET "\n",
                 constants::import::circular_help
             );
 
