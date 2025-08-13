@@ -28,12 +28,13 @@
 //
 
 #pragma once
+#include "file_code/type.h"
 
 namespace zelix::code
 {
     struct declaration
     {
-        type *decl_type; // The declaration's type
+        type decl_type; // The declaration's type
         bool is_const;   // Whether the declaration is constant
         parser::ast *value; // The declaration's value
     };
