@@ -74,6 +74,7 @@ namespace zelix::code::converter
                 requested_path.ptr() + 5, // Skip the "@std/" prefix
                 requested_path.size() - 5 // Adjust the size accordingly
             );
+            path.push(".zx"); // Add the .zx extension
         }
         else
         {
