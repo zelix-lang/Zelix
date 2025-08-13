@@ -92,9 +92,10 @@ void print_task(const size_t nested, const char *reason)
             task.name
         );
 
+        printf("\n");
         print_nested_spaces(nested);
         printf(
-            "\n    \033[38;5;214m\033[2m(!) what "
+            "    \033[38;5;214m\033[2m(!) what "
             ANSI_RESET
             ANSI_BRIGHT_BLACK
             "~ "
