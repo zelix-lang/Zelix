@@ -30,6 +30,7 @@
 #include "parser/rule/expr/expr.h"
 #include "parser/rule/for.h"
 #include "parser/rule/if.h"
+#include "parser/rule/ret.h"
 
 using namespace zelix;
 
@@ -217,6 +218,19 @@ void parser::rule::block(
                         next
                     )
                 ) break; // Successfully parsed an assignment
+            }
+
+            case lexer::token::RETURN:
+            {
+                tokens.next(); // Consume the token
+                ret(
+                    tokens,
+                    allocator,
+                    next,
+                    current_block
+                );
+
+                break;
             }
 
             default:
