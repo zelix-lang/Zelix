@@ -33,8 +33,5 @@
 
 namespace zelix::code::converter
 {
-    void type(
-        const parser::ast *root,
-        container::vector<type> &vec
-    );
+    type type(const parser::ast *root);
 }

@@ -37,15 +37,12 @@ struct queue_el
     const parser::ast *node;
 };
 
-void code::converter::type(
-    const parser::ast *root,
-    container::vector<code::type> &vec
-)
+code::type code::converter::type(const parser::ast *root)
 {
     // Create the root type
-    vec.emplace_back();
+    code::type ret{};
     container::vector<queue_el> queue;
-    queue.emplace_back(vec.back(), root);
+    queue.emplace_back(ret, root);
 
     while (!queue.empty())
     {
@@ -118,4 +115,6 @@ void code::converter::type(
             queue.emplace_back(type.children.back(), ast);
         }
     }
+
+    return ret;
 }
