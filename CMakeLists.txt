@@ -68,6 +68,16 @@ add_executable(Zelix
         file_code/type.h
         parser/rule/type/type.cpp
         file_code/declaration.h
+        file_code/converter/converter.h
+        file_code/converter/function.h
+        file_code/converter/type/type.h
+        file_code/converter/type/type.cpp
+        file_code/converter/converter.cpp
+        file_code/converter/import.h
+        global/constants.h
+        util/dirname.h
+        util/absolute.h
+        file_code/converter/mod.h
 )
 
 target_include_directories(Zelix PRIVATE ${CMAKE_BINARY_DIR}/_deps/fluent_libc-src/include)
