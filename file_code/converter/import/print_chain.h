@@ -28,25 +28,12 @@
 //
 
 #pragma once
-#include <ankerl/unordered_dense.h>
-
-#include "zelix/container/owned_string.h"
+#include "file_code/file_code.h"
 
 namespace zelix::code::converter::helper
 {
-    inline void print_import_chain(
-        ankerl::unordered_dense::set<
-            container::string,
-            container::string_hash
-        > &chain
-    )
-    {
-        if (chain.empty())
-        {
-            return;
-        }
-
-        // Get the first element
-
-    }
+    void print_import_chain(
+        container::vector<file_code *> &files, const container::string &target,
+        container::string &root_path
+    );
 }
