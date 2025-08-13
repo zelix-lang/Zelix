@@ -40,7 +40,8 @@ container::vector<code::file_code *> code::convert(
     memory::lazy_allocator<parser::ast> &ast_allocator,
     memory::lazy_allocator<lexer::token> &token_allocator,
     memory::lazy_allocator<function> &fun_allocator,
-    memory::lazy_allocator<mod> &mod_allocator, parser::ast *const &root,
+    memory::lazy_allocator<mod> &mod_allocator,
+    parser::ast *const &root,
     container::string &root_path
 )
 {
