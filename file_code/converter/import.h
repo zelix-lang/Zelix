@@ -57,7 +57,7 @@ namespace zelix::code::converter
         container::string &root_dir
     )
     {
-        time::post(node->value.get(), 4, 1);
+        time::post(node->value.get(), 3, 1);
 
         // Read the file
         container::string path;
@@ -101,6 +101,7 @@ namespace zelix::code::converter
         }
 
         chain.insert(path);
+        time::advance();
 
         // Read the file
         auto contents = util::read_file(path.c_str());
