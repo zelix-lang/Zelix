@@ -87,6 +87,7 @@ namespace zelix::parser
             PUBLIC,
             PTR,
             DEREF,
+            RETURN,
             DERIVE,
             ASSIGNMENT
         };
