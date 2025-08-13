@@ -33,7 +33,9 @@
 #include <zelix/container/external_string.h>
 
 #include "../converter.h"
+#include "fluent/ansi/ansi.h"
 #include "global/constants.h"
+#include "global/messages/import.h"
 #include "lexer/lexer.h"
 #include "memory/allocator.h"
 #include "parser/ast.h"
@@ -98,7 +100,21 @@ namespace zelix::code::converter
                 return;
             }
 
-            throw except::exception("Circular import detected");
+            time::fail("Circular import detected");
+            printf(
+                "\n" ANSI_BRIGHT_RED "Error" ANSI_RESET
+                ANSI_BRIGHT_BLACK ":" ANSI_RESET
+                " Your code has a circular import.\n"
+                ANSI_BRIGHT_BLACK "Import chain:\n" ANSI_RESET
+            );
+
+            // TODO!
+            printf(
+                ANSI_BRIGHT_GREEN "|\n└─ help: %s" ANSI_RESET,
+                constants::import::circular_help
+            );
+
+            throw except::exception("");
         }
 
         chain.insert(path);
