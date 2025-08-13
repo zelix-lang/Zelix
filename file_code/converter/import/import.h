@@ -52,6 +52,7 @@ namespace zelix::code::converter
             container::string,
             container::string_hash
         > &chain,
+        container::vector<file_code *> &files,
         parser::ast *const &node,
         container::vector<queue_el> &queue,
         memory::lazy_allocator<parser::ast> &ast_allocator,
