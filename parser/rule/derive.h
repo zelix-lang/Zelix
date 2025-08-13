@@ -91,6 +91,15 @@ namespace zelix::parser::rule
                 }
 
                 expecting_comma = true; // Next we expect a comma or semicolon
+
+                // Allocate a new identifier node
+                const auto identifier = allocator.alloc();
+                identifier->rule = ast::IDENTIFIER;
+                identifier->value = next->value;
+                identifier->line = next->line;
+                identifier->column = next->column;
+
+                derive_node->children.push_back(identifier);
             }
 
             next_opt = tokens.next();
