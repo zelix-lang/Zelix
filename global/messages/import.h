@@ -31,5 +31,6 @@
 
 namespace zelix::constants::import
 {
+    inline auto *circular_err = "Your code has circular imports.";
     inline auto *circular_help = "break down your code in smaller files";
 }
