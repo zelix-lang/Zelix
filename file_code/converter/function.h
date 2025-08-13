@@ -60,6 +60,10 @@ namespace zelix::code::converter
             first = children[1]; // Move to the next child
             second = children[2]; // Move to the next child
         }
+        else
+        {
+            fun->pub = false;
+        }
 
         // Get the function name
         const auto &name = first->value.get();
