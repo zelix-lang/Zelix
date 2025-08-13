@@ -112,7 +112,7 @@ namespace zelix::code::converter
                 root_path
             );
 
-            printf(ANSI_BRIGHT_RED "error" ANSI_RESET
+            printf("\n" ANSI_BRIGHT_RED "error" ANSI_RESET
                 ANSI_BRIGHT_BLACK ":" ANSI_RESET
                 " %s\n",
                 constants::import::circular_help
