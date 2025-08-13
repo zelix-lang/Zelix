@@ -47,7 +47,7 @@ void print_chain_el(
 
     if (el == target)
     {
-        printf(ANSI_RED "%s" ANSI_RESET "\n", el.c_str());
+        printf(ANSI_RED "> %s (circular)" ANSI_RESET "\n", el.c_str());
     }
     else
     {
@@ -57,21 +57,18 @@ void print_chain_el(
 
 void code::converter::helper::print_import_chain(
     container::vector<file_code *> &files,
-    const container::string &target,
+    container::string &target,
     container::string &root_path
 )
 {
-    if (files.empty())
-    {
-        return;
-    }
-
     // Print the root path
     print_chain_el(root_path, target);
 
     // Print the import chain
     for (size_t i = 0; i < files.size(); i++)
     {
-        print_chain_el(files[i]->path, target, i);
+        print_chain_el(files[i]->path, target, i + 1);
     }
+
+    print_chain_el(target, target, files.size() + 1);
 }
