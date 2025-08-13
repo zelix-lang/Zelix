@@ -40,6 +40,7 @@
 #include "memory/allocator.h"
 #include "parser/ast.h"
 #include "parser/parser.h"
+#include "print_chain.h"
 #include "time/timed_task.h"
 #include "util/absolute.h"
 #include "util/dirname.h"
@@ -57,7 +58,8 @@ namespace zelix::code::converter
         container::vector<queue_el> &queue,
         memory::lazy_allocator<parser::ast> &ast_allocator,
         memory::lazy_allocator<lexer::token> &token_allocator,
-        container::string &root_dir
+        container::string &root_dir,
+        container::string &root_path
     )
     {
         time::post(node->value.get(), 3, 1);
@@ -109,7 +111,12 @@ namespace zelix::code::converter
                 ANSI_BRIGHT_BLACK "Import chain:\n" ANSI_RESET
             );
 
-            // TODO!
+            helper::print_import_chain(
+                files,
+                path,
+                root_path
+            );
+
             printf(
                 ANSI_BRIGHT_GREEN "|\n└─ help: %s" ANSI_RESET,
                 constants::import::circular_help
