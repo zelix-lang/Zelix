@@ -39,7 +39,7 @@ namespace zelix::constants
 #       else
         getenv("HOME")
 #       endif
-    );t
+    );
 
     inline auto stdlib = user_home + "/.zelix/stdlib/";
 }
