@@ -107,8 +107,9 @@ namespace zelix::code::converter
             printf(
                 "\n" ANSI_BRIGHT_RED "Error" ANSI_RESET
                 ANSI_BRIGHT_BLACK ":" ANSI_RESET
-                " Your code has a circular import.\n"
-                ANSI_BRIGHT_BLACK "Import chain:\n" ANSI_RESET
+                " %s\n"
+                ANSI_BRIGHT_BLACK "Import chain:\n" ANSI_RESET,
+                constants::import::circular_err
             );
 
             helper::print_import_chain(
