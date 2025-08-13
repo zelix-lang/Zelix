@@ -37,5 +37,6 @@ namespace zelix::code
         type decl_type; // The declaration's type
         bool is_const;   // Whether the declaration is constant
         parser::ast *value; // The declaration's value
+        parser::ast *derive; // The declaration's derived macros
     };
 }
