@@ -102,6 +102,6 @@ namespace zelix::code::converter
         fun->body = second;
 
         // Insert the function into the map
-        map[name] = fun;
+        map.emplace(name, fun);
     }
 }
