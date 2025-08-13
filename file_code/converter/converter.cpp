@@ -76,6 +76,7 @@ container::vector<code::file_code *> code::convert(
                 {
                     converter::imp(
                         chain,
+                        files,
                         child,
                         queue,
                         ast_allocator,
