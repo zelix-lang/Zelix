@@ -28,13 +28,16 @@
 //
 
 #pragma once
-#include "zelix/cli/app.h"
+#include "file_code/converter/converter.h"
+#include "global/constants.h"
 #include "lexer/lexer.h"
 #include "memory/allocator.h"
 #include "parser/parser.h"
-#include "parser/rule/expr/expr.h"
 #include "time/timed_task.h"
+#include "util/absolute.h"
+#include "util/dirname.h"
 #include "util/read_file.h"
+#include "zelix/cli/app.h"
 
 namespace zelix::command
 {
@@ -43,11 +46,13 @@ namespace zelix::command
         try
         {
             time::post("Reading", 1);
-            auto f = util::read_file(
+            auto root_path = util::to_absolute(
                 args.command<container::external_string>(
                     container::external_string("compile", 7)
                 ).ptr()
             );
+
+            auto f = util::read_file(root_path.ptr());
 
             time::complete();
             memory::lazy_allocator<lexer::token> token_allocator;
@@ -63,9 +68,25 @@ namespace zelix::command
             time::complete();
             memory::lazy_allocator<parser::ast> allocator;
             time::post("Parsing", 1);
-            parser::parse(
+            const auto root = parser::parse(
                 tokens,
                 allocator
+            );
+            time::complete();
+
+            time::post("Processing", 1);
+            memory::lazy_allocator<code::file_code> file_allocator;
+            memory::lazy_allocator<code::function> fun_allocator;
+            memory::lazy_allocator<code::mod> mod_allocator;
+
+            const auto file = code::convert(
+                file_allocator,
+                allocator,
+                token_allocator,
+                fun_allocator,
+                mod_allocator,
+                root,
+                root_path
             );
             time::complete();
         }
