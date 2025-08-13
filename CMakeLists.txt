@@ -78,6 +78,11 @@ add_executable(Zelix
         util/dirname.h
         util/absolute.h
         file_code/converter/mod.h
+        file_code/converter/import/print_chain.h
+        global/messages/import.h
+        file_code/converter/import/print_chain.cpp
+        util/nested_spaces.h
+        global/err/print.h
 )
 
 target_include_directories(Zelix PRIVATE ${CMAKE_BINARY_DIR}/_deps/fluent_libc-src/include)
