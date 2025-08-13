@@ -42,15 +42,20 @@ struct timed_task
 // Save the current task
 timed_task task;
 
+void print_nested_spaces(const size_t nested)
+{
+    for (size_t i = 0; i < nested; i++)
+    {
+        printf("  ");
+    }
+}
+
 template <bool Failed, bool Complete>
 void print_task(const size_t nested, const char *reason)
 {
     if (nested > 0)
     {
-        for (size_t i = 0; i < nested; i++)
-        {
-            printf("  ");
-        }
+        print_nested_spaces(nested);
 
         if constexpr (Failed)
         {
@@ -80,17 +85,21 @@ void print_task(const size_t nested, const char *reason)
             ANSI_RESET
             ANSI_BRIGHT_RED
             " %.*s [x]"
-            ANSI_RESET
+            ANSI_RESET,
+            task.steps,
+            task.max_steps,
+            task.name_len,
+            task.name
+        );
+
+        print_nested_spaces(nested);
+        printf(
             "\n    \033[38;5;214m\033[2m(!) what "
             ANSI_RESET
             ANSI_BRIGHT_BLACK
             "~ "
             ANSI_RESET
             "\033[38;5;214m%s\n",
-            task.steps,
-            task.max_steps,
-            task.name_len,
-            task.name,
             reason
         );
     }
