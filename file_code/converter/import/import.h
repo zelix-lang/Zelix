@@ -35,6 +35,7 @@
 #include "../converter.h"
 #include "fluent/ansi/ansi.h"
 #include "global/constants.h"
+#include "global/err/print.h"
 #include "global/messages/import.h"
 #include "lexer/lexer.h"
 #include "memory/allocator.h"
@@ -104,16 +105,10 @@ namespace zelix::code::converter
             }
 
             time::fail("Circular import detected");
+
+            // Report the error and print the details
+            report::err::print(constants::import::circular_err, constants::import::circular_help);
             printf("\n" ANSI_BRIGHT_BLACK "Import chain:\n" ANSI_RESET);
-
-            printf("\n" ANSI_BRIGHT_RED "error" ANSI_RESET
-                ANSI_BRIGHT_BLACK ":" ANSI_RESET
-                " %s\n" ANSI_BRIGHT_GREEN
-                "    └─ help: %s" ANSI_RESET "\n",
-                constants::import::circular_err,
-                constants::import::circular_help
-            );
-
             helper::print_import_chain(
                 files,
                 path,
