@@ -41,4 +41,10 @@ namespace zelix::util
         const auto abs = std::filesystem::absolute(p);
         return container::string(abs.c_str());
     }
+
+    inline bool is_absolute(const char* path)
+    {
+        const std::filesystem::path p(path);
+        return p.is_absolute();
+    }
 }
