@@ -41,5 +41,5 @@ namespace zelix::constants
 #       endif
     );t
 
-    inline auto stdlib = user_home + "/.zelix/stdlib";
+    inline auto stdlib = user_home + "/.zelix/stdlib/";
 }
