@@ -73,7 +73,7 @@ add_executable(Zelix
         file_code/converter/type/type.h
         file_code/converter/type/type.cpp
         file_code/converter/converter.cpp
-        file_code/converter/import.h
+        file_code/converter/import/import.h
         global/constants.h
         util/dirname.h
         util/absolute.h

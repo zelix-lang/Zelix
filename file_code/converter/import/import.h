@@ -32,7 +32,7 @@
 #include <fluent/str_has_prefix/str_has_prefix.h>
 #include <zelix/container/external_string.h>
 
-#include "converter.h"
+#include "../converter.h"
 #include "global/constants.h"
 #include "lexer/lexer.h"
 #include "memory/allocator.h"

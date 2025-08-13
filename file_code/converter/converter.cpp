@@ -30,7 +30,7 @@
 #include "converter.h"
 
 #include "function.h"
-#include "import.h"
+#include "import/import.h"
 #include "mod.h"
 #include "util/dirname.h"
 using namespace zelix;
