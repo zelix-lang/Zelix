@@ -43,7 +43,7 @@ namespace zelix::report::err
             "\n" ANSI_BRIGHT_RED "error" ANSI_RESET
             ANSI_BRIGHT_BLACK ":" ANSI_RESET
             " %s\n" ANSI_BRIGHT_GREEN
-            "    └─ help: %s" ANSI_RESET "\n",
+            "     └─ help: %s" ANSI_RESET "\n",
             message,
             help
         );
