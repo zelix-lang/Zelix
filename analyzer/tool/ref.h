@@ -40,6 +40,35 @@ namespace zelix::analyzer::tool
         code::mod *mod = nullptr;
         declaration *decl = nullptr;
 
+        template <typename T>
+        T *impl_get()
+        {
+            if constexpr (std::is_same_v<T, declaration>)
+            {
+                return decl;
+            }
+
+            else if constexpr (std::is_same_v<T, code::function>)
+            {
+                return fun;
+            }
+
+            else if constexpr (std::is_same_v<T, code::mod>)
+            {
+                return mod;
+            }
+
+            else
+            {
+                // Invalid type
+                static_assert(
+                    false,
+                    "Invalid type for ref::get()"
+                );
+
+                return nullptr;
+            }
+        }
     public:
         enum type
         {
@@ -48,6 +77,8 @@ namespace zelix::analyzer::tool
             FUN,
             MOD,
         };
+
+        type kind = NONE;
 
         template <typename T>
         explicit ref(T *ptr)
@@ -77,36 +108,16 @@ namespace zelix::analyzer::tool
             }
         }
 
-        type kind = NONE;
-
         template <typename T>
         T *get()
         {
-            if constexpr (std::is_same_v<T, declaration>)
+            const auto ptr = impl_get<T>();
+            if (ptr == nullptr)
             {
-                return decl;
+                throw except::exception("Reference is null");
             }
 
-            else if constexpr (std::is_same_v<T, code::function>)
-            {
-                return fun;
-            }
-
-            else if constexpr (std::is_same_v<T, code::mod>)
-            {
-                return mod;
-            }
-
-            else
-            {
-                // Invalid type
-                static_assert(
-                    false,
-                    "Invalid type for ref::get()"
-                );
-
-                return nullptr;
-            }
+            return ptr;
         }
     };
 }
