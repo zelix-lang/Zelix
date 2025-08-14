@@ -28,15 +28,12 @@
 //
 
 #pragma once
-#include <cstddef>
+#include "global/trace/trace.h"
 
 namespace zelix::analyzer
 {
-    struct trace
+    struct trace : globals::trace
     {
         size_t id; // The index of the file_code in the import chain
-        size_t line; // The line number of the error
-        size_t column; // The column number of the error
-        int type; // The type of the error
     };
 }
