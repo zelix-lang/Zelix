@@ -29,12 +29,13 @@
 
 #pragma once
 #include <ankerl/unordered_dense.h>
+#include "global/trace/trace.h"
 #include "parser/ast.h"
 #include "type.h"
 
 namespace zelix::code
 {
-    struct function
+    struct function : globals::trace
     {
         type return_type;
         ankerl::unordered_dense::map<
