@@ -37,6 +37,10 @@ namespace zelix::analyzer
         size_t id = 0; // The index of the file_code in the import chain
         int type = 0; // The type of the error
 
+        trace()
+            : globals::trace()
+        {}
+
         trace(
             const size_t line_,
             const size_t column_,

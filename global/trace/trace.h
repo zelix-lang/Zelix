@@ -35,5 +35,18 @@ namespace zelix::globals
     {
         size_t line; // The line number
         size_t column; // The column number
+
+        trace()
+            : line(0)
+            , column(0)
+        {}
+
+        explicit trace(
+            const size_t line,
+            const size_t column
+        )
+            : line(line)
+            , column(column)
+        {}
     };
 }
