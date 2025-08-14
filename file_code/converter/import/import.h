@@ -136,6 +136,6 @@ namespace zelix::code::converter
         auto ast = parser::parse(tokens, ast_allocator);
 
         // Add the AST to the queue
-        queue.emplace_back(ast, util::dirname(path.c_str()));
+        queue.emplace_back(ast, util::dirname(path.c_str()), container::move(contents));
     }
 }
