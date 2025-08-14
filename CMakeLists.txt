@@ -84,6 +84,14 @@ add_executable(Zelix
         util/nested_spaces.h
         global/err/print.h
         parser/rule/ret.h
+        analyzer/trace.h
+        analyzer/result.h
+        analyzer/error.h
+        analyzer/warn.h
+        analyzer/tool/ref.h
+        analyzer/tool/declaration.h
+        analyzer/analyzer.cpp
+        global/trace/trace.h
 )
 
 target_include_directories(Zelix PRIVATE ${CMAKE_BINARY_DIR}/_deps/fluent_libc-src/include)
