@@ -65,7 +65,7 @@ namespace zelix::code::converter
         container::string &root_path
     )
     {
-        time::post(node->value.get(), 3, 1);
+        time::post(node->value.get(), 4, 1);
 
         // Read the file
         container::string path;
@@ -136,6 +136,7 @@ namespace zelix::code::converter
 
         // Parse the tokens
         auto ast = parser::parse(tokens, ast_allocator);
+        time::advance();
 
         // Add the new import to imports vector
         curr->imports.emplace_back(files.size());
