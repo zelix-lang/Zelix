@@ -59,6 +59,7 @@ namespace zelix::code::converter
         container::vector<queue_el> &queue,
         memory::lazy_allocator<parser::ast> &ast_allocator,
         memory::lazy_allocator<lexer::token> &token_allocator,
+        memory::lazy_allocator<file_code> &file_allocator,
         container::string &root_dir,
         container::string &root_path
     )
@@ -135,7 +136,11 @@ namespace zelix::code::converter
         // Parse the tokens
         auto ast = parser::parse(tokens, ast_allocator);
 
+        // Allocate a new file_code object
+        auto *file = file_allocator.alloc();
+        file->content = container::move(contents);
+
         // Add the AST to the queue
-        queue.emplace_back(ast, util::dirname(path.c_str()), container::move(contents));
+        queue.emplace_back(ast, util::dirname(path.c_str()), container::move(file));
     }
 }
