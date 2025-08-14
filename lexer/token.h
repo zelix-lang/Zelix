@@ -90,7 +90,9 @@ namespace zelix::lexer
             TO, // 50
             IN, // 51
             AMPERSAND, // 51
-            DERIVE // 52
+            DERIVE, // 52
+            PACKAGE, // 53
+            GLOBAL // 54
         };
 
         container::optional<container::external_string> value
