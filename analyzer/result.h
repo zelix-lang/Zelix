@@ -33,9 +33,23 @@
 
 namespace zelix::analyzer
 {
-    struct result
+    class result
     {
+    public:
         container::ring_buffer<trace, 10> errors; // The errors found during analysis
         container::ring_buffer<trace, 10> warnings; // The warnings found during analysis
+
+        void extend(result &other)
+        {
+            for (auto e : other.errors)
+            {
+                errors.push_back(e);
+            }
+
+            for (auto w : other.warnings)
+            {
+                warnings.push_back(w);
+            }
+        }
     };
 }
