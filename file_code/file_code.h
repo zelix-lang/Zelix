@@ -50,5 +50,6 @@ namespace zelix::code
         > modules; // The mod map
 
         container::string path; // The file path
+        container::string content; // The file content
     };
 }
