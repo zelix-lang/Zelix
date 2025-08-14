@@ -68,7 +68,6 @@ bool check_duplicates(
     return false;
 }
 
-template <bool IsRoot>
 void inject_context(
     ankerl::unordered_dense::map<
         container::external_string,
@@ -84,12 +83,9 @@ void inject_context(
     for (auto &[fst, snd] : file->modules)
     {
         // Honor visibility
-        if constexpr (!IsRoot)
+        if (!snd->pub)
         {
-            if (!snd->pub)
-            {
-                continue;
-            }
+            continue;
         }
 
         check_duplicates(
@@ -106,12 +102,9 @@ void inject_context(
     for (auto &[fst, snd] : file->functions)
     {
         // Honor visibility
-        if constexpr (!IsRoot)
+        if (!snd->pub)
         {
-            if (!snd->pub)
-            {
-                continue;
-            }
+            continue;
         }
 
         check_duplicates(
@@ -144,16 +137,15 @@ analyzer::result analyzer::analyze(container::vector<code::file_code *> &files)
         // Get the current file
         auto *file = files[i];
 
-        // Inject the current file's context into the symbol table
-        inject_context<true>(symbols, file, i, res);
-
         // Inject all imports into the symbol table
         for (const auto &idx : file->imports)
         {
             // Get the imported file
             auto *imported_file = files[idx];
-            inject_context<false>(symbols, imported_file, i, res);
+            inject_context(symbols, imported_file, i, res);
         }
+
+
     }
 
     return res;
