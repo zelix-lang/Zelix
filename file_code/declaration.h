@@ -29,6 +29,7 @@
 
 #pragma once
 #include "file_code/type.h"
+#include "parser/ast.h"
 
 namespace zelix::code
 {
