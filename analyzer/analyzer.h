@@ -28,3 +28,11 @@
 //
 
 #pragma once
+#include "file_code/file_code.h"
+#include "result.h"
+#include "tool/ref.h"
+
+namespace zelix::analyzer
+{
+    result analyze(container::vector<code::file_code *> &files);
+}
