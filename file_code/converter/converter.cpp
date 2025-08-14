@@ -81,6 +81,7 @@ container::vector<code::file_code *> code::convert(
                         chain,
                         files,
                         child,
+                        file,
                         queue,
                         ast_allocator,
                         token_allocator,
