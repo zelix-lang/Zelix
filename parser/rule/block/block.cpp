@@ -208,18 +208,6 @@ void parser::rule::block(
                 break;
             }
 
-            case lexer::token::IDENTIFIER:
-            {
-                if (
-                    assignment(
-                        current_block,
-                        tokens,
-                        allocator,
-                        next
-                    )
-                ) break; // Successfully parsed an assignment
-            }
-
             case lexer::token::RETURN:
             {
                 tokens.next(); // Consume the token
@@ -231,6 +219,18 @@ void parser::rule::block(
                 );
 
                 break;
+            }
+
+            case lexer::token::IDENTIFIER:
+            {
+                if (
+                    assignment(
+                        current_block,
+                        tokens,
+                        allocator,
+                        next
+                    )
+                ) break; // Successfully parsed an assignment
             }
 
             default:
