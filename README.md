@@ -3,6 +3,7 @@
     <h1>The Zelix Programming Language</h1>
     Zelix is a modern and blazing-fast programming language.
     <br>
+    <br>
 
 [![GitHub](https://img.shields.io/github/license/zelix-lang/Zelix?style=flat-square)](LICENSE)
 ![GitHub repo size](https://img.shields.io/github/repo-size/zelix-lang/Zelix)
