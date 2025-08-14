@@ -29,13 +29,13 @@
 
 #pragma once
 #include "trace.h"
-#include "zelix/container/vector.h"
+#include "zelix/container/ring_buffer.h"
 
 namespace zelix::analyzer
 {
     struct result
     {
-        container::vector<trace> errors; // The errors found during analysis
-        container::vector<trace> warnings; // The warnings found during analysis
+        container::ring_buffer<trace, 10> errors; // The errors found during analysis
+        container::ring_buffer<trace, 10> warnings; // The warnings found during analysis
     };
 }
