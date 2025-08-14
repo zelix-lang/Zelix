@@ -91,7 +91,8 @@ namespace zelix::parser
             DERIVE,
             ASSIGNMENT,
             TEMPLATES,
-            TEMPLATE
+            TEMPLATE,
+            PACKAGE,
         };
 
         rule_t rule = ROOT;
