@@ -52,19 +52,20 @@ container::vector<code::file_code *> code::convert(
         container::string,
         container::string_hash
     > chain; // The import chain in a set for fast lookup
-    queue.emplace_back(root, util::dirname(root_path.c_str()), container::move(root_content));
+
+    // Allocate a new file_code object
+    auto *file = allocator.alloc();
+    file->content = container::move(root_content);
+
+    queue.emplace_back(root, util::dirname(root_path.c_str()), container::move(file));
 
     // Process the queue until it's empty
     while (!queue.empty())
     {
         // Get the last node in the queue
         // We have to copy here since pop_back() calls the destructor
-        auto [node, dir, content] = queue.back();
+        auto [node, dir, file] = queue.back();
         queue.pop_back();
-
-        // Allocate a new file_code object
-        auto *file = allocator.alloc();
-        file->content = container::move(content);
 
         // Walk the tree
         for (
@@ -83,6 +84,7 @@ container::vector<code::file_code *> code::convert(
                         queue,
                         ast_allocator,
                         token_allocator,
+                        allocator,
                         dir,
                         root_path
                     );
