@@ -56,6 +56,7 @@ namespace zelix::code::converter
         > &chain,
         container::vector<file_code *> &files,
         parser::ast *const &node,
+        file_code *&curr,
         container::vector<queue_el> &queue,
         memory::lazy_allocator<parser::ast> &ast_allocator,
         memory::lazy_allocator<lexer::token> &token_allocator,
@@ -136,9 +137,13 @@ namespace zelix::code::converter
         // Parse the tokens
         auto ast = parser::parse(tokens, ast_allocator);
 
+        // Add the new import to imports vector
+        curr->imports.emplace_back(files.size());
+        
         // Allocate a new file_code object
         auto *file = file_allocator.alloc();
         file->content = container::move(contents);
+        files.push_back(file); // Add the file to the files vector
 
         // Add the AST to the queue
         queue.emplace_back(ast, util::dirname(path.c_str()), container::move(file));
