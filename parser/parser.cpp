@@ -29,6 +29,7 @@
 #include "rule/function.h"
 #include "rule/import.h"
 #include "rule/mod.h"
+#include "rule/package.h"
 using namespace zelix;
 
 parser::ast *parser::parse(
@@ -41,6 +42,9 @@ parser::ast *parser::parse(
 
     bool top_level = true; // Flag to track if we are at the top level of the AST
     bool pub = false; // Flag to track if the next declaration is public
+
+    // Parse the package
+    rule::package(root, tokens, allocator);
 
     // Iterate over the tokens
     auto current_opt = tokens.next();
