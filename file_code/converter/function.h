@@ -67,6 +67,8 @@ namespace zelix::code::converter
 
         // Get the function name
         const auto &name = first->value.get();
+        fun->line = first->line;
+        fun->column = first->column;
 
         // Honor arguments too
         if (second->rule == parser::ast::ARGUMENTS)
