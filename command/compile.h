@@ -86,7 +86,8 @@ namespace zelix::command
                 fun_allocator,
                 mod_allocator,
                 root,
-                root_path
+                root_path,
+                f
             );
             time::complete();
         }
