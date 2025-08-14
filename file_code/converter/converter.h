@@ -62,6 +62,7 @@ namespace zelix::code
         {
             parser::ast *root;
             container::string path;
+            container::string content;
         };
     }
 
@@ -72,6 +73,7 @@ namespace zelix::code
         memory::lazy_allocator<function> &fun_allocator,
         memory::lazy_allocator<mod> &mod_allocator,
         parser::ast *const &root,
-        container::string &root_path
+        container::string &root_path,
+        container::string &root_content
     );
 }
