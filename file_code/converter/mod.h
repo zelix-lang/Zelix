@@ -70,6 +70,8 @@ namespace zelix::code::converter
 
         // Get the module name
         const auto &name = first->value.get();
+        m->line = first->line;
+        m->column = first->column;
         parser::ast *derive = nullptr; // Save the last derive node
 
         // Iterate over the children and fill the mod
