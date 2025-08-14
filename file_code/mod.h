@@ -35,7 +35,7 @@
 
 namespace zelix::code
 {
-    struct mod
+    struct mod : globals::trace
     {
         ankerl::unordered_dense::map<
             container::external_string,
