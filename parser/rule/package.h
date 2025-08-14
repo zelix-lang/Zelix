@@ -39,13 +39,12 @@ namespace zelix::parser::rule
     inline void package(
         ast *&root,
         container::stream<lexer::token *> &tokens,
-        memory::lazy_allocator<ast> &allocator,
-        const lexer::token *const &trace
+        memory::lazy_allocator<ast> &allocator
     )
     {
         // Expect the very first token to be a package
         expect(tokens, lexer::token::PACKAGE);
-        tokens.next(); // Consume the package token
+        const auto &trace = tokens.next().get(); // Consume the package token
         bool id = true; // Flag to track if we are expecting an identifier
 
         // Allocate a new AST node for the package
