@@ -51,5 +51,6 @@ namespace zelix::code
 
         container::string path; // The file path
         container::string content; // The file content
+        container::vector<int> imports; // The import chain, which is a vector of indices>
     };
 }
