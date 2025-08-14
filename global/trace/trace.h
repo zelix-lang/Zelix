@@ -36,6 +36,5 @@ namespace zelix::globals
     {
         size_t line; // The line number of the error
         size_t column; // The column number of the error
-        int type; // The type of the error
     };
 }

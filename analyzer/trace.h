@@ -35,5 +35,6 @@ namespace zelix::analyzer
     struct trace : globals::trace
     {
         size_t id; // The index of the file_code in the import chain
+        int type; // The type of the error
     };
 }
