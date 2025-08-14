@@ -126,6 +126,14 @@ ankerl::unordered_dense::map<
         container::external_string("derive", 6),
         lexer::token::DERIVE
     },
+    {
+        container::external_string("package", 7),
+        lexer::token::PACKAGE
+    },
+    {
+        container::external_string("global", 6),
+        lexer::token::GLOBAL
+    },
 };
 
 bool lexer::is_err()
