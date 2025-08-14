@@ -62,7 +62,7 @@ namespace zelix::code
         {
             parser::ast *root;
             container::string path;
-            container::string content;
+            file_code *file;
         };
     }
 
