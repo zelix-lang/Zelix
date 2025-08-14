@@ -31,7 +31,6 @@
 #include "expr/expr.h"
 #include "lexer/token.h"
 #include "memory/allocator.h"
-#include "parser/rule/call.h"
 #include "zelix/container/stream.h"
 
 namespace zelix::parser::rule
