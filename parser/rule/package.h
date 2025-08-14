@@ -90,6 +90,7 @@ namespace zelix::parser::rule
                 id_node->column = next->column; // Set the column number
                 package_node->children.push_back(id_node); // Add the identifier node to the package node
                 id = false; // Switch to expecting a dot next
+                next_opt = tokens.next(); // Get the next token
                 continue;
             }
 
