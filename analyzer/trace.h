@@ -34,7 +34,18 @@ namespace zelix::analyzer
 {
     struct trace : globals::trace
     {
-        size_t id; // The index of the file_code in the import chain
-        int type; // The type of the error
+        size_t id = 0; // The index of the file_code in the import chain
+        int type = 0; // The type of the error
+
+        trace(
+            const size_t line_,
+            const size_t column_,
+            const size_t id_,
+            const int type_
+        )
+            : globals::trace{line_, column_}  // initialize base class properly
+            , id(id_)
+            , type(type_)
+        {}
     };
 }
