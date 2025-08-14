@@ -139,7 +139,7 @@ namespace zelix::code::converter
 
         // Add the new import to imports vector
         curr->imports.emplace_back(files.size());
-        
+
         // Allocate a new file_code object
         auto *file = file_allocator.alloc();
         file->content = container::move(contents);
