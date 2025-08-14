@@ -29,12 +29,16 @@ The code for the standard library can be found in the [stdlib] repository.
 Zelix is an imperative, statically-typed programming language
 designed with performance and simplicity in mind.
 
+---
+
 ### ⚡ Why Zelix?
 
 - **⚡ Performance** — Designed for speed, with aggressive low-level optimizations.
 - **🛡 Memory safety** — Guaranteed at compile time — no garbage collector, no borrow checker headaches.
 - **✍ Simplicity** — A clean, approachable syntax that gets out of your way.
 - **🔍 Static typing** — Catch type errors early and get better performance, all at compile time.
+
+---
 
 ### 📦 Installation
 
@@ -73,22 +77,32 @@ Installation is simple. There are three main ways to install Zelix:
     Unfortunately, Zelix is not available on these package managers yet.
     You can use the **build from source** method instead.
 
+---
+
 ### 👾 Supported Platforms & Architectures
 Zelix can run on almost any platform that supports a C compiler.
 Currently, Windows support is not available, and it is not planned for the near future.
 Zelix is primarily developed and tested on Linux and macOS.
 
+---
+
 ### 🤝 Getting Involved
 We welcome contributions! Whether you're fixing bugs, adding features, or improving documentation, your help is
 appreciated. Check out our [Contributing Guide][Contributing] for more details.
+
+---
 
 If you consider Zelix has inspired you to create something amazing,
 you can read the [Zelix Internals Book](https://docs.zelixlang.dev/zelix-internals-book)
 to learn how Zelix works under the hood and how it was implemented and written from scratch.
 
+---
+
 ### 📚 Documentation
 For detailed documentation, including language features, standard library usage, and more,
 please visit our [Documentation][Documentation] page.
+
+---
 
 ### 📝 License
 Zelix is licensed under the [GNU General Public License v3.0](LICENSE).
