@@ -70,7 +70,7 @@ namespace zelix::parser
 
                     nested_count--;
 
-                    if (nested_count == 0)
+                    if (nested_count == 0 && nested_end_delim == end_delim)
                     {
                         return result;
                     }
