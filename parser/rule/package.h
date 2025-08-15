@@ -67,7 +67,7 @@ namespace zelix::parser::rule
         root->children.push_back(package_node); // Add the package node to the root
 
         // Get the next token
-        auto next_opt = tokens.next();
+        auto next_opt = tokens.peek();
         if (next_opt.is_none())
         {
             global_err.type = UNEXPECTED_TOKEN;
@@ -80,9 +80,14 @@ namespace zelix::parser::rule
         {
             const auto &next = next_opt.get();
 
-            // Break if we encounter a semicolon
+            // Break if we have reached the Until token
             if (next->type == Until)
             {
+                if constexpr (!IsType)
+                {
+                    tokens.next(); // Consume the token
+                }
+
                 break;
             }
 
@@ -96,6 +101,7 @@ namespace zelix::parser::rule
                     throw except::exception("Unexpected end of input while parsing package");
                 }
 
+                tokens.next(); // Consume the identifier token
                 // Allocate a new AST node for the identifier
                 ast *id_node = allocator.alloc();
                 id_node->rule = ast::IDENTIFIER;
@@ -104,7 +110,7 @@ namespace zelix::parser::rule
                 id_node->column = next->column; // Set the column number
                 package_node->children.push_back(id_node); // Add the identifier node to the package node
                 id = false; // Switch to expecting a dot next
-                next_opt = tokens.next(); // Get the next token
+                next_opt = tokens.peek(); // Get the next token
                 continue;
             }
 
@@ -122,8 +128,9 @@ namespace zelix::parser::rule
                 throw except::exception("Expected '.' after package identifier");
             }
 
+            tokens.next(); // Consume the dot token
             id = true; // Switch to expecting an identifier next
-            next_opt = tokens.next(); // Get the next token
+            next_opt = tokens.peek(); // Get the next token
         }
 
         // Make sure we don't end up expecting an identifier
