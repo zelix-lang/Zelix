@@ -29,6 +29,8 @@
 
 #include "type.h"
 
+#include "parser/rule/package.h"
+
 using namespace zelix;
 
 parser::ast *parse_base(
@@ -40,7 +42,7 @@ parser::ast *parse_base(
 )
 {
     // Get the next token
-    auto next_opt = tokens.next();
+    auto next_opt = tokens.peek();
     if (next_opt.is_none())
     {
         parser::global_err.type = parser::UNEXPECTED_TOKEN;
@@ -90,6 +92,7 @@ parser::ast *parse_base(
         {
             node->rule = parser::ast::NOTHING;
             allow_nested = false; // No nested types allowed after NOTHING
+            tokens.next(); // Consume the token
             break;
         }
 
@@ -97,6 +100,7 @@ parser::ast *parse_base(
         {
             node->rule = parser::ast::STR;
             allow_nested = false; // No nested types allowed
+            tokens.next(); // Consume the token
             break;
         }
 
@@ -104,6 +108,7 @@ parser::ast *parse_base(
         {
             node->rule = parser::ast::NUM;
             allow_nested = false; // No nested types allowed
+            tokens.next(); // Consume the token
             break;
         }
 
@@ -111,6 +116,7 @@ parser::ast *parse_base(
         {
             node->rule = parser::ast::DEC;
             allow_nested = false; // No nested types allowed
+            tokens.next(); // Consume the token
             break;
         }
 
@@ -118,23 +124,22 @@ parser::ast *parse_base(
         {
             node->rule = parser::ast::BOOL;
             allow_nested = false; // No nested types allowed
-            break;
-        }
-
-        case lexer::token::IDENTIFIER:
-        {
-            node->rule = parser::ast::IDENTIFIER;
-            node->value = next->value;
-            allow_nested = true;
+            tokens.next(); // Consume the token
             break;
         }
 
         default:
         {
-            parser::global_err.type = parser::UNEXPECTED_TOKEN;
-            parser::global_err.column = next->column;
-            parser::global_err.line = next->line;
-            throw except::exception("Unexpected token while parsing type");
+            // Parse a package
+            parser::rule::package<false, lexer::token::UNKNOWN, true>(
+                type_node,
+                tokens,
+                allocator
+            );
+
+            allow_nested = true;
+            allocator.dealloc(node);
+            return type_node; // Return the type node without the base type
         }
     }
 
