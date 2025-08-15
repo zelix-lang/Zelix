@@ -44,7 +44,7 @@ parser::ast *parser::parse(
     bool pub = false; // Flag to track if the next declaration is public
 
     // Parse the package
-    rule::package(root, tokens, allocator);
+    rule::package<true, lexer::token::SEMICOLON>(root, tokens, allocator);
 
     // Iterate over the tokens
     auto current_opt = tokens.next();
