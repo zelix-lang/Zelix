@@ -95,10 +95,7 @@ namespace zelix::parser::rule
             {
                 if (next->type != lexer::token::IDENTIFIER)
                 {
-                    global_err.type = UNEXPECTED_TOKEN;
-                    global_err.column = next->column;
-                    global_err.line = next->line;
-                    throw except::exception("Unexpected end of input while parsing package");
+                    return; // Break if we are not expecting an identifier
                 }
 
                 tokens.next(); // Consume the identifier token
