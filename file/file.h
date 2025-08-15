@@ -30,6 +30,7 @@
 #pragma once
 #include "ankerl/unordered_dense.h"
 #include "function.h"
+#include "mod.h"
 #include "zelix/container/external_string.h"
 #include "zelix/container/owned_string.h"
 
@@ -41,13 +42,13 @@ namespace zelix::code
 
         ankerl::unordered_dense::map<
             container::external_string,
-            function,
+            function *,
             container::external_string_hash
         > functions;
 
         ankerl::unordered_dense::map<
             container::external_string,
-            container::external_string_hash,
+            mod *,
             container::external_string_hash
         > modules;
     };
