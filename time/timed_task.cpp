@@ -29,16 +29,17 @@
 #include <fluent/ansi/ansi.h>
 
 #include "util/nested_spaces.h"
+#include "zelix/container/owned_string.h"
 
 struct timed_task
 {
-    const char *name = nullptr;
-    int name_len = 0;
+    zelix::container::string name;
     std::chrono::system_clock::time_point start_time = std::chrono::system_clock::now();
     size_t took = 0;
     int steps = 0;
     int max_steps = 0;
     size_t nested = 0;
+    bool active = false;
 };
 
 // Save the current task
@@ -78,12 +79,11 @@ void print_task(const size_t nested, const char *reason)
             "\033[2m/%d]"
             ANSI_RESET
             ANSI_BRIGHT_RED
-            " %.*s [x]"
+            " %s [x]"
             ANSI_RESET,
             task.steps,
             task.max_steps,
-            task.name_len,
-            task.name
+            task.name.c_str()
         );
 
         printf("\n");
@@ -106,12 +106,11 @@ void print_task(const size_t nested, const char *reason)
             "\033[2m[%d/%d]\033[22m"
             ANSI_RESET
             ANSI_BRIGHT_GREEN
-            " %.*s"
+            " %s"
             ANSI_RESET,
             task.steps,
             task.max_steps,
-            task.name_len,
-            task.name
+            task.name.c_str()
         );
     }
 
@@ -128,13 +127,12 @@ void print_task(const size_t nested, const char *reason)
             "]"
             ANSI_RESET
             ANSI_BRIGHT_BLUE
-            " %.*s"
+            " %s"
             ANSI_RESET
             "\r",
             task.steps,
             task.max_steps,
-            task.name_len,
-            task.name
+            task.name.c_str()
         );
     }
 
@@ -143,7 +141,7 @@ void print_task(const size_t nested, const char *reason)
 
 void zelix::time::complete(const bool recompute_time)
 {
-    if (task.name == nullptr)
+    if (!task.active)
     {
         return; // No task to complete
     }
@@ -190,12 +188,12 @@ void zelix::time::complete(const bool recompute_time)
         );
     }
 
-    task.name = nullptr; // Clear the task name
+    task.active = false; // Mark the task as inactive
 }
 
 void zelix::time::advance()
 {
-    if (task.name == nullptr)
+    if (!task.active)
     {
         return; // No task to advance
     }
@@ -227,13 +225,13 @@ void zelix::time::post(
 )
 {
     complete();
-    task.name = name; // Set the task name
-    task.name_len = len; // Set the task name length
+    task.name = container::string(name, len); // Set the task name
     task.max_steps = max_steps; // Set the maximum steps
     task.start_time = std::chrono::system_clock::now(); // Reset the start time
     task.took = 0; // Reset the time taken
     task.steps = 0; // Reset the steps
     task.nested = nested; // Set the nesting level
+    task.active = true; // Mark the task as active
 
     print_task<false, false>(nested, nullptr);
 }
@@ -268,11 +266,11 @@ void zelix::time::post(
 
 void zelix::time::fail(const char *reason)
 {
-    if (task.name == nullptr)
+    if (!task.active)
     {
         return; // No task to advance
     }
 
     print_task<true, true>(task.nested, reason);
-    task.name = nullptr; // Clear the task name
+    task.active = false;
 }
