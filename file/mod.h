@@ -41,13 +41,13 @@ namespace zelix::code
     {
         ankerl::unordered_dense::map<
             container::external_string,
-            declaration,
+            declaration *,
             container::external_string_hash
         > declarations;
 
         ankerl::unordered_dense::map<
             container::external_string,
-            function,
+            function *,
             container::external_string_hash
         > functions;
     };
