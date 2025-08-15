@@ -290,5 +290,14 @@ void parser::rule::type(
         throw except::exception("Unclosed nested type in type declaration");
     }
 
+    // Check for empty types at the end
+    auto &back = base->children.back();
+    while (back->children.empty())
+    {
+        allocator.dealloc(back);
+        base->children.pop_back();
+        back = base->children.back();
+    }
+
     root->children.push_back(container::move(base));
 }
