@@ -38,6 +38,7 @@
 #include "parser/rule/prop.h"
 #include "parser/rule/signed.h"
 #include "queue.h"
+#include "zelix/container/stream.h"
 
 namespace zelix::parser::rule
 {
@@ -395,16 +396,21 @@ namespace zelix::parser::rule
                     expr_queue
                 );
 
-                first_opt = expr_stream.curr(); // Get the current token
-                if (
+                first_opt = expr_stream.peek(); // Get the current token
+                if (first_opt.is_none())
+                {
                     process_next(
                         node,
                         candidate,
                         trace,
                         first_opt,
                         first
-                    ) // Process the next token
-                ) continue;
+                    ); // Process the next token
+                    continue;
+                }
+
+                first_opt = expr_stream.curr();
+                first = first_opt.get();
             }
 
             if (
@@ -427,7 +433,7 @@ namespace zelix::parser::rule
                     expr_queue
                 );
 
-                first_opt = expr_stream.curr(); // Get the current token
+                first_opt = expr_stream.next(); // Get the current token
                 if (
                     process_next(
                         node,
