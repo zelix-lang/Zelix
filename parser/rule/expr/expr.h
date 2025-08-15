@@ -114,6 +114,11 @@ namespace zelix::parser::rule
                 false // Do not exclude the first delimiter
             );
 
+            if constexpr (Condition)
+            {
+                tokens.set_pos(tokens.pos() - 1); // Rewind the tokens to include the curly brace
+            }
+
             const auto q_el = queue_allocator.alloc();
             q_el->tokens = container::move(expr_group);
             q_el->node = expr_node;
