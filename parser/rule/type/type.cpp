@@ -177,6 +177,16 @@ void parser::rule::type(
     }
     else
     {
+        if (
+            const auto &first = peek_opt.get();
+            first->type != lexer::token::BOOL_LT
+        )
+        {
+            type_node->children.push_back(base);
+            root->children.push_back(type_node);
+            return;
+        }
+
         auto nested = allocator.alloc();
         nested->rule = ast::TYPE;
         base->children.push_back(nested); // Add the nested type to the base type
