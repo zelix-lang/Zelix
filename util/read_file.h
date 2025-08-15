@@ -83,10 +83,6 @@ namespace zelix::util
         // Close the file
         fclose(file);
 
-        // Construct the string and free buffer
-        container::string content;
-        content.push(buffer);
-        free(buffer);
-        return content;
+        return container::string::no_copy(buffer, read_size);
     }
 }
