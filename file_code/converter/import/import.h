@@ -65,8 +65,6 @@ namespace zelix::code::converter
         container::string &root_path
     )
     {
-        time::post(node->value.get(), 4, 1);
-
         // Read the file
         container::string path;
         bool is_std = false;
@@ -97,15 +95,17 @@ namespace zelix::code::converter
             path.push(requested_path.ptr(), requested_path.size());
         }
 
+        const auto &task_path = node->value.get();
+
         // Check if the file is already in the chain
         if (chain.contains(path))
         {
             if (is_std)
             {
-                time::complete(); // Complete the timed task for stdlib imports
                 return;
             }
 
+            time::post(task_path, 4, 1);
             time::fail("Circular import detected");
 
             // Report the error and print the details
@@ -120,6 +120,7 @@ namespace zelix::code::converter
             throw except::exception("");
         }
 
+        time::post(task_path, 4, 1);
         chain.insert(path);
         time::advance();
 
