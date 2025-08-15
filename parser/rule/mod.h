@@ -28,8 +28,6 @@
 //
 
 #pragma once
-#include <cstdio>
-
 
 #include "declaration.h"
 #include "derive.h"
@@ -96,7 +94,7 @@ namespace zelix::parser::rule
                 case lexer::token::PUB:
                 {
                     pub = true;
-                    continue; // Skip to the next iteration
+                    break; // Skip to the next iteration
                 }
 
                 case lexer::token::FUNCTION:
