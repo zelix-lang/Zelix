@@ -36,7 +36,7 @@
 
 namespace zelix::parser::rule
 {
-    template <bool Expect, lexer::token::t_type Until>
+    template <bool Expect, lexer::token::t_type Until, bool IsType = false>
     inline void package(
         ast *&root,
         container::stream<lexer::token *> &tokens,
@@ -110,6 +110,12 @@ namespace zelix::parser::rule
 
             if (next->type != lexer::token::DOT)
             {
+                if constexpr (IsType)
+                {
+                    // Break for the type parser
+                    break;
+                }
+
                 global_err.type = UNEXPECTED_TOKEN;
                 global_err.column = next->column;
                 global_err.line = next->line;
