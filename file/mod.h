@@ -50,16 +50,5 @@ namespace zelix::code
             function,
             container::external_string_hash
         > functions;
-
-        mod()
-            : trace(0, 0)
-        {}
-
-        explicit mod(
-            const size_t line,
-            const size_t column
-        )
-            : trace(line, column)
-        {}
     };
 }
