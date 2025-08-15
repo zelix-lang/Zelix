@@ -29,7 +29,6 @@
 
 #pragma once
 
-#include "block/block.h"
 #include "expr/expr.h"
 #include "extractor.h"
 #include "zelix/container/stream.h"
@@ -151,13 +150,5 @@ namespace zelix::parser::rule
                 trace
             ); // Parse the range expression
         }
-
-        // Parse the block
-        block(
-            for_node,
-            tokens,
-            allocator,
-            trace
-        );
     }
 }
