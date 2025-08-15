@@ -28,8 +28,6 @@
 //
 
 #pragma once
-#include <cstddef>
-
 #include "zelix/container/external_string.h"
 
 namespace zelix::time
