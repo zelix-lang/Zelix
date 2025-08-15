@@ -29,12 +29,9 @@
 
 #pragma once
 
-#include "ankerl/unordered_dense.h"
 #include "derivable.h"
 #include "global/trace/trace.h"
 #include "parser/ast.h"
-#include "zelix/container/external_string.h"
-#include "zelix/container/owned_string.h"
 
 namespace zelix::code
 {
