@@ -23,8 +23,9 @@
     <https://www.gnu.org/licenses/>.
 */
 
+package main;
 import "@std/io/print";
 
-fun main(a: str) {
-    Abc.new();
+fun main() -> std.String {
+    std.io.println("Hello, World!");
 }
