@@ -92,6 +92,8 @@ add_executable(Zelix
         analyzer/tool/declaration.h
         analyzer/analyzer.cpp
         global/trace/trace.h
+        parser/rule/package.h
+        parser/rule/split.h
 )
 
 target_include_directories(Zelix PRIVATE ${CMAKE_BINARY_DIR}/_deps/fluent_libc-src/include)
