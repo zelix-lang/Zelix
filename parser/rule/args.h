@@ -29,11 +29,15 @@
 
 #pragma once
 
+#include <cstdio>
+
+
 #include "extractor.h"
-#include "zelix/container/stream.h"
 #include "lexer/token.h"
 #include "memory/allocator.h"
 #include "parser/rule/expr/queue.h"
+#include "split.h"
+#include "zelix/container/stream.h"
 
 namespace zelix::parser::rule
 {
@@ -45,8 +49,8 @@ namespace zelix::parser::rule
         container::vector<expr::queue_node *> &expr_queue
     )
     {
-        // Extract all tokens until the end of args
-        auto args_group = extract(tokens);
+        // Split the tokens
+        auto args_group = split_args(tokens);
         if (args_group.empty())
         {
             return;
@@ -57,50 +61,23 @@ namespace zelix::parser::rule
         args_node->rule = ast::ARGUMENTS;
 
         // Iterate over the extracted tokens
-        while (true)
+        for (auto &arg_group : args_group)
         {
+            if (arg_group.empty())
+            {
+                continue; // Skip empty groups
+            }
+
             // Allocate a new AST node for the argument
             ast *arg_node = allocator.alloc();
             arg_node->rule = ast::ARGUMENT;
             args_node->children.push_back(arg_node);
 
-            try
-            {
-                // Extract until the next comma or end of args
-                auto arg_group = extract(
-                    args_group,
-                    lexer::token::COMMA,
-                    lexer::token::CLOSE_PAREN,
-                    lexer::token::OPEN_PAREN,
-                    true, // Handle nested delimiters
-                    false // Do not exclude the first delimiter
-                );
-
-                if (arg_group.empty())
-                {
-                    global_err.type = UNEXPECTED_TOKEN;
-                    global_err.column = args_group.curr().get()->column;
-                    global_err.line = args_group.curr().get()->line;
-                    throw except::exception("Unexpected empty argument group");
-                }
-
-                // Push the argument group to the args node
-                auto q_el = q_allocator.alloc();
-                q_el->tokens = container::move(arg_group);
-                q_el->node = arg_node;
-                expr_queue.emplace_back(q_el);
-            }
-            catch (const except::exception &_)
-            {
-                // If the delimiter was not found, we are at the last argument
-                // and the position was restored
-                auto q_el = q_allocator.alloc();
-                q_el->tokens = container::move(args_group);
-                q_el->node = arg_node;
-                expr_queue.emplace_back(q_el);
-
-                break; // Exit the loop if we reach the end of args
-            }
+            // Push the argument group to the args node
+            auto q_el = q_allocator.alloc();
+            q_el->tokens = container::move(arg_group);
+            q_el->node = arg_node;
+            expr_queue.emplace_back(q_el);
         }
 
         // Append the args node to the root
