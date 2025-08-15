@@ -46,5 +46,21 @@ namespace zelix::code
 
         parser::ast *return_type;
         parser::ast *body;
+
+        function()
+            : return_type(nullptr)
+            , body(nullptr)
+        {}
+
+        explicit function(
+            parser::ast *return_type,
+            parser::ast *body,
+            const size_t line,
+            const size_t column
+        )
+            : trace(line, column)
+            , return_type(return_type)
+            , body(body)
+        {}
     };
 }
