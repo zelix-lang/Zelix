@@ -292,7 +292,7 @@ void parser::rule::type(
 
     // Check for empty types at the end
     auto &back = base->children.back();
-    while (back->children.empty())
+    while (base->children.size() > 1 && base->children.empty())
     {
         allocator.dealloc(back);
         base->children.pop_back();
