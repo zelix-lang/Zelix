@@ -36,15 +36,29 @@
 
 namespace zelix::parser::rule
 {
+    template <bool Expect, lexer::token::t_type Until>
     inline void package(
         ast *&root,
         container::stream<lexer::token *> &tokens,
         memory::lazy_allocator<ast> &allocator
     )
     {
-        // Expect the very first token to be a package
-        expect(tokens, lexer::token::PACKAGE);
-        const auto &trace = tokens.next().get(); // Consume the package token
+        if constexpr (Expect)
+        {
+            // Expect the very first token to be a package
+            expect(tokens, lexer::token::PACKAGE);
+        }
+
+        lexer::token *trace;
+        if constexpr (Expect)
+        {
+            trace = tokens.next().get(); // Consume the package token
+        }
+        else
+        {
+            trace = tokens.curr().get();
+        }
+
         bool id = true; // Flag to track if we are expecting an identifier
 
         // Allocate a new AST node for the package
@@ -67,7 +81,7 @@ namespace zelix::parser::rule
             const auto &next = next_opt.get();
 
             // Break if we encounter a semicolon
-            if (next->type == lexer::token::SEMICOLON)
+            if (next->type == Until)
             {
                 break;
             }
