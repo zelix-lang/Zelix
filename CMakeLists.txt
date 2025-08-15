@@ -72,11 +72,11 @@ add_executable(Zelix
         global/trace/trace.h
         parser/rule/package.h
         parser/rule/split.h
-        file_code/file_code.h
-        file_code/function.h
-        file_code/mod.h
-        file_code/declaration.h
-        file_code/derivable.h
+        file/file_code.h
+        file/function.h
+        file/mod.h
+        file/declaration.h
+        file/derivable.h
 )
 
 target_include_directories(Zelix PRIVATE ${CMAKE_BINARY_DIR}/_deps/fluent_libc-src/include)
