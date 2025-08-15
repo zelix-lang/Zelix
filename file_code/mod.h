@@ -33,7 +33,6 @@
 #include "derivable.h"
 #include "function.h"
 #include "global/trace/trace.h"
-#include "parser/ast.h"
 #include "zelix/container/external_string.h"
 
 namespace zelix::code
