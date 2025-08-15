@@ -90,7 +90,6 @@ namespace zelix::parser::rule
         {
             // Expect an open curly brace for else
             expect(tokens, lexer::token::OPEN_CURLY);
-            tokens.next(); // Consume the open curly brace
         }
 
         // Append the conditional node to the root
