@@ -111,6 +111,7 @@ namespace zelix::parser::rule
                     global_err.type = UNEXPECTED_TOKEN;
                     global_err.column = arg->column;
                     global_err.line = arg->line;
+                    throw except::exception("Unexpected end of input while parsing function signature");
                 }
 
                 // Get the next token
