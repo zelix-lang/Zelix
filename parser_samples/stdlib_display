@@ -1,0 +1,24 @@
+ROOT
+    PACKAGE
+        IDENTIFIER: std
+        IDENTIFIER: io
+    MOD
+        PUBLIC
+        IDENTIFIER: Display
+        FUNCTION
+            PUBLIC
+            IDENTIFIER: display
+            TYPE
+                PACKAGE
+                    IDENTIFIER: std
+                    IDENTIFIER: String
+            BLOCK
+                RETURN
+                    EXPRESSION
+                        PROP_ACCESS
+                            IDENTIFIER: String
+                            CALL
+                                IDENTIFIER: new
+                                ARGUMENTS
+                                    ARGUMENT
+                                        STRING_LITERAL: (Implementation not provided)
