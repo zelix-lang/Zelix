@@ -76,14 +76,15 @@ namespace zelix::memory
         container::vector<T *> free_list;
 
     public:
-        T *alloc()
+        template <typename... Args>
+        T *alloc(Args &&...args)
         {
             // Check the free list first
             if (!free_list.empty())
             {
                 T *ptr = free_list[free_list.size() - 1];
                 free_list.pop_back();
-                new (ptr) T(); // Placement new to construct the object
+                new (ptr) T(container::forward<Args>(args)...); // Placement new to construct the object
                 return ptr;
             }
 
