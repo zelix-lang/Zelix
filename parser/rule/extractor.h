@@ -68,15 +68,11 @@ namespace zelix::parser
                     }
 
                     nested_count--;
-                }
 
-                if (
-                    const bool ok_ret = nested_end_delim == end_delim;
-                    (ok_ret && handle_nested && nested_count == 0)
-                    || (ok_ret && !handle_nested)
-                )
-                {
-                    return result;
+                    if (nested_count == 0)
+                    {
+                        return result;
+                    }
                 }
             }
 
