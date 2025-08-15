@@ -163,8 +163,15 @@ void parser::rule::type(
     bool parsed_base = true; // Flag to indicate if we successfully parsed a base type
     container::vector<ast *> children; // Vector to hold the children of the base type
 
+    if (!allow_nested)
+    {
+        type_node->children.push_back(base);
+        root->children.push_back(type_node);
+        return;
+    }
+
     auto peek_opt = tokens.peek();
-    if (!allow_nested || peek_opt.is_none())
+    if (peek_opt.is_none())
     {
         children.push_back(base);
     }
