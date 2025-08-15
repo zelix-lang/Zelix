@@ -58,39 +58,17 @@ add_executable(Zelix
         parser/rule/if.h
         parser/rule/for.h
         parser/rule/mod.h
-        analyzer/analyzer.h
         parser/rule/derive.h
         parser/rule/assignment.h
         list/list.h
-        file_code/file_code.h
-        file_code/function.h
-        file_code/mod.h
-        file_code/type.h
         parser/rule/type/type.cpp
-        file_code/declaration.h
-        file_code/converter/converter.h
-        file_code/converter/function.h
-        file_code/converter/type/type.h
-        file_code/converter/type/type.cpp
-        file_code/converter/converter.cpp
-        file_code/converter/import/import.h
         global/constants.h
         util/dirname.h
         util/absolute.h
-        file_code/converter/mod.h
-        file_code/converter/import/print_chain.h
         global/messages/import.h
-        file_code/converter/import/print_chain.cpp
         util/nested_spaces.h
         global/err/print.h
         parser/rule/ret.h
-        analyzer/trace.h
-        analyzer/result.h
-        analyzer/error.h
-        analyzer/warn.h
-        analyzer/tool/ref.h
-        analyzer/tool/declaration.h
-        analyzer/analyzer.cpp
         global/trace/trace.h
         parser/rule/package.h
         parser/rule/split.h
