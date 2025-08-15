@@ -61,6 +61,7 @@ namespace zelix::parser
                 {
                     if (nested_count == 0)
                     {
+                        tokens.set_pos(start_pos);
                         global_err.type = UNEXPECTED_TOKEN;
                         global_err.column = current->column;
                         global_err.line = current->line;
