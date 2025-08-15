@@ -128,6 +128,8 @@ namespace zelix::parser::rule
                 continue;
             }
 
+            expr_tokens.push_back(next); // Add the token to the expression tokens
+
             // Peek into the next token
             auto peek_opt = tokens.peek();
             if (peek_opt.is_some() && peek_opt.get()->type == lexer::token::OPEN_CURLY)
@@ -136,7 +138,6 @@ namespace zelix::parser::rule
                 break;
             }
 
-            expr_tokens.push_back(next); // Add the token to the expression tokens
             next_opt = tokens.next();
         }
 
