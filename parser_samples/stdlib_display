@@ -16,6 +16,7 @@ ROOT
                 RETURN
                     EXPRESSION
                         PROP_ACCESS
+                            IDENTIFIER: std
                             IDENTIFIER: String
                             CALL
                                 IDENTIFIER: new
