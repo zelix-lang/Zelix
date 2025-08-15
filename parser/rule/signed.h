@@ -107,7 +107,6 @@ namespace zelix::parser::rule
             if (first_iteration)
             {
                 first_iteration = false; // Set the flag to false for subsequent iterations
-                arithmetic_node->children.push_back(candidate); // Add the candidate as the first child
 
                 if (append_sign)
                 {
@@ -249,6 +248,7 @@ namespace zelix::parser::rule
     {
         // Create the arithmetic AST node
         ast *arithmetic_node = allocator.alloc();
+        arithmetic_node->children.push_back(candidate); // Add the candidate as the first child
         if constexpr (Arithmetic)
         {
             arithmetic_node->rule = ast::ARITHMETIC;
@@ -404,11 +404,14 @@ namespace zelix::parser::rule
         expr_queue.push_back(q_el);
 
         // Unwrap if we have a nested expression
-        if (arithmetic_node->children.size() == 1)
+        if constexpr (Arithmetic)
         {
-            const auto first_child = arithmetic_node->children[0];
-            allocator.dealloc(arithmetic_node); // Deallocate the arithmetic node
-            arithmetic_node = first_child; // Set the first child as the new node
+            if (arithmetic_node->children.size() == 1)
+            {
+                const auto first_child = arithmetic_node->children[0];
+                allocator.dealloc(arithmetic_node); // Deallocate the arithmetic node
+                arithmetic_node = first_child; // Set the first child as the new node
+            }
         }
 
         return arithmetic_node;
