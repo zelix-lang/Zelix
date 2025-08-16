@@ -28,7 +28,7 @@
 //
 
 #pragma once
-#include "expr/expr.h"
+#include "../expr/expr.h"
 #include "lexer/token.h"
 #include "memory/allocator.h"
 #include "zelix/container/stream.h"
