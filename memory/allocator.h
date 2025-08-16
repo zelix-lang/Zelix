@@ -45,46 +45,15 @@ namespace zelix::memory
         size_t offset = 0;
 
     public:
-        explicit lazy_page()
-        {
-            buffer = static_cast<std::byte*>(malloc(Capacity * sizeof(T)));
-            if (!buffer) throw std::bad_alloc();
-        }
-
-        template <typename... Args>
-        T *alloc(Args &&...args)
-        {
-            if (offset >= Capacity)
-            {
-                throw except::exception("Out of memory in lazy page allocator");
-            }
-
-            // Allocate the next object in the buffer
-            T* ptr = reinterpret_cast<T*>(buffer + offset * sizeof(T));
-            ++offset;
-            new (ptr) T(container::forward<Args>(args)...); // Construct the object in place
-            return ptr;
-        }
+        lazy_page();
+        T *alloc(auto&&... args);
 
         [[nodiscard]] bool full() const
         {
             return offset >= Capacity;
         }
 
-        ~lazy_page()
-        {
-            if constexpr (CallDestructors)
-            {
-                // Call the destructor of all allocated objects
-                for (size_t i = 0; i < offset; ++i)
-                {
-                    T *ptr = reinterpret_cast<T*>(buffer + i * sizeof(T));
-                    ptr->~T(); // Call the destructor
-                }
-            }
-
-            free(buffer);
-        }
+        ~lazy_page();
     };
 
     template <typename T, size_t Capacity = 256, bool CallDestructors = false>
@@ -94,15 +63,14 @@ namespace zelix::memory
         container::vector<T *> free_list;
 
     public:
-        template <typename... Args>
-        T *alloc(Args &&...args)
+        T *alloc(auto&&... args)
         {
             // Check the free list first
             if (!free_list.empty())
             {
                 T *ptr = free_list[free_list.size() - 1];
                 free_list.pop_back();
-                new (ptr) T(container::forward<Args>(args)...); // Placement new to construct the object
+                new (ptr) T(container::forward<decltype(args)>(args)...); // Placement new to construct the object
                 return ptr;
             }
 
