@@ -28,7 +28,7 @@
 //
 
 #pragma once
-#include "extractor.h"
+#include "parser/extractor.h"
 #include "lexer/token.h"
 #include "memory/allocator.h"
 #include "parser/rule/expr/queue.h"
