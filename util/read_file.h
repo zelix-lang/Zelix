@@ -29,11 +29,6 @@
 
 #pragma once
 
-#include <cstdio>
-#include <cstdlib>
-#include "zelix/container/owned_string.h"
-#include "zelix/except/exception.h"
-
 namespace zelix::util
 {
     /**
@@ -43,46 +38,5 @@ namespace zelix::util
      * @param path The path to the file to read.
      * @return A container::string containing the file contents.
      */
-    inline container::string read_file(const char* path)
-    {
-        // Open the file in read mode
-        FILE *file = fopen(path, "rb");
-
-        if (file == nullptr)
-        {
-            throw except::exception("Failed to open file");
-        }
-
-        // Seek to the end to determine file size
-        if (fseek(file, 0, SEEK_END) != 0)
-        {
-            fclose(file);
-            throw except::exception("Failed to seek file");
-        }
-
-        const long file_size = ftell(file);
-        if (file_size < 0)
-        {
-            fclose(file);
-            throw except::exception("Failed to determine file size");
-        }
-
-        rewind(file);
-
-        // Allocate buffer and read file
-        auto* buffer = static_cast<char*>(malloc(file_size + 1));
-        if (!buffer)
-        {
-            fclose(file);
-            throw except::exception("Failed to allocate buffer");
-        }
-
-        const size_t read_size = std::fread(buffer, 1, file_size, file);
-        buffer[read_size] = '\0';
-
-        // Close the file
-        fclose(file);
-
-        return container::string::no_copy(buffer, read_size);
-    }
+    container::string read_file(const char* path);
 }
