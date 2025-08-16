@@ -30,8 +30,6 @@
 #pragma once
 
 #include <cstddef>
-#include <new>
-#include "zelix/container/forward.h"
 #include "zelix/container/vector.h"
 
 namespace zelix::memory
