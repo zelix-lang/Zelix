@@ -136,3 +136,18 @@ void parser::rule::package(
         throw except::exception("Unexpected end of input while parsing package");
     }
 }
+
+// Package templates
+template
+void parser::rule::package<false, lexer::token::UNKNOWN, true>(
+    ast*&,
+    container::stream<lexer::token*>&,
+    memory::lazy_allocator<ast, 256ul, false>&
+);
+
+template
+void parser::rule::package<true, lexer::token::SEMICOLON, false>(
+    ast*&,
+    container::stream<lexer::token*>&,
+    memory::lazy_allocator<ast, 256ul, false>&
+);
