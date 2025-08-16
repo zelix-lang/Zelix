@@ -28,9 +28,9 @@
 //
 
 #include "mod.h"
-#include "../declaration/declaration.h"
-#include "../derive/derive.h"
-#include "../function/function.h"
+#include "parser/rule/declaration/declaration.h"
+#include "parser/rule/derive/derive.h"
+#include "parser/rule/function/function.h"
 #include "parser/expect.h"
 #include "parser/parser.h"
 
