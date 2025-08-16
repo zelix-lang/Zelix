@@ -29,7 +29,7 @@
 
 #pragma once
 
-#include "declaration.h"
+#include "declaration/declaration.h"
 #include "derive.h"
 #include "function.h"
 #include "lexer/token.h"
