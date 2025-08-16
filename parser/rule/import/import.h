@@ -30,42 +30,16 @@
 #pragma once
 #include "zelix/container/stream.h"
 #include "lexer/token.h"
-#include "parser/expect.h"
-#include "parser/parser.h"
+#include "parser/ast.h"
+#include "memory/allocator.h"
 
 namespace zelix::parser::rule
 {
-    inline void imp(
+    void imp(
         ast *&root,
         container::stream<lexer::token *> &tokens,
         const bool &top_level,
         memory::lazy_allocator<ast> &allocator,
         const lexer::token *const& trace
-    )
-    {
-        // Make sure we are at the top level
-        if (!top_level)
-        {
-            global_err.type = ILLEGAL_IMPORT;
-            global_err.column = trace->column;
-            global_err.line = trace->line;
-            throw except::exception("Illegal import statement outside of top-level scope");
-        }
-
-        expect(tokens, lexer::token::STRING_LITERAL);
-        const auto path = tokens.next()
-            .get();
-
-        // Expect a semicolon
-        expect(tokens, lexer::token::SEMICOLON);
-        tokens.next(); // Consume the semicolon
-
-        // Create the import node
-        ast *import_node = allocator.alloc();
-        import_node->rule = ast::IMPORT;
-        import_node->value = path->value;
-        import_node->line = path->line;
-        import_node->column = path->column;
-        root->children.push_back(import_node);
-    }
+    );
 }
