@@ -28,13 +28,13 @@
 //
 
 #include "expr.h"
-#include "parser/rule/call/call.h"
+#include "parser/rule/prop/prop.h"
 #include "lexer/token.h"
 #include "likely.h"
 #include "memory/allocator.h"
 #include "parser/extractor.h"
 #include "parser/parser.h"
-#include "parser/rule/prop.h"
+#include "parser/rule/call/call.h"
 #include "parser/rule/signed.h"
 #include "queue.h"
 #include "zelix/container/stream.h"
