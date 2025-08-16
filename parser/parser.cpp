@@ -29,7 +29,7 @@
 #include "rule/function/function.h"
 #include "rule/import/import.h"
 #include "rule/mod/mod.h"
-#include "rule/package.h"
+#include "rule/package/package.h"
 using namespace zelix;
 
 parser::ast *parser::parse(
