@@ -34,6 +34,7 @@ namespace zelix::code::exception
 {
     class unresolved_symbol final : except::exception
     {
+    public:
         explicit unresolved_symbol(const char *msg)
             : exception(msg)
         {}
