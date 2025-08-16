@@ -119,6 +119,7 @@ zelix::memory::lazy_allocator<T, Capacity, CallDestructors>::~lazy_allocator()
     pages.clear(); // Clear the vector of pages
 }
 
+// Page templates
 template struct zelix::memory::lazy_page<zelix::code::symbol, 256ul, false>;
 template struct zelix::memory::lazy_page<zelix::code::mod, 256ul, false>;
 template struct zelix::memory::lazy_page<zelix::code::function, 256ul, false>;
@@ -127,7 +128,7 @@ template class zelix::memory::lazy_page<zelix::lexer::token, 256ul, false>;
 template class zelix::memory::lazy_page<zelix::parser::ast, 256ul, false>;
 template class zelix::memory::lazy_page<zelix::parser::rule::expr::queue_node, 256ul, false>;
 
-// Page templates
+// Page allocation templates
 template
 zelix::lexer::token*
     zelix::memory::lazy_page<zelix::lexer::token, 256ul, false>::alloc<>();
