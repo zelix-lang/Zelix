@@ -35,9 +35,9 @@
 namespace zelix::code
 {
     using package = ankerl::unordered_dense::map<
-        container::string,
+        container::external_string,
         symbol,
-        container::string_hash
+        container::external_string_hash
     >;
     class program
     {
@@ -46,9 +46,9 @@ namespace zelix::code
         memory::lazy_allocator<function> function_alloc;
         memory::lazy_allocator<declaration> declaration_alloc;
         ankerl::unordered_dense::map<
-            container::string,
+            container::external_string,
             package,
-            container::string_hash
+            container::external_string_hash
         > context; // The global context
 
     public:
@@ -73,7 +73,7 @@ namespace zelix::code
             }
         }
 
-        package &pkg(const container::string &str)
+        package &pkg(const container::external_string &str)
         {
             // See if the package exists
             if (!context.contains(str))
@@ -86,15 +86,18 @@ namespace zelix::code
 
         package &new_pkg(const container::string &str)
         {
+            // Convert the string to an external string
+            const container::external_string ext_str(str.c_str(), str.size());
+
             // See if the package exists
-            if (!context.contains(str))
+            if (!context.contains(ext_str))
             {
                 // Insert the package directly
-                context.try_emplace(str);
+                context.try_emplace(ext_str);
             }
 
             // Return the package
-            return context[str];
+            return context[ext_str];
         }
     };
 }
