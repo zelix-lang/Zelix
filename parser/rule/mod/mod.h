@@ -29,9 +29,9 @@
 
 #pragma once
 
-#include "declaration/declaration.h"
-#include "derive/derive.h"
-#include "function/function.h"
+#include "../declaration/declaration.h"
+#include "../derive/derive.h"
+#include "../function/function.h"
 #include "lexer/token.h"
 #include "memory/allocator.h"
 #include "parser/expect.h"
