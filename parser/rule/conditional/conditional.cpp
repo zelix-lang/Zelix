@@ -104,3 +104,40 @@ void parser::rule::conditional(
         current_conditional = nullptr; // Reset the current conditional for else
     }
 }
+
+// Template declarations
+template
+void parser::rule::conditional<false, false, true, false>(
+    ast*&,
+    ast*&,
+    lexer::token const* const&,
+    container::stream<lexer::token*>&,
+    memory::lazy_allocator<ast, 256ul, false>&
+);
+
+template
+void parser::rule::conditional<true, false, false, false>(
+    ast*&,
+    ast*&,
+    lexer::token const* const&,
+    container::stream<lexer::token*>&,
+    memory::lazy_allocator<ast, 256ul, false>&
+);
+
+template
+void parser::rule::conditional<false, true, false, false>(
+    ast*&,
+    ast*&,
+    lexer::token const* const&,
+    container::stream<lexer::token*>&,
+    memory::lazy_allocator<ast, 256ul, false>&
+);
+
+template
+void parser::rule::conditional<false, false, false, true>(
+    ast*&,
+    ast*&,
+    lexer::token const* const&,
+    container::stream<lexer::token*>&,
+    memory::lazy_allocator<ast, 256ul, false>&
+);
