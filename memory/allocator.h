@@ -86,10 +86,10 @@ namespace zelix::memory
                 // Allocate a new page
                 pages.emplace_back();
                 back = pages[pages.size() - 1];
-                return back.alloc(container::forward<Args>(args)...);
+                return back.alloc(container::forward<decltype(args)>(args)...);
             }
 
-            return back.alloc(container::forward<Args>(args)...);
+            return back.alloc(container::forward<decltype(args)>(args)...);
         }
 
         void dealloc(T *ptr)
