@@ -28,10 +28,6 @@
 //
 
 #pragma once
-
-#include <cstdio>
-
-
 #include "extractor.h"
 #include "lexer/token.h"
 #include "memory/allocator.h"
