@@ -35,9 +35,9 @@
 namespace zelix::code
 {
     using package = ankerl::unordered_dense::map<
-        container::external_string,
+        container::string,
         symbol,
-        container::external_string_hash
+        container::string_hash
     >;
     class program
     {
@@ -46,9 +46,9 @@ namespace zelix::code
         memory::lazy_allocator<function> function_alloc;
         memory::lazy_allocator<declaration> declaration_alloc;
         ankerl::unordered_dense::map<
-            container::external_string,
+            container::string,
             package,
-            container::external_string_hash
+            container::string_hash
         > context; // The global context
 
     public:
