@@ -36,22 +36,11 @@ namespace zelix::code
     // Forward declaration of symbol
     class symbol;
 
-    using package = ankerl::unordered_dense::map<
-        container::external_string,
-        symbol *,
-        container::external_string_hash
-    >;
-
     class symbol
     {
         function *func = nullptr; // Pointer to the function symbol
         mod *mod = nullptr; // Pointer to the module symbol
         declaration *decl = nullptr; // Pointer to the declaration symbol
-        ankerl::unordered_dense::map<
-            container::external_string,
-            symbol *,
-            container::external_string_hash
-        > *package = nullptr; // Pointer to the package symbol
 
     public:
         template <typename T>
@@ -68,10 +57,6 @@ namespace zelix::code
             else if constexpr (std::is_same_v<T, declaration>)
             {
                 decl = ptr;
-            }
-            else if constexpr (std::is_same_v<T, code::package>)
-            {
-                package = ptr;
             }
             else
             {
@@ -97,10 +82,6 @@ namespace zelix::code
             {
                 return decl;
             }
-            else if constexpr (std::is_same_v<T, code::package>)
-            {
-                return package;
-            }
             else
             {
                 static_assert(
@@ -125,10 +106,6 @@ namespace zelix::code
             else if constexpr (std::is_same_v<T, declaration>)
             {
                 return decl != nullptr;
-            }
-            else if constexpr (std::is_same_v<T, code::package>)
-            {
-                return package != nullptr;
             }
             else
             {
