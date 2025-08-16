@@ -29,9 +29,10 @@
 
 #pragma once
 
-#include "parser/rule/expr/expr.h"
 #include "lexer/token.h"
 #include "memory/allocator.h"
+#include "parser/ast.h"
+#include "parser/rule/expr/expr.h"
 #include "zelix/container/stream.h"
 
 namespace zelix::parser::rule
