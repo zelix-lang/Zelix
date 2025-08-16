@@ -38,11 +38,17 @@ namespace zelix::code::rule
         str.reserve(ast->children.size() * 2 - 1);
 
         // Build the string
-        for (const auto &child : ast->children)
+        const auto size = ast->children.size() - 1;
+        for (size_t i = 0; i <= size; i++)
         {
+            const auto &child = ast->children[i];
             const auto &value = child->value.get();
             str.push(value.ptr(), value.size());
-            str.push('.');
+
+            if (i != size)
+            {
+                str.push('.');
+            }
         }
 
         // Insert the new package
