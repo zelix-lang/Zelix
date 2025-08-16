@@ -29,6 +29,7 @@
 
 #pragma once
 #include "exception/unresolved_symbol.h"
+#include "zelix/container/string_equality.h"
 #include "memory/allocator.h"
 #include "symbol.h"
 
@@ -39,6 +40,7 @@ namespace zelix::code
         symbol,
         container::external_string_hash
     >;
+
     class program
     {
         memory::lazy_allocator<symbol> symbol_alloc;
@@ -46,9 +48,10 @@ namespace zelix::code
         memory::lazy_allocator<function> function_alloc;
         memory::lazy_allocator<declaration> declaration_alloc;
         ankerl::unordered_dense::map<
-            container::external_string,
+            container::string,
             package,
-            container::external_string_hash
+            container::string_hash,
+            container::string_equal
         > context; // The global context
 
     public:
@@ -81,23 +84,20 @@ namespace zelix::code
                 throw exception::unresolved_symbol(str.ptr());
             }
 
-            return context[str];
+            return context.at(str);
         }
 
-        package &new_pkg(const container::string &str)
+        package &new_pkg(container::string &str)
         {
-            // Convert the string to an external string
-            const container::external_string ext_str(str.c_str(), str.size());
-
             // See if the package exists
-            if (!context.contains(ext_str))
+            if (!context.contains(str))
             {
                 // Insert the package directly
-                context.try_emplace(ext_str);
+                context.try_emplace(str);
             }
 
             // Return the package
-            return context[ext_str];
+            return context[str];
         }
     };
 }
