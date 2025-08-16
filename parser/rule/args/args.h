@@ -28,54 +28,15 @@
 //
 
 #pragma once
-#include "parser/split.h"
-#include "lexer/token.h"
-#include "memory/allocator.h"
 #include "parser/rule/expr/queue.h"
-#include "zelix/container/stream.h"
 
 namespace zelix::parser::rule
 {
-    inline void args(
+    void args(
         ast *&root,
         container::stream<lexer::token *> &tokens,
         memory::lazy_allocator<ast> &allocator,
         memory::lazy_allocator<expr::queue_node> &q_allocator,
         container::vector<expr::queue_node *> &expr_queue
-    )
-    {
-        // Split the tokens
-        auto args_group = split_args(tokens);
-        if (args_group.empty())
-        {
-            return;
-        }
-
-        // Create a new AST node for the arguments
-        ast *args_node = allocator.alloc();
-        args_node->rule = ast::ARGUMENTS;
-
-        // Iterate over the extracted tokens
-        for (auto &arg_group : args_group)
-        {
-            if (arg_group.empty())
-            {
-                continue; // Skip empty groups
-            }
-
-            // Allocate a new AST node for the argument
-            ast *arg_node = allocator.alloc();
-            arg_node->rule = ast::ARGUMENT;
-            args_node->children.push_back(arg_node);
-
-            // Push the argument group to the args node
-            auto q_el = q_allocator.alloc();
-            q_el->tokens = container::move(arg_group);
-            q_el->node = arg_node;
-            expr_queue.emplace_back(q_el);
-        }
-
-        // Append the args node to the root
-        root->children.push_back(args_node);
-    }
+    );
 }
