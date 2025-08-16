@@ -28,81 +28,19 @@
 //
 
 #pragma once
-#include "../expr/expr.h"
 #include "lexer/token.h"
 #include "memory/allocator.h"
-#include "parser/parser.h"
+#include "parser/ast.h"
 #include "zelix/container/stream.h"
 
 namespace zelix::parser::rule
 {
     template <bool If, bool ElseIf, bool Else, bool While>
-    inline void conditional(
+    void conditional(
         ast *&root,
         ast *&current_conditional,
         const lexer::token *const &trace,
         container::stream<lexer::token *> &tokens,
         memory::lazy_allocator<ast> &allocator
-    )
-    {
-        // Allocate a new AST node for the conditional
-        ast *cond_node = allocator.alloc();
-        if constexpr (If)
-        {
-            cond_node->rule = ast::IF;
-        }
-        else if constexpr (ElseIf)
-        {
-            cond_node->rule = ast::ELSEIF;
-        }
-        else if constexpr (Else)
-        {
-            cond_node->rule = ast::ELSE;
-        }
-        else if constexpr (While)
-        {
-            cond_node->rule = ast::WHILE;
-        }
-
-        if constexpr (!If)
-        {
-            // Make sure we have a current conditional
-            if (current_conditional == nullptr)
-            {
-                global_err.type = UNEXPECTED_TOKEN;
-                global_err.column = trace->column;
-                global_err.line = trace->line;
-                throw except::exception("Unexpected else without a preceding if");
-            }
-        }
-
-        // Parse the condition
-        if constexpr (If || ElseIf || While)
-        {
-            expression<true, false>(
-                cond_node,
-                tokens,
-                allocator,
-                trace
-            );
-        }
-        else
-        {
-            // Expect an open curly brace for else
-            expect(tokens, lexer::token::OPEN_CURLY);
-        }
-
-        // Append the conditional node to the root
-        root->children.push_back(cond_node);
-
-        // Set the current conditional to the new node
-        if constexpr ((If || ElseIf) && !While)
-        {
-            current_conditional = cond_node; // Set the current conditional to the new node
-        }
-        else
-        {
-            current_conditional = nullptr; // Reset the current conditional for else
-        }
-    }
+    );
 }
