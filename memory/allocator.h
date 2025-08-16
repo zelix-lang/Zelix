@@ -68,6 +68,11 @@ namespace zelix::memory
         {
             return offset >= Capacity;
         }
+
+        ~lazy_page()
+        {
+            free(buffer);
+        }
     };
 
     template <typename T, size_t Capacity = 256>
