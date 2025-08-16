@@ -32,7 +32,7 @@
 
 namespace zelix::code::rule
 {
-    inline void convert(parser::ast *ast, program &pro)
+    inline void package(parser::ast *ast, program &pro)
     {
         container::string str;
         str.reserve(ast->children.size() * 2 - 1);
