@@ -30,7 +30,7 @@
 #pragma once
 
 #include "expr/expr.h"
-#include "extractor.h"
+#include "parser/extractor.h"
 #include "zelix/container/stream.h"
 #include "lexer/token.h"
 #include "memory/allocator.h"
