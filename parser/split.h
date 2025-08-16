@@ -28,6 +28,9 @@
 //
 
 #pragma once
+#include "zelix/container/vector.h"
+#include "zelix/container/stream.h"
+#include "lexer/token.h"
 
 namespace zelix::parser
 {
