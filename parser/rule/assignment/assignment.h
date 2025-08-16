@@ -29,56 +29,12 @@
 
 #pragma once
 
-#include "lexer/token.h"
-#include "memory/allocator.h"
-#include "parser/ast.h"
-#include "parser/rule/expr/expr.h"
-#include "zelix/container/stream.h"
-
 namespace zelix::parser::rule
 {
-    inline bool assignment(
+    bool assignment(
         ast *&root,
         container::stream<lexer::token *> &tokens,
         memory::lazy_allocator<ast> &allocator,
         const lexer::token *const &trace
-    )
-    {
-        // Peek into the next token to determine if it's an assignment
-        const auto next_opt = tokens.peek(1);
-        if (next_opt.is_none())
-        {
-            return false; // No more tokens to process
-        }
-
-        if (
-            const auto &next = next_opt.get();
-            next->type != lexer::token::EQUALS
-        )
-        {
-            return false; // Not an assignment
-        }
-
-        tokens.next(); // Consume the identifier token
-        tokens.next(); // Consume the '=' token
-
-        // Create an assignment AST node
-        ast *assign_node = allocator.alloc();
-        assign_node->rule = ast::ASSIGNMENT;
-        assign_node->line = trace->line;
-        assign_node->column = trace->column;
-
-        // Allocate a new node for the identifier
-        ast *id_node = allocator.alloc();
-        id_node->rule = ast::IDENTIFIER;
-        id_node->value = trace->value; // Set the identifier value
-        id_node->line = trace->line;
-        id_node->column = trace->column;
-        assign_node->children.push_back(id_node); // Add the identifier node as a child
-
-        // Parse the expression on the right side of the assignment
-        expression(assign_node, tokens, allocator, trace);
-        root->children.push_back(assign_node); // Add the assignment node as a child of the root
-        return true; // Successfully parsed an assignment
-    }
+    );
 }
