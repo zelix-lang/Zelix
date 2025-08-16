@@ -28,24 +28,11 @@
 //
 
 #pragma once
-#include <fluent/ansi/ansi.h>
-#include <cstddef>
-#include <cstdio>
 
 namespace zelix::report::err
 {
-    inline void print(
+    void print(
         const char *const &message,
         const char *const &help
-    )
-    {
-        printf(
-            "\n" ANSI_BRIGHT_RED "error" ANSI_RESET
-            ANSI_BRIGHT_BLACK ":" ANSI_RESET
-            " %s\n" ANSI_BRIGHT_GREEN
-            "     └─ help: %s" ANSI_RESET "\n",
-            message,
-            help
-        );
-    }
+    );
 }
