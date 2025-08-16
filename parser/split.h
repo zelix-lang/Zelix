@@ -28,80 +28,10 @@
 //
 
 #pragma once
-#include "zelix/container/stream.h"
-#include "lexer/token.h"
 
 namespace zelix::parser
 {
-    inline container::vector<container::stream<lexer::token *>> split_args(
+    container::vector<container::stream<lexer::token *>> split_args(
         container::stream<lexer::token*> &tokens
-    )
-    {
-        tokens.next();
-        container::vector<container::stream<lexer::token *>> res;
-        container::vector<lexer::token *> current_group;
-        size_t nested_count = 0;
-        auto next_opt = tokens.next();
-
-        while (next_opt.is_some())
-        {
-            const auto &next = next_opt.get();
-
-            if (next->type == lexer::token::COMMA)
-            {
-                // Handle the end of a group
-                if (nested_count == 0)
-                {
-                    res.emplace_back(current_group);
-                    current_group.clear();
-                }
-                else
-                {
-                    current_group.push_back(next);
-                }
-            }
-
-            else if (next->type == lexer::token::OPEN_PAREN)
-            {
-                nested_count++;
-
-                if (nested_count > 1)
-                {
-                    current_group.push_back(next);
-                }
-            }
-
-            else if (next->type == lexer::token::CLOSE_PAREN)
-            {
-                if (nested_count == 0)
-                {
-                    break;
-                }
-
-                nested_count--;
-
-                if (nested_count == 1)
-                {
-                    break;
-                }
-
-                current_group.push_back(next);
-            }
-
-            else
-            {
-                current_group.push_back(next);
-            }
-
-            next_opt = tokens.next();
-        }
-
-        // Append the last group if it contains tokens
-        if (!current_group.empty())
-        {
-            res.emplace_back(current_group);
-        }
-
-        return res;
-    }
+    );
 }
