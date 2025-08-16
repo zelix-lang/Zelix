@@ -36,7 +36,7 @@
 
 namespace zelix::memory
 {
-    template <typename T, size_t Capacity>
+    template <typename T, size_t Capacity, bool CallDestructors>
     class lazy_page
     {
         std::byte *buffer = nullptr;
@@ -71,14 +71,24 @@ namespace zelix::memory
 
         ~lazy_page()
         {
+            if constexpr (CallDestructors)
+            {
+                // Call the destructor of all allocated objects
+                for (size_t i = 0; i < offset; ++i)
+                {
+                    T *ptr = reinterpret_cast<T*>(buffer + i * sizeof(T));
+                    ptr->~T(); // Call the destructor
+                }
+            }
+
             free(buffer);
         }
     };
 
-    template <typename T, size_t Capacity = 256>
+    template <typename T, size_t Capacity = 256, bool CallDestructors = false>
     class lazy_allocator
     {
-        container::vector<lazy_page<T, Capacity>> pages;
+        container::vector<lazy_page<T, Capacity, CallDestructors>> pages;
         container::vector<T *> free_list;
 
     public:
