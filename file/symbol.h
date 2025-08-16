@@ -39,7 +39,7 @@ namespace zelix::code
     class symbol
     {
         function *func = nullptr; // Pointer to the function symbol
-        mod *mod = nullptr; // Pointer to the module symbol
+        mod *module = nullptr; // Pointer to the module symbol
         declaration *decl = nullptr; // Pointer to the declaration symbol
 
     public:
@@ -50,9 +50,9 @@ namespace zelix::code
             {
                 func = ptr;
             }
-            else if constexpr (std::is_same_v<T, code::mod>)
+            else if constexpr (std::is_same_v<T, mod>)
             {
-                mod = ptr;
+                module = ptr;
             }
             else if constexpr (std::is_same_v<T, declaration>)
             {
@@ -74,9 +74,9 @@ namespace zelix::code
             {
                 return func;
             }
-            else if constexpr (std::is_same_v<T, code::mod>)
+            else if constexpr (std::is_same_v<T, mod>)
             {
-                return mod;
+                return module;
             }
             else if constexpr (std::is_same_v<T, declaration>)
             {
@@ -99,9 +99,9 @@ namespace zelix::code
             {
                 return func != nullptr;
             }
-            else if constexpr (std::is_same_v<T, code::mod>)
+            else if constexpr (std::is_same_v<T, mod>)
             {
-                return mod != nullptr;
+                return module != nullptr;
             }
             else if constexpr (std::is_same_v<T, declaration>)
             {
