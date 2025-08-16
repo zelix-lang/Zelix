@@ -29,63 +29,12 @@
 
 #pragma once
 
-#include "parser/rule/expr/expr.h"
-#include "parser/rule/type/type.h"
-#include "lexer/token.h"
-#include "memory/allocator.h"
-#include "parser/expect.h"
-#include "zelix/container/stream.h"
-
 namespace zelix::parser::rule
 {
     template <bool Const>
-    inline void declaration(
+    void declaration(
         ast *root,
         container::stream<lexer::token *> &tokens,
         memory::lazy_allocator<ast> &allocator
-    )
-    {
-        // Expect an identifier
-        expect(tokens, lexer::token::IDENTIFIER);
-        const auto identifier = tokens.next().get();
-
-        // Allocate a new AST node for the declaration
-        ast *decl_node = allocator.alloc();
-        if constexpr (Const)
-        {
-            decl_node->rule = ast::CONST_DECLARATION;
-        }
-        else
-        {
-            decl_node->rule = ast::DECLARATION;
-        }
-        decl_node->line = identifier->line;
-        decl_node->column = identifier->column;
-        root->children.push_back(decl_node); // Add the declaration node as a child of the root
-
-        // Allocate a new node for the identifier
-        ast *id_node = allocator.alloc();
-        id_node->rule = ast::IDENTIFIER;
-        id_node->value = identifier->value; // Set the identifier value
-        decl_node->children.push_back(id_node); // Add the identifier node as a child
-
-        // Expect a colon for type declaration
-        expect(tokens, lexer::token::COLON);
-        tokens.next(); // Consume the colon
-
-        // Parse the type
-        type(decl_node, tokens, allocator, identifier);
-        expect(tokens, lexer::token::EQUALS); // Expect an equals sign for assignment
-        tokens.next(); // Consume the equals sign
-
-        // Queue the rest of the tokens for expression parsing
-        // Since expr() extracts until the next semicolon, we don't
-        // need to manually expect it here.
-        expression(
-            decl_node,
-            tokens,
-            allocator,
-            identifier
-        );
-    }
+    );
 }
