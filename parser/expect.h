@@ -28,50 +28,11 @@
 //
 
 #pragma once
-#include "zelix/container/stream.h"
-#include "parser.h"
 
 namespace zelix::parser
 {
-    inline void expect(
+    void expect(
         container::stream<lexer::token *> &tokens,
-        const lexer::token::t_type expected_type
-    )
-    {
-        auto token_opt = tokens.peek();
-        if (token_opt.is_none())
-        {
-            // Get the current token
-            container::optional<lexer::token *> trace = tokens.curr();
-            if (trace.is_none())
-            {
-                global_err.line = 0;
-                global_err.column = 0;
-            }
-            else
-            {
-                const auto current_token = trace.get();
-                global_err.type = UNEXPECTED_TOKEN;
-                global_err.column = current_token->column; // Use the column from the current token
-                global_err.line = current_token->line; // Use the line from the current token
-            }
-
-            throw except::exception("Assertion failed");
-        }
-
-        // Get the token
-        // Check if the token type matches the expected type
-        if (
-            const auto &token = token_opt.get();
-            token->type != expected_type
-        )
-        {
-            global_err.type = UNEXPECTED_TOKEN;
-            global_err.column = token->column; // Use the column from the token
-            global_err.line = token->line; // Use the line from the token
-
-            // If it doesn't match, return false
-            throw except::exception("Assertion failed");
-        }
-    }
+        lexer::token::t_type expected_type
+    );
 }
