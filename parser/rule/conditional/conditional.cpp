@@ -28,7 +28,7 @@
 //
 
 #include "conditional.h"
-
+#include "parser/parser.h"
 #include "parser/expect.h"
 #include "parser/rule/expr/expr.h"
 #include "zelix/container/stream.h"
