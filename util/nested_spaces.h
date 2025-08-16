@@ -28,7 +28,6 @@
 //
 
 #pragma once
-#include <cstddef>
 #include <cstdio>
 
 namespace zelix::util
