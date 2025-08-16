@@ -30,7 +30,6 @@
 #pragma once
 #include "zelix/container/stream.h"
 #include "lexer/token.h"
-#include "parser/parser.h"
 
 namespace zelix::parser
 {
