@@ -30,7 +30,7 @@
 #pragma once
 
 #include "declaration/declaration.h"
-#include "derive.h"
+#include "derive/derive.h"
 #include "function.h"
 #include "lexer/token.h"
 #include "memory/allocator.h"
