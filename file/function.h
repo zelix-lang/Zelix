@@ -38,6 +38,8 @@ namespace zelix::code
 {
     struct function : globals::trace
     {
+        bool pub = false;
+
         ankerl::unordered_dense::map<
             container::external_string,
             parser::ast *,

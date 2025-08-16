@@ -39,6 +39,8 @@ namespace zelix::code
 {
     struct mod : globals::trace, derivable
     {
+        bool pub = false;
+
         ankerl::unordered_dense::map<
             container::external_string,
             declaration *,
