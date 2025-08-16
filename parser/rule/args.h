@@ -28,11 +28,10 @@
 //
 
 #pragma once
-#include "parser/extractor.h"
+#include "parser/split.h"
 #include "lexer/token.h"
 #include "memory/allocator.h"
 #include "parser/rule/expr/queue.h"
-#include "split.h"
 #include "zelix/container/stream.h"
 
 namespace zelix::parser::rule
