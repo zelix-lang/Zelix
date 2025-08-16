@@ -28,33 +28,13 @@
 //
 
 #pragma once
-#include "../expr/expr.h"
-#include "lexer/token.h"
-#include "memory/allocator.h"
-#include "zelix/container/stream.h"
 
 namespace zelix::parser::rule
 {
-    inline void ret(
+    void ret(
         container::stream<lexer::token *> &tokens,
         memory::lazy_allocator<ast> &allocator,
         const lexer::token *const &trace,
         ast *&current_block
-    )
-    {
-        // Allocate a new AST
-        auto *tree = allocator.alloc();
-        tree->rule = ast::RETURN;
-
-        // Parse the expression
-        expression(
-            tree,
-            tokens,
-            allocator,
-            trace
-        );
-
-        // Add the tree to the current block
-        current_block->children.push_back(tree);
-    }
+    );
 }
