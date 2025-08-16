@@ -62,12 +62,7 @@ namespace zelix::memory
 
     public:
         T *alloc(auto&&... args);
-
-        void dealloc(T *ptr)
-        {
-            ptr->~T(); // Call the destructor
-            free_list.push_back(ptr);
-        }
+        void dealloc(T *ptr);
 
         ~lazy_allocator()
         {
