@@ -42,86 +42,86 @@ void parser::rule::derive(
     container::stream<lexer::token *> &tokens,
     memory::lazy_allocator<ast> &allocator
 )
+{
+    // Expect an open parenthesis
+    expect(tokens, lexer::token::OPEN_PAREN);
+    tokens.next(); // Consume the open parenthesis
+
+    // Get the next token
+    auto next_opt = tokens.next();
+    if (next_opt.is_none())
     {
-        // Expect an open parenthesis
-        expect(tokens, lexer::token::OPEN_PAREN);
-        tokens.next(); // Consume the open parenthesis
+        global_err.type = UNEXPECTED_TOKEN;
+        global_err.column = 0;
+        global_err.line = 0;
+        throw except::exception("Unexpected end of input while parsing derive");
+    }
 
-        // Get the next token
-        auto next_opt = tokens.next();
-        if (next_opt.is_none())
+    // Create a new AST node
+    ast *derive_node = allocator.alloc();
+    derive_node->rule = ast::DERIVE;
+
+    auto &next = next_opt.get();
+    bool expecting_comma = false;
+
+    // Parse the derive list
+    while (next->type != lexer::token::CLOSE_PAREN)
+    {
+        if (expecting_comma)
         {
-            global_err.type = UNEXPECTED_TOKEN;
-            global_err.column = 0;
-            global_err.line = 0;
-            throw except::exception("Unexpected end of input while parsing derive");
-        }
-
-        // Create a new AST node
-        ast *derive_node = allocator.alloc();
-        derive_node->rule = ast::DERIVE;
-
-        auto &next = next_opt.get();
-        bool expecting_comma = false;
-
-        // Parse the derive list
-        while (next->type != lexer::token::CLOSE_PAREN)
-        {
-            if (expecting_comma)
-            {
-                if (next->type != lexer::token::COMMA)
-                {
-                    global_err.type = UNEXPECTED_TOKEN;
-                    global_err.column = next->column;
-                    global_err.line = next->line;
-                    throw except::exception("Expected comma in derive list");
-                }
-
-                expecting_comma = false;
-            }
-            else
-            {
-                // Make sure the token is an identifier
-                if (next->type != lexer::token::IDENTIFIER)
-                {
-                    global_err.type = UNEXPECTED_TOKEN;
-                    global_err.column = next->column;
-                    global_err.line = next->line;
-                    throw except::exception("Expected identifier in derive list");
-                }
-
-                expecting_comma = true; // Next we expect a comma or semicolon
-
-                // Allocate a new identifier node
-                const auto identifier = allocator.alloc();
-                identifier->rule = ast::IDENTIFIER;
-                identifier->value = next->value;
-                identifier->line = next->line;
-                identifier->column = next->column;
-
-                derive_node->children.push_back(identifier);
-            }
-
-            next_opt = tokens.next();
-            if (next_opt.is_none())
+            if (next->type != lexer::token::COMMA)
             {
                 global_err.type = UNEXPECTED_TOKEN;
                 global_err.column = next->column;
                 global_err.line = next->line;
-                throw except::exception("Unexpected end of input while parsing derive");
+                throw except::exception("Expected comma in derive list");
             }
 
-            next = next_opt.get();
+            expecting_comma = false;
+        }
+        else
+        {
+            // Make sure the token is an identifier
+            if (next->type != lexer::token::IDENTIFIER)
+            {
+                global_err.type = UNEXPECTED_TOKEN;
+                global_err.column = next->column;
+                global_err.line = next->line;
+                throw except::exception("Expected identifier in derive list");
+            }
+
+            expecting_comma = true; // Next we expect a comma or semicolon
+
+            // Allocate a new identifier node
+            const auto identifier = allocator.alloc();
+            identifier->rule = ast::IDENTIFIER;
+            identifier->value = next->value;
+            identifier->line = next->line;
+            identifier->column = next->column;
+
+            derive_node->children.push_back(identifier);
         }
 
-        // Make sure we ended correctly
-        if (!expecting_comma)
+        next_opt = tokens.next();
+        if (next_opt.is_none())
         {
             global_err.type = UNEXPECTED_TOKEN;
             global_err.column = next->column;
             global_err.line = next->line;
-            throw except::exception("Trailing comma in derive list");
+            throw except::exception("Unexpected end of input while parsing derive");
         }
 
-        root->children.push_back(derive_node);
+        next = next_opt.get();
     }
+
+    // Make sure we ended correctly
+    if (!expecting_comma)
+    {
+        global_err.type = UNEXPECTED_TOKEN;
+        global_err.column = next->column;
+        global_err.line = next->line;
+        throw except::exception("Trailing comma in derive list");
+    }
+
+    root->children.push_back(derive_node);
+}
