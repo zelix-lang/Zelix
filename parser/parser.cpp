@@ -28,7 +28,7 @@
 #include "memory/allocator.h"
 #include "rule/function/function.h"
 #include "rule/import/import.h"
-#include "rule/mod.h"
+#include "rule/mod/mod.h"
 #include "rule/package.h"
 using namespace zelix;
 
