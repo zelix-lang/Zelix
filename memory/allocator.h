@@ -63,10 +63,6 @@ namespace zelix::memory
     public:
         T *alloc(auto&&... args);
         void dealloc(T *ptr);
-
-        ~lazy_allocator()
-        {
-            pages.clear(); // Clear the vector of pages
-        }
+        ~lazy_allocator();
     };
 }
