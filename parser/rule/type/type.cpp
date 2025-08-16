@@ -29,7 +29,7 @@
 
 #include "type.h"
 
-#include "parser/rule/package.h"
+#include "parser/rule/package/package.h"
 
 using namespace zelix;
 
