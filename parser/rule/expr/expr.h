@@ -29,9 +29,14 @@
 
 #pragma once
 #include "parser/ast.h"
-#include "zelix/container/stream.h"
 #include "lexer/token.h"
 #include "memory/allocator.h"
+
+namespace zelix::container
+{
+    template <typename T>
+    class stream;
+}
 
 namespace zelix::parser::rule
 {
