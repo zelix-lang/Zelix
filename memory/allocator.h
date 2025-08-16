@@ -30,9 +30,7 @@
 #pragma once
 
 #include <cstddef>
-#include <cstdlib>
 #include <new>
-#include "zelix/except/exception.h"
 #include "zelix/container/forward.h"
 #include "zelix/container/vector.h"
 
