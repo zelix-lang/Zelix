@@ -28,29 +28,28 @@
 //
 
 #pragma once
+#include "exception/unresolved_symbol.h"
 #include "memory/allocator.h"
 #include "symbol.h"
 
 namespace zelix::code
 {
+    using package = ankerl::unordered_dense::map<
+        container::external_string,
+        symbol,
+        container::external_string_hash
+    >;
     class program
     {
-        memory::lazy_allocator<package, 64, true> package_alloc;
         memory::lazy_allocator<symbol> symbol_alloc;
         memory::lazy_allocator<mod> mod_alloc;
         memory::lazy_allocator<function> function_alloc;
         memory::lazy_allocator<declaration> declaration_alloc;
-        package *package = package_alloc.alloc();
-
-        static void throw_mismatch()
-        {
-            throw except::exception("Symbol type mismatch");
-        }
-
-        static void throw_does_not_exist()
-        {
-            throw except::exception("Symbol does not exist");
-        }
+        ankerl::unordered_dense::map<
+            container::external_string,
+            package,
+            container::external_string_hash
+        > context; // The global context
 
     public:
         template <typename T>
@@ -68,126 +67,34 @@ namespace zelix::code
             {
                 return declaration_alloc.alloc();
             }
-            else if constexpr (std::is_same_v<T, code::package>)
-            {
-                return package_alloc.alloc();
-            }
             else
             {
                 throw except::exception("Unknown type for program symbol");
             }
         }
 
-        template <typename T>
-        void set(container::external_string &name, T *ptr)
+        package &pkg(const container::external_string &str)
         {
-            package->try_emplace(name, ptr);
+            // See if the package exists
+            if (!context.contains(str))
+            {
+                throw exception::unresolved_symbol(str.ptr());
+            }
+
+            return context[str];
         }
 
-        template <typename T>
-        T *set(container::external_string &name)
+        package &new_pkg(const container::external_string &str)
         {
-            // Do not allocate if the package is already there
-            if (package->contains(name))
+            // See if the package exists
+            if (!context.contains(str))
             {
-                return static_cast<T *>(package->at(name));
+                // Insert the package directly
+                context.try_emplace(str);
             }
 
-            // Allocate a new instance of T
-            T *ptr = alloc<T>();
-
-            // Allocate a new symbol
-            auto symbol = symbol_alloc.alloc(ptr);
-            package->try_emplace(name, symbol);
-            return ptr;
-        }
-
-        template <typename T>
-        T *resolve(container::external_string &name)
-        {
-            const auto it = package->find(name);
-            if (it == package->end())
-            {
-                throw_does_not_exist();
-            }
-
-            const auto &symbol = it->second;
-            if (!symbol->is<T>())
-            {
-                throw_mismatch();
-            }
-
-            return symbol->get<T>();
-        }
-
-        template <typename T = code::package, bool RetrievePackage = false>
-        T *resolve(parser::ast *package_node)
-        {
-            static_assert(
-                std::is_same_v<T, code::package> ||
-                std::is_same_v<T, mod>,
-                "Unsupported package type"
-            );
-
-            // Get the children
-            const auto &children = package_node->children;
-            const auto size = children.size() - 1;
-            code::package *last_pkg = package;
-
-            for (size_t i = 0; i <= size; ++i)
-            {
-                const auto &child = children[i];
-
-                // Get the child's value
-                const auto &child_val = child->value.get();
-
-                // Make sure that the value exists
-                if (!last_pkg->contains(child_val))
-                {
-                    throw_does_not_exist();
-                }
-
-                // Get the symbol
-                const auto symbol = last_pkg->at(child_val);
-                if (symbol->is<mod>())
-                {
-                    if (i != size)
-                    {
-                        throw_mismatch();
-                    }
-
-                    // Make sure the types match
-                    if constexpr (std::is_same_v<T, mod>)
-                    {
-                        throw_mismatch();
-                    }
-
-                    return symbol->get<mod>();
-                }
-
-                if (symbol->is<code::package>())
-                {
-                    if constexpr (RetrievePackage)
-                    {
-                        if (i == size)
-                        {
-                            throw_mismatch();
-                        }
-                    }
-
-                    return symbol->get<code::package>();
-                }
-
-                throw_mismatch();
-            }
-
-            if constexpr (std::is_same_v<T, code::package>)
-            {
-                return last_pkg;
-            }
-
-            // Unreachable code
-            return nullptr;
+            // Return the package
+            return context[str];
         }
     };
 }
