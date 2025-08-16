@@ -383,3 +383,24 @@ parser::ast *parser::rule::signed_op(
 
     return arithmetic_node;
 }
+
+// signed_op templates
+template
+parser::ast*
+    parser::rule::signed_op<true>(
+        ast*&,
+        container::stream<lexer::token*>&,
+        memory::lazy_allocator<ast, 256ul, false>&,
+        memory::lazy_allocator<expr::queue_node, 256ul, false>&,
+        container::vector<expr::queue_node*>&
+    );
+
+template
+parser::ast*
+    parser::rule::signed_op<false>(
+        ast*&,
+        container::stream<lexer::token*>&,
+        memory::lazy_allocator<ast, 256ul, false>&,
+        memory::lazy_allocator<expr::queue_node, 256ul, false>&,
+        container::vector<expr::queue_node*>&
+    );
