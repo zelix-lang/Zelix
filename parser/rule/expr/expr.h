@@ -28,7 +28,6 @@
 //
 
 #pragma once
-#include "parser/ast.h"
 #include "memory/allocator.h"
 
 namespace zelix::container
@@ -40,6 +39,11 @@ namespace zelix::container
 namespace zelix::lexer
 {
     struct token;
+}
+
+namespace zelix::parser
+{
+    struct ast;
 }
 
 namespace zelix::parser::rule
