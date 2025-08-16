@@ -29,13 +29,17 @@
 
 #pragma once
 #include "parser/ast.h"
-#include "lexer/token.h"
 #include "memory/allocator.h"
 
 namespace zelix::container
 {
     template <typename T>
     class stream;
+}
+
+namespace zelix::lexer
+{
+    struct token;
 }
 
 namespace zelix::parser::rule
