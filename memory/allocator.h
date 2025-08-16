@@ -49,7 +49,8 @@ namespace zelix::memory
             if (!buffer) throw std::bad_alloc();
         }
 
-        T *alloc()
+        template <typename... Args>
+        T *alloc(Args &&...args)
         {
             if (offset >= Capacity)
             {
@@ -59,7 +60,7 @@ namespace zelix::memory
             // Allocate the next object in the buffer
             T* ptr = reinterpret_cast<T*>(buffer + offset * sizeof(T));
             ++offset;
-            new (ptr) T(); // Construct the object in place
+            new (ptr) T(container::forward<Args>(args)...); // Construct the object in place
             return ptr;
         }
 
