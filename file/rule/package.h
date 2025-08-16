@@ -24,32 +24,28 @@
 */
 
 //
-// Created by rodri on 8/15/25.
+// Created by rodri on 8/16/25.
 //
 
 #pragma once
-#include "ankerl/unordered_dense.h"
-#include "function.h"
-#include "mod.h"
-#include "zelix/container/external_string.h"
-#include "zelix/container/owned_string.h"
+#include "file/program.h"
 
-namespace zelix::code
+namespace zelix::code::rule
 {
-    struct file
+    inline void convert(parser::ast *ast, program &pro)
     {
-        container::string package;
+        container::string str;
+        str.reserve(ast->children.size() * 2 - 1);
 
-        ankerl::unordered_dense::map<
-            container::external_string,
-            function *,
-            container::external_string_hash
-        > functions;
+        // Build the string
+        for (const auto &child : ast->children)
+        {
+            const auto &value = child->value.get();
+            str.push(value.ptr(), value.size());
+            str.push('.');
+        }
 
-        ankerl::unordered_dense::map<
-            container::external_string,
-            mod *,
-            container::external_string_hash
-        > modules;
-    };
+        // Insert the new package
+        pro.new_pkg(str);
+    }
 }
