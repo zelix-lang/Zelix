@@ -28,8 +28,9 @@
 //
 
 #pragma once
-#include "lexer/token.h"
-#include "parser/ast.h"
+
+namespace zelix::lexer { struct token; }
+namespace zelix::parser { struct ast; }
 
 namespace zelix::parser::rule::expr
 {
