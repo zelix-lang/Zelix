@@ -61,34 +61,7 @@ namespace zelix::memory
         container::vector<T *> free_list;
 
     public:
-        T *alloc(auto&&... args)
-        {
-            // Check the free list first
-            if (!free_list.empty())
-            {
-                T *ptr = free_list[free_list.size() - 1];
-                free_list.pop_back();
-                new (ptr) T(container::forward<decltype(args)>(args)...); // Placement new to construct the object
-                return ptr;
-            }
-
-            // See if we have any pages available
-            if (pages.empty())
-            {
-                pages.emplace_back();
-            }
-
-            auto &back = pages[pages.size() - 1];
-            if (back.full())
-            {
-                // Allocate a new page
-                pages.emplace_back();
-                back = pages[pages.size() - 1];
-                return back.alloc(container::forward<decltype(args)>(args)...);
-            }
-
-            return back.alloc(container::forward<decltype(args)>(args)...);
-        }
+        T *alloc(auto&&... args);
 
         void dealloc(T *ptr)
         {
