@@ -26,6 +26,7 @@
 #include "parser.h"
 
 #include "memory/allocator.h"
+#include "rule/declaration/declaration.h"
 #include "rule/function/function.h"
 #include "rule/import/import.h"
 #include "rule/mod/mod.h"
