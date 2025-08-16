@@ -28,6 +28,12 @@
 //
 
 #include "mod.h"
+#include "../declaration/declaration.h"
+#include "../derive/derive.h"
+#include "../function/function.h"
+#include "parser/expect.h"
+#include "parser/parser.h"
+
 using namespace zelix;
 
 void parser::rule::mod(
