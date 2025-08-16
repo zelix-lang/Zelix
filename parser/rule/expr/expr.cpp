@@ -392,3 +392,25 @@ void parser::rule::expression(
         throw except::exception("Unexpected token in expression");
     }
 }
+
+// Explicit instantiations
+template void parser::rule::expression<>( // default = <false,false>
+    ast*&,
+    container::stream<lexer::token*>&,
+    memory::lazy_allocator<ast>&,
+    const lexer::token* const&
+);
+
+template void parser::rule::expression<false, true>(
+    ast*&,
+    container::stream<lexer::token*>&,
+    memory::lazy_allocator<ast>&,
+    const lexer::token* const&
+);
+
+template void parser::rule::expression<true, false>(
+    ast*&,
+    container::stream<lexer::token*>&,
+    memory::lazy_allocator<ast>&,
+    const lexer::token* const&
+);
