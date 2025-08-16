@@ -5,7 +5,7 @@
     <br>
     <br>
 
-[![GitHub](https://img.shields.io/github/license/zelix-lang/Zelix?style=flat-square)](LICENSE)
+[![GitHub](https://img.shields.io/github/license/zelix-lang/Zelix)](LICENSE)
 ![GitHub repo size](https://img.shields.io/github/repo-size/zelix-lang/Zelix)
 ![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/zelix-lang/Zelix)
 ![GitHub Repo stars](https://img.shields.io/github/stars/zelix-lang/Zelix?style=flat)
