@@ -29,7 +29,7 @@
 
 #pragma once
 
-#include "../args/args.h"
+#include "parser/rule/args/args.h"
 #include "lexer/token.h"
 #include "memory/allocator.h"
 #include "parser/parser.h"
