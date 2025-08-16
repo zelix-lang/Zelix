@@ -33,7 +33,7 @@
 #include "memory/allocator.h"
 #include "parser/parser.h"
 #include "parser/rule/call.h"
-#include "parser/rule/extractor.h"
+#include "parser/extractor.h"
 #include "parser/rule/prop.h"
 #include "parser/rule/signed.h"
 #include "queue.h"
