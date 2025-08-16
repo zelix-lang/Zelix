@@ -29,8 +29,8 @@
 
 #pragma once
 
-#include "../expr/expr.h"
-#include "../type/type.h"
+#include "parser/rule/expr/expr.h"
+#include "parser/rule/type/type.h"
 #include "lexer/token.h"
 #include "memory/allocator.h"
 #include "parser/expect.h"
