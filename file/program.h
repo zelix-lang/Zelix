@@ -73,7 +73,7 @@ namespace zelix::code
             }
         }
 
-        package &pkg(const container::external_string &str)
+        package &pkg(const container::string &str)
         {
             // See if the package exists
             if (!context.contains(str))
@@ -84,7 +84,7 @@ namespace zelix::code
             return context[str];
         }
 
-        package &new_pkg(const container::external_string &str)
+        package &new_pkg(const container::string &str)
         {
             // See if the package exists
             if (!context.contains(str))
