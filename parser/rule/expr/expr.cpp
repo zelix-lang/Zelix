@@ -27,17 +27,17 @@
 // Created by rodri on 8/16/25.
 //
 
-#include "zelix/container/stream.h"
+#include "expr.h"
+#include "parser/rule/call/call.h"
 #include "lexer/token.h"
 #include "likely.h"
 #include "memory/allocator.h"
-#include "parser/parser.h"
-#include "parser/rule/call.h"
 #include "parser/extractor.h"
+#include "parser/parser.h"
 #include "parser/rule/prop.h"
 #include "parser/rule/signed.h"
 #include "queue.h"
-#include "expr.h"
+#include "zelix/container/stream.h"
 using namespace zelix;
 
 bool process_next(
