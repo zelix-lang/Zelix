@@ -28,6 +28,10 @@
 //
 
 #pragma once
+#include "parser/ast.h"
+#include "zelix/container/stream.h"
+#include "lexer/token.h"
+#include "memory/allocator.h"
 
 namespace zelix::parser::rule
 {
